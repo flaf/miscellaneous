@@ -46,3 +46,4 @@ LABEL squeeze-amd64
     KERNEL  debian-installer/amd64/linux
     APPEND language=en keymap=fr country=FR locale=fr_FR.UTF-8 interface=eth0 url=http://pxe/squeeze-preseed-amd64.cfg initrd=debian-installer/amd64/initrd.gz domain=athome.priv --
 
+
