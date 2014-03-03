@@ -1,0 +1,48 @@
+# D-I config version 2.0
+
+# Usefull aliases in APPEND statement:
+# (http://www.debian.org/releases/stable/armel/apbs02.html.fr#preseed-aliases)
+#
+#     keymap    --> keyboard-configuration/xkb-keymap
+#     language  --> debian-installer/language
+#     country   --> debian-installer/country
+#     locale    --> debian-installer/locale
+#     url       --> preseed/url
+#     hostname  --> netcfg/get_hostname
+#     domain    --> netcfg/get_domain
+#     interface --> netcfg/choose_interface
+#     priority  --> debconf/priority
+#
+
+
+DEFAULT debian-installer/amd64/boot-screens/vesamenu.c32
+
+# No timeout.
+PROMPT 0
+
+# Timeout in centiseconds (10 cs = 1 second).
+#TIMEOUT 100
+
+MENU TITLE PXE Boot Menu
+
+LABEL wheezy-amd64
+    MENU LABEL Debian Wheezy amd64: expert installation
+    KERNEL  debian-installer/amd64/linux
+    APPEND priority=low initrd=debian-installer/amd64/initrd.gz --
+    #TEXT HELP
+    #Classic installation of Debian Wheezy.
+    #ENDTEXT
+
+LABEL wheezy-amd64-preseed
+    MENU LABEL Debian Wheezy amd64: installation with preseed
+    KERNEL debian-installer/amd64/linux
+    APPEND language=en keymap=fr country=FR locale=fr_FR.UTF-8 interface=eth0 url=http://pxe/wheezy-preseed-amd64.cfg initrd=debian-installer/amd64/initrd.gz domain=athome.priv --
+    #TEXT HELP
+    #Fully automatic installation of Debian Wheezy.
+    #ENDTEXT
+
+LABEL squeeze-amd64
+    MENU LABEL Debian Squeeze amd64: installation with preseed
+    KERNEL  debian-installer/amd64/linux
+    APPEND language=en keymap=fr country=FR locale=fr_FR.UTF-8 interface=eth0 url=http://pxe/squeeze-preseed-amd64.cfg initrd=debian-installer/amd64/initrd.gz domain=athome.priv --
+
