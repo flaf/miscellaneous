@@ -56,7 +56,7 @@ LABEL wheezy-amd64-preseed
     APPEND language=en keymap=fr country=FR locale=fr_FR.UTF-8 interface=eth0 hostname=wheezy-vm domain=athome.priv ipv6.disable=1 url=http://pxe/wheezy-preseed-amd64.cfg initrd=debian-installer/amd64/initrd.gz --
     TEXT HELP
     Fully automatic installation of Debian Wheezy.
-    hostname == DNS entry of the host IP, if exist.
+    hostname == DNS entry of the host IP, if exists.
     hostname == "wheezy-vm" if there is no DNS entry.
     ENDTEXT
     # The default entry if the user just presses Enter before the timeout
@@ -68,7 +68,7 @@ LABEL squeeze-amd64-preseed
     APPEND language=en keymap=fr country=FR locale=fr_FR.UTF-8 interface=eth0 hostname=squeeze-vm domain=athome.priv ipv6.disable=1 url=http://pxe/squeeze-preseed-amd64.cfg initrd=debian-installer/amd64/initrd.gz --
     TEXT HELP
     Fully automatic installation of Debian Squeeze.
-    hostname == DNS entry of the host IP, if exist.
+    hostname == DNS entry of the host IP, if exists.
     hostname == "squeeze-vm" if there is no DNS entry.
     ENDTEXT
 
