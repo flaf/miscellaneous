@@ -1,0 +1,123 @@
+#!/bin/sh
+
+SCRIPT_NAME=${0##*/}
+export LC_ALL=C
+export PATH='/usr/sbin:/usr/bin:/sbin:/bin'
+
+check_url () {
+    local url timeout working_dir host
+    url="$1"
+    timeout="$2"
+    working_dir="$3"
+    host="$4"
+
+    if [ -z "$host" ]
+    then
+        if ! wget "http://$url" -O /dev/null --tries=1 --timeout="$timeout" 2>/dev/null
+        then
+            touch "$working_dir/$url"
+        fi
+    else
+        if ! wget "http://$host" -O /dev/null --header="Host: $url" --tries=1 --timeout="$timeout" 2>/dev/null
+        then
+            touch "$working_dir/$url"
+        fi
+    fi
+}
+
+options_list='help,urls-file:,timeout:,packets:,working-dir:,host:'
+
+if ! TEMP=$(getopt -o "h" -l "$options_list" -n "$SCRIPT_NAME" -- "$@"); then
+    echo "Syntax error with $SCRIPT_NAME command." >&2
+    exit 1
+fi
+
+eval set -- "$TEMP"
+unset TEMP
+
+# Default values.
+timeout=10
+packets=10
+host=''
+
+while true
+do
+    case "$1" in
+        --urls-file)
+            urls_file="$2"
+            shift 2
+        ;;
+
+        --timeout)
+            timeout="$2"
+            shift 2
+        ;;
+
+        --packets)
+            packets="$2"
+            if ! echo "$packets" | grep -qE '[0-9]+'
+            then
+                echo 'Sorry in "--packets=P", P must be an positive and nonzero integer.'
+                exit 1
+            fi
+            if [ "$packets" -le 0 ]
+            then
+                echo 'Sorry in "--packets=P", P must be an positive and nonzero integer.'
+                exit 1
+            fi
+            shift 2
+        ;;
+
+        --working-dir)
+            # Remove leading slash.
+            working_dir=$(echo "$2" | sed -r 's:/{2,}:/:g;s:/$::')
+            shift 2
+        ;;
+
+        --host)
+            host="$2"
+            shift 2
+        ;;
+
+        --help|-h)
+            echo "The syntax is:"
+            echo "$SCRIPT_NAME --urls-file='<file name>' --working-dir='<directory>' [ --timeout=N ] [ --packets=P ] [ --host='<address>' ]"
+            exit 0
+        ;;
+
+        --)
+            shift 1
+            break
+        ;;
+    esac
+done
+
+if [ -z "$urls_file" ] || [ -z "$working_dir" ]
+then
+    echo "You must provide the --urls-file and --working-dir options."
+    exit 1
+fi
+
+c=0
+n_urls=0
+
+echo "Running checks with packets=$packets and timeout=$timeout"
+
+for url in $(cat "$urls_file")
+do
+    check_url "$url" "$timeout" "$working_dir" "$host" &
+
+    c=$((c + 1))
+    n_urls=$((n_urls + 1))
+
+    if [ "$c" = "$packets" ]
+    then
+        echo "Little pause... ($n_urls urls already tested or being tested)"
+        sleep "$timeout"
+        c=0
+    fi
+done
+
+[ "$c" -gt 0 ] && sleep "$timeout"
+
+
