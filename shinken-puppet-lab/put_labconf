@@ -5,6 +5,7 @@ ROOT_DIR=$(cd $(dirname "$0"); pwd)
 # Hiera.
 cat "$ROOT_DIR/default.yaml" > /puppet/production/hieradata/default.yaml
 cat "$ROOT_DIR/shinken.athome.priv.yaml" > /puppet/production/hieradata/fqdn/shinken.athome.priv.yaml
+cat "$ROOT_DIR/node.athome.priv.yaml" > /puppet/production/hieradata/fqdn/node.athome.priv.yaml
 echo "---" > /puppet/production/hieradata/datacenter/lss.yaml
 echo "---" > /puppet/production/hieradata/datacenter/vty.yaml
 
