@@ -27,7 +27,7 @@ class exim4 {
 
   exec { 'update-exim4':
     path        => '/usr/sbin:/usr/bin:/sbin:/bin',
-    command     => 'update-exim4',
+    command     => 'update-exim4.conf',
     refreshonly => true,
     notify      => Service['exim4'],
   }
