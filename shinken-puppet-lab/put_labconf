@@ -1,0 +1,13 @@
+#!/bin/sh
+
+ROOT_DIR=$(cd $(dirname "$0"); pwd)
+
+cat "$ROOT_DIR/default.yaml" > /puppet/production/hieradata/default.yaml
+cat "$ROOT_DIR/shinken.athome.priv.yaml" > /puppet/production/hieradata/fqdn/shinken.athome.priv.yaml
+echo "---" > /puppet/production/datacenter/lss.yaml
+echo "---" > /puppet/production/datacenter/vty.yaml
+
+rm -rf /puppet/production/modules/exim4
+cp -ar "$ROOT_DIR/exim4" /puppet/production/modules/
+
+
