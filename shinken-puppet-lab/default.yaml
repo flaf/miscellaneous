@@ -18,7 +18,7 @@ snmp:
   secview: 'monitoring'
 
   # The community password for SNMPv2c.
-  community: 'communtypass'
+  community: 'communitypass'
 
   # Addresses allowed to do SNMPv2c requests and the corresponding view.
   sources:
