@@ -15,6 +15,6 @@ rm -rf "$PUPPET_DIR/modules/exim4"
 cp -ar "$ROOT_DIR/exim4" "$PUPPET_DIR/modules/"
 
 # Change interval_length parameter.
-sed -i 's/^interval_length=.*$/interval_length=1/' "$PUPPET_DIR/modules/shinken/templates/server/nagios.cfg.erb"
+sed -i 's/^interval_length=.*$/interval_length=2/' "$PUPPET_DIR/modules/shinken/templates/server/nagios.cfg.erb"
 
 
