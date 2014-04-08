@@ -19,13 +19,14 @@ class icecast2 {
     owner   => 'root',
     group   => 'root',
     mode    => 644,
-    content => template('icecast2/icecast.default.erb'),
+    content => template('icecast2/icecast2.default.erb'),
     require => Package['icecast2'],
     notify  => Service['icecast2'],
   }
 
   service { 'icecast2':
     hasrestart => true,
+    hasstatus  => false,
     ensure     => running,
   }
 
