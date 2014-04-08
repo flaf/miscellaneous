@@ -276,6 +276,104 @@
         <on-connect>/home/icecast/bin/stream-start</on-connect>
         <on-disconnect>/home/icecast/bin/stream-stop</on-disconnect>
 </mount>
+<mount>
+        <mount-name>/clg-maisonblanche-clamart.mp3</mount-name>
+        <burst-size>65536</burst-size>
+        <password>0920068</password>
+        <fallback-mount>/generique.ogg</fallback-mount>
+        <fallback-override>1</fallback-override>
+        <fallback-when-full>1</fallback-when-full>
+        <fileserve>0</fileserve>
+        <genre>éducation</genre>
+        <stream-name>Flux proposé par le CRDP de l'académie de versailles</stream-name>
+        <stream-description>un flux de web-radio éducatif</stream-description>
+        <stream-url>http://radio.crdp.ac-versailles.fr</stream-url>
+        <on-connect>/home/icecast/bin/stream-start</on-connect>
+        <on-disconnect>/home/icecast/bin/stream-stop</on-disconnect>
+</mount>
+<mount>
+        <mount-name>/lyc-buisson-ermont.mp3</mount-name>
+        <burst-size>65536</burst-size>
+        <password>0950645</password>
+        <fallback-mount>/generique.ogg</fallback-mount>
+        <fallback-override>1</fallback-override>
+        <fallback-when-full>1</fallback-when-full>
+        <fileserve>0</fileserve>
+        <genre>éducation</genre>
+        <stream-name>Flux proposé par le CRDP de l'académie de versailles</stream-name>
+        <stream-description>un flux de web-radio éducatif</stream-description>
+        <stream-url>http://radio.crdp.ac-versailles.fr</stream-url>
+        <on-connect>/home/icecast/bin/stream-start</on-connect>
+        <on-disconnect>/home/icecast/bin/stream-stop</on-disconnect>
+</mount>
+
+
+
+<mount>
+        <mount-name>/clg-lurcat-acheres.mp3</mount-name>
+        <burst-size>65536</burst-size>
+        <password>0783248</password>
+        <fallback-mount>/generique.ogg</fallback-mount>
+        <fallback-override>1</fallback-override>
+        <fallback-when-full>1</fallback-when-full>
+        <fileserve>0</fileserve>
+        <genre>éducation</genre>
+        <stream-name>Flux proposé par le CRDP de l'académie de versailles</stream-name>
+        <stream-description>un flux de web-radio éducatif</stream-description>
+        <stream-url>http://radio.crdp.ac-versailles.fr</stream-url>
+        <on-connect>/home/icecast/bin/stream-start</on-connect>
+        <on-disconnect>/home/icecast/bin/stream-stop</on-disconnect>
+</mount>
+
+<mount>
+        <mount-name>/lyc-marie-curie-sceaux.mp3</mount-name>
+        <burst-size>65536</burst-size>
+        <password>0920146</password>
+        <fallback-mount>/generique.ogg</fallback-mount>
+        <fallback-override>1</fallback-override>
+        <fallback-when-full>1</fallback-when-full>
+        <fileserve>0</fileserve>
+        <genre>éducation</genre>
+        <stream-name>Flux proposé par le CRDP de l'académie de versailles</stream-name>
+        <stream-description>un flux de web-radio éducatif</stream-description>
+        <stream-url>http://radio.crdp.ac-versailles.fr</stream-url>
+        <on-connect>/home/icecast/bin/stream-start</on-connect>
+        <on-disconnect>/home/icecast/bin/stream-stop</on-disconnect>
+</mount>
+<mount>
+        <mount-name>/intertice.mp3</mount-name>
+        <burst-size>65536</burst-size>
+        <password>interticepll</password>
+        <fallback-mount>/generique.ogg</fallback-mount>
+        <fallback-override>1</fallback-override>
+        <fallback-when-full>1</fallback-when-full>
+        <fileserve>0</fileserve>
+        <genre>éducation</genre>
+        <stream-name>Flux proposé par le CRDP de l'académie de versailles</stream-name>
+        <stream-description>un flux de web-radio éducatif</stream-description>
+        <stream-url>http://radio.crdp.ac-versailles.fr</stream-url>
+        <on-connect>/home/icecast/bin/stream-start</on-connect>
+        <on-disconnect>/home/icecast/bin/stream-stop</on-disconnect>
+</mount>
+
+<mount>
+        <mount-name>/lyc-monnet-montrouge.mp3</mount-name>
+        <burst-size>65536</burst-size>
+        <password>0920164</password>
+        <fallback-mount>/generique.ogg</fallback-mount>
+        <fallback-override>1</fallback-override>
+        <fallback-when-full>1</fallback-when-full>
+        <fileserve>0</fileserve>
+        <genre>éducation</genre>
+        <stream-name>Flux proposé par le CRDP de l'académie de versailles</stream-name>
+        <stream-description>un flux de web-radio éducatif</stream-description>
+        <stream-url>http://radio.crdp.ac-versailles.fr</stream-url>
+        <on-connect>/home/icecast/bin/stream-start</on-connect>
+        <on-disconnect>/home/icecast/bin/stream-stop</on-disconnect>
+</mount>
+
+
+
 
 <mount>
         <mount-name>/clg-saules-guyancourt.mp3</mount-name>
@@ -431,26 +529,6 @@
         <on-connect>/home/icecast/bin/stream-start</on-connect>
         <on-disconnect>/home/icecast/bin/stream-stop</on-disconnect>
  </mount>
-
-
- <mount>
-        <mount-name>/intertice.ogg</mount-name>
-        <burst-size>65536</burst-size>
-        <username>pll</username>
-        <password>interticepll</password>
-        <fallback-mount>/generique.ogg</fallback-mount>
-        <fallback-override>1</fallback-override>
-        <fallback-when-full>1</fallback-when-full>
-        <fileserve>0</fileserve>
-        <intro></intro>
-        <genre>éducation</genre>
-        <stream-name>Flux proposé par le CRDP de l'académie de versailles</stream-name>
-        <stream-description>un flux de web-radio éducatif</stream-description>
-        <stream-url>http://radio.crdp.ac-versailles.fr</stream-url>
-        <on-connect>/home/icecast/bin/stream-start</on-connect>
-        <on-disconnect>/home/icecast/bin/stream-stop</on-disconnect>
- </mount>
-
 
 
  <mount>
