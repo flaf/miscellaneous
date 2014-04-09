@@ -2,3 +2,8 @@
 classes:
   - icecast2
 
+icecast2:
+  source_password: '__pwd__{"salt" => ["$fqdn", "source"], "nice" => true, "max_length" => 8 }'
+  admin_password: '__pwd__{"salt" => ["$fqdn", "admin"], "nice" => true, "max_length" => 8 }'
+
+

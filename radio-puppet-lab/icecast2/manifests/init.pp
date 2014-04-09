@@ -1,5 +1,9 @@
 class icecast2 {
 
+  $icecast2_conf   = hiera_hash('icecast2')
+  $source_password = $icecast2_conf['source_password']
+  $admin_password  = $icecast2_conf['admin_password']
+
   package { 'icecast2':
     ensure => present,
   }
