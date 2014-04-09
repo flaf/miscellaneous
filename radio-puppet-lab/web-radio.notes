@@ -16,7 +16,7 @@ export DEBIAN_FRONTEND='noninteractive'
 apt-get install --yes icecast2
 apt-get install --yes airtime
 
-# Il faut configuré tout après installation car,
+# Il faut configurer tout après installation car,
 # si on configure d'abord icecast2 sur le port 80
 # et qu'ensuite on installe airtime, l'installation de
 # airtime plante car lors de l'installation de apache2
