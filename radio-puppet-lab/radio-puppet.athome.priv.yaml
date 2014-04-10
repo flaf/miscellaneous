@@ -4,6 +4,11 @@ classes:
 
 icecast2:
 
+  # The password of the default username (called 'source') for all
+  # source connections. This and the username can be changed in the
+  # individual mount sections.
+  # The password of the 'relay' username is automatically set to
+  # the same value.
   # Default is '__pwd__{"salt" => ["$fqdn", "source"], "nice" => true, "max_length" => 10 }'.
   source_password: '__pwd__{"salt" => ["$fqdn", "source"], "nice" => true, "max_length" => 8 }'
 
@@ -25,4 +30,14 @@ icecast2:
   # seconds), then the source connection is removed from the server.
   limits_source_timeout: 20
 
+  # 4=Debug, 3=Info, 2=Warn, 1=Error.
+  # With log level equal to 3 and I there is Airtime installed too
+  # with a stream set with a bad password, there will be regular
+  # writing on the log file.
+  # Default is 2.
+  log_level: 3
 
+  # Log size in KBytes. If a log file is grower than the log size,
+  # then "mv <filename>.log <filename>.log.old".
+  # Default is 10000.
+  log_size: 20000

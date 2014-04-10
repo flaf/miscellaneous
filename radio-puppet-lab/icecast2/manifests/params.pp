@@ -44,6 +44,20 @@ class icecast2::params {
     $limits_source_timeout = '10'
   }
 
+  # Default value of log level.
+  if ($icecast2_conf['log_level'] != '') {
+    $log_level = $icecast2_conf['log_level']
+  } else {
+    $log_level = '2'
+  }
+
+  # Default value of log size.
+  if ($icecast2_conf['log_size'] != '') {
+    $log_size = $icecast2_conf['log_size']
+  } else {
+    $log_size = '10000'
+  }
+
 }
 
 

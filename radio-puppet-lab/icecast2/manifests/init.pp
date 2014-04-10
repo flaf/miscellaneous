@@ -8,6 +8,8 @@ class icecast2 {
   $limits_clients         = $icecast2::params::limits_clients
   $limits_sources         = $icecast2::params::limits_sources
   $limits_source_timeout  = $icecast2::params::limits_source_timeout
+  $log_level              = $icecast2::params::log_level
+  $log_size               = $icecast2::params::log_size
 
   package { 'icecast2':
     ensure => present,
