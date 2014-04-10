@@ -1,13 +1,13 @@
 <!-- This file is managed by Puppet, don't edit it -->
 <icecast>
     <limits>
-        <clients>100</clients>
-        <sources>2</sources>
+        <clients><%= @limits_clients %></clients>
+        <sources><%= @limits_sources %></sources>
         <threadpool>5</threadpool>
         <queue-size>524288</queue-size>
         <client-timeout>30</client-timeout>
         <header-timeout>15</header-timeout>
-        <source-timeout>10</source-timeout>
+        <source-timeout><%= @limits_source_timeout %></source-timeout>
         <!-- If enabled, this will provide a burst of data when a client 
              first connects, thereby significantly reducing the startup 
              time for listeners that do substantial buffering. However,
@@ -53,7 +53,7 @@
 
     <!-- You may have multiple <listener> elements -->
     <listen-socket>
-        <port>8000</port>
+        <port><%= @port %></port>
         <!-- <bind-address>127.0.0.1</bind-address> -->
         <!-- <shoutcast-mount>/stream</shoutcast-mount> -->
     </listen-socket>

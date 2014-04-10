@@ -1,8 +1,13 @@
 class icecast2 {
 
-  $icecast2_conf   = hiera_hash('icecast2')
-  $source_password = $icecast2_conf['source_password']
-  $admin_password  = $icecast2_conf['admin_password']
+  require 'icecast2::params'
+
+  $source_password        = $icecast2::params::source_password
+  $admin_password         = $icecast2::params::admin_password
+  $port                   = $icecast2::params::port
+  $limits_clients         = $icecast2::params::limits_clients
+  $limits_sources         = $icecast2::params::limits_sources
+  $limits_source_timeout  = $icecast2::params::limits_source_timeout
 
   package { 'icecast2':
     ensure => present,
