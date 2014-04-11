@@ -1,0 +1,47 @@
+#!/bin/sh
+
+export LC_ALL=C
+export PATH="/usr/sbin:/usr/bin:/sbin:/bin"
+
+case "$1" in
+
+    start)
+        invoke-rc.d icecast2 start
+        sleep 1
+        # To have a exit code equal to 0 only if icecast2
+        # is really started.
+        netstat -ltnp | grep -Eq '[0-9]+/icecast2'; exit $?
+    ;;
+
+    restart)
+        invoke-rc.d icecast2 restart
+        sleep 1
+        # To have a exit code equal to 0 only if icecast2
+        # is really restarted.
+        netstat -ltnp | grep -Eq '[0-9]+/icecast2'; exit $?
+    ;;
+
+    status)
+        # To have a exit code equal to 0 only if icecast2
+        # is really restarted.
+        netstat -ltnp | grep -Eq '[0-9]+/icecast2'; exit $?
+    ;;
+
+    update-conf)
+        cat "/etc/icecast2/icecast.xml.puppet" > "/etc/icecast2/icecast.xml"
+    ;;
+
+    is-updated)
+        # If there is no change, then diff return 0 and the configuration
+        # is updated.
+        diff "/etc/icecast2/icecast.xml.puppet" "/etc/icecast2/icecast.xml"
+    ;;
+
+    *)
+        echo "Sorry argument unknown."
+        exit 1
+    ;;
+
+esac
+
+

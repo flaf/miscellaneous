@@ -13,7 +13,10 @@ class icecast2 {
 
   package { 'icecast2':
     ensure => present,
+    notify => Service['icecast2'],
   }
+
+  ->
 
   file { '/etc/icecast2/icecast.xml.puppet':
     ensure  => present,
@@ -21,9 +24,10 @@ class icecast2 {
     group   => 'icecast',
     mode    => 660,
     content => template('icecast2/icecast.xml.puppet.erb'),
-    require => Package['icecast2'],
     notify  => Service['icecast2'],
   }
+
+  ->
 
   file { '/etc/default/icecast2':
     ensure  => present,
@@ -31,13 +35,39 @@ class icecast2 {
     group   => 'root',
     mode    => 644,
     content => template('icecast2/icecast2.default.erb'),
-    require => Package['icecast2'],
     notify  => Service['icecast2'],
   }
 
+  ->
+
+  file { '/usr/local/sbin/icecast-service':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => 755,
+    content => template('icecast2/icecast-service.erb'),
+  }
+
+  ->
+
+  exec { 'update-icecast-conf':
+    user    => 'root',
+    path    => '/usr/sbin:/usr/bin:/sbin:/bin',
+    command => '/usr/local/sbin/icecast-service update-conf',
+    unless  => '/usr/local/sbin/icecast-service is-updated',
+    notify  => Service['icecast2'],
+  }
+
+  ->
+
   service { 'icecast2':
-    hasrestart => true,
+    # The return value of The icecast2 init script is false.
+    # Must use a specific script to start/restart/status.
+    hasrestart => false,
     hasstatus  => false,
+    status     => '/usr/local/sbin/icecast-service status',
+    start      => '/usr/local/sbin/icecast-service start',
+    restart    => '/usr/local/sbin/icecast-service restart',
     ensure     => running,
   }
 
