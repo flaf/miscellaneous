@@ -1,0 +1,33 @@
+### This a file managed by Puppet, don't edit it. ###
+
+[database]
+host = localhost
+dbname = airtime
+dbuser = airtime
+dbpass = <%= scope.function_generate_password(['__pwd__{"salt" => ["$fqdn", "postgreSQL"], "nice" => true, "max_length" => 16}']) %>
+
+[rabbitmq]
+host = 127.0.0.1
+port = 5672
+user = airtime
+password = PKCZGNH73OXSFSW2PZU1
+vhost = /airtime
+
+[general]
+api_key = SWRQR7J0NVG6H9VS3QY9
+web_server_user = www-data
+airtime_dir = /usr/share/airtime
+base_url = localhost
+base_port = 80
+base_dir = /
+cache_ahead_hours = 1
+
+[monit]
+monit_user = guest
+monit_password = airtime
+
+[soundcloud]
+connection_retries = 3
+time_between_retries = 60
+
+

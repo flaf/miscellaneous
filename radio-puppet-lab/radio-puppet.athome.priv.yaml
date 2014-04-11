@@ -4,6 +4,11 @@ classes:
   #- icecast2
   - airtime
 
+airtime:
+  # The port of the Web interface.
+  # Default is 8080.
+  port: 8080
+
 icecast2:
 
   # The password of the default username (called 'source') for all
@@ -30,6 +35,7 @@ icecast2:
 
   # If source does not send any data within this timeout period (in
   # seconds), then the source connection is removed from the server.
+  # The default is 10.
   limits_source_timeout: 20
 
   # 4=Debug, 3=Info, 2=Warn, 1=Error.
@@ -43,3 +49,6 @@ icecast2:
   # then "mv <filename>.log <filename>.log.old".
   # Default is 10000.
   log_size: 20000
+
+
+
