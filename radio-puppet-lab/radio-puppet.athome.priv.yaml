@@ -1,6 +1,8 @@
 ---
 classes:
-  - icecast2
+  - debian::apt::sources
+  #- icecast2
+  - airtime
 
 icecast2:
 
