@@ -43,7 +43,7 @@ icecast2:
   # with a stream set with a bad password, there will be regular
   # writing on the log file.
   # Default is 2.
-  log_level: 3
+  log_level: 2
 
   # Log size in KBytes. If a log file is grower than the log size,
   # then "mv <filename>.log <filename>.log.old".

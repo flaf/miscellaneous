@@ -1,24 +1,23 @@
-### This a file managed by Puppet, don't edit it. ###
-
+<%-# Comment impossible here beacause it's not allowed by airtime. -%>
 [database]
 host = localhost
 dbname = airtime
 dbuser = airtime
-dbpass = <%= scope.function_generate_password(['__pwd__{"salt" => ["$fqdn", "postgreSQL"], "nice" => true, "max_length" => 16}']) %>
+dbpass = <%= @postgre_pass %>
 
 [rabbitmq]
 host = 127.0.0.1
 port = 5672
 user = airtime
-password = PKCZGNH73OXSFSW2PZU1
+password = <%= @rabbit_pass %>
 vhost = /airtime
 
 [general]
-api_key = SWRQR7J0NVG6H9VS3QY9
+api_key = <%= @api_key %>
 web_server_user = www-data
 airtime_dir = /usr/share/airtime
-base_url = localhost
-base_port = 80
+base_url = <%= @fqdn %>
+base_port = <%= @port %>
 base_dir = /
 cache_ahead_hours = 1
 
