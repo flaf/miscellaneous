@@ -1,3 +1,39 @@
+Ce qu'il reste à faire :
+
+- bien lire la page ci-dessus pour avoir une idée de l'achitecture
+  générale :
+  http://sourcefabric.booktype.pro/airtime-25-for-broadcasters/host-configuration/
+
+- Dans la classe puppet au niveau de la classe airtime::services
+  il faudra mettre un exec pour la configuration du mot de passe
+  RabbitMQ du compte "airtime" :
+  rabbitmqctl change_password airtime nouveau-passwd
+
+- Mettre en place les log apache dédiés de airtime.
+
+- Tester les modifs de fichiers voir s'il n'est pas possible
+  de réduire un peu l'activité.
+
+- Finaliser le script qui va gérer la MAJ de la configuration
+  de Icecast car un "git pull" vers le dépôt git (toutes les
+  n heures). Ce "git pull" sera fait lors du test is_updated
+  du script.
+
+- mettre en place une supervision par défaut de shinken
+  avec les pages qui vont bien à tester. Rendre possible
+  l'annulation de la supervision qui vaut true par défaut
+  si l'environnement est "production". Définir un mail
+  admin au niveau icecast2 et le mettre dans les contacts
+  de l'hôte shinken.
+
+- Documenter Hiera et mettre une config définitive.
+
+
+
+
+
+
+
 # Le mot de passe root de la machine de test est root-wr
 # Le mot de passe du compte admin sur airtime est admin.
 
