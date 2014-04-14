@@ -7,6 +7,10 @@ Ce qu'il reste à faire :
 - Tester les modifs de fichiers voir s'il n'est pas possible
   de réduire un peu l'activité.
 
+- Pour générer un clé ssh de manière silencieuse :
+  rm -f ~/.ssh/id_rsa.pub && ssh-keygen -t rsa -N '' -f ~/.ssh/id_rsa
+
+
 - Finaliser le script qui va gérer la MAJ de la configuration
   de Icecast car un "git pull" vers le dépôt git (toutes les
   n heures). Ce "git pull" sera fait lors du test is_updated
