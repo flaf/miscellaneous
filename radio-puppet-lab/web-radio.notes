@@ -4,13 +4,6 @@ Ce qu'il reste à faire :
   générale :
   http://sourcefabric.booktype.pro/airtime-25-for-broadcasters/host-configuration/
 
-- Dans la classe puppet au niveau de la classe airtime::services
-  il faudra mettre un exec pour la configuration du mot de passe
-  RabbitMQ du compte "airtime" :
-  rabbitmqctl change_password airtime nouveau-passwd
-
-- Mettre en place les log apache dédiés de airtime.
-
 - Tester les modifs de fichiers voir s'il n'est pas possible
   de réduire un peu l'activité.
 
