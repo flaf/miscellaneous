@@ -1,5 +1,6 @@
 ---
 classes:
+  - common::baseapps
   - debian::apt::sources
   #- icecast2
   - airtime

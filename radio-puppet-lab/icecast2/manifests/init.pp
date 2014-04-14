@@ -3,6 +3,8 @@ class icecast2 {
   require 'icecast2::params'
 
   $git_repository        = $icecast2::params::git_repository
+  $git_directory         = $icecast2::params::git_directory
+  $git_lockfile          = $icecast2::params::git_lockfile
   $source_password       = $icecast2::params::source_password
   $admin_password        = $icecast2::params::admin_password
   $port                  = $icecast2::params::port
@@ -15,6 +17,23 @@ class icecast2 {
   package { 'icecast2':
     ensure => present,
     notify => Service['icecast2'],
+  }
+
+  ->
+
+  package{ 'git-for-icecast2':
+    name   => 'git',
+    ensure => present,
+  }
+
+  ->
+
+  # ssh key to "git pull" without password.
+  exec { 'create-key-ssh':
+    user    => 'root',
+    path    => '/usr/sbin:/usr/bin:/sbin:/bin',
+    command => 'ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa',
+    unless  => '[ -e ~/.ssh/id_rsa ]',
   }
 
   ->
@@ -70,6 +89,25 @@ class icecast2 {
     start      => '/usr/local/sbin/icecast-service start',
     restart    => '/usr/local/sbin/icecast-service restart',
     ensure     => running,
+  }
+
+  ->
+
+  file { '/usr/local/sbin/retrieve-mountpoints':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => 755,
+    content => template('icecast2/retrieve-mountpoints.erb'),
+  }
+
+  ->
+
+  cron { 'retrieve-mountpoints':
+    ensure  => present,
+    command => '/usr/local/sbin/retrieve-mountpoints',
+    user    => 'root',
+    minute  => 45,
   }
 
 }

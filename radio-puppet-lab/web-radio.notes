@@ -1,5 +1,11 @@
 Ce qu'il reste à faire :
 
+- Revoir le code tout à la fin et le commenter etc. Mettre des docs
+  en entêtes qui soient propres et compréhensibles.
+
+- Il faudra penser à baculacifier le fichier xml des points de
+  montage.
+
 - bien lire la page ci-dessus pour avoir une idée de l'achitecture
   générale :
   http://sourcefabric.booktype.pro/airtime-25-for-broadcasters/host-configuration/
@@ -22,6 +28,12 @@ Ce qu'il reste à faire :
   si l'environnement est "production". Définir un mail
   admin au niveau icecast2 et le mettre dans les contacts
   de l'hôte shinken.
+  Bien réfléchir à l'organisation du bazar et tenter de
+  faire un truc générique. L'idée serait peut-être de créer
+  une ressource custom qui puisse déclencher de la supervision
+  et le tout en prenant sa conf directement dans le code
+  puppet et plus dans hiera, afin d'avoir accès aux données
+  de la classe/module.
 
 - Documenter Hiera et mettre une config définitive.
 

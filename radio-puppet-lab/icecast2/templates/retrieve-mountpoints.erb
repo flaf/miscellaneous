@@ -1,0 +1,55 @@
+#!/bin/sh
+
+### This file is managed by Puppet, don't edit it! ###
+
+script_name=${0##*/}
+git_directory='<%= @git_directory %>'
+git_directory_path="/etc/icecast2/$git_directory"
+git_lockfile="$git_directory_path/<%= @git_lockfile %>"
+git_repository="<%= @git_repository %>"
+tag="cron/$script_name"
+
+export LC_ALL=C
+export PATH="/usr/sbin:/usr/bin:/sbin:/bin"
+
+cd "/etc/icecast2/"
+
+if [ ! -d "$git_directory_path" ]
+then
+    # The git directory doesn't exist.
+    if timeout 10 git clone "$git_repository" "$git_directory"
+    then
+        logger -t "$tag" "git clone of '$git_repository' successful."
+    else
+        logger -t "$tag" "git clone of '$git_repository' failed. End of the script."
+        exit 1
+    fi
+fi
+
+if [ -e "$git_lockfile" ]
+then
+    logger -t "$tag" "$git_lockfile already exists. End of the script."
+    exit 1
+fi
+
+# Creation of the lockfile.
+touch "$git_lockfile"
+
+# Important to wait a little to avoid conflict with
+# the puppet managment.
+sleep 10
+
+cd "$git_directory_path"
+
+if timeout 10 git pull
+then
+    logger -t "$tag" "git pull successful."
+    rm "$git_lockfile"
+    exit 0
+else
+    logger -t "$tag" "git pull failed."
+    rm "$git_lockfile"
+    exit 1
+fi
+
+
