@@ -34,6 +34,22 @@ case "$1" in
     ;;
 
     is-updated)
+        # If there is no rsa keys, we create they.
+        [ -e ~/.ssh/id_rsa ] || ssh-keygen -t rsa -N '' -f ~/.ssh/id_rsa
+
+        cd /etc/icecast2/ || exit
+        if [ ! -d /etc/icecast2/mountpoints ]
+        then
+          if timeout 10 git clone "<%= @git_repository %>" mountpoints
+          then
+          fi
+
+        fi
+        if timeout 10 git clone <%= @git_repository %> test
+        then
+          cd test && timeout 10 git pull
+        fi
+
         # If there is no change, then diff return 0 and the configuration
         # is updated.
         diff "/etc/icecast2/icecast.xml.puppet" "/etc/icecast2/icecast.xml"

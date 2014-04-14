@@ -2,6 +2,8 @@ class icecast2::params {
 
   $icecast2_conf = hiera_hash('icecast2', {})
 
+  $git_repository = $icecast2_conf['git_repository']
+
   # Default value of the source password.
   if ($icecast2_conf['source_password'] != '') {
     $source_password = $icecast2_conf['source_password']

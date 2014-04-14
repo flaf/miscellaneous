@@ -2,14 +2,15 @@ class icecast2 {
 
   require 'icecast2::params'
 
-  $source_password        = $icecast2::params::source_password
-  $admin_password         = $icecast2::params::admin_password
-  $port                   = $icecast2::params::port
-  $limits_clients         = $icecast2::params::limits_clients
-  $limits_sources         = $icecast2::params::limits_sources
-  $limits_source_timeout  = $icecast2::params::limits_source_timeout
-  $log_level              = $icecast2::params::log_level
-  $log_size               = $icecast2::params::log_size
+  $git_repository        = $icecast2::params::git_repository
+  $source_password       = $icecast2::params::source_password
+  $admin_password        = $icecast2::params::admin_password
+  $port                  = $icecast2::params::port
+  $limits_clients        = $icecast2::params::limits_clients
+  $limits_sources        = $icecast2::params::limits_sources
+  $limits_source_timeout = $icecast2::params::limits_source_timeout
+  $log_level             = $icecast2::params::log_level
+  $log_size              = $icecast2::params::log_size
 
   package { 'icecast2':
     ensure => present,
