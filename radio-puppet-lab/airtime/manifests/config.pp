@@ -1,10 +1,10 @@
 class airtime::config {
 
   require 'airtime::params'
-  $port         = $airtime::params::port
-  $postgre_pass = $airtime::params::postgre_pass
-  $rabbit_pass  = $airtime::params::rabbit_pass
-  $api_key      = $airtime::params::api_key
+  $port          = $airtime::params::port
+  $postgre_pass  = $airtime::params::postgre_pass
+  $rabbitmq_pass = $airtime::params::rabbitmq_pass
+  $api_key       = $airtime::params::api_key
 
   file { '/etc/airtime/airtime.conf':
     owner   => 'www-data',

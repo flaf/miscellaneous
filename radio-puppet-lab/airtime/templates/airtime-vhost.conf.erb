@@ -16,6 +16,10 @@
               Order allow,deny
               Allow from all
       </Directory>
+
+      ErrorLog ${APACHE_LOG_DIR}/error.log
+      CustomLog ${APACHE_LOG_DIR}/airtime.log combined
+
 </VirtualHost>
 
 
