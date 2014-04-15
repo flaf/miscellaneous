@@ -60,7 +60,11 @@ send_mails () {
     local subject
     subject="$1"
     mesg="$2"
-    echo "$mesg" | mail -s "$hostname: $subject" $mails
+
+    for mail in $mails
+    do
+        echo "$mesg" | mail -s "$hostname: $subject" $mail
+    done
 }
 
 case "$1" in
