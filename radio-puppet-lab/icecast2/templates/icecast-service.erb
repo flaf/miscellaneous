@@ -60,7 +60,7 @@ send_mails () {
     local subject
     subject="$1"
     mesg="$2"
-    echo "$mesg" | mail -a "Content-Type: text/plain; charset=UTF-8" -s "$hostname: $subject" $mails
+    echo "$mesg" | mail -s "$hostname: $subject" $mails
 }
 
 case "$1" in
