@@ -1,0 +1,43 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+### This file is managed by Puppet, don't edit it! ###
+
+import sys
+
+def to_str(m):
+    assert isinstance(m, unicode) or isinstance(m, str)
+    if isinstance(m, unicode):
+        return m.encode('utf-8')
+    else:
+        return m
+
+#try:
+
+import xml.etree.ElementTree as ET
+
+tree = ET.parse('/etc/icecast2/icecast.xml')
+root = tree.getroot()
+
+c = 0
+
+for mountpoint in root.findall('mount'):
+
+    c += 1
+
+    name = mountpoint.find('mount-name')
+    if name is not None:
+        name = to_str(name.text)
+
+    stream_name = mountpoint.find('stream-name')
+    if stream_name is not None:
+        stream_name = to_str(stream_name.text)
+
+    print("%s: %s -> %s" % (str(c), name, stream_name))
+
+#except:
+
+#    print("Sorry, problem in the %s execution" % sys.argv[0])
+#    sys.exit(1)
+
+

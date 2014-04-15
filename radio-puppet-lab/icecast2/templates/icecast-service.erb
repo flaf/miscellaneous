@@ -2,19 +2,20 @@
 
 ### This file is managed by Puppet, don't edit it! ###
 
-<%- if @admins_mails.is_a?(Array) and not @admins_mails.empty? -%>
-# OK (array non vide)
-<%- else -%>
-# KO. ! (array non vide)
-<%- end -%>
+export LC_ALL='fr_FR.UTF-8'
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
-export LC_ALL=C
-export PATH="/usr/sbin:/usr/bin:/sbin:/bin"
-
+script_name=${0##*/}
+hostname=$(hostname)
 git_directory='<%= @git_directory %>'
 git_directory_path="/etc/icecast2/$git_directory"
 git_lockfile="$git_directory_path/<%= @git_lockfile %>"
 mountpoints_file="$git_directory_path/<%= @mountpoints_file %>"
+<%- if @admins_mails.is_a?(Array) and not @admins_mails.empty? -%>
+mails='<%= @admins_mails.join(' ') %>'
+<%- else -%>
+mails=''
+<%- end -%>
 
 awk_prog='{
     if ($0 ~ /^<!--Mountpoints here-->/) {
@@ -49,6 +50,18 @@ print_new_conf () {
     fi
 }
 
+send_mails () {
+    if [ -z "$mails" ]
+    then
+        # No mail to send.
+        return 0
+    fi
+    local mesg
+    local subject
+    subject="$1"
+    mesg="$2"
+    echo "$mesg" | mail -a "Content-Type: text/plain; charset=UTF-8" -s "$hostname: $subject" $mails
+}
 
 case "$1" in
 
@@ -57,7 +70,13 @@ case "$1" in
         sleep 1
         # To have a exit code equal to 0 only if icecast2
         # is really started.
-        netstat -ltnp | grep -Eq '[0-9]+/icecast2'; exit $?
+        if netstat -ltnp | grep -Eq '[0-9]+/icecast2'
+        then
+            exit 0
+        else
+            send_mails "start of Icecast2 NOT OK" "Maybe a bad syntax in the xml configuration..."
+            exit 1
+        fi
     ;;
 
     restart)
@@ -65,7 +84,20 @@ case "$1" in
         sleep 1
         # To have a exit code equal to 0 only if icecast2
         # is really restarted.
-        netstat -ltnp | grep -Eq '[0-9]+/icecast2'; exit $?
+        if netstat -ltnp | grep -Eq '[0-9]+/icecast2'
+        then
+            message="Problably a new xml configuration has been pushed.
+
+Here is the list of the mountpoints currently defined in the xml configuration:
+$(print_mountpoints 2>&1)
+"
+            send_mails "restart of Icecast2 OK" "$message"
+            exit 0
+        else
+            send_mails "restart of Icecast2 NOT OK" "Maybe a bad syntax in the new xml configuration..."
+            exit 1
+        fi
+
     ;;
 
     status)

@@ -49,6 +49,16 @@ class icecast2 {
 
   ->
 
+  file { '/usr/local/bin/print_mountpoints':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => 755,
+    content => template('icecast2/print_mountpoints.erb'),
+  }
+
+  ->
+
   file { '/usr/local/sbin/icecast-service':
     ensure  => present,
     owner   => 'root',
