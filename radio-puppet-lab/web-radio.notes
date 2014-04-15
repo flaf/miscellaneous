@@ -1,5 +1,9 @@
 Ce qu'il reste à faire :
 
+- Voir au niveau des logs. Il faut que je garde dans les
+  logs qui a diffusé (quelle IP) et quand à quand et garder
+  les logs pendant des infos exactement 1 an !
+
 - Lecture du xml avec Python.
 
 >>> import xml.etree.ElementTree as ET
