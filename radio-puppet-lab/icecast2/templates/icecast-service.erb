@@ -11,7 +11,7 @@ git_lockfile="$git_directory_path/<%= @git_lockfile %>"
 mountpoints_file="$git_directory_path/<%= @mountpoints_file %>"
 
 awk_prog='{
-    if ($0 ~ /^<!-- /!\ Mountpoint here /!\ -->/) {
+    if ($0 ~ /^<!--Mountpoints here-->/) {
         system("cat \"'"$mountpoints_file"'\"")
     } else {
         print $0
@@ -22,7 +22,7 @@ awk_prog='{
 wait_lockfile_out () {
     local c
     c=0
-    while [ -e "$mountpoints_file" ]
+    while [ -e "$git_lockfile" ]
     do
         c=$((c+1))
         sleep 1
@@ -32,7 +32,12 @@ wait_lockfile_out () {
 }
 
 print_new_conf () {
-    awk "$awk_prog" "/etc/icecast2/icecast.xml.puppet"
+    if [ -e "$mountpoints_file" ]
+    then
+        awk "$awk_prog" "/etc/icecast2/icecast.xml.puppet"
+    else
+        cat "/etc/icecast2/icecast.xml.puppet"
+    fi
 }
 
 
