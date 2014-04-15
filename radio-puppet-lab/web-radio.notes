@@ -1,5 +1,9 @@
 Ce qu'il reste à faire :
 
+- Voir sur IRC s'il est possible d'avoir les points de montages
+  autrement que dans un xml avec les mots de passe en clair.
+  Base MySQL etc. ?
+
 - Voir au niveau des logs. Il faut que je garde dans les
   logs qui a diffusé (quelle IP) et quand à quand et garder
   les logs pendant des infos exactement 1 an !
