@@ -4,6 +4,9 @@ Le nom du serveur sera *webradio*
 
 Ce qu'il reste à faire :
 
+- Rediriger la sortie du cron. Voir aussi dans les crons de mes
+  autres classes puppet.
+
 - Voir sur IRC s'il est possible d'avoir les points de montages
   autrement que dans un xml avec les mots de passe en clair.
   Base MySQL etc. ?

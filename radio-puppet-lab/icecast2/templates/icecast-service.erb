@@ -16,6 +16,7 @@ mails='<%= @admins_mails.join(' ') %>'
 <%- else -%>
 mails=''
 <%- end -%>
+tag="$script_name[$$]"
 
 awk_prog='{
     if ($0 ~ /^<!--Mountpoints here-->/) {
@@ -76,8 +77,10 @@ case "$1" in
         # is really started.
         if netstat -ltnp | grep -Eq '[0-9]+/icecast2'
         then
+            logger -t "$tag" "Start of Icecast2 successful."
             exit 0
         else
+            logger -t "$tag" "Start of Icecast2 failed."
             send_mails "start of Icecast2 NOT OK" "Maybe a bad syntax in the xml configuration..."
             exit 1
         fi
@@ -96,16 +99,18 @@ Here is the list of the mountpoints currently defined in the xml configuration:
 $(print_mountpoints 2>&1)
 "
             send_mails "restart of Icecast2 OK" "$message"
+            logger -t "$tag" "Restart of Icecast2 successful."
             exit 0
         else
             send_mails "restart of Icecast2 NOT OK" "Maybe a bad syntax in the new xml configuration..."
+            logger -t "$tag" "Restart of Icecast2 failed."
             exit 1
         fi
 
     ;;
 
     status)
-        # To have a exit code equal to 0 only if icecast2
+        # To have an exit code equal to 0 only if icecast2
         # is really restarted.
         netstat -ltnp | grep -Eq '[0-9]+/icecast2'; exit $?
     ;;
@@ -114,9 +119,11 @@ $(print_mountpoints 2>&1)
         if wait_lockfile_out
         then
             print_new_conf > "/etc/icecast2/icecast.xml"
+            logger -t "$tag" "/etc/icecast2/icecast.xml has been updated."
             exit 0
         else
             # Update later.
+            logger -t "$tag" "/etc/icecast2/icecast.xml hasn't been updated because lock file is present."
             exit 1
         fi
     ;;
@@ -125,7 +132,9 @@ $(print_mountpoints 2>&1)
         if wait_lockfile_out
         then
             # Lockfile is out.
-            print_new_conf | diff -q - "/etc/icecast2/icecast.xml" 1>/dev/null 2>&1; exit $?
+            if print_new_conf | diff -q - "/etc/icecast2/icecast.xml" 1>/dev/null 2>&1
+            else #TODO
+            fi
         else
             # Lockfile is present.
             # In this case, we decide that the configuration
