@@ -5,6 +5,37 @@
 export LC_ALL=C
 export PATH="/usr/sbin:/usr/bin:/sbin:/bin"
 
+git_directory='<%= @git_directory %>'
+git_directory_path="/etc/icecast2/$git_directory"
+git_lockfile="$git_directory_path/<%= @git_lockfile %>"
+mountpoints_file="$git_directory_path/<%= @mountpoints_file %>"
+
+awk_prog='{
+    if ($0 ~ /^<!-- /!\ Mountpoint here /!\ -->/) {
+        system("cat \"'"$mountpoints_file"'\"")
+    } else {
+        print $0
+    }
+}'
+
+# Returns 0 if there is no lockfile, else returns 1.
+wait_lockfile_out () {
+    local c
+    c=0
+    while [ -e "$mountpoints_file" ]
+    do
+        c=$((c+1))
+        sleep 1
+        [ "$c" = '10' ] && return 1
+    done
+    return 0
+}
+
+print_new_conf () {
+    awk "$awk_prog" "/etc/icecast2/icecast.xml.puppet"
+}
+
+
 case "$1" in
 
     start)
@@ -30,26 +61,27 @@ case "$1" in
     ;;
 
     update-conf)
-        cat "/etc/icecast2/icecast.xml.puppet" > "/etc/icecast2/icecast.xml"
+        if wait_lockfile_out
+        then
+            print_new_conf > "/etc/icecast2/icecast.xml"
+            exit 0
+        else
+            # Update later.
+            exit 1
+        fi
     ;;
 
     is-updated)
-        #cd /etc/icecast2/ || exit
-        #if [ ! -d /etc/icecast2/mountpoints ]
-        #then
-        #  if timeout 10 git clone "<%= @git_repository %>" mountpoints
-        #  then
-        #  fi
-
-        #fi
-        #if timeout 10 git clone <%= @git_repository %> test
-        #then
-        #  cd test && timeout 10 git pull
-        #fi
-
-        # If there is no change, then diff return 0 and the configuration
-        # is updated.
-        diff "/etc/icecast2/icecast.xml.puppet" "/etc/icecast2/icecast.xml"
+        if wait_lockfile_out
+        then
+            # Lockfile is out.
+            print_new_conf | diff -q - "/etc/icecast2/icecast.xml" 1>/dev/null 2>&1; exit $?
+        else
+            # Lockfile is present.
+            # In this case, we decide that the configuration
+            # isn't updated.
+            exit 1
+        fi
     ;;
 
     *)

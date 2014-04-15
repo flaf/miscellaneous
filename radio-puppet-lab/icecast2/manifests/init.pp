@@ -5,6 +5,7 @@ class icecast2 {
   $git_repository        = $icecast2::params::git_repository
   $git_directory         = $icecast2::params::git_directory
   $git_lockfile          = $icecast2::params::git_lockfile
+  $mountpoints_file      = $icecast2::params::mountpoints_file
   $source_password       = $icecast2::params::source_password
   $admin_password        = $icecast2::params::admin_password
   $port                  = $icecast2::params::port
@@ -66,6 +67,16 @@ class icecast2 {
     group   => 'root',
     mode    => 755,
     content => template('icecast2/icecast-service.erb'),
+  }
+
+  ->
+
+  file { '/usr/local/sbin/ssh-for-git-clone':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => 755,
+    content => template('icecast2/ssh-for-git-clone.erb'),
   }
 
   ->

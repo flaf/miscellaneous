@@ -2,9 +2,10 @@ class icecast2::params {
 
   $icecast2_conf = hiera_hash('icecast2', {})
 
-  $git_repository = $icecast2_conf['git_repository']
-  $git_directory  = 'mountpoints'
-  $git_lockfile   = 'aware.lock'
+  $git_repository   = $icecast2_conf['git_repository']
+  $git_directory    = 'mountpoints'
+  $git_lockfile     = 'aware.lock'
+  $mountpoints_file = 'mountpoints.xml'
 
   # Default value of the source password.
   if ($icecast2_conf['source_password'] != '') {

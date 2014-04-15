@@ -10,26 +10,41 @@ git_repository="<%= @git_repository %>"
 tag="cron/$script_name"
 
 export LC_ALL=C
-export PATH="/usr/sbin:/usr/bin:/sbin:/bin"
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
-cd "/etc/icecast2/"
+rm_lockfile () {
+  rm -f "$git_lockfile"
+}
 
-if [ ! -d "$git_directory_path" ]
-then
-    # The git directory doesn't exist.
-    if timeout 10 git clone "$git_repository" "$git_directory"
-    then
-        logger -t "$tag" "git clone of '$git_repository' successful."
-    else
-        logger -t "$tag" "git clone of '$git_repository' failed. End of the script."
-        exit 1
-    fi
-fi
+# When the script is finished, we remove the lockfile.
+trap rm_lockfile EXIT
+
+
+
 
 if [ -e "$git_lockfile" ]
 then
-    logger -t "$tag" "$git_lockfile already exists. End of the script."
+    logger -t "$tag" "Error, $git_lockfile already exists. End of the script."
     exit 1
+fi
+
+cd "/etc/icecast2/" || {
+    logger -t "$tag" "Error, the /etc/icecast2 directory doesn't exist. End of the script"
+    exit 1
+}
+
+# Normally, it happens only the firt time.
+if [ ! -d "$git_directory_path" ]
+then
+    # The git directory doesn't exist.
+    # GIT_SSH='...' allows a "git clone" without fingerprint confirmation (see man git).
+    if timeout 10 GIT_SSH='ssh-for-git-clone' git clone "$git_repository" "$git_directory"
+    then
+        logger -t "$tag" "git clone of '$git_repository' successful."
+    else
+        logger -t "$tag" "Error, git clone of '$git_repository' failed. End of the script."
+        exit 1
+    fi
 fi
 
 # Creation of the lockfile.
@@ -39,16 +54,17 @@ touch "$git_lockfile"
 # the puppet managment.
 sleep 10
 
-cd "$git_directory_path"
+cd "$git_directory_path" || {
+    logger -t "$tag" "Error, the '$git_directory_path' doesn't exist. End of the script."
+    exit 10
+}
 
 if timeout 10 git pull
 then
     logger -t "$tag" "git pull successful."
-    rm "$git_lockfile"
     exit 0
 else
-    logger -t "$tag" "git pull failed."
-    rm "$git_lockfile"
+    logger -t "$tag" "Error, git pull failed. End of the script."
     exit 1
 fi
 
