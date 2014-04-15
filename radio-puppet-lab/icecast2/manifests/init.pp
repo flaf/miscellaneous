@@ -6,6 +6,7 @@ class icecast2 {
   $git_directory         = $icecast2::params::git_directory
   $git_lockfile          = $icecast2::params::git_lockfile
   $mountpoints_file      = $icecast2::params::mountpoints_file
+  $admins_mails          = $icecast2::params::admins_mails
   $source_password       = $icecast2::params::source_password
   $admin_password        = $icecast2::params::admin_password
   $port                  = $icecast2::params::port
@@ -15,26 +16,13 @@ class icecast2 {
   $log_level             = $icecast2::params::log_level
   $log_size              = $icecast2::params::log_size
 
+  if ($git_repository != '') {
+    include 'icecast2::gitrepository'
+  }
+
   package { 'icecast2':
     ensure => present,
     notify => Service['icecast2'],
-  }
-
-  ->
-
-  package{ 'git-for-icecast2':
-    name   => 'git',
-    ensure => present,
-  }
-
-  ->
-
-  # ssh key to "git pull" without password.
-  exec { 'create-key-ssh':
-    user    => 'root',
-    path    => '/usr/sbin:/usr/bin:/sbin:/bin',
-    command => 'ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa',
-    unless  => '[ -e ~/.ssh/id_rsa ]',
   }
 
   ->
@@ -71,16 +59,6 @@ class icecast2 {
 
   ->
 
-  file { '/usr/local/sbin/ssh-for-git-clone':
-    ensure  => present,
-    owner   => 'root',
-    group   => 'root',
-    mode    => 755,
-    content => template('icecast2/ssh-for-git-clone.erb'),
-  }
-
-  ->
-
   exec { 'update-icecast-conf':
     user    => 'root',
     path    => '/usr/sbin:/usr/bin:/sbin:/bin',
@@ -100,25 +78,6 @@ class icecast2 {
     start      => '/usr/local/sbin/icecast-service start',
     restart    => '/usr/local/sbin/icecast-service restart',
     ensure     => running,
-  }
-
-  ->
-
-  file { '/usr/local/sbin/retrieve-mountpoints':
-    ensure  => present,
-    owner   => 'root',
-    group   => 'root',
-    mode    => 755,
-    content => template('icecast2/retrieve-mountpoints.erb'),
-  }
-
-  ->
-
-  cron { 'retrieve-mountpoints':
-    ensure  => present,
-    command => '/usr/local/sbin/retrieve-mountpoints',
-    user    => 'root',
-    minute  => 45,
   }
 
 }

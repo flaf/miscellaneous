@@ -2,6 +2,7 @@
 classes:
   - common::baseapps
   - debian::apt::sources
+  - exim4
   #- icecast2
   - airtime
 
@@ -12,9 +13,18 @@ airtime:
 
 icecast2:
 
-  # This entry is mandatory. It's the ssh url of the git repository
-  # of the mountpoints.
+  # It's the ssh url of the git repository of the mountpoints.
+  # The default value is an empty, ie icecast2 doesn't use
+  # a git repository.
   git_repository: git@gitlab.crdp.ac-versailles.fr:francois.lafont/web-radio.git
+
+  # Address mails to notify when the Icecast2 configuration is
+  # updated and/or when Icecast2 doesn't restart after the
+  # update. It must be an array. Default value is an empty
+  # array.
+  admins_mails:
+    - 'mathsattacks@free.fr'
+    - 'francois.lafont@crdp.ac-versailles.fr'
 
   # The password of the default username (called 'source') for all
   # source connections. This and the username can be changed in the

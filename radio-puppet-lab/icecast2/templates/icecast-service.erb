@@ -2,6 +2,12 @@
 
 ### This file is managed by Puppet, don't edit it! ###
 
+<%- if @admins_mails.is_a?(Array) and not @admins_mails.empty? -%>
+# OK (array non vide)
+<%- else -%>
+# KO. ! (array non vide)
+<%- end -%>
+
 export LC_ALL=C
 export PATH="/usr/sbin:/usr/bin:/sbin:/bin"
 
@@ -34,8 +40,11 @@ wait_lockfile_out () {
 print_new_conf () {
     if [ -e "$mountpoints_file" ]
     then
+        # In this case, there is a mountpoints file and a
+        # git repository.
         awk "$awk_prog" "/etc/icecast2/icecast.xml.puppet"
     else
+        # In this case, there is no git repository.
         cat "/etc/icecast2/icecast.xml.puppet"
     fi
 }

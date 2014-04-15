@@ -7,13 +7,20 @@ git_directory='<%= @git_directory %>'
 git_directory_path="/etc/icecast2/$git_directory"
 git_lockfile="$git_directory_path/<%= @git_lockfile %>"
 git_repository="<%= @git_repository %>"
-tag="cron/$script_name"
+tag="cron/$script_name[$$]"
 
 export LC_ALL=C
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
 rm_lockfile () {
-  rm -f "$git_lockfile"
+    if [ "$?" = "11" ]
+    then
+        # In this case, probably another instance of the script is running.
+        logger -t "$tag" "The lock file is not removed."
+    else
+        rm -f "$git_lockfile"
+        logger -t "$tag" "The lock file is removed."
+    fi
 }
 
 # When the script is finished, we remove the lockfile.
@@ -24,8 +31,8 @@ trap rm_lockfile EXIT
 
 if [ -e "$git_lockfile" ]
 then
-    logger -t "$tag" "Error, $git_lockfile already exists. End of the script."
-    exit 1
+    logger -t "$tag" "Error, $git_lockfile already exists. Probably another instance of the script is running. End of the script."
+    exit 11
 fi
 
 cd "/etc/icecast2/" || {
@@ -50,9 +57,10 @@ fi
 
 # Creation of the lockfile.
 touch "$git_lockfile"
+logger -t "$tag" "The lock file is created."
 
-# Important to wait a little to avoid conflict with
-# the puppet managment.
+# Very important to wait a little to avoid conflict with the puppet managment of
+# the icecast2 configuration.
 sleep 10
 
 cd "$git_directory_path" || {
