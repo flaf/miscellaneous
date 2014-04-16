@@ -41,9 +41,11 @@ class icecast2::gitrepository {
 
   cron { 'retrieve-mountpoints':
     ensure  => present,
-    command => '/usr/local/sbin/retrieve-mountpoints',
+    command => '/usr/local/sbin/retrieve-mountpoints >/dev/null 2>&1',
     user    => 'root',
     minute  => 45,
   }
 
 }
+
+

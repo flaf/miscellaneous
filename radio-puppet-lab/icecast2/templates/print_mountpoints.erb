@@ -12,32 +12,22 @@ def to_str(m):
     else:
         return m
 
-#try:
-
-import xml.etree.ElementTree as ET
-
-tree = ET.parse('/etc/icecast2/icecast.xml')
-root = tree.getroot()
-
-c = 0
-
-for mountpoint in root.findall('mount'):
-
-    c += 1
-
-    name = mountpoint.find('mount-name')
-    if name is not None:
-        name = to_str(name.text)
-
-    stream_name = mountpoint.find('stream-name')
-    if stream_name is not None:
-        stream_name = to_str(stream_name.text)
-
-    print("%s: %s -> %s" % (str(c), name, stream_name))
-
-#except:
-
-#    print("Sorry, problem in the %s execution" % sys.argv[0])
-#    sys.exit(1)
+try:
+    import xml.etree.ElementTree as ET
+    tree = ET.parse('/etc/icecast2/icecast.xml')
+    root = tree.getroot()
+    c = 0
+    for mountpoint in root.findall('mount'):
+        c += 1
+        name = mountpoint.find('mount-name')
+        if name is not None:
+            name = to_str(name.text)
+        stream_name = mountpoint.find('stream-name')
+        if stream_name is not None:
+            stream_name = to_str(stream_name.text)
+        print("%s: %s -> %s" % (str(c), name, stream_name))
+except:
+    print("Sorry, problem in the execution of %s." % sys.argv[0])
+    sys.exit(1)
 
 
