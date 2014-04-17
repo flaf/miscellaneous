@@ -1,8 +1,17 @@
 Le nom du serveur sera *webradio*
 
-
-
 Ce qu'il reste à faire :
+
+- A priori, il serait possible de faire du ssl pour les
+  "source clients" et du http sans ssl pour les listeners.
+  À creuser parce qu'en l'état le mot de passe envoyé
+  par un "source client" pour se connecter à un point de
+  diffusion circule en clair. En fait, si j'ai bien compris
+  ça consiste à faire écouter icecast2 sur 2 ports : le 80
+  en http et le 443 en https si bien qu'un source client
+  peut utiliser le https et les listeners le 443 (mais
+  on ne peut pas empêcher un "source client" d'utiliser
+  le 80 si j'ai bien compris).
 
 - Rediriger la sortie du cron. Voir aussi dans les crons de mes
   autres classes puppet.
@@ -10,21 +19,13 @@ Ce qu'il reste à faire :
 - Voir sur IRC s'il est possible d'avoir les points de montages
   autrement que dans un xml avec les mots de passe en clair.
   Base MySQL etc. ?
+    --> dans la version 2.3.3, il y les stream-auth qui semble
+        permettre d'éviter les mots de passe en clair.
 
 - Voir au niveau des logs. Il faut que je garde dans les
   logs qui a diffusé (quelle IP) et quand à quand et garder
   les logs pendant des infos exactement 1 an !
-
-- Lecture du xml avec Python.
-
->>> import xml.etree.ElementTree as ET
->>> tree = ET.parse('/etc/icecast2/icecast.xml')
->>> root = tree.getroot()
->>> for m in root.findall('mount'):
-...    print m.find('mount-name').text
-... 
-/test1.mp3
-/test2.mp3
+  Vérifier que l'IP est bien loguée d'ailleurs.
 
 - Revoir le code tout à la fin et le commenter etc. Mettre des docs
   en entêtes qui soient propres et compréhensibles.
@@ -38,15 +39,6 @@ Ce qu'il reste à faire :
 
 - Tester les modifs de fichiers voir s'il n'est pas possible
   de réduire un peu l'activité.
-
-- Pour générer un clé ssh de manière silencieuse :
-  rm -f ~/.ssh/id_rsa.pub && ssh-keygen -t rsa -N '' -f ~/.ssh/id_rsa
-
-
-- Finaliser le script qui va gérer la MAJ de la configuration
-  de Icecast car un "git pull" vers le dépôt git (toutes les
-  n heures). Ce "git pull" sera fait lors du test is_updated
-  du script.
 
 - mettre en place une supervision par défaut de shinken
   avec les pages qui vont bien à tester. Rendre possible
