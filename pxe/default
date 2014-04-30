@@ -22,7 +22,7 @@ MENU TITLE PXE Boot Menu
 # Timeout in centiseconds (10 cs = 1 second).
 # If you don't want timeout, just comment these lines.
 TIMEOUT 200
-ONTIMEOUT local2
+ONTIMEOUT local
 MENU AUTOBOOT AUTOMATIC LOCAL BOOT in # second{,s}...
 
 # For colors, see http://www.syslinux.org/wiki/index.php/Comboot/menu.c32
@@ -30,17 +30,17 @@ MENU COLOR tabmsg      37;40    #80ffffff #00000000 std
 MENU COLOR timeout_msg 31;41    #90ffff00 #00000000 std
 
 
-LABEL local1
+LABEL local
     menu label Local boot (for classic computers)
     localboot 0
 
-LABEL local2
-    menu label Local boot (for virtualbox computers)
-    # chain.c32 is not included in netboot.tar.gz.
-    # You must copy it in the root of the ftp directory.
-    # apt-get install syslinux-common && cp /usr/lib/syslinux/chain.c32 /srv/tftp/
-    KERNEL chain.c32
-    APPEND hd0 0
+#LABEL local2
+#    menu label Local boot (for virtualbox computers)
+#    # chain.c32 is not included in netboot.tar.gz.
+#    # You must copy it in the root of the ftp directory.
+#    # apt-get install syslinux-common && cp /usr/lib/syslinux/chain.c32 /srv/tftp/
+#    KERNEL chain.c32
+#    APPEND hd0 0
 
 LABEL wheezy-amd64
     MENU LABEL Debian Wheezy amd64: expert installation
