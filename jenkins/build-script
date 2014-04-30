@@ -1,6 +1,20 @@
 TARGET_COMPONENT=shinken
 GIT_URL='https://github.com/flaf/snmpd-extend.git'
 WORGING_DIR_IN_GIT='snmpd-extend/snmpd-extend'
+
+# Pour le numéro de version, ça dépend un peu de la politique
+# choisie. Si le paquet n'est pas un package natif alors
+# on peut mettre un -xx en bout de chaîne comme dans 2.1-4
+# sachant que dans cet exemple 2.1 est le numéro de version
+# de l'appli upstream et 4 et le numéro de révision du package.
+#
+# Rq: si le package est natif alors par défaut mettre un
+#     numéro de révision fait planter le build sauf si
+#     on met l'option --no-tgz-check au niveau du build
+#     avec :
+#              debuild --no-tgz-check -us -uc
+
+
 VERSION="$(date '+%Y%m%d%H%M')" # This is a native package so don't put `-' in the version number.
 #VERSION="1.4.1-$(date '+%Y%m%d%H%M')" # This is not a native package so put `-' in the version number.
 
@@ -37,8 +51,14 @@ git clone $GIT_URL
 cd $WORGING_DIR_IN_GIT
 
 # Install build-deps
+# /!\ Attention petit piège : le fichier ./debian/control ne doit
+#     pas se finir par des lignes vides sinon la commande plante.
+#     Apparemment, ce serait un bug de mk-build-deps (bug qui serait
+#     rectifié sous jessie).
 mk-build-deps --install --tool 'apt-get --yes --no-install-recommends' --remove ./debian/control
 
+# Le changelog doit être modifié par jenkins sinon la signature
+# des paquets générés à la fin plantera.
 export DEBEMAIL=hudson@$HOST 
 export DEBFULLNAME='Hudson CI' 
 dch -b --newversion $VERSION --empty 'Jenkins Automatic CI' --distribution stable
@@ -47,6 +67,40 @@ dch -b --newversion $VERSION --empty 'Jenkins Automatic CI' --distribution stabl
 " >$SCRIPT
 
 pbuilder-wheezy-amd64 execute --bindmounts $TARGET_DIR -- $SCRIPT
+
+# Ici les paquets sont signés et envoyés sur le serveur
+# repository. On va supposer que $TARGET_COMPONENT est
+# égal à "shinken" ici.
+#
+# Au préalable, Il faudra:
+#
+# 1. Déjà créer la target "shinken" dans le fichier
+# /var/www/debian/conf/distributions du serveur repository.
+# Par exemple avec ça :
+#
+#     Origin: http://debian-repository.crdp.ac-versailles.fr/
+#     Label: http://debian-repository.crdp.ac-versailles.fr/
+#     Codename: shinken
+#     Architectures: i386 amd64
+#     Components: main
+#     Description: Apt repository for CRDP
+#     DebOverride: override.wheezy
+#     DscOverride: override.wheezy
+#     SignWith: 78BB3659
+#
+# 2. Ensuite, toujours sur repository :
+#
+#     mkdir /var/www/debian/incoming/shinken
+#     chown repository:repository /var/www/debian/incoming/shinken
+#
+# 3. Ensuite, il faut créer « l'hôte » shinken dans la conf dput
+# de jenking. Là, on passe par la conf puppet où il faut éditer
+# le fichier hieradata/fqdn/jenkins-squeeze-amd64.crdp.ac-versailles.fr.yaml
+# et ajouter une entrée dans « dput: ».
+
+Attention, pour que la commande dput fonctionne
+# (upload des paquets sur repository), il faut :
+#    1. Créer le repertoire 
 (cd "$TARGET_DIR/$WORGING_DIR_IN_GIT/.." && debsign *.changes && dput "$TARGET_COMPONENT" *.changes)
 
 
