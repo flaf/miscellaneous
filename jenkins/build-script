@@ -88,6 +88,10 @@ pbuilder-wheezy-amd64 execute --bindmounts $TARGET_DIR -- $SCRIPT
 #     DscOverride: override.wheezy
 #     SignWith: 78BB3659
 #
+# Suivi d'un :
+#
+#     reprepro --verbose --basedir /var/www/debian remove wheezy shinken
+#
 # 2. Ensuite, toujours sur repository :
 #
 #     mkdir /var/www/debian/incoming/shinken
