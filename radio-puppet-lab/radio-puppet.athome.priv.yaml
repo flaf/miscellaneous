@@ -27,8 +27,8 @@ icecast2:
     - 'francois.lafont@crdp.ac-versailles.fr'
 
   # The password of the default username (called 'source') for all
-  # source connections. This and the username can be changed in the
-  # individual mount sections.
+  # source connections. It can be changed in the individual mount
+  # sections.
   # The password of the 'relay' username is automatically set to
   # the same value.
   # Default is '__pwd__{"salt" => ["$fqdn", "source"], "nice" => true, "max_length" => 10 }'.
@@ -54,7 +54,7 @@ icecast2:
   limits_source_timeout: 20
 
   # 4=Debug, 3=Info, 2=Warn, 1=Error.
-  # With log level equal to 3 and I there is Airtime installed too
+  # With log level equal to 3 and if there is Airtime installed too
   # with a stream set with a bad password, there will be regular
   # writing on the log file.
   # Default is 2.
