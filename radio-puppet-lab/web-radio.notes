@@ -3,7 +3,8 @@ Le nom du serveur sera *webradio*
 Ce qu'il reste à faire etc.
 
 - le serveur s'appellera webradio.
-  L'ancien possède 2Go de RAM et 4 CPU (VM sur proxmox-3)
+  L'ancien possède 2Go de RAM et 4 CPUs (en fait 2 CPUs avec 2 threads chacun).
+  C'est une VM sur proxmox-3.
 
 - Quand ce sera ok, il faudra virer dans liste_ip l'entrée:
   195.221.97.64 radio (VM virtualbox de test, temporaire, pour la Web-radio sur le PC de bureau de flaf)
