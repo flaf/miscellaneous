@@ -13,9 +13,6 @@ Ce qu'il reste à faire :
   on ne peut pas empêcher un "source client" d'utiliser
   le 80 si j'ai bien compris).
 
-- Rediriger la sortie du cron. Voir aussi dans les crons de mes
-  autres classes puppet.
-
 - Voir sur IRC s'il est possible d'avoir les points de montages
   autrement que dans un xml avec les mots de passe en clair.
   Base MySQL etc. ?
@@ -23,8 +20,8 @@ Ce qu'il reste à faire :
         permettre d'éviter les mots de passe en clair.
 
 - Voir au niveau des logs. Il faut que je garde dans les
-  logs qui a diffusé (quelle IP) et quand à quand et garder
-  les logs pendant des infos exactement 1 an !
+  logs qui a diffusé (quelle IP) et quand et garder
+  les logs pendant exactement 1 an !
   Vérifier que l'IP est bien loguée d'ailleurs.
 
 - Revoir le code tout à la fin et le commenter etc. Mettre des docs
