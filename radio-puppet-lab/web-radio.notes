@@ -1,6 +1,12 @@
 Le nom du serveur sera *webradio*
 
-Ce qu'il reste à faire :
+Ce qu'il reste à faire etc.
+
+- le serveur s'appellera webradio.
+  L'ancien possède 2Go de RAM et 4 CPU (VM sur proxmox-3)
+
+- Quand ce sera ok, il faudra virer dans liste_ip l'entrée:
+  195.221.97.64 radio (VM virtualbox de test, temporaire, pour la Web-radio sur le PC de bureau de flaf)
 
 - A priori, il serait possible de faire du ssl pour les
   "source clients" et du http sans ssl pour les listeners.
