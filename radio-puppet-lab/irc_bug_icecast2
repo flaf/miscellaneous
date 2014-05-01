@@ -1,3 +1,8 @@
+Le patch est ici a priori:
+
+    http://ruecker.fi/foss/icecast/gid.patch
+
+
 │13:40:22          flaf | In the shell script, I have tried the "id" command.                                                       │
 │13:40:32          flaf | The result is:                                                                                            │
 │13:40:40          flaf | uid=108(icecast2) gid=111(icecast) groups=111(icecast),0(root)                                            │
