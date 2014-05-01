@@ -62,7 +62,7 @@ class icecast2::params {
   if ($icecast2_conf['log_level'] != '') {
     $log_level = $icecast2_conf['log_level']
   } else {
-    $log_level = '2'
+    $log_level = '3'
   }
 
   # Default value of log size.

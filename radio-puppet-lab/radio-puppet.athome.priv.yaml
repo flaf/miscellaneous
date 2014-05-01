@@ -57,8 +57,11 @@ icecast2:
   # With log level equal to 3 and if there is Airtime installed too
   # with a stream set with a bad password, there will be regular
   # writing on the log file.
-  # Default is 2.
-  log_level: 2
+  # But 3 is the recommended value. For example, with log_level 2,
+  # Icecast2 don't log in /var/icecast2/error.log the begin of the
+  # source connection and the end.
+  # Default is 3 (ie info + warn + error).
+  log_level: 3
 
   # Log size in KBytes. If a log file is grower than the log size,
   # then "mv <filename>.log <filename>.log.old".
