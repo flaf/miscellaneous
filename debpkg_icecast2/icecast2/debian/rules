@@ -109,6 +109,8 @@ clean::
 ### Personal targets ###
 ########################
 
+BUILD_NAME = icecast2
+
 # The absolute path of the rules file.
 # The realpath function returns the canonical absolute name.
 # A canonical name does not contain any . or .. components,
@@ -130,11 +132,13 @@ git_clean:
 	{ cd "$(WORKING_DIR)" && [ ! -z "$(FILES_TO_CLEAN)" ] && rm -rf $(FILES_TO_CLEAN); } || true
 	cd "$(WORKING_DIR)" && rm -rf ".pc"
 	# All files in the parent directory created by the building.
-	cd "$(WORKING_DIR)" && rm -f ../$(PYBUILD_NAME)*.deb
-	cd "$(WORKING_DIR)" && rm -f ../$(PYBUILD_NAME)*.dsc
-	cd "$(WORKING_DIR)" && rm -f ../$(PYBUILD_NAME)*.changes
-	cd "$(WORKING_DIR)" && rm -f ../$(PYBUILD_NAME)*.debian.tar.gz
-	cd "$(WORKING_DIR)" && rm -f ../$(PYBUILD_NAME)*.build
+	cd "$(WORKING_DIR)" && rm -f ../$(BUILD_NAME)*.deb
+	cd "$(WORKING_DIR)" && rm -f ../$(BUILD_NAME)*.dsc
+	cd "$(WORKING_DIR)" && rm -f ../$(BUILD_NAME)*.changes
+	cd "$(WORKING_DIR)" && rm -f ../$(BUILD_NAME)*.debian.tar.gz
+	cd "$(WORKING_DIR)" && rm -f ../$(BUILD_NAME)*.build
+	cd "$(WORKING_DIR)" && rm -f debian/stamp-* debian/copyright_newhints
+	cd "$(WORKING_DIR)" && rm -fr debian/upstream-stuff/
 
 populate_working_dir: git_clean
 	# Extract the Shinken source.
