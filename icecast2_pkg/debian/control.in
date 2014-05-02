@@ -1,0 +1,23 @@
+Source: icecast2
+Section: sound
+Priority: optional
+Maintainer: Debian Multimedia Maintainers <pkg-multimedia-maintainers@lists.alioth.debian.org>
+Uploaders: Guillaume Pellerin <yomguy@altern.org>,
+ Romain Beauxis <toots@rastageeks.org>,
+ Jonas Smedegaard <dr@jones.dk>
+Build-Depends: @cdbs@
+Vcs-Git: git://git.debian.org/pkg-multimedia/icecast2.git
+Vcs-Browser: http://git.debian.org/?p=pkg-multimedia/icecast2.git
+Standards-Version: 3.9.3
+Homepage: http://www.icecast.org/
+
+Package: icecast2
+Architecture: any
+Depends: adduser, ${shlibs:Depends}, ${misc:Depends}
+Suggests: ices2
+Description: streaming media server
+ Icecast is a versatile multimedia streaming server which can create
+ (for instance) a private jukebox or "Internet radio station". It
+ supports Ogg streaming using the Vorbis and Theora codecs, as well as
+ other formats such as MP3, AAC, or NSV, and is compatible with most
+ media players.

@@ -1,0 +1,13 @@
+Source: areca-cli
+Section: misc
+Priority: extra
+Maintainer: François Lafont <francois.lafont@crdp.ac-versailles.fr>
+Build-Depends: debhelper (>= 8.0.0), devscripts, fakeroot
+Standards-Version: 3.9.3
+Homepage: http://www.areca.com.tw/support/s_linux/linux.htm
+
+Package: areca-cli
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Command line tool to manage Areca RAID controller
+ Command line tool to manage Areca RAID controller
