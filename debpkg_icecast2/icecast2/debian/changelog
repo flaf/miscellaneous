@@ -1,3 +1,12 @@
+icecast2 (2.3.3-3~MANE-Versailles) wheezy-backports; urgency=low
+
+  * Non-maintainer upload.
+  * Fix a security hole: with setgid, supplementary groups are not cleaned
+    and, when the caller is root, the icecast2 process has the "root" group
+    in its supplementary groups.
+
+ -- François Lafont <francois.lafont@crdp.ac-versailles.fr>  Fri, 02 May 2014 18:55:13 +0200
+
 icecast2 (2.3.3-2~bpo70+1) wheezy-backports; urgency=low
 
   * Rebuild for wheezy-backports.
