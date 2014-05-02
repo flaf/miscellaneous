@@ -21,7 +21,8 @@ Build-Depends: cdbs (>= 0.4.70~),
  libtheora-dev (>= 0.0.0.alpha7),
  libspeex-dev,
  po-debconf,
- autoconf-archive
+ autoconf-archive,
+ quilt
 Vcs-Git: git://git.debian.org/pkg-multimedia/icecast2.git
 Vcs-Browser: http://git.debian.org/?p=pkg-multimedia/icecast2.git
 Standards-Version: 3.9.3
