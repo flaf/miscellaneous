@@ -1,0 +1,14 @@
+--- a/src/main.c
++++ b/src/main.c
+@@ -395,6 +395,10 @@
+                fprintf(stdout, "Changed groupid to %i.\n", (int)gid);
+            else
+                fprintf(stdout, "Error changing groupid: %s.\n", strerror(errno));
++           if(!initgroups(conf->user, gid))
++               fprintf(stdout, "Changed supplementary groups based on user: %s.\n", conf->user);
++           else
++               fprintf(stdout, "Error changing supplementary groups: %s.\n", strerror(errno));
+        }
+·
+        if(uid != -1) {
+
