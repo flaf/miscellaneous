@@ -44,6 +44,9 @@ trap clean EXIT
 
 cd $TARGET_DIR
 
+# Don't forget it.
+apt-get update
+
 # Prepare environment
 apt-get install --no-install-recommends --yes git openssl ca-certificates devscripts equivs
 
