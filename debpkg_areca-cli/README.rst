@@ -16,8 +16,8 @@ To build the .deb package on Debian Wheezy, you can run these commands in a shel
 .. code:: sh
 
   # Creation of the working directory.
-  git clone https://github.com/flaf/areca-cli.git
-  cd areca-cli/areca-cli
+  git clone https://github.com/flaf/miscellaneous.git
+  cd miscellaneous/debpkg_areca-cli/areca-cli/
 
   # Installation of the build-dependencies
   BUILD_DEPENDS='<see the debian/control file>'

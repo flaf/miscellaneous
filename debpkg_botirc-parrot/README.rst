@@ -49,8 +49,8 @@ To build the .deb package on Debian Wheezy, you can run these commands in a shel
 .. code:: sh
 
   # Creation of the working directory.
-  git clone https://github.com/flaf/botirc-parrot.git
-  cd botirc-parrot/botirc-parrot/
+  git clone https://github.com/flaf/miscellaneous.git
+  cd miscellaneous/debpkg_botirc-parrot/botirc-parrot/
 
   # Installation of the build-dependencies
   BUILD_DEPENDS='<see the debian/control file>'
