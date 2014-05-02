@@ -9,6 +9,5 @@
 +           else
 +               fprintf(stdout, "Error changing supplementary groups: %s.\n", strerror(errno));
         }
-·
+ 
         if(uid != -1) {
-
