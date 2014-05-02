@@ -111,6 +111,9 @@ clean::
 
 BUILD_NAME = icecast2
 
+export QUILT_PATCHES=debian/patches
+export QUILT_REFRESH_ARGS='-p ab --no-timestamps --no-index'
+
 # The absolute path of the rules file.
 # The realpath function returns the canonical absolute name.
 # A canonical name does not contain any . or .. components,
