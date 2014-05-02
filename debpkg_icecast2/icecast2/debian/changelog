@@ -1,4 +1,4 @@
-icecast2 (2.3.3-3~MANE-Versailles) wheezy-backports; urgency=low
+icecast2 (2.3.3-3~MANE~Versailles) wheezy-backports; urgency=low
 
   * Non-maintainer upload.
   * Fix a security hole: with setgid, supplementary groups are not cleaned
