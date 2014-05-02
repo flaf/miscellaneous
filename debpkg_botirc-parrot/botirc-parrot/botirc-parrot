@@ -1,0 +1,184 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+# Copyright: 2013 Francois Lafont <francois.lafont@crdp.ac-versailles.fr>
+#
+# License: GPL-3.0+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+import socket
+import time
+import os
+import threading
+import traceback
+import sys
+
+
+NICKNAME = os.uname()[1] # == $(hostname)
+FULL_NAME = "I'm a bot baby"
+TIME_WAIT = 2 # between loops.
+TIMEOUT_SOCKET = 300
+SIZE_RECV = 2048
+
+
+def message(s, level=0):
+    if level == 0:
+        return
+    else:
+        sys.stdout.write(s + "\n")
+        sys.stdout.flush()
+
+
+try:
+    PIPE_FILE = os.environ['PARROT_FIFO']
+    SERVER_IRC = os.environ['PARROT_SERVER']
+    PORT = int(os.environ['PARROT_PORT'])
+    CHANNEL = os.environ['PARROT_CHANNEL']
+    PASSWORD = os.environ['PARROT_PASSWORD']
+except KeyError:
+    message("Sorry, some environment variables among PARROT_FIFO PARROT_SERVER " + \
+            "PARROT_PORT PARROT_CHANNEL PARROT_PASSWORD are not defined ", 1)
+    sys.exit(1)
+
+
+if not os.path.exists(PIPE_FILE):
+    message("Sorry, the fifo file doesn't exist.", 1)
+    sys.exit(1)
+
+
+pipe_closed = threading.Event()
+socket_created = threading.Event()
+socket_closed = threading.Event()
+
+
+class Socket_reader(threading.Thread):
+
+    def __init__(self):
+        threading.Thread.__init__(self)
+
+    def run(self):
+        try:
+            self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.socket.connect((SERVER_IRC, PORT))
+            self.socket.send("USER " + NICKNAME + " " + " " + NICKNAME + " " + NICKNAME + " :" + FULL_NAME + "\n")
+            self.socket.send("NICK " + NICKNAME + "\n")
+            if PASSWORD == "":
+                self.socket.send("JOIN " + CHANNEL + "\n")
+            else:
+                self.socket.send("JOIN " + CHANNEL + " " + PASSWORD + "\n")
+            socket_created.set()
+            message("Socket created.")
+            self.socket.settimeout(TIMEOUT_SOCKET)
+
+            while not pipe_closed.isSet():
+                message("Reading of the socket input...")
+                try:
+                    msg = self.socket.recv(SIZE_RECV)
+                except socket.timeout:
+                    message("Timeout.")
+                if not msg:
+                    break
+                else:
+                    message(msg)
+                if "PING :" in msg:
+                    message("Sending a PONG message...")
+                    self.socket.send("PONG :pingis\n")
+            message("Connection lost on the socket.")
+            self.socket.close()
+            socket_closed.set()
+
+        except Exception, e:
+            message("Problem during the Socket_reader running.")
+            message(str(e))
+            socket_closed.set()
+            try:
+                #self.socket.send("QUIT " + ":déconnexion.\n")
+                self.socket.close()
+            except:
+                pass
+
+    def quit(self):
+        self._Thread__stop()
+
+
+class Pipe_reader(threading.Thread):
+
+    def __init__(self, socket, pipe_file):
+        threading.Thread.__init__(self)
+        self.socket = socket
+        self.pipe_file = pipe_file
+
+    def run(self):
+        try:
+            self.f = open(self.pipe_file, "r")
+            while not socket_closed.isSet():
+                time.sleep(TIME_WAIT)
+                message("Reading of the pipe file...")
+                msg = self.f.read()
+                if msg == "":
+                    continue
+                else:
+                    message("Writing in the pipe file.")
+                    lines = msg.split("\n")
+                    for line in lines:
+                        self.socket.send("PRIVMSG " + CHANNEL + " :" + line + "\n" )
+        except Exception, e:
+            message("Problem during the Pipe_reader running.")
+            message(str(e))
+            self.f.close()
+            pipe_closed.set()
+
+    def quit(self):
+        self._Thread__stop()
+
+
+if __name__ == '__main__':
+    try:
+        while True:
+            message("Starting the connection in a few seconds.")
+            # Before to attempt a new connection, it's better to wait a few seconds.
+            time.sleep(10)
+
+            pipe_closed.clear()
+            socket_created.clear()
+            socket_closed.clear()
+
+            socket_reader = Socket_reader()
+            socket_reader.start()
+            socket_created.wait(20)
+
+            pipe_reader = Pipe_reader(socket_reader.socket, PIPE_FILE)
+            pipe_reader.start()
+
+            # Whithout this dummy file openning in "w" mode, pipe_reader.run()
+            # is blocked at « self.f = open(PIPE_FILE, 'r') ».
+            f = open(PIPE_FILE, "w")
+            f.write("")
+            f.close()
+
+            while pipe_reader.isAlive() and socket_reader.isAlive():
+                message("All threads are alive. Keep going.")
+                time.sleep(TIME_WAIT)
+
+            message("Restart the programm.")
+            socket_reader.quit()
+            pipe_reader.quit()
+    except:
+        message("Stopping of the programm.", 1)
+        socket_reader.quit()
+        pipe_reader.quit()
+
+    print("")
+
+

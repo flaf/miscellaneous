@@ -1,0 +1,20 @@
+# This file is sourced by /etc/init.d/botirc-parrot.
+
+# Set to "YES" if you want to start the daemon.
+START="NO"
+
+# Who runs the daemon?
+USER="root"
+GROUP="root"
+
+# You must create the fifo file before.
+# Of course, the daemon must be able to read this file.
+PARROT_FIFO="/edit/your/fifo/file/here"
+
+# Which server, port, channel and password?
+PARROT_SERVER="irc.freenode.net"
+PARROT_PORT="6667"
+PARROT_CHANNEL="#mychan"
+PARROT_PASSWORD="myspasswd"
+
+

@@ -1,0 +1,13 @@
+Source: botirc-parrot
+Section: misc
+Priority: extra
+Maintainer: Francois Lafont <francois.lafont@crdp.ac-versailles.fr>
+Build-Depends: devscripts, fakeroot, debhelper (>= 7.0.50~)
+Standards-Version: 3.8.4
+Vcs-Browser: https://github.com/flaf/botirc-parrot.git
+
+Package: botirc-parrot
+Architecture: all
+Depends: ${misc:Depends}, sudo, python
+Description: IRC bot which reapeats the text stream from a fifo file.
+ IRC bot which reapeats the text stream from a fifo file.
