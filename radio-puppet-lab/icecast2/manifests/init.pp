@@ -21,7 +21,7 @@
 #                   |          |
 #                   +----------+
 #
-# This class depends on:
+# /!\ This class depends on: /!\
 # - repositories::webradio to add a repository made in CRDP with
 #   icecast2 version 2.3.3 and an important security patch.
 # - generate_password function to avoid to put clear text passwords in hiera.
