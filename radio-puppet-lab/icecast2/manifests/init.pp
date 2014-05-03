@@ -93,6 +93,29 @@ class icecast2 {
     ensure     => running,
   }
 
+  ->
+
+  # Script to remove old logs (logs which contain information older than 1 year).
+  file { '/usr/local/bin/remove-old-icecast-logs':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => 755,
+    content => template('icecast2/remove-old-icecast-logs.erb'),
+  }
+
+  ->
+
+  # At 2:00 a.m.
+  cron { 'remove-old-icecast-logs':
+    ensure  => present,
+    command => '/usr/local/bin/remove-old-icecast-logs >/dev/null 2>&1',
+    user    => 'icecast2',
+    minute  => 0,
+    hour    => 2,
+  }
+
+
 }
 
 
