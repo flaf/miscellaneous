@@ -21,17 +21,17 @@
 #                   |          |
 #                   +----------+
 #
-# /!\ This class depends on: /!\
+# /!\ This puppet class depends on: /!\
 # - repositories::webradio to add a repository made in CRDP with
 #   icecast2 version 2.3.3 and an important security patch.
 # - generate_password function to avoid to put clear text passwords in hiera.
-#   You can can use clear text passwords or use the __pwd__ syntax in hiera.
+#   You can can use clear text passwords or the __pwd__ syntax in hiera.
 #
 #
-# Here is explanations about the hiera configuration below:
+# Below, here are explanations about the hiera configuration:
 #
 # * location: visible on the server info page of the icecast web interface.
-#             This entry is optional. The default value is "$datacenter" if 
+#             This entry is optional. The default value is "$datacenter" if
 #             defined else it's "$fqdn".
 #
 # * official_admin_password: visible on the server info page of the icecast
@@ -41,19 +41,19 @@
 #
 # * git_repository: the ssh url of the git repository of the mountpoints.
 #                   This entry is optional and the default value is empty,
-#                   ie icecast2 doesn't use a git repository (in this cas,
+#                   ie icecast2 doesn't use a git repository (in this case
 #                   all the configuration is in the icecast.xml template).
 #                   If not empty, ssh public and private keys are generate
 #                   by root. The public key (/root/.ssh/id_rsa.pub) must be
 #                   manually put in the git repository to allow read only
-#                   access. In this cas, root will run a "git pull" every
+#                   access. In this case, root will run a "git pull" every
 #                   hour.
 #
 # * admins_mails: address mails to notify when the icecast configuration
 #                 is updated (because there are new mountpoints via the
 #                 git repository). The mails indicate if icecast server
-#                 has restarted (or if not). The mails give the new list
-#                 of the enabled mountpoints too.
+#                 has well restarted (or if not). The mails give the new
+#                 list of the enabled mountpoints too.
 #                 This entry, which must be an array, is optional. The
 #                 default value is an empty arry, ie no notification.
 #
@@ -83,9 +83,9 @@
 #                          the default value is 10.
 #
 # * log_level: 4=Debug, 3=Info, 2=Warn, 1=Error. This entry is optional and the
-#              default value is 3. This is the recommended value. For example,
+#              default value is 3. This is the minimal recommended value. Indeed,
 #              with log_level 2 or 1, icecast don't log in /var/icecast2/error.log
-#              the begin of the source connection and the end.
+#              the beginning of the source connection and the end.
 #
 # * log_size: log size in KBytes. If a log file is grower than the log size,
 #             then "mv <filename>.log <filename>.log.<datestamp>".
@@ -103,7 +103,7 @@
 #  official_admin_mail: 'admin@world-compagny.tld'
 #  git_repository: git@gitlab.domain.tld:bob/web-radio.git
 #  admins_mails:
-#    - 'mathsattacks@free.fr'
+#    - 'alice@domain.tld'
 #    - 'bob@domain.tld'
 #  source_password: '__pwd__{"salt" => ["$fqdn", "source"], "nice" => true, "max_length" => 8 }'
 #  admin_password: '__pwd__{"salt" => ["$fqdn", "admin"], "nice" => true, "max_length" => 8 }'
@@ -117,8 +117,8 @@
 #
 class icecast2 {
 
-  require 'icecast2::params'
   require 'repositories::webradio'
+  require 'icecast2::params'
 
   $location              = $icecast2::params::location
   $official_admin_mail   = $icecast2::params::official_admin_mail
