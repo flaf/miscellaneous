@@ -10,8 +10,8 @@
 # - repositories::sourcefabric to add the airtime repository.
 # - "icecast2" class. Don't include this class yourself because
 #   you can have error because of ordering problem. The "airtime"
-#   class will include the "icecast2" class in the good moment
-#   to avoid ordering error.
+#   class will iutomatically nclude the "icecast2" class in the
+#   good moment to avoid ordering errors.
 #
 #
 #==Hiera
