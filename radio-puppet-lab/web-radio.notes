@@ -31,18 +31,12 @@ Ce qu'il reste à faire etc.
   les logs pendant exactement 1 an !
   Vérifier que l'IP est bien loguée d'ailleurs.
 
-- Revoir le code tout à la fin et le commenter etc. Mettre des docs
-  en entêtes qui soient propres et compréhensibles.
-
 - Il faudra penser à baculacifier le fichier xml des points de
   montage.
 
 - bien lire la page ci-dessus pour avoir une idée de l'achitecture
   générale :
   http://sourcefabric.booktype.pro/airtime-25-for-broadcasters/host-configuration/
-
-- Tester les modifs de fichiers voir s'il n'est pas possible
-  de réduire un peu l'activité.
 
 - mettre en place une supervision par défaut de shinken
   avec les pages qui vont bien à tester. Rendre possible
