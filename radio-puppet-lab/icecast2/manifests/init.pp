@@ -1,3 +1,120 @@
+#==Action
+#
+# Install an Icecast2 server. Tested with Debian Wheezy.
+# See the hiera configuration to have more details.
+# Scheme to keep in mind:
+#
+#      sends audio stream to a     +---------------+
+#      mountpoint of the server    |               |
+#               +--------<<<-------+ Source client |
+#               |                  |               |
+#         +-----+----+             +---------------+
+#         | Icecast2 |
+#         |  server  |
+#         +--+----+--+             +----------+
+#            |    |                |          |
+#  receive   |    +------->>>------+ listener |
+#  the audio |                     |          |
+#  stream of |      +----------+   +----------+
+#  server    |      |          |
+#            +->>>--+ listener |
+#                   |          |
+#                   +----------+
+#
+# This class depends on:
+# - repositories::webradio to add a repository made in CRDP with
+#   icecast2 version 2.3.3 and an important security patch.
+# - generate_password function to avoid to put clear text passwords in hiera.
+#   You can can use clear text passwords or use the __pwd__ syntax in hiera.
+#
+#
+# Here is explanations about the hiera configuration below:
+#
+# * location: visible on the server info page of the icecast web interface.
+#             This entry is optional. The default value is "$datacenter" if 
+#             defined else it's "$fqdn".
+#
+# * official_admin_password: visible on the server info page of the icecast
+#                            web interface. This entry is optional. The default
+#                            value is "$admin_email" if defined else it's
+#                            "$admin@$fqdn".
+#
+# * git_repository: the ssh url of the git repository of the mountpoints.
+#                   This entry is optional and the default value is empty,
+#                   ie icecast2 doesn't use a git repository (in this cas,
+#                   all the configuration is in the icecast.xml template).
+#                   If not empty, ssh public and private keys are generate
+#                   by root. The public key (/root/.ssh/id_rsa.pub) must be
+#                   manually put in the git repository to allow read only
+#                   access. In this cas, root will run a "git pull" every
+#                   hour.
+#
+# * admins_mails: address mails to notify when the icecast configuration
+#                 is updated (because there are new mountpoints via the
+#                 git repository). The mails indicate if icecast server
+#                 has restarted (or if not). The mails give the new list
+#                 of the enabled mountpoints too.
+#                 This entry, which must be an array, is optional. The
+#                 default value is an empty arry, ie no notification.
+#
+# * source_password: the password of the default username (called 'source') for all
+#                    source connections. It can be changed in the individual mount
+#                    sections. The password of the 'relay' username is automatically
+#                    set to the same value. This entry is optional and the default is
+#                    '__pwd__{"salt" => ["$fqdn", "source"], "nice" => true, "max_length" => 10 }'.
+#                    So, you can use the '__pwd__{...}' syntax to avoid clear passwords.
+#
+# * admin_password: admin password in the web administration interface. This entry
+#                   is optional and the default value is
+#                   '__pwd__{"salt" => ["$fqdn", "admin"], "nice" => true, "max_length" => 10 }'.
+#
+# * port: this is the listening port of icecast. This entry is optional and the
+#         default value is 8080.
+#
+# * limits_clients: max connections for the entire server (not per mountpoint).
+#                   This entry is optional and the default value is 100.
+#
+# * limits_sources: max number of connected sources supported by the server.
+#                   This entry is optional and the default value is 10.
+#
+# * limits_source_timeout: if source does not send any data within this timeout
+#                          period (in seconds), then the source connection is
+#                          removed from the server. This entry is optional and
+#                          the default value is 10.
+#
+# * log_level: 4=Debug, 3=Info, 2=Warn, 1=Error. This entry is optional and the
+#              default value is 3. This is the recommended value. For example,
+#              with log_level 2 or 1, icecast don't log in /var/icecast2/error.log
+#              the begin of the source connection and the end.
+#
+# * log_size: log size in KBytes. If a log file is grower than the log size,
+#             then "mv <filename>.log <filename>.log.<datestamp>".
+#             Every night, all files older than 1 year are deleted. (in fact,
+#             among the files the mtime of which is older than 1 year, all the
+#             files are removed except the youngest which can contain information
+#             newer than 1 year). This entry is optional and the default value
+#             is 10000 (ie 10 MB).
+#
+#
+#==Hiera
+#
+#icecast2:
+#  location: 'Lesseps'
+#  official_admin_mail: 'admin@world-compagny.tld'
+#  git_repository: git@gitlab.domain.tld:bob/web-radio.git
+#  admins_mails:
+#    - 'mathsattacks@free.fr'
+#    - 'bob@domain.tld'
+#  source_password: '__pwd__{"salt" => ["$fqdn", "source"], "nice" => true, "max_length" => 8 }'
+#  admin_password: '__pwd__{"salt" => ["$fqdn", "admin"], "nice" => true, "max_length" => 8 }'
+#  port: '80'
+#  limits_clients: 200
+#  limits_sources: 20
+#  limits_source_timeout: 20
+#  log_level: 3
+#  log_size: 10000
+#
+#
 class icecast2 {
 
   require 'icecast2::params'
