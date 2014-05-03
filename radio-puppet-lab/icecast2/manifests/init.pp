@@ -223,7 +223,7 @@ class icecast2 {
 
   ->
 
-  # At 2:00 a.m.
+  # At 2:00 a.m, removing of old logs.
   cron { 'remove-old-icecast-logs':
     ensure  => present,
     command => '/usr/local/bin/remove-old-icecast-logs >/dev/null 2>&1',
