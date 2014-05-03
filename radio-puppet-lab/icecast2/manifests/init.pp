@@ -2,7 +2,7 @@
 #
 # Install an Icecast2 server. Tested with Debian Wheezy.
 # See the hiera configuration to have more details.
-# Scheme to keep in mind:
+# Bacic scheme to keep in mind:
 #
 #      sends audio stream to a     +---------------+
 #      mountpoint of the server    |               |
