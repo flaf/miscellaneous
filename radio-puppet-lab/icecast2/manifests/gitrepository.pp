@@ -18,6 +18,7 @@ class icecast2::gitrepository {
   ->
 
   # A ssh wrapper to git clone without fingerprint confirmation.
+  # Used only for the initial "git clone", not for the "git pull".
   file { '/usr/local/sbin/ssh-for-git-clone':
     ensure  => present,
     owner   => 'root',
@@ -28,7 +29,7 @@ class icecast2::gitrepository {
 
   ->
 
-  # Script to retrieve the mountpoints via git pull.
+  # Script to retrieve the mountpoints via "git pull".
   file { '/usr/local/sbin/retrieve-mountpoints':
     ensure  => present,
     owner   => 'root',
