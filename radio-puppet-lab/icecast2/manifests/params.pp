@@ -6,8 +6,30 @@ class icecast2::params {
   $git_lockfile     = 'aware.lock'
   $mountpoints_file = 'mountpoints.xml'
 
+
+  # The default value of location.
+  $location = $icecast2_conf['location']
+  if ($location = '') {
+    if ($datacenter == undef) {
+      $location = $fqdn
+    } else {
+      $location = $datacenter
+    }
+  }
+
+  # The default value of official_admin_mail.
+  $official_admin_mail = $icecast2_conf['official_admin_mail']
+  if ($official_admin_mail = '') {
+    if ($admin_email == undef) {
+      $official_admin_mail = "admin@$fqdn"
+    } else {
+      $official_admin_mail = $admin_email
+    }
+  }
+
+
   # The default value will be ''.
-  $git_repository   = $icecast2_conf['git_repository']
+  $git_repository = $icecast2_conf['git_repository']
 
   # Default value of admins_mails
   if ($icecast2_conf['admins_mails'] != '') {

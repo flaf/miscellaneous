@@ -11,7 +11,19 @@ airtime:
   # Default is 8080.
   port: 8080
 
+
+
+# Depends on repositories::webradio.
 icecast2:
+
+  # Location and adim are visible on the server info page
+  # of the icecast web interface.
+  # For location, the default value is "$datacenter" if defined
+  # else it's "$fqdn".
+  # For official_admin_mail, the default is "$admin_email" if defined
+  # else it's "admin@$fqdn".
+  location: 'Lesseps'
+  official_admin_mail: 'admin@crdp.ac-versailles.fr'
 
   # It's the ssh url of the git repository of the mountpoints.
   # The default value is an empty, ie icecast2 doesn't use

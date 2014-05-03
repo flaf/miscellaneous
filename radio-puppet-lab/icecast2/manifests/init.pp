@@ -1,7 +1,10 @@
 class icecast2 {
 
   require 'icecast2::params'
+  require 'repositories::webradio'
 
+  $location              = $icecast2::params::location
+  $official_admin_mail   = $icecast2::params::official_admin_mail
   $git_repository        = $icecast2::params::git_repository
   $git_directory         = $icecast2::params::git_directory
   $git_lockfile          = $icecast2::params::git_lockfile
