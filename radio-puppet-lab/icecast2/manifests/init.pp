@@ -69,7 +69,7 @@
 #                   '__pwd__{"salt" => ["$fqdn", "admin"], "nice" => true, "max_length" => 10 }'.
 #
 # * port: this is the listening port of icecast. This entry is optional and the
-#         default value is 8080.
+#         default value is 8000.
 #
 # * limits_clients: max connections for the entire server (not per mountpoint).
 #                   This entry is optional and the default value is 100.
