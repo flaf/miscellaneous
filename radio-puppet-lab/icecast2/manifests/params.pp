@@ -14,6 +14,8 @@ class icecast2::params {
     } else {
       $location = $datacenter
     }
+  } else {
+    $location = $icecast2_conf['location']
   }
 
   # The default value of official_admin_mail.
@@ -23,6 +25,8 @@ class icecast2::params {
     } else {
       $official_admin_mail = $admin_email
     }
+  } else {
+    $official_admin_mail = $icecast2_conf['official_admin_mail']
   }
 
 
