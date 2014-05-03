@@ -79,6 +79,10 @@ icecast2:
   # Log size in KBytes. If a log file is grower than the log size,
   # then "mv <filename>.log <filename>.log.old".
   # Default is 10000.
+  # Every night, all files older than 1 year are deleted.
+  # (in fact, among the files that its mtime are older than 1
+  # year, all the files except the youngest file which can contain
+  # information newer than 1 year).
   log_size: 10000
 
 

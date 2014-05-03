@@ -4,8 +4,8 @@ export LC_ALL=C
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
 # List of files with mtime > 366 days. We
-# sort the files to remove (with sed) the younger
-# because maybe this file contains logs younger
+# sort the files to remove (with sed) the youngest
+# because maybe this file contains logs youngest
 # than 1 year.
 files=$(find /var/log/icecast2/ -type f -name '*.log.*' -mtime +366 -exec \ls -1t {} \+ | sed -n '1!p')
 
