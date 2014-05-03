@@ -8,8 +8,7 @@ class icecast2::params {
 
 
   # The default value of location.
-  $location = $icecast2_conf['location']
-  if ($location == '') {
+  if ($icecast2_conf['location'] == '') {
     if ($datacenter == undef) {
       $location = $fqdn
     } else {
@@ -18,8 +17,7 @@ class icecast2::params {
   }
 
   # The default value of official_admin_mail.
-  $official_admin_mail = $icecast2_conf['official_admin_mail']
-  if ($official_admin_mail == '') {
+  if ($icecast2_conf['official_admin_mail'] == '') {
     if ($admin_email == undef) {
       $official_admin_mail = "admin@$fqdn"
     } else {
