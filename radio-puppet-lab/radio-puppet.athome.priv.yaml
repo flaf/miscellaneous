@@ -13,7 +13,7 @@ airtime:
 
 
 
-# Depends on repositories::webradio.
+# /!\ Depends on repositories::webradio. /!\
 icecast2:
 
   # Location and adim are visible on the server info page
@@ -33,7 +33,7 @@ icecast2:
   # Address mails to notify when the Icecast2 configuration is
   # updated and/or when Icecast2 doesn't restart after the
   # update. It must be an array. Default value is an empty
-  # array.
+  # array (ie no notification).
   admins_mails:
     - 'mathsattacks@free.fr'
     - 'francois.lafont@crdp.ac-versailles.fr'
@@ -46,6 +46,7 @@ icecast2:
   # Default is '__pwd__{"salt" => ["$fqdn", "source"], "nice" => true, "max_length" => 10 }'.
   source_password: '__pwd__{"salt" => ["$fqdn", "source"], "nice" => true, "max_length" => 8 }'
 
+  # Admin password in the web administration interface.
   # Default is '__pwd__{"salt" => ["$fqdn", "admin"], "nice" => true, "max_length" => 10 }'.
   admin_password: '__pwd__{"salt" => ["$fqdn", "admin"], "nice" => true, "max_length" => 8 }'
 
@@ -78,6 +79,6 @@ icecast2:
   # Log size in KBytes. If a log file is grower than the log size,
   # then "mv <filename>.log <filename>.log.old".
   # Default is 10000.
-  log_size: 20000
+  log_size: 10000
 
 
