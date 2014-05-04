@@ -51,8 +51,14 @@ Ce qu'il reste à faire etc.
   puppet et plus dans hiera, afin d'avoir accès aux données
   de la classe/module.
 
-- Documenter Hiera et mettre une config définitive.
-
+- À l'occasion, il faudra laisser tomber cette histoire
+  de lock file qui complique beacoup  pour pas grand chose
+  et faire :
+    - d'un côté puppet qui met à jour icecast.xml.puppet
+      et qui s'assure que le service icecast2 tourne.
+    - de l'autre le cron qui fait un git (clone/pull)
+      puis qui met à jour icecast.xml et restart
+      icecast2 si nécessaire.
 
 
 
