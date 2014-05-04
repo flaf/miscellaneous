@@ -58,7 +58,11 @@ Ce qu'il reste à faire etc.
       et qui s'assure que le service icecast2 tourne.
     - de l'autre le cron qui fait un git (clone/pull)
       puis qui met à jour icecast.xml et restart
-      icecast2 si nécessaire.
+      icecast2 si nécessaire. Éventuellement dans le
+      cron, si on craint qu'une lecture du xml.puppet
+      se fasse à un moment où puppet le bidouille,
+      trouver un moyen de checker qu'aucun run puppet
+      n'est en cours etc.
 
 
 
