@@ -6,7 +6,7 @@ class common {
                        'tree',
                      ]
 
-  package { [ $common_packages:
+  package { $common_packages:
     ensure => latest,
   }
 
