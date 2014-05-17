@@ -31,3 +31,14 @@ EOF
 sleep 1 && invoke-rc.d samba start
 
 
+# /usr/local/samba/bin/samba-tool domain provision --realm="ATHOME.PRIV" --domain="ATHOME" --server-role=dc --dns-backend=SAMBA_INTERNAL --adminpass='@admin7+8' --use-rfc2307
+
+
+# /usr/local/samba/sbin/samba -i -M single
+
+# wget https://ftp.samba.org/pub/ldb/ldb-1.1.17.tar.gz
+
+# Dans le smb.conf afin de virer ipv6 et de ne pas avoir d'erreur
+#bind interfaces only = yes
+#interfaces = 127.0.0.1 172.31.5.1
+
