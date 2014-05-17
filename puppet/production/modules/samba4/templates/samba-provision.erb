@@ -21,6 +21,9 @@ samba-tool domain provision --realm="$realm"               \
                             --adminpass='Ch@ngE+me;Please' \
                             --use-rfc2307
 
+
+patch /etc/init.d/samba /etc/samba/init-samba.patch
+
 cat >/etc/resolv.conf <<EOF
 domain $domain
 search $domain
@@ -28,18 +31,12 @@ nameserver <%= @ipaddress %>
 
 EOF
 
-invoke-rc.d samba disable
-echo "The daemon samba must be started manually."
+# If you want to disable the automatic start at each reboot.
+#update-rc.d samba disable 2>/dev/null || true
+#update-rc.d samba-ad-dc disable 2>/dev/null || true
+#echo "The daemon samba will must be started manually."
 
+# If you want to test samba service.
+#/usr/local/samba/sbin/samba -i -M single
 
-# /usr/local/samba/bin/samba-tool domain provision --realm="ATHOME.PRIV" --domain="ATHOME" --server-role=dc --dns-backend=SAMBA_INTERNAL --adminpass='@admin7+8' --use-rfc2307
-
-
-# /usr/local/samba/sbin/samba -i -M single
-
-# wget https://ftp.samba.org/pub/ldb/ldb-1.1.17.tar.gz
-
-# Dans le smb.conf afin de virer ipv6 et de ne pas avoir d'erreur
-#bind interfaces only = yes
-#interfaces = 127.0.0.1 172.31.5.1
 
