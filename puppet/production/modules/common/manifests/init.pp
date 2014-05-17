@@ -4,6 +4,8 @@ class common {
                        'lsb-release',
                        'less',
                        'tree',
+                       'git',
+                       'dnsutils',
                      ]
 
   package { $common_packages:
