@@ -14,11 +14,11 @@ invoke-rc.d samba stop
 rm -f /etc/samba/smb.conf
 rm -rf /var/lib/samba/private/*
 
-samba-tool domain provision --realm="$realm"             \
-                            --domain="$windows_domain"   \
-                            --server-role=dc             \
-                            --dns-backend=SAMBA_INTERNAL \
-                            --adminpass='@admin7+8'      \
+samba-tool domain provision --realm="$realm"               \
+                            --domain="$windows_domain"     \
+                            --server-role=dc               \
+                            --dns-backend=SAMBA_INTERNAL   \
+                            --adminpass='Ch@ngE+me;Please' \
                             --use-rfc2307
 
 cat >/etc/resolv.conf <<EOF
@@ -28,7 +28,8 @@ nameserver <%= @ipaddress %>
 
 EOF
 
-sleep 1 && invoke-rc.d samba start
+invoke-rc.d samba disable
+echo "The daemon samba must be started manually."
 
 
 # /usr/local/samba/bin/samba-tool domain provision --realm="ATHOME.PRIV" --domain="ATHOME" --server-role=dc --dns-backend=SAMBA_INTERNAL --adminpass='@admin7+8' --use-rfc2307
