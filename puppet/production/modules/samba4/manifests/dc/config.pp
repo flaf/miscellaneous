@@ -6,26 +6,26 @@ class samba4::dc::config {
   $workgroup     = $samba4::dc::params::workgroup
   $dns_forwarder = $samba4::dc::params::dns_forwarder
 
-  file { 'samba-provision-script':
+  file { 'dc_provisioning_script':
     ensure  => present,
     owner   => 'root',
     group   => 'root',
     mode    => '0754',
-    path    => '/usr/local/sbin/samba-provision',
-    content => template('samba4/samba-provision.erb'),
+    path    => '/usr/local/sbin/dc_provisioning',
+    content => template('samba4/dc_provisioning.erb'),
   }
 
-  exec { 'samba-provision':
-    require     => File['samba-provision-script'],
+  exec { 'dc_provisioning':
+    require     => File['dc_provisioning_script'],
     path        => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
     user        => 'root',
-    command     => 'samba-provision',
+    command     => 'dc_provisioning',
     refreshonly => true,
     subscribe   => Apt::Force['samba'],
   }
 
   file { 'smb.conf':
-    require => Exec['samba-provision'],
+    require => Exec['dc_provisioning'],
     ensure  => present,
     owner   => 'root',
     group   => 'root',

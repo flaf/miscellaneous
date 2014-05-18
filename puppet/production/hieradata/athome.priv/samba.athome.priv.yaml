@@ -2,4 +2,7 @@
 classes:
   - 'samba4::member'
 
+samba4:
+  toto: 'tototo'
+
 
