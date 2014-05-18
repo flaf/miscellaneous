@@ -10,6 +10,7 @@ class common {
                        'gawk',
                        'screen',
                        'tcpdump',
+                       'rsync',
                      ]
 
   package { $common_packages:
