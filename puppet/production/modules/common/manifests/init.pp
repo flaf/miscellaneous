@@ -7,6 +7,7 @@ class common {
                        'git',
                        'dnsutils',
                        'psmisc',
+                       'gawk',
                      ]
 
   package { $common_packages:

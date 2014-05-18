@@ -21,6 +21,7 @@ class samba4::dc::config {
     user        => 'root',
     command     => 'samba-provision',
     refreshonly => true,
+    subscribe   => Apt::Force['samba'],
   }
 
   file { 'smb.conf':
