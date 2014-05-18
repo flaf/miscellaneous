@@ -9,6 +9,12 @@
     bind interfaces only = yes
     interfaces = 127.0.0.1 <%= @ipaddress %>
 
+    # These parameters were  present in the old domain controller.
+    ;load printers = no
+    ;printcap name = /dev/null
+    ;deadtime = 10
+    ;socket options = TCP_NODELAY SO_KEEPALIVE
+
 [netlogon]
     path = /var/lib/samba/sysvol/athome.priv/scripts
     read only = No
