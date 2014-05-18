@@ -20,12 +20,24 @@ samba-tool domain provision --realm="$realm"               \
                             --adminpass='Ch@ngE+me;Please' \
                             --use-rfc2307
 
-# If you want to disable the automatic start at each reboot.
-#update-rc.d samba disable 2>/dev/null || true
-#update-rc.d samba-ad-dc disable 2>/dev/null || true
-#echo "The daemon samba will must be started manually."
 
-# If you want to test samba service.
-#samba -i -M single
+# Remove password complexity rule.
+samba-tool domain passwordsettings set --complexity=off \
+    --max-pwd-age=0 --min-pwd-length=4
+
+# * If you want to change the administrator's password:
+#
+#       samba-tool user setpassword administrator --newpassword="newpassword"
+#
+#
+# * If you want to disable the automatic start at each reboot.
+#
+#       update-rc.d samba disable 2>/dev/null || true
+#       update-rc.d samba-ad-dc disable 2>/dev/null || true
+#
+# * If you want to test samba service:
+#
+#       samba -i -M single
+#
 
 

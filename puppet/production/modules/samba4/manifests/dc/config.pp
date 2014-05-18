@@ -1,8 +1,10 @@
 class samba4::dc::config {
 
-  $realm     = upcase($domain)
-  # If realm is "AAA-91.BBB.CCC", workgroup will be "AAA-91".
-  $workgroup = regsubst($realm, '^([-A-Z0-9]*)\..*$', '\1')
+  require 'samba4::dc::params'
+
+  $realm         = $samba4::dc::params::realm
+  $workgroup     = $samba4::dc::params::workgroup
+  $dns_forwarder = $samba4::dc::params::dns_forwarder
 
   file { 'samba-provision-script':
     ensure  => present,

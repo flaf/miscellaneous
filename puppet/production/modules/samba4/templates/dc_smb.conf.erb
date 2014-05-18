@@ -4,7 +4,7 @@
     realm = <%= @realm %>
     netbios name = DC
     server role = active directory domain controller
-    dns forwarder = 172.31.0.1
+    dns forwarder = <%= @dns_forwarder %>
     idmap_ldb:use rfc2307 = yes
     bind interfaces only = yes
     interfaces = 127.0.0.1 <%= @ipaddress %>
