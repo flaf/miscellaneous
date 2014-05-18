@@ -11,6 +11,8 @@ class common {
                        'screen',
                        'tcpdump',
                        'rsync',
+                       'openssl',
+                       'ca-certificates',
                      ]
 
   package { $common_packages:
