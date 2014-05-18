@@ -8,6 +8,8 @@ class common {
                        'dnsutils',
                        'psmisc',
                        'gawk',
+                       'screen',
+                       'tcpdump',
                      ]
 
   package { $common_packages:
