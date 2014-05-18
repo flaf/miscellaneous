@@ -3,6 +3,6 @@ classes:
   - 'samba4::member'
 
 samba4:
-  toto: 'tototo'
+  ip_dc: '172.31.5.1'
 
 

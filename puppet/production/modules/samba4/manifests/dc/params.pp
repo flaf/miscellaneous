@@ -1,9 +1,5 @@
 class samba4::dc::params {
 
-  $realm         = upcase($domain)
-  # If realm is "AAA-91.BBB.CCC", workgroup will be "AAA-91".
-  $workgroup     = regsubst($realm, '^([-A-Z0-9]*)\..*$', '\1')
-
   $conf          = hiera_hash('samba4')
   $dns_forwarder = $conf['dns_forwarder']
 

@@ -1,9 +1,11 @@
 class samba4::dc::config {
 
+  require 'samba4::common::params'
   require 'samba4::dc::params'
 
-  $realm         = $samba4::dc::params::realm
-  $workgroup     = $samba4::dc::params::workgroup
+  $realm         = $samba4::common::params::realm
+  $workgroup     = $samba4::common::params::workgroup
+  $netbios_name  = $samba4::common::params::netbios_name
   $dns_forwarder = $samba4::dc::params::dns_forwarder
 
   file { 'dc_provisioning_script':

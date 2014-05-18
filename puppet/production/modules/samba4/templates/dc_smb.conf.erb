@@ -2,7 +2,7 @@
 [global]
     workgroup = <%= @workgroup %>
     realm = <%= @realm %>
-    netbios name = DC
+    netbios name = <%= @netbios_name %>
     server role = active directory domain controller
     dns forwarder = <%= @dns_forwarder %>
     idmap_ldb:use rfc2307 = yes
@@ -16,7 +16,7 @@
     ;socket options = TCP_NODELAY SO_KEEPALIVE
 
 [netlogon]
-    path = /var/lib/samba/sysvol/athome.priv/scripts
+    path = /var/lib/samba/sysvol/<%= @domain %>/scripts
     read only = No
 
 [sysvol]
