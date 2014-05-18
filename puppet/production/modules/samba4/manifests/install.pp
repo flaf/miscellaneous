@@ -75,7 +75,7 @@ class samba4::install {
     restart    => '/etc/init.d/samba stop ; sleep 1 ; /etc/init.d/samba start ; sleep 1',
     # Because Samba is the DNS server, it's better to wait 1 second
     # after the start (or the restart) to be sure that the DNS is running.
-    start    => '/etc/init.d/samba start ; sleep 1',
+    start      => '/etc/init.d/samba start ; sleep 1',
   }
 
 }
