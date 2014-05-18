@@ -1,5 +1,5 @@
 ---
 classes:
-  - 'samba4'
+  - 'samba4::dc'
 
 
