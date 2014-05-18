@@ -7,6 +7,10 @@ class common {
                        'git',
                        'dnsutils',
                        'psmisc',
+                       'gawk',
+                       'screen',
+                       'tcpdump',
+                       'rsync',
                      ]
 
   package { $common_packages:
