@@ -101,3 +101,8 @@ hiera_include('classes')
 EOF
 
 
+# Installation de la puppet stdlib.
+puppet module install puppetlabs-stdlib
+
+
+

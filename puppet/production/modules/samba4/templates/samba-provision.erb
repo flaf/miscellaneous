@@ -5,9 +5,8 @@ set -e
 export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
 export LC_ALL='C'
 
-domain=$(hostname --domain)
-realm=$(echo "$domain" | tr '[:lower:]' '[:upper:]')
-windows_domain=${realm%.*}
+realm="<%= @realm %>"
+workgroup="<%= @workgroup %>"
 
 invoke-rc.d samba stop
 
@@ -15,21 +14,11 @@ rm -f /etc/samba/smb.conf
 rm -rf /var/lib/samba/private/*
 
 samba-tool domain provision --realm="$realm"               \
-                            --domain="$windows_domain"     \
+                            --domain="$workgroup"          \
                             --server-role=dc               \
                             --dns-backend=SAMBA_INTERNAL   \
                             --adminpass='Ch@ngE+me;Please' \
                             --use-rfc2307
-
-
-patch /etc/init.d/samba /etc/samba/init-samba.patch
-
-cat >/etc/resolv.conf <<EOF
-domain $domain
-search $domain
-nameserver <%= @ipaddress %>
-
-EOF
 
 # If you want to disable the automatic start at each reboot.
 #update-rc.d samba disable 2>/dev/null || true
@@ -37,6 +26,6 @@ EOF
 #echo "The daemon samba will must be started manually."
 
 # If you want to test samba service.
-#/usr/local/samba/sbin/samba -i -M single
+#samba -i -M single
 
 

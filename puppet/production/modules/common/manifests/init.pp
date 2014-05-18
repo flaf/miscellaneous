@@ -6,6 +6,7 @@ class common {
                        'tree',
                        'git',
                        'dnsutils',
+                       'psmisc',
                      ]
 
   package { $common_packages:
