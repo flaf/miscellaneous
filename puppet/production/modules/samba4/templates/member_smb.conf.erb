@@ -4,16 +4,22 @@
     netbios name = <%= @netbios_name %>
     security = ADS
     encrypt passwords = yes
+    idmap_ldb:use rfc2307 = yes
     log file = /var/log/samba/log.%m
     log level = 2
 
-    # These parameters were  present in the old domain controller.
-    ;idmap config *:backend = tdb
-    ;idmap config *:range = 70001-80000
-    ;winbind trusted domains only = no
-    ;winbind use default domain = yes
-    ;winbind enum users = yes
-    ;winbind enum groups = yes
+    idmap config *:backend = tdb
+    idmap config *:range = 70001-80000
+    idmap config <%= @workgroup %>:backend = ad
+    idmap config <%= @workgroup %>:schema_mode = rfc2307
+    idmap config <%= @workgroup %>:range = 500-40000
+
+    winbind nss info = rfc2307
+    winbind trusted domains only = no
+    winbind use default domain = yes
+    winbind enum users = yes
+    winbind enum groups = yes
+
     ;winbind cache time = 300
     ;deadtime = 10
     ;socket options = TCP_NODELAY SO_KEEPALIVE

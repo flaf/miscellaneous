@@ -29,6 +29,7 @@ class samba4::member::config {
 
 # Une jonction (enfin quand ça marchera...) :
 #   samba-tool domain join athome.priv MEMBER -U administrator%admin
+#   ou --> net ads join -U administrator%admin
 #
 # Lister tous les enregistrements DNS de tout type et de type A seulement :
 #   samba-tool dns query localhost athome.priv @ ALL -U administrator%admin
@@ -39,8 +40,15 @@ class samba4::member::config {
 #
 # Création d'une entrée DNS (celle qui a été supprimée ci-dessus) :
 #   samba-tool dns add localhost athome.priv samba A 172.31.5.2 -U administrator%admin
-
-
+#
+# Vérifier tous les paramètres de smb.conf :
+#   samba-tool testparm --suppress-prompt
+#
+# Changer le mot de passe du compte administrator :
+#   samba-tool user setpassword administrator --newpassword="admin"
+#
+# Pour sortir du domaine ke serveur sur lequel on est connecté :
+#   net ads leave -U administrator%admin
 
 }
 
