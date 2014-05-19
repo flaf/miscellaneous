@@ -1,0 +1,7 @@
+TODO
+
+* Exim4 configuration.
+* Test rsync between samba-1 and samba-2. Are there problems of rights etc.
+* Test the rights of the shares when created.
+
+
