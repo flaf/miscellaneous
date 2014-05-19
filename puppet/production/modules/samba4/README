@@ -1,7 +1,65 @@
 TODO
+----
 
-* Exim4 configuration.
-* Test rsync between samba-1 and samba-2. Are there problems of rights etc.
-* Test the rights of the shares when created.
+* Il faudrait prévoir la configuration de Exim4 par exemple pour
+  l'envoi de mails.
+
+* Il manque la mise en place de tous les scripts (rsync entre
+  samba-1 et samba-2, la création des comptes, la bascule etc).
+  Pour le rsync, vérifier qu'il n'y a pas de problème de droits.
+  Vérifier aussi que les droits sur les partages sont bons
+  (pas de trous de sécurité béants).
+
+
+
+
+Des commandes en vrac
+---------------------
+
+
+* Une jonction au domaine (il faut que l'unique DNS du
+  serveur soit un DC) :
+
+        samba-tool domain join "mydomain.tld" MEMBER -U administrator%admin
+
+  ou :
+
+        net ads join -U administrator%admin
+
+  Actuellement, c'est la 2e commande qui marche mais à
+  terme ce sera la première.
+
+
+* Lister tous les enregistrements DNS de tout type, puist de type A
+  seulement (la requête se fait sur le DC donc c'est localhost
+  qui est interrogé) :
+
+        samba-tool dns query localhost athome.priv @ ALL -U administrator%admin
+        samba-tool dns query localhost athome.priv @ A   -U administrator%admin
+
+
+* Suppression de l'enregistrement DNS de type A « srv-3.athome.priv -> 172.31.5.2 » :
+
+        samba-tool dns delete localhost athome.priv srv-3 A 172.31.5.2 -U administrator%admin
+
+
+* Création d'une entrée DNS (celle qui a été supprimée ci-dessus) :
+
+        samba-tool dns add localhost athome.priv srv-3 A 172.31.5.2 -U administrator%admin
+
+
+* Vérifier tous les paramètres de la conf courante dans smb.conf :
+
+        samba-tool testparm --suppress-prompt --verbose
+
+
+* Changer le mot de passe du compte administrator :
+
+        samba-tool user setpassword "administrator" --newpassword="admin"
+
+
+* Pour sortir du domaine le serveur sur lequel on est connecté :
+
+        net ads leave -U administrator%admin
 
 
