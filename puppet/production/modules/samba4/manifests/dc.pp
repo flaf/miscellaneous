@@ -4,7 +4,8 @@
 # Tested with Debian Wheezy.
 #
 # /!\ Don't forget to change the adminstrator's password
-# /!\ after installation.
+# /!\ after installation with:
+# /!\   samba-tool user setpassword administrator --newpassword="password"
 #
 #
 # This class depends on;
