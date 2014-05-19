@@ -32,6 +32,7 @@ class samba4::member {
     -> Class['samba4::member::install']
     -> Class['samba4::common::config']
     -> Class['samba4::member::config']
+    -> notify { "You must join the domain manually.": }
 
 }
 
