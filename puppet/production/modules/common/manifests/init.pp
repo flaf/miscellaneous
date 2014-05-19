@@ -1,4 +1,4 @@
-class common {
+class common ($stage = 'base_packages')  {
 
   $common_packages = [ 'vim',
                        'lsb-release',
