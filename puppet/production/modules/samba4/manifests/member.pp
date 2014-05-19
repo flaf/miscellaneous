@@ -9,7 +9,7 @@
 # /!\
 # /!\   invoke-rc.d samba stop
 # /!\   invoke-rc.d winbind stop
-# /!\   net ads join -U administrator%passwd
+# /!\   net ads join -U administrator%admin
 # /!\   invoke-rc.d samba start
 # /!\   invoke-rc.d winbind start
 # /!\
