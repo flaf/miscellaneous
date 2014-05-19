@@ -27,6 +27,21 @@ class samba4::member::config {
     content => template('samba4/member_smb.conf.erb'),
   }
 
+# Une jonction (enfin quand ça marchera...) :
+#   samba-tool domain join athome.priv MEMBER -U administrator%admin
+#
+# Lister tous les enregistrements DNS de tout type et de type A seulement :
+#   samba-tool dns query localhost athome.priv @ ALL -U administrator%admin
+#   samba-tool dns query localhost athome.priv @ A   -U administrator%admin
+#
+# Suppression de l'enregistrement DNS de type A « samba.athome.priv -> 172.31.5.2 » :
+#   samba-tool dns delete localhost athome.priv samba A 172.31.5.2 -U administrator%admin
+#
+# Création d'une entrée DNS (celle qui a été supprimée ci-dessus) :
+#   samba-tool dns add localhost athome.priv samba A 172.31.5.2 -U administrator%admin
+
+
+
 }
 
 
