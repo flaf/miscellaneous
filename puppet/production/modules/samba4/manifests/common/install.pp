@@ -7,7 +7,7 @@ class samba4::common::install {
     release => "$lsbdistcodename-backports",
   }
 
-  package { ['attr', 'samba-vfs-modules', 'acl']:
+  package { ['attr', 'acl']:
     require => Apt::Force['samba'],
     ensure  => present,
   }

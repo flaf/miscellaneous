@@ -1,3 +1,5 @@
+### This file is managed by Puppet. Don't edit it! ###
+
 # Global parameters
 [global]
     workgroup = <%= @workgroup %>
@@ -9,9 +11,9 @@
     bind interfaces only = yes
     interfaces = 127.0.0.1 <%= @ipaddress %>
 
-    # These parameters were  present in the old domain controller.
-    ;load printers = no
-    ;printcap name = /dev/null
+    load printers = no
+    printcap name = /dev/null
+
     ;deadtime = 10
     ;socket options = TCP_NODELAY SO_KEEPALIVE
 

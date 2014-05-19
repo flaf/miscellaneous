@@ -5,6 +5,13 @@ class samba4::common::params {
   $workgroup    = regsubst($realm, '^([-A-Z0-9]*)\..*$', '\1')
   $netbios_name = upcase($hostname)
 
+  $conf         = hiera_hash('samba4')
+  $ntp_server   = $conf['ntp_server']
+
+  if ($ntp_server == '') {
+    fail("you must provide a ntp_server key in the hiera configuration of samba4")
+  }
+
 }
 
 
