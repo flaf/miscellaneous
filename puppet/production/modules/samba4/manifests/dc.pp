@@ -5,7 +5,7 @@
 #
 # /!\ Don't forget to change the adminstrator's password
 # /!\ after installation with:
-# /!\   samba-tool user setpassword administrator --newpassword="password"
+# /!\   samba-tool user setpassword administrator --newpassword="admin"
 #
 #
 # This class depends on;
@@ -29,7 +29,6 @@ class samba4::dc {
   Class['samba4::common::install']
     -> Class['samba4::common::config']
     -> Class['samba4::dc::config']
-    -> notify { "Don't forget to change the administrator's password.": }
 
 }
 

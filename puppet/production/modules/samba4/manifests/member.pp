@@ -6,7 +6,13 @@
 # /!\ You must first install the domain controller.
 # /!\ After installation, you must join the domain
 # /!\ manually with:
+# /!\
+# /!\   invoke-rc.d samba stop
+# /!\   invoke-rc.d winbind stop
 # /!\   net ads join -U administrator%passwd
+# /!\   invoke-rc.d samba start
+# /!\   invoke-rc.d winbind start
+# /!\
 #
 #
 # This class depends on;
@@ -32,7 +38,6 @@ class samba4::member {
     -> Class['samba4::member::install']
     -> Class['samba4::common::config']
     -> Class['samba4::member::config']
-    -> notify { "You must join the domain manually.": }
 
 }
 
