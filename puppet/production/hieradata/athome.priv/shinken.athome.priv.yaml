@@ -140,7 +140,5 @@ shinken_node_properties:
 #  # Addresses allowed to do SNMPv2c requests and the corresponding view.
 #  sources:
 #    'localhost': 'monitoring'
-#    '192.168.0.4': 'monitoring'
-#    '192.168.0.5': 'monitoring'
 
 
