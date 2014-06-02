@@ -3,9 +3,11 @@ $extlookup_precedence = ["common"]
 
 
 stage { 'base_packages': }
+stage { 'repository': }
 stage { 'last': }
 
 Stage['base_packages']
+  -> Stage['repository']
   -> Stage['main']
   -> Stage['last']
 
