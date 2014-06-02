@@ -15,8 +15,9 @@ class common ($stage = 'base_packages')  {
                        'ca-certificates',
                      ]
 
-  package { $common_packages:
+  package { 'common_packages':
     ensure => latest,
+    name   => $common_packages,
   }
 
 }
