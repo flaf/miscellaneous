@@ -1,0 +1,56 @@
+### This file is managed by Puppet, do not edit it manually! ###
+
+<% if @lsbdistcodename != 'lenny' -%>
+# Listening for connections.
+
+agentAddress udp:161
+
+<% end -%>
+# System Information
+
+syslocation <%= @datacenter %>
+syscontact <%= @admin_email %>
+
+# SNMPv3 Authentification
+# removed by olecam after a talk with asyd
+
+agentSecName <%= @secname %>
+createUser <%= @secname %> <%= @authproto.upcase %> '<%= @authpass %>' <%= @privproto.upcase %> <%= @privpass %>
+
+# Access Control
+
+<% @views.each do |key,values| -%>
+<% values.each do |value| -%>
+view <%= key %> included <%= value %>
+<% end -%>
+<% end -%>
+
+rouser <%= secname %> priv -V <%= @secview %>
+<% @sources.each do |source,view| -%>
+rocommunity <%= community %> <%= source %> -V <%= view %>
+<% end -%>
+
+# Other Configuration
+
+dontLogTCPWrappersConnects yes
+disablePerl true
+skipNFSInHostResources true
+storageUseNFS 1
+
+# Agent Extension
+
+master agentx
+
+# Active Monitoring
+
+# trapcommunity public
+# trapsink traphost.me.com public
+# trap2sink traphost.me.com public
+# linkUpDownNotifications yes
+# monitor -o prNames -o prErrMessage "process table" prErrorFlag != 0
+# monitor -o memErrorName -o memSwapErrorMsg "memory" memSwapError != 0
+# monitor -o extNames -o extOutput "extTable" extResult != 0
+# monitor -o dskPath -o dskErrorMsg "dskTable" dskErrorFlag != 0
+# monitor -o fileName -o fileErrorMsg  "fileTable" fileErrorFlag != 0
+# load 0 0 0
+
