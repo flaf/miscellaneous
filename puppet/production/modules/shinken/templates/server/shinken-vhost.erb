@@ -1,0 +1,24 @@
+### This file is managed by puppet, don't edit it. ###
+
+<VirtualHost *:80>
+
+    ServerName <%= @fqdn %>
+    ServerAlias localhost 127.0.0.1
+
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+    ProxyRequests Off
+    ProxyPass        /  http://localhost:7767/
+    ProxyPassReverse /  http://localhost:7767/
+    <%- if @add_in_links != '_EMPTY_' -%>
+    ExtFilterDefine fixtext mode=output cmd="<%= @html_filter_bin %>"
+
+    <Location />
+        SetOutputFilter fixtext
+    </Location>
+    <%- end -%>
+
+</VirtualHost>
+
+

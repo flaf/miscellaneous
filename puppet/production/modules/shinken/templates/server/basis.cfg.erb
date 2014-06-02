@@ -1,0 +1,216 @@
+### This is a file managed by Puppet, don't edit it! ###
+
+
+#####################################################################
+####                         BASIC COMMANDS                     #####
+#####################################################################
+
+# Shinken-packs provides the sp_notify command to send
+# email. See ̀ sp_notify --help' for more explanations.
+define command {
+    command_name notify_host_by_email
+    command_line sp_notify by-email \
+        --contact-name="$CONTACTNAME$" \
+        --black-list="$BLACK_LIST$" \
+        --host-name="$HOSTNAME$" \
+        --host-address="$HOSTADDRESS$" \
+        --notification-type="$NOTIFICATIONTYPE$" \
+        --state="$HOSTSTATE$" \
+        --business-impact="$HOSTBUSINESSIMPACT$" \
+        --additional-info='$HOSTOUTPUT$' \
+        --notification-number="$HOSTNOTIFICATIONNUMBER$" \
+        --rarefaction-threshold="$RAREFACTION_THRESHOLD$" \
+        --contact-email="$CONTACTEMAIL$" \
+        --contact-number="$CONTACTADDRESS1$" \
+        --sms-threshold="$SMS_THRESHOLD$"
+}
+
+define command {
+    command_name notify_service_by_email
+    command_line sp_notify by-email \
+        --contact-name="$CONTACTNAME$" \
+        --black-list="$BLACK_LIST$" \
+        --host-name="$HOSTNAME$" \
+        --host-address="$HOSTADDRESS$" \
+        --service-description="$SERVICEDESC$" \
+        --notification-type="$NOTIFICATIONTYPE$" \
+        --state="$SERVICESTATE$" \
+        --business-impact="$SERVICEBUSINESSIMPACT$" \
+        --additional-info='$SERVICEOUTPUT$' \
+        --notification-number="$SERVICENOTIFICATIONNUMBER$" \
+        --rarefaction-threshold="$RAREFACTION_THRESHOLD$" \
+        --contact-email="$CONTACTEMAIL$" \
+        --contact-number="$CONTACTADDRESS1$" \
+        --sms-threshold="$SMS_THRESHOLD$"
+}
+
+# Command to send host notifications by IRC.
+define command {
+    command_name notify_host_by_irc
+    command_line sp_notify by-file \
+        --contact-name="$CONTACTNAME$" \
+        --black-list="$BLACK_LIST$" \
+        --host-name="$HOSTNAME$" \
+        --host-address="$HOSTADDRESS$" \
+        --notification-type="$NOTIFICATIONTYPE$" \
+        --state="$HOSTSTATE$" \
+        --business-impact="$HOSTBUSINESSIMPACT$" \
+        --additional-info='$HOSTOUTPUT$' \
+        --notification-number="$HOSTNOTIFICATIONNUMBER$" \
+        --rarefaction-threshold="$RAREFACTION_THRESHOLD$" \
+        --file-name="$IRC_PIPE$" \
+        --contact-number="$CONTACTADDRESS1$" \
+        --sms-threshold="$SMS_THRESHOLD$"
+}
+
+# Command to send service notifications by IRC.
+define command {
+    command_name notify_service_by_irc
+    command_line sp_notify by-file \
+        --contact-name="$CONTACTNAME$" \
+        --black-list="$BLACK_LIST$" \
+        --host-name="$HOSTNAME$" \
+        --host-address="$HOSTADDRESS$" \
+        --service-description="$SERVICEDESC$" \
+        --notification-type="$NOTIFICATIONTYPE$" \
+        --state="$SERVICESTATE$" \
+        --business-impact="$SERVICEBUSINESSIMPACT$" \
+        --additional-info='$SERVICEOUTPUT$' \
+        --notification-number="$SERVICENOTIFICATIONNUMBER$" \
+        --rarefaction-threshold="$RAREFACTION_THRESHOLD$" \
+        --file-name="$IRC_PIPE$" \
+        --contact-number="$CONTACTADDRESS1$" \
+        --sms-threshold="$SMS_THRESHOLD$"
+}
+
+# Command to check if an host is alive. Very important.
+define command {
+    command_name check_icmp
+    command_line $PLUGINSDIR$/check_icmp -H "$HOSTADDRESS$" $_HOSTCHECK_ICMP_OPTIONS$
+}
+
+# Dummy check returns the same exit code as its argument.
+# Useful for testing.
+define command {
+    command_name check_dummy
+    command_line "$PLUGINSDIR$/check_dummy" "$ARG1$"
+}
+
+# The return value is in the code of this check wittren in
+# shell. We can change the return value directly in the code
+# without restart shinken.
+define command {
+    command_name check_dummy_in_shell
+    command_line "$SHINKEN_PACKS_PLUGINSDIR$/check_dummy_wrapper"
+}
+
+
+#####################################################################
+####                         TIMEPERIODS                        #####
+#####################################################################
+
+define timeperiod {
+    timeperiod_name H24
+    sunday          00:00-24:00
+    monday          00:00-24:00
+    tuesday         00:00-24:00
+    wednesday       00:00-24:00
+    thursday        00:00-24:00
+    friday          00:00-24:00
+    saturday        00:00-24:00
+}
+
+
+#####################################################################
+####                       CONTACT GROUPS                       #####
+#####################################################################
+
+define contactgroup {
+    # The members of this group monitor all!
+    # See the host and service generic templates...
+    contactgroup_name lynx-eyed_cg
+    alias lynx-eyed_cg
+}
+
+
+#####################################################################
+####                      GENERIC TEMPLATES                     #####
+#####################################################################
+
+define contact {
+    name generic-contact_tpl
+    register 0
+    # address1 will be the phone number. If equal to NONE,
+    # no SMS notification.
+    address1 NONE
+
+    host_notification_period H24
+    # (d=down, u=unreachable, r=recovery, f=flapping).
+    host_notification_options d,u,r,f
+    host_notification_commands notify_host_by_email
+
+    service_notification_period H24
+    # (w=warning, u=unkown, c=critical, r=recovery, f=flapping).
+    service_notification_options w,u,c,r,f
+    service_notification_commands notify_service_by_email
+
+    # If the buisiness impact < 2, no notification.
+    min_business_impact 2
+}
+
+# The generic "host" template.
+define host {
+    name generic-host_tpl
+    register 0
+
+    # The '+' character is important.
+    # It allows the additive inheritance of "contact" groups.
+    contact_groups +lynx-eyed_cg
+
+    active_checks_enabled 1
+    notifications_enabled 1
+
+    check_interval 10
+    retry_interval 1
+    max_check_attempts 1 ; immediate notification
+    notification_interval 180
+    check_period H24
+    notification_period H24
+    flap_detection_enabled 0
+    notification_options d,u,r,f
+
+    check_command check_icmp
+    # The -n option gives the number of sent packets. With this
+    # options below, if 100% of packets are lost or if the rta
+    # (round trip average) is greater than 1000 ms, the check
+    # returns a CRITICAL and the host is DOWN (or UNREACHABLE)
+    # according to Shinken.
+    # Unless to use the "use_aggressive_host_checking" option
+    # (not recommended), if the check returns a WARNING, the
+    # host is UP according to Shinken.
+    _CHECK_ICMP_OPTIONS -w "500,50%" -c "1000,100%" -n 10
+
+    business_impact 3
+}
+
+# The generic "service" template.
+define service {
+    name generic-service_tpl
+    register 0
+
+    active_checks_enabled 1
+    notifications_enabled 1
+
+    check_interval 10
+    retry_interval 3
+    max_check_attempts 3
+    notification_interval 180
+    check_period H24
+    notification_period H24
+    flap_detection_enabled 0
+    notification_options w,u,c,r,f
+
+    business_impact 2
+}
+
+

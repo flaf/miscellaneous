@@ -1,0 +1,20 @@
+### This is a file managed by Puppet, don't edit it! ###
+
+# Set to "YES" if you want to start the daemon.
+START="YES"
+
+# Who runs the daemon?
+USER="shinken"
+GROUP="shinken"
+
+# You must create the fifo file before.
+# Of course, the daemon must be able to read this file.
+PARROT_FIFO="<%= @irc_pipe_file %>"
+
+# Which server, port, channel and password?
+PARROT_SERVER="<%= @irc_server %>"
+PARROT_PORT="<%= @irc_port %>"
+PARROT_CHANNEL="<%= @irc_channel %>"
+PARROT_PASSWORD="<%= @irc_password %>"
+
+

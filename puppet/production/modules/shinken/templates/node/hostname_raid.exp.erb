@@ -1,0 +1,7 @@
+<%- if @raid_controllers -%>
+#<%= @raid_controllers.gsub("\n", "|") %>
+<%- end -%>
+hostname: <%= @hostname %>
+address: <%= @ipaddress %>
+fqdn: <%= @fqdn %>
+template: raid_tpl

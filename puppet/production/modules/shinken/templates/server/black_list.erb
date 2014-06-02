@@ -1,0 +1,28 @@
+### This is a file managed by Puppet, don't edit it! ###
+
+# This file contains rules to cancel notification.
+# Each line is a rule.
+#
+# For a service, the syntax is:
+#
+#   <contact regex>:<host regex>:<service description regex>:<timeslots>
+#
+# For a host, the syntax is (service description is empty):
+#
+#   <contact regex>:<host regex>::<timeslots>
+#
+# If a regex begins with ! (exclamation mark), the matching
+# is reversed. By example, with this rule:
+#
+#   !^joe$:.*:^load cpu$:[00h00;11h00][17h00;23h59]
+#
+# there is no "load cpu" notification (for any host), except for "joe"
+# from 5:00 PM to 11:00 AM.
+<%- if @black_list.is_a?(Array) -%>
+
+  <%- @black_list.each do |rule| -%>
+<%= rule %>
+  <%- end -%>
+<%- end -%>
+
+

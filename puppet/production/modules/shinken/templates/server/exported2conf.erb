@@ -1,0 +1,55 @@
+#!/bin/sh
+
+### This is a file managed by Puppet, don't edit it! ###
+
+set -e
+
+notify () {
+    if [ "$?" != "0" ]
+    then
+        host=$(hostname)
+        script=${0##*/}
+        message="$(date)
+Update of the shinken configuration failed on \"$host\" server.
+The exit value of \"<%= @exported2conf_file %>\" was non zero.
+The shinken service is perhaps not operational at this moment."
+        subject="$host PROBLEM: update of the shinken configuration failed"
+        # Sending messages.
+        echo "$message" > "<%= @irc_pipe_file %>"
+<% @contacts.each do |contact,properties| -%>
+    <%- if properties['is_admin'] == 'true' -%>
+        echo "$message" | mail -s "$subject" "<%= properties['email'] %>"
+    <%- end -%>
+<% end -%>
+    fi
+}
+
+export LC_ALL="US.UTF-8"
+export PATH="/usr/sbin:/usr/bin:/sbin:/bin"
+
+SCRIPT_NAME=${0##*/}
+PID="$$"
+EXPORTED_DIR="<%= @exported_dir %>"
+EXPORTED_FILES=$(find "$EXPORTED_DIR/" -type f -name "*.exp")
+HOSTS_FILE="<%= @puppet_hosts_file %>"
+CMD="sp_merge_cfg"
+
+if [ "$1" = "has_changed" ]; then
+    if "$CMD" $EXPORTED_FILES | diff -q - "$HOSTS_FILE" > /dev/null; then
+        # The files are the same.
+        exit 1
+    else
+        # The files aren't the same.
+        exit 0
+    fi
+else
+    # Trap only when the script is called in order to update the $HOST_FILE.
+    trap 'notify' EXIT
+    "$CMD" $EXPORTED_FILES > "$HOSTS_FILE"
+    logger -t "shinken/${SCRIPT_NAME}[${PID}]" "$HOSTS_FILE has been updated."
+fi
+
+#echo "### This file is indirectly managed by Puppet. Don't edit it ###" > "$HOSTS_FILE"
+#echo "### Last modification: $(date)." >> "$HOSTS_FILE"
+
+

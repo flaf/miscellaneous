@@ -1,0 +1,56 @@
+### This is a file managed by Puppet, don't edit it! ###
+
+# Plugins directories.
+$PLUGINSDIR$=<%= @nagios_plugins_dir %>
+$SHINKEN_PACKS_PLUGINSDIR$=<%= @sp_plugins_dir %>
+
+# The default timeout in seconds used by the commands
+# of shinken-packs.
+$TIMEOUT$=12
+
+# SNMPv3 authentifcation parameters for the commands of
+# shinken-packs wich need SNMP.
+$SNMP_USER$=<%= @secname %>
+$SNMP_AUTHPASS$=<%= @authpass %>
+$SNMP_AUTHPROTO$=<%= @authproto %>
+$SNMP_PRIVPASS$=<%= @privpass %>
+$SNMP_PRIVPROTO$=<%= @privproto %>
+
+<%- if @pfsense_community.length > 0 -%>
+# In the pfsense_tpl template, the commands use SNMPv2c.
+$PFSENSE_COMMUNITY$=<%= @pfsense_community %>
+
+<%- end -%>
+<%- if @ftp_account.length > 0 and @ftp_password.length > 0 -%>
+# The login/password for the ftp_tpl template.
+$FTP_LOGIN$=<%= @ftp_account %>
+$FTP_PASSWORD$=<%= @ftp_password %>
+
+<%- end -%>
+<%- if @ipmi_account.length > 0 and @ipmi_password.length > 0 -%>
+# The login/password of IPMI.
+$IPMI_LOGIN$=<%= @ipmi_account %>
+$IPMI_PASSWORD$=<%= @ipmi_password %>
+
+<%- end -%>
+<%- if @windows_account.length > 0 and @windows_password.length > 0 -%>
+# The login/password for the windows_tpl template.
+$WINDOWS_USER$=<%= @windows_account %>
+$WINDOWS_PASSWORD$=<%= @windows_password %>
+
+<%- end -%>
+# Macros for the notifications.
+$BLACK_LIST$=<%= @black_list_file %>
+$SMS_EMAIL$=<%= @email_for_sms %>
+$SMS_THRESHOLD$=<%= @sms_threshold %>
+$RAREFACTION_THRESHOLD$=<%= @rarefaction_threshold %>
+$IRC_PIPE$=<%= @irc_pipe_file %>
+<%- if not @additional_macros.empty? -%>
+
+# Addtional macros.
+  <%- @additional_macros.each do |name,value| -%>
+$<%= name %>$=<%= scope.function_generate_password([value]) %>
+  <%- end -%>
+<%- end -%>
+
+

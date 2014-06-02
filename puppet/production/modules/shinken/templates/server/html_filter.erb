@@ -1,0 +1,35 @@
+#!/bin/sh
+### This is a file managed by Puppet. Don't edit it. ###
+
+export LC_ALL="en_US.UTF-8"
+
+# The firt -e:
+#       One , or one : or one = or one (
+#       then possibly some spaces
+#       then one ' or one "
+#       then one /
+#       We keep all this except that "/" are replaced with "/<%= @add_in_links %>/".
+#
+# The second -e fixies the first -e: if we have "/<%= @add_in_links %>/<%= @add_in_links %>/",
+# we remove one "<%= @add_in_links %>/".
+#
+# The third -e:
+#       In some css files, there is by example "url(/static/img/icons/pointer.gif)"
+#       which aren't matched by the first -e. So, we add a regex.
+#       url
+#       then possibly some spaces
+#       then (
+#       then possibly some spaces
+#       then /
+#       Wee keep all this except that "/" are replaced with "/<%= @add_in_links %>/".
+#
+# The fourth -e fix an error because the string "split('/');" is replaced with
+# "split('/<%= @add_in_links %>/');" but this is not good. So, we make the reverse
+# substitution.
+
+/bin/sed -r -e "s|([,:=\(])([[:space:]]*)(['\"])/|\1\2\3/<%= @add_in_links %>/|g" \
+            -e "s|([,:=\(])([[:space:]]*)(['\"])/<%= @add_in_links %>/<%= @add_in_links %>/|\1\2\3/<%= @add_in_links %>/|g" \
+            -e 's|(url[[:space:]]*\([[:space:]]*)/|\1/<%= @add_in_links %>/|g' \
+            -e "s|split\('/<%= @add_in_links %>/'\);|split('/');|g"
+
+

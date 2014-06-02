@@ -1,0 +1,41 @@
+### This is a file managed by Puppet, don't edit it! ###
+
+define contact {
+    contact_name botirc
+    alias botirc
+    use generic-contact_tpl
+
+    # Specific commands to send notifications for a botirc.
+    host_notification_commands notify_host_by_irc
+    service_notification_commands notify_service_by_irc
+
+    contactgroups +lynx-eyed_cg
+}
+
+
+<% @contacts.each do |contact,properties| -%>
+define contact {
+    contact_name <%= contact %>
+    alias <%= contact %>
+    use generic-contact_tpl
+    email <%= properties['email'] %>
+    <%- if properties['password'].is_a?(String) -%>
+    password <%= scope.function_generate_password([properties['password']]) %>
+    <%- end -%>
+    <%- if properties['tel'].is_a?(String) -%>
+    address1 <%= properties['tel'] %>
+    <%- end -%>
+
+    <%- if properties['is_admin'] == 'true' -%>
+    # The contact see all in the WebUI.
+    # This option does nothing more.
+    is_admin 1
+    # This contact can initiate checks manually.
+    can_submit_commands 1
+
+    <%- end -%>
+    contactgroups +lynx-eyed_cg
+}
+
+<% end -%>
+

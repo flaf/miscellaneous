@@ -1,0 +1,20 @@
+### This is a file managed by Puppet, don't edit it! ###
+
+<%- if @manual_hosts.is_a?(Hash) -%>
+  <%- @manual_hosts.each do |name,properties| -%>
+define host {
+    host_name <%= name %>
+    use       <%= properties['templates'] %>
+    address   <%= properties['address'] %>
+    <%- if properties['custom'].is_a?(Array) -%>
+
+    # Customized properties.
+      <%- properties['custom'].each do |value| -%>
+    <%= value %>
+      <%- end -%>
+    <%- end -%>
+}
+
+  <%- end -%>
+<%- end -%>
+

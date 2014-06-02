@@ -1,0 +1,25 @@
+#!/bin/sh
+# This filed is managed by Puppet, don't edit it.
+
+# Call this script like this:
+#
+#   . <%= @source_pass %>
+#
+# Useful to get the SNMP passwords etc. in variables and make
+# tests in the shell.
+
+resources="<%= @resources_file %>"
+
+SNMP_USER=$(grep '^\$SNMP_USER\$=' "$resources" | cut -d'=' -f2)
+SNMP_AUTHPASS=$(grep '^\$SNMP_AUTHPASS\$=' "$resources" | cut -d'=' -f2)
+SNMP_AUTHPROTO=$(grep '^\$SNMP_AUTHPROTO\$=' "$resources" | cut -d'=' -f2)
+SNMP_PRIVPASS=$(grep '^\$SNMP_PRIVPASS\$=' "$resources" | cut -d'=' -f2)
+SNMP_PRIVPROTO=$(grep '^\$SNMP_PRIVPROTO\$=' "$resources" | cut -d'=' -f2)
+
+SNMP_AUTH_PLUGIN="-l $SNMP_USER -x $SNMP_AUTHPASS -X $SNMP_PRIVPASS -L $SNMP_AUTHPROTO,$SNMP_PRIVPROTO"
+SNMP_AUTH_CMD="-u $SNMP_USER -A $SNMP_AUTHPASS -X $SNMP_PRIVPASS -a $SNMP_AUTHPROTO -x $SNMP_PRIVPROTO -v3 -l authPriv"
+
+FTP_LOGIN=$(grep '^\$FTP_LOGIN\$=' "$resources" | cut -d'=' -f2)
+FTP_PASSWORD=$(grep '^\$FTP_PASSWORD\$=' "$resources" | cut -d'=' -f2)
+
+

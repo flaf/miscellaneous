@@ -1,0 +1,15 @@
+hostname: <%= @hostname %>
+address: <%= @ipaddress %>
+fqdn: <%= @fqdn %>
+template: linux_tpl
+template: puppet_tpl
+<%- if @additional_templates.is_a?(Array) -%>
+  <%- @additional_templates.each do |template| -%>
+template: <%= template %>
+  <%- end -%>
+<%- end -%>
+<%- if @properties.is_a?(Hash) -%>
+  <%- @properties.each do |name,value| -%>
+custom: <%= name %> <%= value %>
+  <%- end -%>
+<%- end -%>
