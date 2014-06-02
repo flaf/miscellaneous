@@ -1,0 +1,5 @@
+<% if has_variable?("apt_cron_hour") -%>
+<%= apt_cron_min %> <%= apt_cron_hour %> * * *   root    test -x /usr/sbin/cron-apt && /usr/sbin/cron-apt
+<% else -%>
+<%= apt_cron_time[1] %> <%= apt_cron_time[0] %>	* * *	root	test -x /usr/sbin/cron-apt && /usr/sbin/cron-apt
+<% end -%>

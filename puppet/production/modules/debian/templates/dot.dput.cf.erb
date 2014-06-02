@@ -1,0 +1,10 @@
+<% sections.each do |section,params| -%>
+[<%= section %>]
+fqdn = <%= params['target'] %>
+method =  <%= params['method'] %>
+login = <%= params['login'] %>
+incoming = <%= params['incoming'] %>
+allow_unsigned_uploads = 0
+<%# post_upload_command = ssh <fqdn> mini-dinstall -b -%>
+
+<% end -%>

@@ -1,0 +1,17 @@
+# This file is managed by Puppet
+# Any changes done here will be overwritten
+ 
+DEBOOTSTRAP=cdebootstrap
+ 
+MIRRORSITE=http://cdn.debian.net/debian/
+OTHERMIRROR="<%= pbuilder['othermirror'] %>"
+ 
+# export http_proxy=http://apt-cacher-ng:3142
+ 
+# We're using ramdisk -> no hardlink
+APTCACHEHARDLINK=<%= pbuilder['aptcachehardlink'] %>
+ 
+CONCURRENCY_LEVEL=<%= pbuilder['jobs'] %>
+export CONCURRENCY_LEVEL=<%= pbuilder['jobs'] %>
+ 
+DEBBUILDOPTS="-j<%= pbuilder['jobs'] %> -sa"

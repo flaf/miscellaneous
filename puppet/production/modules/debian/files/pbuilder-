@@ -1,0 +1,36 @@
+#!/bin/sh
+# script from Jamin W. Collins  BTS: #255165
+# adapted by Arthur Gautier
+ 
+OPERATION=$1
+DISTRIBUTION=`basename $0 | cut -f2 -d '-'`
+ARCHITECTURE=`basename $0 | cut -f3 -d '-'`
+PROCEED=false
+BASE_DIR="/var/cache/pbuilder/bases"
+OPTIONS=""
+
+if [ "`whoami`" != 'root' ]; then
+  OPTIONS="--buildresult $HOME/pbuilder/result/"
+fi
+case $OPERATION in
+   create|update|build|clean|login|execute )
+      PROCEED=true
+      ;;
+esac
+if ( $PROCEED == true ) then
+   shift
+   sudo DISTRIBUTION=$DISTRIBUTION pbuilder $OPERATION \
+      --basetgz $BASE_DIR/$DISTRIBUTION-$ARCHITECTURE-base.tgz \
+      --distribution $DISTRIBUTION \
+      --architecture $ARCHITECTURE $OPTIONS "$@"
+else
+   echo "Invalid command..."
+   echo "Valid commands are:"
+   echo "   create"
+   echo "   update"
+   echo "   build"
+   echo "   clean"
+   echo "   login"
+   echo "   execute"
+   exit 1
+fi
