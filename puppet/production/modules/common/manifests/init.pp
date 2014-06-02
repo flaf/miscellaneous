@@ -16,7 +16,7 @@ class common ($stage = 'base_packages')  {
                      ]
 
   package { 'common_packages':
-    ensure => latest,
+    ensure => present,
     name   => $common_packages,
   }
 
