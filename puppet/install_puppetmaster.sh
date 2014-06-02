@@ -9,7 +9,7 @@ mkdir /etc/puppet/extdata/
 touch /etc/puppet/extdata/common.csv
 chown root:root /etc/puppet/extdata/common.csv
 chmod 600 /etc/puppet/extdata/common.csv
-hostname | md5sum | cut -d' ' -f1 > /etc/puppet/extdata/common.csv
+echo "master_password,$(date +%s | md5sum | cut -d' ' -f1)" > /etc/puppet/extdata/common.csv
 
 # Installation de puppetdeb pour avoir
 # les ressources exportées.
