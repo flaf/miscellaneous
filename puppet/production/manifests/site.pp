@@ -1,3 +1,7 @@
+$extlookup_datadir = "/etc/puppet/extdata"
+$extlookup_precedence = ["common"]
+
+
 stage { 'base_packages': }
 stage { 'last': }
 
