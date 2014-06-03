@@ -21,10 +21,17 @@ classes:
 shinken_contacts:
   flaf:
     email: 'francois.lafont@crdp.ac-versailles.fr'
-    tel: '06XXXXXXX8'         # Optional.
-    is_admin: 'true'          # Optional. If 'true', the contact see all in the WebUI and can initiate checks manually.
-    password: 'flaf'          # Optional. This password will be in the shinken
-                              # configuration in clear text.
+    is_admin: 'true'
+    password: 'flaf'
+  gbarre:
+    email: 'guillaume.barre@crdp.ac-versailles.fr'
+    is_admin: 'true'
+    password: 'gbarre'
+  xaubrun:
+    email: 'xavier.aubrun@crdp.ac-versailles.fr'
+    is_admin: 'true'
+    password: 'xaubrun'
+
 
 # This entry is optional. Rules to cancel some notifications. The syntax is
 # explained in the black_list file header in the shinken configuration.
@@ -54,14 +61,19 @@ shinken_misc:
 
   # This entry is optional. Useful to add hosts that don't use a puppet
   # client and that we want to check anyway.
-  #manual_hosts:
-  #  google:                    # The host_name in the shinken configuration.
-  #    address: 'www.google.fr' # Required for each manual host (if exists).
-  #    templates: 'http_tpl'    # Required for each manual host (if exists).
-  #    custom:                  # Optional. Add customized properties for this host.
-  #      - '_HTTP_WARN 5'
-  #      - '_HTTP_CRIT 8'
-
+  manual_hosts:
+    samba-1:
+      address: '172.20.0.4'
+      templates: 'linux_tpl,raid_tpl'
+    samba-2:
+      address: '172.20.0.6'
+      templates: 'linux_tpl,raid_tpl'
+    capes-doc-dc:
+      address: '172.20.0.2'
+      templates: 'linux_tpl'
+    proxy:
+      address: '172.20.0.1'
+      templates: 'linux_tpl'
 
 
 
