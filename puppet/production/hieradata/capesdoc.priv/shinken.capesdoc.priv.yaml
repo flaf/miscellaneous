@@ -48,7 +48,7 @@ shinken_misc:
 
   # Used to define the IRC bot contact in shinken.
   irc_server: 'irc.capesdoc.priv'
-  irc_port: '7778'
+  irc_port: '6667'
   irc_channel: '#technique'
   irc_password: ''
 
