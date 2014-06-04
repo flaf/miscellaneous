@@ -35,9 +35,9 @@ shinken_contacts:
 
 # This entry is optional. Rules to cancel some notifications. The syntax is
 # explained in the black_list file header in the shinken configuration.
-#shinken_black_list:
-#    - '^joe$:.*:^load cpu$'
-#    - '^(joe|bob)$:foo-server-[12]:.*'
+shinken_black_list:
+  - '.*:^shinken$:^puppet$'
+
 
 shinken_misc:
   # Useful if you want to visit the WebUI via a reverse proxy
@@ -74,6 +74,9 @@ shinken_misc:
     proxy:
       address: '172.20.0.1'
       templates: 'linux_tpl'
+      custom:
+        - '_NET_WARN 10,10'
+        - '_NET_CRIT 20,20'
 
 
 
