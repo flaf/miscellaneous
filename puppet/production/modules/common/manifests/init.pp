@@ -10,6 +10,7 @@ class common ($stage = 'base_packages')  {
                        'gawk',
                        'screen',
                        'tcpdump',
+                       'iftop',
                        'rsync',
                        'openssl',
                        'ca-certificates',
