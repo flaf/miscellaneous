@@ -36,7 +36,7 @@ shinken_contacts:
 # This entry is optional. Rules to cancel some notifications. The syntax is
 # explained in the black_list file header in the shinken configuration.
 shinken_black_list:
-  - '.*:^shinken$:^puppet$:[00h00][23h59]'
+  - '.*:^shinken$:^puppet$:[00h00;23h59]'
 
 
 shinken_misc:
