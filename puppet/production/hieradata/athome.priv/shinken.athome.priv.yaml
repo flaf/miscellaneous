@@ -58,7 +58,7 @@ shinken_misc:
   manual_hosts:
     google:                    # The host_name in the shinken configuration.
       address: 'www.google.fr' # Required for each manual host (if exists).
-      templates: 'http_tpl'    # Required for each manual host (if exists).
+      templates: 'https_tpl'   # Required for each manual host (if exists).
       custom:                  # Optional. Add customized properties for this host.
         - '_HTTP_WARN 5'
         - '_HTTP_CRIT 8'
