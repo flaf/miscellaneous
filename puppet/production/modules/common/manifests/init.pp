@@ -14,6 +14,8 @@ class common ($stage = 'base_packages')  {
                        'rsync',
                        'openssl',
                        'ca-certificates',
+                       'curl',
+                       'file',
                      ]
 
   package { 'common_packages':
