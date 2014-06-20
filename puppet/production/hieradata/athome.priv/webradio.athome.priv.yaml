@@ -1,7 +1,7 @@
 ---
 classes:
   - exim4
-  - airtime
+  - icecast2
 
 airtime:
   port: 8080
