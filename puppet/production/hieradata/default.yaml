@@ -1,6 +1,7 @@
 ---
 classes:
   - 'common'
+  - 'debian::apt::sources'
 
 samba4:
   ntp_server: '172.31.0.1'
