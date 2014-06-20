@@ -60,8 +60,8 @@ shinken_misc:
       address: 'www.google.fr' # Required for each manual host (if exists).
       templates: 'https_tpl'   # Required for each manual host (if exists).
       custom:                  # Optional. Add customized properties for this host.
-        - '_HTTP_WARN 5'
-        - '_HTTP_CRIT 8'
+        - '_HTTPS_WARN 5'
+        - '_HTTPS_CRIT 8'
 
 
 
