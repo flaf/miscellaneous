@@ -26,4 +26,9 @@ snmp:
   sources:
     'localhost': 'monitoring'
 
+repositories:
+  sourcefabric:
+    url: 'http://repository/apt.sourcefabric.org'
+    key: 'http://repository/apt.sourcefabric.org/sourcefabric.gpg'
+
 
