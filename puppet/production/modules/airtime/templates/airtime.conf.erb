@@ -1,0 +1,32 @@
+<%-# Comment impossible here beacause it's not allowed by airtime. -%>
+[database]
+host = localhost
+dbname = airtime
+dbuser = airtime
+dbpass = <%= @postgre_pass %>
+
+[rabbitmq]
+host = 127.0.0.1
+port = 5672
+user = airtime
+password = <%= @rabbitmq_pass %>
+vhost = /airtime
+
+[general]
+api_key = <%= @api_key %>
+web_server_user = www-data
+airtime_dir = /usr/share/airtime
+base_url = <%= @fqdn %>
+base_port = <%= @port %>
+base_dir = /
+cache_ahead_hours = 1
+
+[monit]
+monit_user = guest
+monit_password = airtime
+
+[soundcloud]
+connection_retries = 3
+time_between_retries = 60
+
+

@@ -1,0 +1,23 @@
+---
+classes:
+  - exim4
+  - airtime
+
+airtime:
+  port: 8080
+
+icecast2:
+  location: 'Lesseps'
+  official_admin_mail: 'admin@crdp.ac-versailles.fr'
+  git_repository: git@gitlab.crdp.ac-versailles.fr:francois.lafont/web-radio.git
+  admins_mails:
+    - 'francois.lafont@crdp.ac-versailles.fr'
+  source_password: '__pwd__{"salt" => ["$fqdn", "source"], "nice" => true, "max_length" => 10 }'
+  admin_password: '__pwd__{"salt" => ["$fqdn", "admin"], "nice" => true, "max_length" => 14 }'
+  port: '8000'
+  limits_clients: 200
+  limits_sources: 20
+  limits_source_timeout: 20
+  log_level: 3
+  log_size: 10000
+
