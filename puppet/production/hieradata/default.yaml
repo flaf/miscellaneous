@@ -29,7 +29,6 @@ snmp:
 
 repositories:
   sourcefabric:
-    url: 'http://repository/apt.sourcefabric.org'
-    key: 'http://repository/apt.sourcefabric.org/sourcefabric.gpg'
-
+    url: 'http://repository/apt-mirror/apt.sourcefabric.org'
+    key: 'http://repository/apt-mirror/apt.sourcefabric.org/sourcefabric.gpg'
 
