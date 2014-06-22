@@ -8,7 +8,7 @@ class icecast2::params {
 
   # Default value of fqdn_icecast
   if ($icecast2_conf['fqdn_icecast'] != '') {
-    if ($icecast2_conf['fqdn_icecast'] = 'IP-ADDRESS') {
+    if ($icecast2_conf['fqdn_icecast'] == 'IP-ADDRESS') {
       $fqdn_icecast = $ipaddress
     } else {
       $fqdn_icecast = $icecast2_conf['fqdn_icecast']
