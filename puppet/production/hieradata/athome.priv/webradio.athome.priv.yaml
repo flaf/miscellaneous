@@ -8,6 +8,7 @@ airtime:
 
 icecast2:
   #fqdn_icecast: 'webradio.google.fr' # un peu ambitieux quand même...
+  fqdn_icecast: 'IP-ADDRESS'
   location: 'Lesseps'
   official_admin_mail: 'admin@crdp.ac-versailles.fr'
   git_repository: git@gitlab.crdp.ac-versailles.fr:francois.lafont/web-radio.git
