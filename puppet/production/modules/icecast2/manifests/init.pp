@@ -52,6 +52,8 @@
 #                 for the server address. So, be careful, this address must
 #                 be resolve by the other people (the listeners). This entry
 #                 is optional. The default value is "$fqdn".
+#                 There is a specific value: if fqdn_icecast == 'IP-ADDRESS',
+#                 (with the same case), the value will be "$ipaddress".
 #
 # * location: visible on the server info page of the icecast web interface.
 #             This entry is optional. The default value is "$datacenter" if
