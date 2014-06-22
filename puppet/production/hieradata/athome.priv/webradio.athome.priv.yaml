@@ -14,7 +14,7 @@ icecast2:
     - 'francois.lafont@crdp.ac-versailles.fr'
   source_password: '__pwd__{"salt" => ["$fqdn", "source"], "nice" => true, "max_length" => 10 }'
   admin_password: '__pwd__{"salt" => ["$fqdn", "admin"], "nice" => true, "max_length" => 14 }'
-  port: '8000'
+  ports: [ '80', '443', '8000' ]
   limits_clients: 200
   limits_sources: 20
   limits_source_timeout: 20

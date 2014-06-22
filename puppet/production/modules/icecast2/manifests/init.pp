@@ -83,8 +83,9 @@
 #                   is optional and the default value is
 #                   '__pwd__{"salt" => ["$fqdn", "admin"], "nice" => true, "max_length" => 10 }'.
 #
-# * port: this is the listening port of icecast. This entry is optional and the
-#         default value is 8000.
+# * ports: this is the listening ports of icecast. This entry is optional, but,
+#          if present, must be an array of string numbers. The default value is
+#          [ '8000' ].
 #
 # * limits_clients: max connections for the entire server (not per mountpoint).
 #                   This entry is optional and the default value is 100.
@@ -122,7 +123,7 @@
 #    - 'bob@domain.tld'
 #  source_password: '__pwd__{"salt" => ["$fqdn", "source"], "nice" => true, "max_length" => 8 }'
 #  admin_password: '__pwd__{"salt" => ["$fqdn", "admin"], "nice" => true, "max_length" => 8 }'
-#  port: '80'
+#  ports: [ '80', '8000' ]
 #  limits_clients: 200
 #  limits_sources: 20
 #  limits_source_timeout: 20
@@ -144,7 +145,7 @@ class icecast2 {
   $admins_mails          = $icecast2::params::admins_mails
   $source_password       = $icecast2::params::source_password
   $admin_password        = $icecast2::params::admin_password
-  $port                  = $icecast2::params::port
+  $ports                 = $icecast2::params::ports
   $limits_clients        = $icecast2::params::limits_clients
   $limits_sources        = $icecast2::params::limits_sources
   $limits_source_timeout = $icecast2::params::limits_source_timeout

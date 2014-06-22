@@ -54,11 +54,11 @@ class icecast2::params {
     $admin_password = '__pwd__{"salt" => ["$fqdn", "admin"], "nice" => true, "max_length" => 10 }'
   }
 
-  # Default value of the port.
-  if ($icecast2_conf['port'] != '') {
-    $port = $icecast2_conf['port']
+  # Default value of the ports.
+  if ($icecast2_conf['ports'] != '') {
+    $ports = $icecast2_conf['ports']
   } else {
-    $port = '8000'
+    $ports = ['8000']
   }
 
   # Default value of max clients number.

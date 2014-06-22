@@ -59,14 +59,16 @@
     <hostname><%= @fqdn %></hostname>
 
     <!-- You may have multiple <listener> elements -->
+    <%- @ports.each do |port| -%>
     <listen-socket>
-        <port><%= @port %></port>
-        <!-- <bind-address>127.0.0.1</bind-address> -->
-        <!-- <shoutcast-mount>/stream</shoutcast-mount> -->
+        <port><%= port %></port>
     </listen-socket>
+    <%- end -%>
     <!--
     <listen-socket>
         <port>8001</port>
+        <bind-address>127.0.0.1</bind-address>
+        <shoutcast-mount>/stream</shoutcast-mount>
     </listen-socket>
     -->
 
