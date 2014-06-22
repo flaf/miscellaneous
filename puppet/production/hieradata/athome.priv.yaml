@@ -1,0 +1,5 @@
+repositories:
+  sourcefabric:
+    url: 'http://repository/apt-mirror/apt.sourcefabric.org'
+    key: 'http://repository/apt-mirror/apt.sourcefabric.org/sourcefabric.gpg'
+
