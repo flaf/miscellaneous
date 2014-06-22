@@ -6,6 +6,13 @@ class icecast2::params {
   $git_lockfile     = 'aware.lock'
   $mountpoints_file = 'mountpoints.xml'
 
+  # Default value of fqdn_icecast
+  if ($icecast2_conf['fqdn_icecast'] != '') {
+    $fqdn_icecast = $icecast2_conf['fqdn_icecast']
+  } else {
+    $fqdn_icecast = $::fqdn
+  }
+
 
   # The default value of location.
   if ($icecast2_conf['location'] == '') {

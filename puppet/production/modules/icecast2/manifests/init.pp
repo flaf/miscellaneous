@@ -45,6 +45,14 @@
 #
 # Below, here are explanations about the hiera configuration:
 #
+# * fqdn_icecast: this is the address the listeners will use to receive the
+#                 icecast stream. Even if a listener uses the IP address to
+#                 initiate the connection with the icecast server, during
+#                 the stream reception, the listener will use this paramater
+#                 for the server address. So, be careful, this address must
+#                 be resolve by the other people (the listeners). This entry
+#                 is optional. The default value is "$fqdn".
+#
 # * location: visible on the server info page of the icecast web interface.
 #             This entry is optional. The default value is "$datacenter" if
 #             defined else it's "$fqdn".
@@ -115,7 +123,8 @@
 #==Hiera
 #
 #icecast2:
-#  location: 'Lesseps'
+#  fqdn_icecast: 'icecast.domain.tld'
+#  location: 'California'
 #  official_admin_mail: 'admin@world-compagny.tld'
 #  git_repository: git@gitlab.domain.tld:bob/web-radio.git
 #  admins_mails:
@@ -136,6 +145,7 @@ class icecast2 {
   require 'repositories::webradio'
   require 'icecast2::params'
 
+  $fqdn_icecast          = $icecast2::params::fqdn_icecast
   $location              = $icecast2::params::location
   $official_admin_mail   = $icecast2::params::official_admin_mail
   $git_repository        = $icecast2::params::git_repository
