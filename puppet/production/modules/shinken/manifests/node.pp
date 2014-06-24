@@ -73,7 +73,7 @@ class shinken::node {
   # Unfortunately, the facters "boardmanufacturer" and
   # "boardproductname" are not defined in Lenny and
   # Squeeze (for Wheezy yes). We are forced to use custom
-  # facts. 
+  # facts.
   if ($lsbdistcodename == 'lenny') or ($lsbdistcodename == 'squeeze') {
 
     if ($motherboard_manufacturer != '') {
@@ -91,13 +91,21 @@ class shinken::node {
   if ($boardmanufacturer != undef) and ($boardproductname != undef) {
 
     # The exported file collected by the shinken server.
+    # /!\ Currently not used. Just for information. /!\
     @@file { "${::hostname}_ipmi":
       path    => "$exported_dir/${::hostname}_ipmi.test",
       content => template('shinken/node/hostname_ipmi.exp.erb'),
       tag     => "$tag",
     }
 
+    # check with "ipmi-sensors_tpl" only if the distribution is not
+    # lenny or squeeze.
+    if ($lsbdistcodename != 'lenny') and ($lsbdistcodename != 'squeeze') {
+      $ipmi_sensors_tpl = 'true'
+    }
+
   }
+
 
 }
 
