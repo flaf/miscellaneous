@@ -29,6 +29,11 @@
 #    _HTTP_WARN: '5'
 #    _PROPERTY_NAME: 'property_value'
 #
+#  # This entry is optional. The default value is 'false'. If the value
+#  # is 'true', there is no IPMI check even if Puppet detects a motherboard
+#  # in the host.
+#  disable_ipmi_ckeck: 'true'
+#
 #  # Be careful, you must add too the hiera data from de snmp::snmpd class.
 #  # You can see the doc header of this class.
 #
@@ -43,6 +48,9 @@ class shinken::node {
   $tag                  = $shinken::node::params::tag
   $additional_templates = $shinken::node::params::additional_templates
   $properties           = $shinken::node::params::properties
+  $has_motherboard      = $shinken::node::params::has_motherboard
+  $disable_ipmi_check   = $shinken::node::params::disable_ipmi_check
+  $ipmi_sensors_tpl     = $shinken::node::params::ipmi_sensors_tpl
 
   # Updates will be manual.
   #exec { 'apt-get update for snmpd-extend':
@@ -64,31 +72,7 @@ class shinken::node {
     tag     => "$tag",
   }
 
-  # This package is necessary to have the facters
-  # "boardmanufacturer" and "boardproductname".
-  package { 'dmidecode':
-    ensure => present,
-  }
-
-  # Unfortunately, the facters "boardmanufacturer" and
-  # "boardproductname" are not defined in Lenny and
-  # Squeeze (for Wheezy yes). We are forced to use custom
-  # facts.
-  if ($lsbdistcodename == 'lenny') or ($lsbdistcodename == 'squeeze') {
-
-    if ($motherboard_manufacturer != '') {
-      $boardmanufacturer = $motherboard_manufacturer
-    }
-
-    if ($motherboard_productname != '') {
-      $boardproductname = $motherboard_productname
-    }
-
-  }
-
-  # If these facters are not defined, it's probably a virtual machine
-  # and, of course, no ipmi check in this case.
-  if ($boardmanufacturer != undef) and ($boardproductname != undef) {
+  if ($has_motherboard == 'true') {
 
     # The exported file collected by the shinken server.
     # /!\ Currently not used. Just for information. /!\
@@ -98,14 +82,7 @@ class shinken::node {
       tag     => "$tag",
     }
 
-    # check with "ipmi-sensors_tpl" only if the distribution is not
-    # lenny or squeeze.
-    if ($lsbdistcodename != 'lenny') and ($lsbdistcodename != 'squeeze') {
-      $ipmi_sensors_tpl = 'true'
-    }
-
   }
-
 
 }
 

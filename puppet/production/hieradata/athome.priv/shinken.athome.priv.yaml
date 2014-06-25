@@ -63,5 +63,5 @@ shinken_misc:
         - '_HTTPS_WARN 5'
         - '_HTTPS_CRIT 8'
 
-
+disable_ipmi_check: 'true'
 

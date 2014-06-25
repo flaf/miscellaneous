@@ -3,7 +3,7 @@ address: <%= @ipaddress %>
 fqdn: <%= @fqdn %>
 template: linux_tpl
 template: puppet_tpl
-<%- if @ipmi_sensors_tpl -%>
+<%- if @ipmi_sensors_tpl == 'true' and @disable_ipmi_check != 'true' -%>
 template: ipmi-sensors_tpl
 <%- end -%>
 <%- if @additional_templates.is_a?(Array) -%>
