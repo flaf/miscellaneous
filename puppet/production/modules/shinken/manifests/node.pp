@@ -44,13 +44,21 @@ class shinken::node {
   require 'snmp::snmpd'           # Install and configure snmpd.
   require 'shinken::node::params'
 
-  $exported_dir         = $shinken::node::params::exported_dir
-  $tag                  = $shinken::node::params::tag
-  $additional_templates = $shinken::node::params::additional_templates
-  $properties           = $shinken::node::params::properties
-  $has_motherboard      = $shinken::node::params::has_motherboard
-  $disable_ipmi_check   = $shinken::node::params::disable_ipmi_check
-  $ipmi_sensors_tpl     = $shinken::node::params::ipmi_sensors_tpl
+  $exported_dir                = $shinken::node::params::exported_dir
+  $tag                         = $shinken::node::params::tag
+  $additional_templates        = $shinken::node::params::additional_templates
+  $properties                  = $shinken::node::params::properties
+  $has_motherboard             = $shinken::node::params::has_motherboard
+  $disable_ipmi_check          = $shinken::node::params::disable_ipmi_check
+  $ipmi_sensors_tpl            = $shinken::node::params::ipmi_sensors_tpl
+  $supermicro_ipmi_sensors_tpl = $shinken::node::params::supermicro_ipmi_sensors_tpl
+
+  # For these distributions, these facters aren't defined.
+  # So we use the variables defined in the shinken::node::params class.
+  if ($lsbdistcodename == 'lenny') or ($lsbdistcodename == 'squeeze') {
+    $boardmanufacturer  = $shinken::node::params::boardmanufacturer
+    $boardproductname   = $shinken::node::params::boardproductname
+  }
 
   # Updates will be manual.
   #exec { 'apt-get update for snmpd-extend':
@@ -77,7 +85,7 @@ class shinken::node {
     # The exported file collected by the shinken server.
     # /!\ Currently not used. Just for information. /!\
     @@file { "${::hostname}_ipmi":
-      path    => "$exported_dir/${::hostname}_ipmi.test",
+      path    => "$exported_dir/${::hostname}_ipmi.info",
       content => template('shinken/node/hostname_ipmi.exp.erb'),
       tag     => "$tag",
     }

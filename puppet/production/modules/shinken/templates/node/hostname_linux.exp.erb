@@ -6,6 +6,9 @@ template: puppet_tpl
 <%- if @ipmi_sensors_tpl == 'true' and @disable_ipmi_check != 'true' -%>
 template: ipmi-sensors_tpl
 <%- end -%>
+<%- if @supermicro_ipmi_sensors_tpl == 'true' and @disable_ipmi_check != 'true' -%>
+template: supermicro-ipmi-sensors_tpl
+<%- end -%>
 <%- if @additional_templates.is_a?(Array) -%>
   <%- @additional_templates.each do |template| -%>
 template: <%= template %>

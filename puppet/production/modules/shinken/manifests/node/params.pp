@@ -51,6 +51,16 @@ class shinken::node::params {
     $ipmi_sensors_tpl = 'false'
   }
 
+  if ($ipmi_sensors_tpl == 'true') {
+    $supermicro_ipmi_sensors_tpl = 'false'
+  } else {
+    if ($boardmanufacturer == 'Supermicro') {
+      $supermicro_ipmi_sensors_tpl = 'true'
+    } else {
+      $supermicro_ipmi_sensors_tpl = 'false'
+    }
+  }
+
 }
 
 
