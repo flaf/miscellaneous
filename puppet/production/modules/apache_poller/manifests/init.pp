@@ -6,7 +6,7 @@ class apache_poller {
   ]
 
   package { 'poller_packages':
-    ensure => latest,
+    ensure => present,
     name   => $poller_packages,
   }
 
