@@ -36,7 +36,6 @@ my %syntax = (
 my @ARGV_TOKENS;
 
 if (not @ARGV) {
-
     # When @ARGV is empty, we assume it's a call via http.
     my $q = CGI->new;
     print $q->header(-expires => 'now', -charset=> 'utf-8');
@@ -50,13 +49,10 @@ if (not @ARGV) {
         last if not defined $post_param;
         push(@ARGV_TOKENS, $post_param);
     }
-
 } else {
-
     # When @ARGV is not empty, it's a call from shell.
     # In this cas, @ARGV_TOKENS is a copy of @ARGV.
     @ARGV_TOKENS = @ARGV;
-
 }
 
 GetOptionsFromArray(\@ARGV_TOKENS, %syntax) or bad_syntax();

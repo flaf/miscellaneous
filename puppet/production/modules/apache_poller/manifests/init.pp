@@ -2,6 +2,7 @@ class apache_poller {
 
   $poller_packages = [
     'libnet-snmp-perl',
+    'curl',
   ]
 
   package { 'poller_packages':

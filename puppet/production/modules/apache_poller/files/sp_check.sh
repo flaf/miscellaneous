@@ -6,9 +6,15 @@ export PATH='/usr/bin:/bin'
 url="$1"
 shift
 
-for token in $@
+c='1'
+options=''
+
+for token in "$@"
 do
-    echo "[$token]"
+    options="$options -d 'token$c=$token'"
+    c=$((c+1))
 done
+
+curl $options "http://$url"
 
 
