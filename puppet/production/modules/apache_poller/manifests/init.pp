@@ -44,10 +44,18 @@ class apache_poller {
 
   file { '/etc/perl/ShinkenPacks/SNMP.pm':
     ensure => present,
-    owner   => 'root',
-    group   => 'root',
-    mode    => 755,
-    source  => 'puppet:///modules/apache_poller/SNMP.pm',
+    owner  => 'root',
+    group  => 'root',
+    mode   => 755,
+    source => 'puppet:///modules/apache_poller/SNMP.pm',
+  }
+
+  file { '/usr/bin/sp_check.sh':
+    ensure => present,
+    owner  => 'root',
+    group  => 'root',
+    mode   => 755,
+    source => 'puppet:///modules/apache_poller/sp_check.sh',
   }
 
 
