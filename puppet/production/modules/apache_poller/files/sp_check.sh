@@ -6,15 +6,14 @@ export PATH='/usr/bin:/bin'
 url="$1"
 shift
 
-c='1'
-options=''
-
-for token in "$@"
+i=1
+for arg in "$@"
 do
-    options="$options -d 'token$c=$token'"
-    c=$((c+1))
+    arg=$(printf "%s" "$arg" | /bin/sed "s/'/'\"'\"'/g")
+    options="$options -d 'token$i=$arg'"
+    i=$((i+1))
 done
 
-curl $options "http://$url"
+eval "/usr/bin/curl $options http://$url"
 
 
