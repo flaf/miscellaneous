@@ -9,7 +9,7 @@ shift
 i=1
 for arg in "$@"
 do
-    arg=$(printf "%s" "$arg" | /bin/sed "s/'/'\"'\"'/g")
+    #arg=$(printf "%s" "$arg" | /bin/sed "s/'/'\"'\"'/g")
     options="$options -d 'token$i=$arg'"
     i=$((i+1))
 done
