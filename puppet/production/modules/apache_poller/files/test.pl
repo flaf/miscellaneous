@@ -23,13 +23,15 @@ use ShinkenPacks::SNMP;
 
 # Default values for the options.
 my %options = (
-                'warning'  => 30, 
-                'critical' => 60, 
+                'warning'  => 30,
+                'critical' => 60,
+                'string'   => 'leopard',
               );
 
 my %syntax = (
                'warning|w=i'  => \$options{warning},
                'critical|c=i' => \$options{critical},
+               'string|s=s'   => \$options{string},
              );
 
 # Will be used instead of @ARGV.
