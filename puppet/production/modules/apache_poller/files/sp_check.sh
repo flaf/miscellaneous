@@ -14,6 +14,6 @@ do
     i=$((i+1))
 done
 
-eval "/usr/bin/curl $options http://$url"
+eval "/usr/bin/curl --silent $options http://$url"
 
 
