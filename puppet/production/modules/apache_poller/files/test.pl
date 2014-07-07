@@ -25,7 +25,7 @@ use ShinkenPacks::SNMP;
 my %options = (
                 'warning'  => 30,
                 'critical' => 60,
-                'string'   => 'leopard',
+                'string'   => 'léopard',
               );
 
 my %syntax = (
