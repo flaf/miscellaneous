@@ -18,6 +18,7 @@ use strict;
 use warnings;
 use 5.010;
 use CGI;
+use MIME::Base64;
 use Getopt::Long qw(GetOptionsFromArray :config no_ignore_case);
 use ShinkenPacks::SNMP;
 
@@ -43,13 +44,17 @@ if (not @ARGV) {
     print $q->header(-expires => 'now', -charset=> 'utf-8');
 
     my $post_param;
+    my $decoded_post_param;
     my $c;
     $c = 1;
     while (1) {
         $post_param = $q->param("token$c");
-        $c += 1;
         last if not defined $post_param;
-        push(@ARGV_TOKENS, $post_param);
+        $decoded_post_param = decode_base64($post_param);
+        #say "perl: token$c base64 -> [$post_param]";
+        say "perl: token$c clear  -> [$decoded_post_param]";
+        push(@ARGV_TOKENS, $decoded_post_param);
+        $c += 1;
     }
 } else {
     # When @ARGV is not empty, it's a call from shell.
