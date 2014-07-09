@@ -21,7 +21,7 @@ MENU TITLE PXE Boot Menu
 
 # Timeout in centiseconds (10 cs = 1 second).
 # If you don't want timeout, just comment these lines.
-TIMEOUT 200
+TIMEOUT 50
 ONTIMEOUT local
 MENU AUTOBOOT AUTOMATIC LOCAL BOOT in # second{,s}...
 
