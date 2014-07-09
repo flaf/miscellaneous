@@ -85,7 +85,7 @@ LABEL trusty-amd64
 LABEL trusty-amd64-preseed
     MENU LABEL Ubuntu Trusty amd64: installation with preseed
     KERNEL  trusty/ubuntu-installer/amd64/linux
-    APPEND language=en keymap=fr country=FR locale=fr_FR.UTF-8 interface=eth0 hostname=trusty-vm ipv6.disable=1 url=http://pxe/trusty-preseed-amd64.cfg initrd=trusty/ubuntu-installer/amd64/initrd.gz --
+    APPEND language=fr keymap=fr country=FR locale=fr_FR.UTF-8 interface=eth0 hostname=trusty-vm ipv6.disable=1 url=http://pxe/trusty-preseed-amd64.cfg initrd=trusty/ubuntu-installer/amd64/initrd.gz --
     TEXT HELP
     Fully automatic installation of Ubuntu Trusty.
     hostname == DNS entry of the host IP, if exists.
