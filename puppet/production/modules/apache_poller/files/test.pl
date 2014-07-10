@@ -18,7 +18,6 @@ use strict;
 use warnings;
 use 5.010;
 use CGI;
-#use MIME::Base64;
 use Getopt::Long qw(GetOptionsFromArray :config no_ignore_case);
 use ShinkenPacks::SNMP;
 
@@ -50,9 +49,7 @@ if (not @ARGV) {
     while (1) {
         $post_param = $q->param("token$c");
         last if not defined $post_param;
-        #$decoded_post_param = decode_base64($post_param);
-        #say "perl: token$c base64 -> [$post_param]";
-        say "perl: token$c -> [$post_param]";
+        say "Perl: token$c -> [$post_param]";
         push(@ARGV_TOKENS, $post_param);
         $c += 1;
     }
