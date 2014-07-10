@@ -117,7 +117,7 @@ int main(int argc, char *argv[]) {
     }
     // Remove the last character &.
     post[strlen(post)-1] = 0;
-    printf("Language C: POST [%s]\n", post);
+    printf("C: POST [%s]\n", post);
 
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, post);
 
