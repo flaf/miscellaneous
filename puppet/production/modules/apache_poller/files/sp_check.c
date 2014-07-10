@@ -106,7 +106,7 @@ int main(int argc, char *argv[]) {
     char post[MAX_POST_LENGTH] = {0};
 
     for (i = 3; i < argc; i++) {
-        printf("Language C: arg %d: [%s]\n", i, argv[i]);
+        printf("C: arg %d: [%s]\n", i, argv[i]);
         char temp[700] = {0};
         char *s = NULL;
         s = curl_easy_escape(curl, argv[i], 0);
