@@ -68,12 +68,6 @@ int isPositiveInteger(const char *s) {
 
 int main(int argc, char *argv[]) {
 
-    CURL *curl;
-    CURLcode ret;
-    int wr_error;
-    wr_error = 0;
-    wr_index = 0;
-
     if (argc < 4) {
         printf("Sorry, bad syntax. You must apply at least 3 arguments.\n");
         return 3;
@@ -87,7 +81,10 @@ int main(int argc, char *argv[]) {
     int timeout = atoi(argv[1]);
     char* url = argv[2];
 
+    wr_index = 0;
+
     // First step, init curl.
+    CURL *curl;
     curl = curl_easy_init();
     if (!curl) {
         printf("Sorry, couldn't init curl.\n");
@@ -99,6 +96,7 @@ int main(int argc, char *argv[]) {
 
     // Tell curl that we'll receive data to the function write_data, and
     // also provide it with a context pointer for our error return.
+    int wr_error = 0;
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&wr_error);
     curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
@@ -124,6 +122,7 @@ int main(int argc, char *argv[]) {
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, post);
 
     // Allow curl to perform the action.
+    CURLcode ret;
     ret = curl_easy_perform(curl);
 
     if (ret) {
