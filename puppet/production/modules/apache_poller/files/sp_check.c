@@ -12,9 +12,8 @@
 #define MAX_BUF 65536
 #define MAX_POST_LENGTH 4096
 
-
-char wr_buf[MAX_BUF+1];
-int wr_index;
+static char wr_buf[MAX_BUF+1] = {0};
+static int wr_index = 0;
 
 
 // Write data callback function (called within the context of
@@ -80,8 +79,6 @@ int main(int argc, char *argv[]) {
 
     int timeout = atoi(argv[1]);
     char* url = argv[2];
-
-    wr_index = 0;
 
     // First step, init curl.
     CURL *curl;
