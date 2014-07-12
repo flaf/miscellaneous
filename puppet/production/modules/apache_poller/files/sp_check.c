@@ -127,7 +127,7 @@ int main(int argc, char *argv[]) {
         if (strlen(post) + strlen(temp) + 1 < MAX_POST_LENGTH) {
             strcat(post, temp);
         } else {
-            printf("Sorry, the max POST size is exceeded.");
+            printf("Sorry, the max POST size is exceeded.\n");
             curl_easy_cleanup(curl);
             return UNKNOWN;
         }
