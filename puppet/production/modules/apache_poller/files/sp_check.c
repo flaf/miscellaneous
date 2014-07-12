@@ -1,25 +1,33 @@
 // Sur Debian Wheezy, faire :
 //
 //     sudo apt-get install libcurl4-openssl-dev libssl-dev
-//     gcc -lssl -lcurl -o curl-launcher.exe curl-launcher.c
+//     gcc -lssl -lcurl -std=c99 -o curl-launcher.exe curl-launcher.c
 //
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include <curl/curl.h>
 
-#define MAX_BUF 65536
+//#define MAX_BUF         65536
+#define MAX_BUF         25
 #define MAX_POST_LENGTH 4096
 
+#define OK       0
+#define WARNING  1
+#define CRITICAL 2
+#define UNKNOWN  3
+
+
 static char wr_buf[MAX_BUF+1] = {0};
-static int wr_index = 0;
 
 
 // Write data callback function (called within the context of
 // curl_easy_perform).
 size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp) {
 
+    static int wr_index = 0;
     int segsize = size * nmemb;
 
     // Check to see if this data exceeds the size of our buffer. If so,
@@ -27,6 +35,7 @@ size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp) {
     // problem to curl.
     if (wr_index + segsize > MAX_BUF) {
         *(int *)userp = 1;
+        printf("Sorry, the max output size of the plugin is exceeded.\n");
         return 0;
     }
 
@@ -69,12 +78,13 @@ int main(int argc, char *argv[]) {
 
     if (argc < 4) {
         printf("Sorry, bad syntax. You must apply at least 3 arguments.\n");
-        return 3;
+        printf("%s <timeout> <url> <args>...\n", argv[0]);
+        return UNKNOWN;
     }
 
     if (!isPositiveInteger(argv[1])) {
         printf("Sorry, bad syntax. The first argument must be a positive integer.\n");
-        return 3;
+        return UNKNOWN;
     }
 
     int timeout = atoi(argv[1]);
@@ -83,38 +93,62 @@ int main(int argc, char *argv[]) {
     // First step, init curl.
     CURL *curl;
     curl = curl_easy_init();
+
     if (!curl) {
         printf("Sorry, couldn't init curl.\n");
-        return 3;
+        return UNKNOWN;
     }
 
-    // Tell curl the URL of the file we're going to retrieve.
-    curl_easy_setopt(curl, CURLOPT_URL, url);
+    // Construction of the post variable, a string with this form:
+    //      token1=<urlencoded data1>&token2=<urlencoded data2>&...
+    char post[MAX_POST_LENGTH] = {0};
+    int token_num = 1;
+    char *urlencoded_str = NULL;
+    int i = 0;
 
+    for (i = 3; i < argc; i++) {
+
+        if (token_num > 999) {
+            printf("Sorry, the limit number (999) of POST variables is exceeded.");
+            curl_easy_cleanup(curl);
+            return UNKNOWN;
+        }
+
+        //printf("C: token%d: [%s]\n", token_num, argv[i]);
+
+        urlencoded_str = curl_easy_escape(curl, argv[i], 0);
+
+        // 10 is the max length of the string "token<num>=&".
+        // The maximum is reached with "token999=&".
+        int temp_size = 10 + strlen(urlencoded_str) + 1;
+        char temp[temp_size];
+        //memset(temp, 0, temp_size*sizeof(char));
+        sprintf(temp, "token%d=%s&", token_num, urlencoded_str);
+
+        if (strlen(post) + strlen(temp) + 1 < MAX_POST_LENGTH) {
+            strcat(post, temp);
+        } else {
+            printf("Sorry, the max POST size is exceeded.");
+            curl_easy_cleanup(curl);
+            return UNKNOWN;
+        }
+
+        curl_free(urlencoded_str);
+        token_num++;
+
+    }
+
+    // Remove the last character "&".
+    post[strlen(post)-1] = 0;
+    //printf("C: POST [%s]\n", post);
+
+    curl_easy_setopt(curl, CURLOPT_URL, url);
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout);
     // Tell curl that we'll receive data to the function write_data, and
     // also provide it with a context pointer for our error return.
     int wr_error = 0;
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&wr_error);
-    curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
-
-    int i;
-    int tn = 1;
-    char post[MAX_POST_LENGTH] = {0};
-
-    for (i = 3; i < argc; i++) {
-        printf("C: arg %d: [%s]\n", i, argv[i]);
-        char temp[700] = {0};
-        char *s = NULL;
-        s = curl_easy_escape(curl, argv[i], 0);
-        sprintf(temp, "token%d=%s&", tn, s);
-        curl_free(s);
-        strcat(post, temp);
-        tn++;
-    }
-    // Remove the last character &.
-    post[strlen(post)-1] = 0;
-    printf("C: POST [%s]\n", post);
 
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, post);
 
@@ -124,13 +158,13 @@ int main(int argc, char *argv[]) {
 
     if (ret) {
         printf("exit value of curl %d (write_error = %d)\n", ret, wr_error);
-        return 3;
+        return UNKNOWN;
     }
 
     // Emit the page if curl indicates that no errors occurred.
-    if (ret == 0) {
-        printf( "%s", wr_buf );
-    }
+    //if (ret == 0) {
+    //    printf("%s", wr_buf);
+    //}
 
     curl_easy_cleanup(curl);
     return 0;
