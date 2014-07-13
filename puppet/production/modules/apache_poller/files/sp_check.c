@@ -31,7 +31,7 @@ int main(int argc, char *argv[]) {
 
   if (!isPositiveInteger(argv[1])) {
     printf("Sorry, bad syntax. The first argument must be a positive");
-    printf(" integer (it's timeout in seconds).\n");
+    printf(" integer (it's a timeout in seconds).\n");
     return UNKNOWN;
   }
 
@@ -160,7 +160,10 @@ size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp) {
   // But here, we just stop the function without error (ie, we return
   // segsize) and our buffer will be troncated.
   if (wr_index + segsize > MAX_BUF) {
-    memcpy((void *) &wr_buf[wr_index], buffer, (size_t) (MAX_BUF - wr_index));
+    if (MAX_BUF - wr_index > 0) {
+      memcpy((void *) &wr_buf[wr_index], buffer, (size_t) (MAX_BUF - wr_index));
+    }
+    wr_index = MAX_BUF + 1; // wr_buf will be not written anymore.
     return segsize;
   }
 
