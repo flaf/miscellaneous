@@ -18,56 +18,8 @@
 #define CRITICAL        2
 #define UNKNOWN         3
 
-
-
-
-// Write data callback function (called within the context
-// of curl_easy_perform).
-size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp) {
-
-    // It is assumed that the type of userp is char*.
-    char *wr_buf = (char *)userp;
-
-    static int wr_index = 0;
-    int segsize = size * nmemb;
-
-    // Check to see if this data exceeds the size of our buffer. If so,
-    // it's possible to return O to indicate a problem to curl.
-    // But here, we just stop the function without error (ie, we return
-    // segsize) and our buffer will be troncated.
-    if (wr_index + segsize > MAX_BUF) {
-        memcpy((void*)&wr_buf[wr_index], buffer, (size_t)(MAX_BUF-wr_index));
-        return segsize;
-    }
-
-    // Copy the data from the curl buffer into our buffer.
-    memcpy((void*)&wr_buf[wr_index], buffer, (size_t)segsize);
-
-    // Update the write index.
-    wr_index += segsize;
-
-    // Return the number of bytes received, indicating to curl that
-    // all is okay.
-    return segsize;
-}
-
-
-int isPositiveInteger(const char *s) {
-
-    if (s == NULL || *s == '\0' || isspace(*s)) {
-      return 0;
-    }
-
-    int i;
-    for(i = 0; i < strlen(s); i++) {
-        // ASCII value of 0 -> 48, of 1 -> 49, ..., of 9 -> 57.
-        if (s[i] < 48 || s[i] > 57) {
-            return 0;
-        }
-    }
-
-    return 1;
-}
+size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp);
+int isPositiveInteger(const char s[]);
 
 
 
@@ -188,6 +140,57 @@ int main(int argc, char *argv[]) {
     printf("%s", wr_buf+2);
     return return_value;
 
+}
+
+
+
+
+// Write data callback function (called within the context
+// of curl_easy_perform).
+size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp) {
+
+    // It is assumed that the type of userp is char*.
+    char *wr_buf = (char *)userp;
+
+    static int wr_index = 0;
+    int segsize = size * nmemb;
+
+    // Check to see if this data exceeds the size of our buffer. If so,
+    // it's possible to return O to indicate a problem to curl.
+    // But here, we just stop the function without error (ie, we return
+    // segsize) and our buffer will be troncated.
+    if (wr_index + segsize > MAX_BUF) {
+        memcpy((void*)&wr_buf[wr_index], buffer, (size_t)(MAX_BUF-wr_index));
+        return segsize;
+    }
+
+    // Copy the data from the curl buffer into our buffer.
+    memcpy((void*)&wr_buf[wr_index], buffer, (size_t)segsize);
+
+    // Update the write index.
+    wr_index += segsize;
+
+    // Return the number of bytes received, indicating to curl that
+    // all is okay.
+    return segsize;
+}
+
+
+int isPositiveInteger(const char s[]) {
+
+    if (s == NULL || *s == '\0') {
+      return 0;
+    }
+
+    int i;
+    for(i = 0; i < strlen(s); i++) {
+        // ASCII value of 0 -> 48, of 1 -> 49, ..., of 9 -> 57.
+        if (s[i] < 48 || s[i] > 57) {
+            return 0;
+        }
+    }
+
+    return 1;
 }
 
 
