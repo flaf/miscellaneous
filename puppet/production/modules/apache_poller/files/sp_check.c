@@ -108,8 +108,25 @@ int main(int argc, char *argv[]) {
   ret = curl_easy_perform(curl);
 
   if (ret) {
-    printf("Sorry, exit value of curl %d.\n", ret);
     curl_easy_cleanup(curl);
+    printf("Sorry, exit value of curl is %d.", ret);
+
+    switch (ret) {
+
+    case CURLE_COULDNT_RESOLVE_HOST:
+      printf(" Could not resolve the host address.\n");
+      break;
+
+    case CURLE_OPERATION_TIMEDOUT:
+      printf(" Operation timeout.\n");
+      break;
+
+    default:
+      printf("\n");
+      break;
+
+    }
+
     return UNKNOWN;
   }
 
