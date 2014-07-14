@@ -202,7 +202,7 @@ int isPositiveInteger(const char s[]) {
     return 0;
   }
 
-  int i;
+  size_t i;
   for (i = 0; i < strlen(s); i++) {
     // ASCII value of 0 -> 48, of 1 -> 49, ..., of 9 -> 57.
     if (s[i] < 48 || s[i] > 57) {
