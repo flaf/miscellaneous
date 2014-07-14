@@ -11,12 +11,12 @@
 #include <ctype.h>
 #include <curl/curl.h>
 
-#define MAX_BUF_IN_BYTES         65536
-#define MAX_POST_LENGTH_IN_BYTES 4096
-#define OK              0
-#define WARNING         1
-#define CRITICAL        2
-#define UNKNOWN         3
+#define MAX_BUF_IN_BYTES  65536
+#define MAX_POST_IN_BYTES 4096
+#define OK                0
+#define WARNING           1
+#define CRITICAL          2
+#define UNKNOWN           3
 
 size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp);
 int isPositiveInteger(const char s[]);
@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
 
   // Construction of the post variable, a string with this form:
   //      token1=<urlencoded data1>&token2=<urlencoded data2>&...
-  char post[MAX_POST_LENGTH_IN_BYTES] = { 0 };
+  char post[MAX_POST_IN_BYTES] = { 0 };
   int token_num = 1;
   char *urlencoded_str = NULL;
   int i = 0;
@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
     //memset(temp, 0, temp_size*sizeof(char));
     sprintf(temp, "token%d=%s&", token_num, urlencoded_str);
 
-    if (strlen(post) + strlen(temp) + 1 < MAX_POST_LENGTH_IN_BYTES) {
+    if (strlen(post) + strlen(temp) + 1 < MAX_POST_IN_BYTES) {
       strcat(post, temp);
     }
     else {
@@ -166,11 +166,15 @@ int main(int argc, char *argv[]) {
 // of curl_easy_perform).
 size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp) {
 
-  // It is assumed that the type of userp is char*.
-  char *wr_buf = (char *) userp;
-
+  // We want to keep the value of wr_index for the next call
+  // this function. So, wr_index is a static variable.
   static int wr_index = 0;
+
+  // The size (in bytes) of the received buffer.
   int segsize = size * nmemb;
+
+  // In this function, userp refers to a simple array of bytes.
+  char *wr_buf = (char *) userp;
 
   // Check to see if this data exceeds the size of our buffer. If so,
   // it's possible to return O to indicate a problem to curl.
