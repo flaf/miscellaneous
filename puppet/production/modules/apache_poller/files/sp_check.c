@@ -1,7 +1,7 @@
 /* With Debian Wheezy:
  *
  *    sudo apt-get install libcurl4-openssl-dev
- *    gcc -lcurl -std=c99 -o curl-launcher.exe curl-launcher.c
+ *    gcc -std=c99 -W -Wall -O2 -o sp_check sp_check.c -lcurl
  *
  */
 
