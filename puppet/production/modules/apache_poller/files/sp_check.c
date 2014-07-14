@@ -11,8 +11,8 @@
 #include <ctype.h>
 #include <curl/curl.h>
 
-#define MAX_BUF         65536
-#define MAX_POST_LENGTH 4096
+#define MAX_BUF_IN_BYTES         65536
+#define MAX_POST_LENGTH_IN_BYTES 4096
 #define OK              0
 #define WARNING         1
 #define CRITICAL        2
@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
 
   // Construction of the post variable, a string with this form:
   //      token1=<urlencoded data1>&token2=<urlencoded data2>&...
-  char post[MAX_POST_LENGTH] = { 0 };
+  char post[MAX_POST_LENGTH_IN_BYTES] = { 0 };
   int token_num = 1;
   char *urlencoded_str = NULL;
   int i = 0;
@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
     //memset(temp, 0, temp_size*sizeof(char));
     sprintf(temp, "token%d=%s&", token_num, urlencoded_str);
 
-    if (strlen(post) + strlen(temp) + 1 < MAX_POST_LENGTH) {
+    if (strlen(post) + strlen(temp) + 1 < MAX_POST_LENGTH_IN_BYTES) {
       strcat(post, temp);
     }
     else {
@@ -92,7 +92,7 @@ int main(int argc, char *argv[]) {
   post[strlen(post) - 1] = 0;
   //printf("C: POST [%s]\n", post);
 
-  char wr_buf[MAX_BUF + 1] = { 0 };
+  char wr_buf[MAX_BUF_IN_BYTES + 1] = { 0 };
 
   curl_easy_setopt(curl, CURLOPT_URL, url);
   curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout);
@@ -176,12 +176,12 @@ size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp) {
   // it's possible to return O to indicate a problem to curl.
   // But here, we just stop the function without error (ie, we return
   // segsize) and our buffer will be troncated.
-  if (wr_index + segsize > MAX_BUF) {
-    if (MAX_BUF - wr_index > 0) {
+  if (wr_index + segsize > MAX_BUF_IN_BYTES) {
+    if (MAX_BUF_IN_BYTES - wr_index > 0) {
       memcpy((void *) &wr_buf[wr_index], buffer,
-             (size_t) (MAX_BUF - wr_index));
+             (size_t) (MAX_BUF_IN_BYTES - wr_index));
     }
-    wr_index = MAX_BUF + 1;     // wr_buf will be not written anymore.
+    wr_index = MAX_BUF_IN_BYTES + 1; // wr_buf will be not written anymore.
     return segsize;
   }
 
