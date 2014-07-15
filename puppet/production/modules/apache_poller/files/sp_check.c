@@ -182,8 +182,7 @@ size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp) {
   // segsize) and our buffer will be troncated.
   if (wr_index + segsize > MAX_BUF_IN_BYTES) {
     if (MAX_BUF_IN_BYTES - wr_index > 0) {
-      memcpy(&wr_buf[wr_index], buffer,
-             (MAX_BUF_IN_BYTES - wr_index));
+      memcpy(&wr_buf[wr_index], buffer, MAX_BUF_IN_BYTES - wr_index);
     }
     wr_index = MAX_BUF_IN_BYTES + 1; // wr_buf will be not written anymore.
     return segsize;
@@ -216,5 +215,3 @@ int isPositiveInteger(const char s[]) {
 
   return 1;
 }
-
-
