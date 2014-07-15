@@ -1,7 +1,7 @@
 /* With Debian Wheezy:
  *
  *    sudo apt-get install libcurl4-openssl-dev
- *    gcc -std=c99 -W -Wall -O2 -o sp_check sp_check.c -lcurl
+ *    gcc -std=c99 -Wextra -Wall -O2 -o sp_check sp_check.c -lcurl
  *
  */
 
@@ -174,7 +174,7 @@ size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp) {
   int segsize = size * nmemb;
 
   // In this function, userp refers to a simple array of bytes.
-  char *wr_buf = (char *) userp;
+  char *wr_buf = userp;
 
   // Check to see if this data exceeds the size of our buffer. If so,
   // it's possible to return O to indicate a problem to curl.
@@ -182,15 +182,15 @@ size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp) {
   // segsize) and our buffer will be troncated.
   if (wr_index + segsize > MAX_BUF_IN_BYTES) {
     if (MAX_BUF_IN_BYTES - wr_index > 0) {
-      memcpy((void *) &wr_buf[wr_index], buffer,
-             (size_t) (MAX_BUF_IN_BYTES - wr_index));
+      memcpy(&wr_buf[wr_index], buffer,
+             (MAX_BUF_IN_BYTES - wr_index));
     }
     wr_index = MAX_BUF_IN_BYTES + 1; // wr_buf will be not written anymore.
     return segsize;
   }
 
   // Copy the data from the curl buffer into our buffer.
-  memcpy((void *) &wr_buf[wr_index], buffer, (size_t) segsize);
+  memcpy(&wr_buf[wr_index], buffer, segsize);
 
   // Update the write index.
   wr_index += segsize;
