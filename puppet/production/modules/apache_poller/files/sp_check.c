@@ -35,8 +35,8 @@ int main(int argc, char *argv[]) {
     return UNKNOWN;
   }
 
-  int timeout = atoi(argv[1]);
-  char *url = argv[2];
+  const int timeout = atoi(argv[1]);
+  const char *const url = argv[2];
 
   // First step, init curl.
   CURL *curl;
@@ -206,9 +206,9 @@ int isPositiveInteger(const char s[]) {
   }
 
   size_t i;
-  for (i = 0; i < strlen(s); i++) {
+  for (i = 0; s[i] != '\0'; i++) {
     // ASCII value of 0 -> 48, of 1 -> 49, ..., of 9 -> 57.
-    if (s[i] < 48 || s[i] > 57) {
+    if (s[i] < '0' || s[i] > '9') {
       return 0;
     }
   }
