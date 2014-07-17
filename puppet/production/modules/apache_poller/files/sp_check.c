@@ -3,6 +3,14 @@
  *    sudo apt-get install libcurl4-openssl-dev
  *    gcc -std=c99 -Wextra -Wall -O2 -o sp_check sp_check.c -lcurl
  *
+ *    TODO:
+ *          char wr_buf[MAX_BUF_IN_BYTES + 1] = { 0 }; --> char wr_buf[MAX_BUF_IN_BYTES];
+ *          Pas d'initialisation (car ça coûte en ressource). Mettre un \0
+ *          à la fin juste après une memcpy dans la fonction write_data.
+ *          (attention au changement d'indice).
+ *
+ *          Comme le suggère Xavier Roche, faire de *userp une structure.
+ *
  */
 
 #include <stdio.h>
