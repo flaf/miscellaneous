@@ -49,7 +49,8 @@ int main(int argc, char *argv[]) {
 
   // Construction of the post variable, a string with this form:
   //      token1=<urlencoded data1>&token2=<urlencoded data2>&...
-  char post[MAX_POST_IN_BYTES] = { 0 };
+  char post[MAX_POST_IN_BYTES];
+  post[0] = '\0';
   int token_num = 1;
   char *urlencoded_str = NULL;
   int i = 0;
@@ -71,7 +72,6 @@ int main(int argc, char *argv[]) {
     // The maximum is reached with "token999=&".
     int temp_size = 10 + strlen(urlencoded_str) + 1;
     char temp[temp_size];
-    //memset(temp, 0, temp_size*sizeof(char));
     sprintf(temp, "token%d=%s&", token_num, urlencoded_str);
 
     if (strlen(post) + strlen(temp) + 1 < MAX_POST_IN_BYTES) {
