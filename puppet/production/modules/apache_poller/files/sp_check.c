@@ -207,8 +207,8 @@ int isPositiveInteger(const char s[]) {
 
   size_t i;
   for (i = 0; s[i] != '\0'; i++) {
-    // ASCII value of 0 -> 48, of 1 -> 49, ..., of 9 -> 57.
-    if (s[i] < '0' || s[i] > '9') {
+    // Test if all the characters are digits.
+    if (! isdigit(s[i])) {
       return 0;
     }
   }
