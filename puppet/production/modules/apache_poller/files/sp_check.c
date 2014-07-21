@@ -218,7 +218,6 @@ int main ( int argc, char *argv[] )
 
       switch ( ret )
       {
-
       case CURLE_COULDNT_RESOLVE_HOST:
         printf ( " Could not resolve the host address.\n" );
         break;
@@ -230,9 +229,7 @@ int main ( int argc, char *argv[] )
       default:
         printf ( "\n" );
         break;
-
       }
-
       return UNKNOWN;
     }
   }
