@@ -27,7 +27,17 @@
 #define UNKNOWN           3
 
 size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp);
+
 int isPositiveInteger(const char s[]);
+
+typedef struct Buffer Buffer;
+struct Buffer {
+  char buf[MAX_BUF_IN_BYTES];
+  size_t index;
+};
+
+
+
 
 int main(int argc, char *argv[]) {
 
@@ -169,6 +179,9 @@ int main(int argc, char *argv[]) {
   return return_value;
 
 }
+
+
+
 
 // Write data callback function (called within the context
 // of curl_easy_perform).
