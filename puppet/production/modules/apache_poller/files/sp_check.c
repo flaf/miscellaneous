@@ -33,14 +33,14 @@ struct Buffer
   size_t capa;
 };
 
-static void init_buffer (Buffer * buffer)
+static void init_buffer ( Buffer * buffer )
 {
   buffer->wr_buf[0] = '\0';     // an empty string by default.
   buffer->index = 0;
-  buffer->capa = sizeof (buffer->wr_buf);
+  buffer->capa = sizeof ( buffer->wr_buf );
 }
 
-static int is_filled (const Buffer * const buffer)
+static int is_filled ( const Buffer * const buffer )
 {
   // (buffer->wr_buf)[buffer->cap - 1] must contain '\0'
   // and can not be used.
@@ -50,8 +50,8 @@ static int is_filled (const Buffer * const buffer)
 // If this function does not return segsize, it will signal an error 
 // condition to the library. This will cause the transfer to get aborted
 // and the libcurl function used will return CURLE_WRITE_ERROR.
-static size_t write_data (void *buffer, size_t size, size_t nmemb,
-                          void *userp)
+static size_t write_data ( void *buffer, size_t size, size_t nmemb,
+                           void *userp )
 {
   // The size (in bytes) of the received buffer.
   const int segsize = size * nmemb;
@@ -59,7 +59,7 @@ static size_t write_data (void *buffer, size_t size, size_t nmemb,
   // In this function, userp refers to a Buffer structure.
   Buffer *const userbuf = userp;
 
-  if (is_filled (userbuf))
+  if ( is_filled ( userbuf ) )
   {
     return 0;
   }
@@ -67,17 +67,18 @@ static size_t write_data (void *buffer, size_t size, size_t nmemb,
   // Get truncated_segsize.
   int truncated_segsize = segsize;
 
-  if (userbuf->index + segsize >= userbuf->capa)
+  if ( userbuf->index + segsize >= userbuf->capa )
   {
     truncated_segsize = userbuf->capa - 1 - userbuf->index;
   }
 
-  if (truncated_segsize > 0)
+  if ( truncated_segsize > 0 )
   {
-    memcpy (&(userbuf->wr_buf)[userbuf->index], buffer, truncated_segsize);
+    memcpy ( &( userbuf->wr_buf )[userbuf->index], buffer,
+             truncated_segsize );
     userbuf->index += truncated_segsize;
     // After each change, userbuf->wr_buf must be a valid string.
-    (userbuf->wr_buf)[userbuf->index] = '\0';
+    ( userbuf->wr_buf )[userbuf->index] = '\0';
     return truncated_segsize;
   }
   else
@@ -87,21 +88,21 @@ static size_t write_data (void *buffer, size_t size, size_t nmemb,
   }
 }
 
-static int is_positive_integer (const char s[])
+static int is_positive_integer ( const char s[] )
 {
-  assert (s != NULL);
+  assert ( s != NULL );
 
-  if (*s == '\0')
+  if ( *s == '\0' )
   {
     return 0;
   }
 
   size_t i;
 
-  for (i = 0; s[i] != '\0'; i++)
+  for ( i = 0; s[i] != '\0'; i++ )
   {
     // Test if all the characters are digits.
-    if (!isdigit (s[i]))
+    if ( !isdigit ( s[i] ) )
     {
       return 0;
     }
@@ -112,33 +113,33 @@ static int is_positive_integer (const char s[])
 
 
 
-int main (int argc, char *argv[])
+int main ( int argc, char *argv[] )
 {
-  if (argc < 4)
+  if ( argc < 4 )
   {
-    printf ("Sorry, bad syntax. You must apply at least 3 arguments.\n");
-    printf ("%s <timeout> <url> <args>...\n", argv[0]);
+    printf ( "Sorry, bad syntax. You must apply at least 3 arguments.\n" );
+    printf ( "%s <timeout> <url> <args>...\n", argv[0] );
     return UNKNOWN;
   }
 
-  if (!is_positive_integer (argv[1]))
+  if ( !is_positive_integer ( argv[1] ) )
   {
-    printf ("Sorry, bad syntax. The first argument must be a positive");
-    printf (" integer (it is a timeout in seconds).\n");
+    printf ( "Sorry, bad syntax. The first argument must be a positive" );
+    printf ( " integer (it is a timeout in seconds).\n" );
     return UNKNOWN;
   }
 
-  const int timeout = atoi (argv[1]);
+  const int timeout = atoi ( argv[1] );
   const char *const url = argv[2];
 
   // First step, init curl.
   CURL *curl;
 
-  curl = curl_easy_init ();
+  curl = curl_easy_init (  );
 
-  if (!curl)
+  if ( !curl )
   {
-    printf ("Sorry, could not init curl.\n");
+    printf ( "Sorry, could not init curl.\n" );
     return UNKNOWN;
   }
 
@@ -152,90 +153,90 @@ int main (int argc, char *argv[])
   char *urlencoded_str = NULL;
   int i = 0;
 
-  for (i = 3; i < argc; i++)
+  for ( i = 3; i < argc; i++ )
   {
-    if (token_num > 999)
+    if ( token_num > 999 )
     {
       printf
-        ("Sorry, the limit number (999) of POST variables is exceeded.\n");
-      curl_easy_cleanup (curl);
+        ( "Sorry, the limit number (999) of POST variables is exceeded.\n" );
+      curl_easy_cleanup ( curl );
       return UNKNOWN;
     }
 
     //printf("token%d: [%s]\n", token_num, argv[i]);
 
-    urlencoded_str = curl_easy_escape (curl, argv[i], 0);
+    urlencoded_str = curl_easy_escape ( curl, argv[i], 0 );
 
     // 10 is the max length of the string "token<num>=&".
     // The maximum is reached with "token999=&".
-    int temp_size = 10 + strlen (urlencoded_str) + 1;
+    int temp_size = 10 + strlen ( urlencoded_str ) + 1;
     char temp[temp_size];
 
-    sprintf (temp, "token%d=%s&", token_num, urlencoded_str);
+    sprintf ( temp, "token%d=%s&", token_num, urlencoded_str );
 
-    if (strlen (post) + strlen (temp) + 1 < MAX_POST_IN_BYTES)
+    if ( strlen ( post ) + strlen ( temp ) + 1 < MAX_POST_IN_BYTES )
     {
-      strcat (post, temp);
+      strcat ( post, temp );
     }
     else
     {
-      printf ("Sorry, the max POST size is exceeded.\n");
-      curl_easy_cleanup (curl);
+      printf ( "Sorry, the max POST size is exceeded.\n" );
+      curl_easy_cleanup ( curl );
       return UNKNOWN;
     }
 
-    curl_free (urlencoded_str);
+    curl_free ( urlencoded_str );
     token_num++;
   }
 
   // Remove the last character "&".
-  post[strlen (post) - 1] = '\0';
+  post[strlen ( post ) - 1] = '\0';
 
   //printf("POST [%s]\n", post);
 
-  curl_easy_setopt (curl, CURLOPT_URL, url);
-  curl_easy_setopt (curl, CURLOPT_TIMEOUT, timeout);
-  curl_easy_setopt (curl, CURLOPT_POSTFIELDS, post);
+  curl_easy_setopt ( curl, CURLOPT_URL, url );
+  curl_easy_setopt ( curl, CURLOPT_TIMEOUT, timeout );
+  curl_easy_setopt ( curl, CURLOPT_POSTFIELDS, post );
 
   // Tell curl that we will receive data to the function write_data
   // which will write the data in "buf".
   Buffer buf;
 
-  init_buffer (&buf);
-  curl_easy_setopt (curl, CURLOPT_WRITEFUNCTION, write_data);
-  curl_easy_setopt (curl, CURLOPT_WRITEDATA, &buf);
+  init_buffer ( &buf );
+  curl_easy_setopt ( curl, CURLOPT_WRITEFUNCTION, write_data );
+  curl_easy_setopt ( curl, CURLOPT_WRITEDATA, &buf );
 
   // Allow curl to perform the action.
   CURLcode ret;
 
-  ret = curl_easy_perform (curl);
+  ret = curl_easy_perform ( curl );
 
-  if (ret)
+  if ( ret )
   {
-    if (ret != CURLE_WRITE_ERROR || !is_filled (&buf))
+    if ( ret != CURLE_WRITE_ERROR || !is_filled ( &buf ) )
     {
-      curl_easy_cleanup (curl);
-      printf ("Sorry, exit value of curl_easy_perform is %d.", ret);
+      curl_easy_cleanup ( curl );
+      printf ( "Sorry, exit value of curl_easy_perform is %d.", ret );
 
-      switch (ret)
+      switch ( ret )
       {
       case CURLE_COULDNT_RESOLVE_HOST:
-        printf (" Could not resolve the host address.\n");
+        printf ( " Could not resolve the host address.\n" );
         break;
 
       case CURLE_OPERATION_TIMEDOUT:
-        printf (" Operation timeout.\n");
+        printf ( " Operation timeout.\n" );
         break;
 
       default:
-        printf ("\n");
+        printf ( "\n" );
         break;
       }
       return UNKNOWN;
     }
   }
 
-  curl_easy_cleanup (curl);
+  curl_easy_cleanup ( curl );
 
   /*
      printf("----------------------------------\n");
@@ -245,39 +246,39 @@ int main (int argc, char *argv[])
 
   int return_value;
 
-  if (!strncmp (buf.wr_buf, "0\n", 2))
+  if ( !strncmp ( buf.wr_buf, "0\n", 2 ) )
   {
     return_value = OK;
   }
-  else if (!strncmp (buf.wr_buf, "1\n", 2))
+  else if ( !strncmp ( buf.wr_buf, "1\n", 2 ) )
   {
     return_value = WARNING;
   }
-  else if (!strncmp (buf.wr_buf, "2\n", 2))
+  else if ( !strncmp ( buf.wr_buf, "2\n", 2 ) )
   {
     return_value = CRITICAL;
   }
-  else if (!strncmp (buf.wr_buf, "3\n", 2))
+  else if ( !strncmp ( buf.wr_buf, "3\n", 2 ) )
   {
     return_value = UNKNOWN;
   }
   else
   {
-    printf ("Unexpected output of the plugin, return value not");
-    printf (" displayed or not in {0, 1, 2, 3}.\n");
+    printf ( "Unexpected output of the plugin, return value not" );
+    printf ( " displayed or not in {0, 1, 2, 3}.\n" );
     return UNKNOWN;
   }
 
   char *output = buf.wr_buf + 2;
-  size_t len = strlen (output);
+  size_t len = strlen ( output );
 
-  if (len > 0 && output[len - 1] == '\n')
+  if ( len > 0 && output[len - 1] == '\n' )
   {
-    printf ("%s", output);
+    printf ( "%s", output );
   }
   else
   {
-    printf ("%s\n", output);
+    printf ( "%s\n", output );
   }
 
   return return_value;
