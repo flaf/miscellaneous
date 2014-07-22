@@ -51,15 +51,7 @@ class apache_poller {
     source => 'puppet:///modules/apache_poller/SNMP.pm',
   }
 
-  file { '/usr/bin/sp_check.sh':
-    ensure => present,
-    owner  => 'root',
-    group  => 'root',
-    mode   => 755,
-    source => 'puppet:///modules/apache_poller/sp_check.sh',
-  }
-
-  package { ['libcurl4-openssl-dev', 'libssl-dev']:
+  package { 'libcurl4-openssl-dev':
     ensure => present,
   }
 
