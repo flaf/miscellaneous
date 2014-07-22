@@ -38,8 +38,8 @@ int is_filled ( Buffer * buffer )
 {
   if ( buffer->index >= buffer->capa - 1 )
   {
-    // Because (buffer->wr_buf)[buffer->cap - 1] must contain '\0'
-    // and can be used.
+    // (buffer->wr_buf)[buffer->cap - 1] must contain '\0'
+    // and can not be used.
     return 1;
   }
   else
