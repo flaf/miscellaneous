@@ -195,6 +195,7 @@ int main ( int argc, char *argv[] )
     else
     {
       fprintf ( stderr, "Sorry, the max POST size is exceeded.\n" );
+      curl_free ( urlencoded_str );
       curl_easy_cleanup ( curl );
       return UNKNOWN;
     }
