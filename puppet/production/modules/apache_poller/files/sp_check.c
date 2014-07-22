@@ -103,11 +103,6 @@ static int is_positive_integer ( const char s[] )
 {
   assert ( s != NULL );
 
-  if ( *s == '\0' )
-  {
-    return 0;
-  }
-
   size_t i;
 
   for ( i = 0; s[i] != '\0'; i++ )
@@ -118,7 +113,8 @@ static int is_positive_integer ( const char s[] )
       return 0;
     }
   }
-  return 1;
+  // return 1 unless s is an empty string.
+  return i != 0 ? 1 : 0;
 }
 
 
