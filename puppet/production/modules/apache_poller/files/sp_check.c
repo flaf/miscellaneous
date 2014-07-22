@@ -22,9 +22,9 @@ typedef struct Buffer Buffer;
 
 struct Buffer
 {
-  char wr_buf[MAX_BUF_IN_BYTES];
-  size_t index;
-  size_t capa;
+  char      wr_buf[MAX_BUF_IN_BYTES];
+  size_t    index;
+  size_t    capa;
 };
 
 void init_buffer ( Buffer * buffer )
@@ -54,10 +54,10 @@ int is_filled ( Buffer * buffer )
 size_t write_data ( void *buffer, size_t size, size_t nmemb, void *userp )
 {
   // The size (in bytes) of the received buffer.
-  int segsize = size * nmemb;
+  int       segsize = size * nmemb;
 
   // In this function, userp refers to a Buffer structure.
-  Buffer *userbuf = userp;
+  Buffer   *userbuf = userp;
 
   if ( userbuf->index >= userbuf->capa - 1 )
   {
@@ -66,7 +66,7 @@ size_t write_data ( void *buffer, size_t size, size_t nmemb, void *userp )
   }
 
   // Get truncated_segsize.
-  int truncated_segsize = segsize;
+  int       truncated_segsize = segsize;
 
   if ( userbuf->index + segsize >= userbuf->capa )
   {
@@ -96,7 +96,7 @@ int isPositiveInteger ( const char s[] )
     return 0;
   }
 
-  size_t i;
+  size_t    i;
 
   for ( i = 0; s[i] != '\0'; i++ )
   {
@@ -132,7 +132,7 @@ int main ( int argc, char *argv[] )
   const char *const url = argv[2];
 
   // First step, init curl.
-  CURL *curl;
+  CURL     *curl;
 
   curl = curl_easy_init (  );
 
@@ -144,12 +144,13 @@ int main ( int argc, char *argv[] )
 
   // Construction of the post variable, a string with this form:
   //      token1=<urlencoded data1>&token2=<urlencoded data2>&...
-  char post[MAX_POST_IN_BYTES];
+  char      post[MAX_POST_IN_BYTES];
 
   post[0] = '\0';
-  int token_num = 1;
-  char *urlencoded_str = NULL;
-  int i = 0;
+
+  int       token_num = 1;
+  char     *urlencoded_str = NULL;
+  int       i = 0;
 
   for ( i = 3; i < argc; i++ )
   {
@@ -167,8 +168,8 @@ int main ( int argc, char *argv[] )
 
     // 10 is the max length of the string "token<num>=&".
     // The maximum is reached with "token999=&".
-    int temp_size = 10 + strlen ( urlencoded_str ) + 1;
-    char temp[temp_size];
+    int       temp_size = 10 + strlen ( urlencoded_str ) + 1;
+    char      temp[temp_size];
 
     sprintf ( temp, "token%d=%s&", token_num, urlencoded_str );
 
@@ -188,7 +189,7 @@ int main ( int argc, char *argv[] )
   }
 
   // Remove the last character "&".
-  post[strlen ( post ) - 1] = 0;
+  post[strlen ( post ) - 1] = '\0';
 
   //printf("POST [%s]\n", post);
 
@@ -198,14 +199,14 @@ int main ( int argc, char *argv[] )
 
   // Tell curl that we will receive data to the function write_data
   // which will write the data in "buf".
-  Buffer buf;
+  Buffer    buf;
 
   init_buffer ( &buf );
   curl_easy_setopt ( curl, CURLOPT_WRITEFUNCTION, write_data );
   curl_easy_setopt ( curl, CURLOPT_WRITEDATA, &buf );
 
   // Allow curl to perform the action.
-  CURLcode ret;
+  CURLcode  ret;
 
   ret = curl_easy_perform ( curl );
 
@@ -242,7 +243,7 @@ int main ( int argc, char *argv[] )
      printf("----------------------------------\n");
    */
 
-  int return_value;
+  int       return_value;
 
   if ( !strncmp ( buf.wr_buf, "0\n", 2 ) )
   {
@@ -267,8 +268,8 @@ int main ( int argc, char *argv[] )
     return UNKNOWN;
   }
 
-  char *output = buf.wr_buf + 2;
-  size_t len = strlen ( output );
+  char     *output = buf.wr_buf + 2;
+  size_t    len = strlen ( output );
 
   if ( len > 0 && output[len - 1] == '\n' )
   {
