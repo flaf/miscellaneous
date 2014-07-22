@@ -28,7 +28,7 @@
 #undef assert
 #define assert(exp) (void) ( (exp) || (assert_failed(#exp, __FILE__, __LINE__), 0) )
 
-static void assert_failed ( char *exp, char *file, int line )
+static void assert_failed ( const char *exp, const char *file, const int line )
 {
   fprintf ( stderr, "Assertion failed in %s line %d with `%s'.\n", file, line,
             exp );
