@@ -15,7 +15,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <curl/curl.h>
-#include <assert.h>
+//#include <assert.h>
 
 #define MAX_BUF_IN_BYTES  65536
 #define MAX_POST_IN_BYTES 4096
@@ -23,6 +23,16 @@
 #define WARNING           1
 #define CRITICAL          2
 #define UNKNOWN           3
+
+// Define our assert macro.
+#undef assert
+#define assert(exp) (void) ( (exp) || (assert_failed(#exp, __FILE__, __LINE__), 0) )
+
+static void assert_failed ( char *exp, char *file, int line )
+{
+  printf ( "Assertion failed in %s line %d with `%s'.\n", file, line, exp );
+  exit ( UNKNOWN );
+}
 
 typedef struct Buffer Buffer;
 
