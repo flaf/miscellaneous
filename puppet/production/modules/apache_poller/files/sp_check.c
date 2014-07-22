@@ -30,7 +30,8 @@
 
 static void assert_failed ( char *exp, char *file, int line )
 {
-  printf ( "Assertion failed in %s line %d with `%s'.\n", file, line, exp );
+  fprintf ( stderr, "Assertion failed in %s line %d with `%s'.\n", file, line,
+            exp );
   exit ( UNKNOWN );
 }
 
@@ -127,15 +128,17 @@ int main ( int argc, char *argv[] )
 {
   if ( argc < 4 )
   {
-    printf ( "Sorry, bad syntax. You must apply at least 3 arguments.\n" );
-    printf ( "%s <timeout> <url> <args>...\n", argv[0] );
+    fprintf ( stderr,
+              "Sorry, bad syntax. You must apply at least 3 arguments.\n" );
+    fprintf ( stderr, "%s <timeout> <url> <args>...\n", argv[0] );
     return UNKNOWN;
   }
 
   if ( !is_positive_integer ( argv[1] ) )
   {
-    printf ( "Sorry, bad syntax. The first argument must be a positive" );
-    printf ( " integer (it is a timeout in seconds).\n" );
+    fprintf ( stderr,
+              "Sorry, bad syntax. The first argument must be a positive" );
+    fprintf ( stderr, " integer (it is a timeout in seconds).\n" );
     return UNKNOWN;
   }
 
@@ -149,7 +152,7 @@ int main ( int argc, char *argv[] )
 
   if ( !curl )
   {
-    printf ( "Sorry, could not init curl.\n" );
+    fprintf ( stderr, "Sorry, could not init curl.\n" );
     return UNKNOWN;
   }
 
@@ -167,8 +170,9 @@ int main ( int argc, char *argv[] )
   {
     if ( token_num > 999 )
     {
-      printf
-        ( "Sorry, the limit number (999) of POST variables is exceeded.\n" );
+      fprintf
+        ( stderr,
+          "Sorry, the limit number (999) of POST variables is exceeded.\n" );
       curl_easy_cleanup ( curl );
       return UNKNOWN;
     }
@@ -190,7 +194,7 @@ int main ( int argc, char *argv[] )
     }
     else
     {
-      printf ( "Sorry, the max POST size is exceeded.\n" );
+      fprintf ( stderr, "Sorry, the max POST size is exceeded.\n" );
       curl_easy_cleanup ( curl );
       return UNKNOWN;
     }
@@ -226,20 +230,21 @@ int main ( int argc, char *argv[] )
     if ( ret != CURLE_WRITE_ERROR || !is_filled ( &buf ) )
     {
       curl_easy_cleanup ( curl );
-      printf ( "Sorry, exit value of curl_easy_perform is %d.", ret );
+      fprintf ( stderr, "Sorry, exit value of curl_easy_perform is %d.",
+                ret );
 
       switch ( ret )
       {
       case CURLE_COULDNT_RESOLVE_HOST:
-        printf ( " Could not resolve the host address.\n" );
+        fprintf ( stderr, " Could not resolve the host address.\n" );
         break;
 
       case CURLE_OPERATION_TIMEDOUT:
-        printf ( " Operation timeout.\n" );
+        fprintf ( stderr, " Operation timeout.\n" );
         break;
 
       default:
-        printf ( "\n" );
+        fprintf ( stderr, "\n" );
         break;
       }
       return UNKNOWN;
@@ -274,8 +279,8 @@ int main ( int argc, char *argv[] )
   }
   else
   {
-    printf ( "Unexpected output of the plugin, return value not" );
-    printf ( " displayed or not in {0, 1, 2, 3}.\n" );
+    fprintf ( stderr, "Unexpected output of the plugin, return value not" );
+    fprintf ( stderr, " displayed or not in {0, 1, 2, 3}.\n" );
     return UNKNOWN;
   }
 
