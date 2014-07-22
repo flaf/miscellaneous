@@ -1,7 +1,12 @@
-/* With Debian Wheezy:
+/* With Debian Wheezy, to compile the source:
  *
  *    sudo apt-get install libcurl4-openssl-dev
  *    gcc -std=c99 -Wextra -Wall -O2 -o sp_check sp_check.c -lcurl
+ *
+ * With Debian Wheezy, to execute the binary command:
+ *
+ *    sudo apt-get install libcurl3
+ *    ./sp_check 5 localhost/plugin.pl -w 10 -c 20 --login xyz
  *
  */
 
