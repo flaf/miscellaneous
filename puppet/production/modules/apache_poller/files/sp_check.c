@@ -1,7 +1,7 @@
 /* With Debian Wheezy, to compile the source:
  *
  *    sudo apt-get install libcurl4-openssl-dev
- *    gcc -std=c99 -Wextra -Wall -O2 -o sp_check sp_check.c -lcurl
+ *    gcc -std=c99 -pedantic -Wextra -Wall -O2 -o sp_check sp_check.c -lcurl
  *
  * With Debian Wheezy, to execute the binary command:
  *
@@ -28,7 +28,8 @@
 #undef assert
 #define assert(exp) (void) ( (exp) || (assert_failed(#exp, __FILE__, __LINE__), 0) )
 
-static void assert_failed ( const char *exp, const char *file, const int line )
+static void assert_failed ( const char *exp, const char *file,
+                            const int line )
 {
   fprintf ( stderr, "Assertion failed in %s line %d with `%s'.\n", file, line,
             exp );
