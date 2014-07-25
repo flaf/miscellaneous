@@ -22,8 +22,8 @@
  *      number of digits in MAX_POST_IN_BYTES + strlen("token=&")
  *      number of digits in MAX_POST_IN_BYTES + 7
  */
-#define PATTERN_SIZE         11
 #define MAX_POST_IN_BYTES  4096
+#define PATTERN_SIZE         11
 #define MAX_BUF_IN_BYTES  65536
 
 #define OK                    0
