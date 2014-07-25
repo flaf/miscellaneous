@@ -120,6 +120,7 @@ static int write_post ( char *post, const unsigned int post_size,
     if ( p_index + strlen ( urlencoded ) + PATTERN_SIZE < post_size )
     {
       add = sprintf ( post, "token%d=%s&", d_index, urlencoded );
+      curl_free ( urlencoded );
       if ( add < 0 )
       {
         fprintf ( stderr, "Sorry, error with the sprintf function.\n" );
@@ -127,12 +128,11 @@ static int write_post ( char *post, const unsigned int post_size,
       }
       post += add;
       p_index += add;
-      curl_free ( urlencoded );
     }
     else
     {
-      fprintf ( stderr, "Sorry, the max POST size is exceeded.\n" );
       curl_free ( urlencoded );
+      fprintf ( stderr, "Sorry, the max POST size is exceeded.\n" );
       return 0;
     }
   }
