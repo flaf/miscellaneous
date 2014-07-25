@@ -63,6 +63,14 @@ class apache_poller {
     source => 'puppet:///modules/apache_poller/sp_check.c',
   }
 
+  file { '/root/sp_check_ansi.c':
+    ensure => present,
+    owner  => 'root',
+    group  => 'root',
+    mode   => 644,
+    source => 'puppet:///modules/apache_poller/sp_check_ansi.c',
+  }
+
 }
 
 
