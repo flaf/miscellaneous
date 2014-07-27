@@ -102,7 +102,7 @@ static int write_post ( char *post, const unsigned int post_size,
 {
   unsigned int d_index = 0;     /* data index */
   unsigned int p_index = 0;     /* post index is 0 initially (firt element of the post array) */
-  int add;
+  int add = 0;
   char *urlencoded = NULL;
 
   /* Initially, post is an empty string. */
@@ -137,8 +137,14 @@ static int write_post ( char *post, const unsigned int post_size,
     }
   }
 
-  /* Remove the last character "&" */
-  *( post - 1 ) = '\0';
+  /*
+   * Remove the last character "&" only if there is at least
+   * one post variable appended.
+   */
+  if ( add > 0 )
+  {
+    *( post - 1 ) = '\0';
+  }
 
   return 1;
 }
