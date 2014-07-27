@@ -56,7 +56,7 @@ struct Buffer
   size_t capa;
 };
 
-static void init_buffer ( Buffer * buffer )
+static void init_buffer ( Buffer * const buffer )
 {
   buffer->wr_buf[0] = '\0';     /* an empty string by default. */
   buffer->index = 0;
@@ -155,8 +155,8 @@ static int write_post ( char *post, const unsigned int post_size,
  * condition to the library. This will cause the transfer to get aborted
  * and the libcurl function used will return CURLE_WRITE_ERROR.
  */
-static size_t write_data ( void *buffer, size_t size, size_t nmemb,
-                           void *userp )
+static size_t write_data ( const void *const buffer, const size_t size,
+                           const size_t nmemb, void *userp )
 {
   /* The size (in bytes) of the received buffer. */
   const int segsize = size * nmemb;
@@ -195,7 +195,7 @@ static size_t write_data ( void *buffer, size_t size, size_t nmemb,
 
 
 
-int main ( const int argc, char *argv[] )
+int main ( int argc, char *argv[] )
 {
   int timeout;
   char *url = NULL;
