@@ -18,9 +18,8 @@ class common ($stage = 'base_packages')  {
                        'file',
                      ]
 
-  package { 'common_packages':
+  package { $common_packages:
     ensure => present,
-    name   => $common_packages,
   }
 
 }
