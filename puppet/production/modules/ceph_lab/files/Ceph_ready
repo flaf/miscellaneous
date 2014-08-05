@@ -21,5 +21,9 @@ sudo chmod 0440 "/etc/sudoers.d/ceph"
 
 # Configure /etc/hosts. The hostname must be
 # resolved with a non loopback IP address.
+host_name=$(hostname)
+fqdn=$(hostname -f)
+ipaddress=$(facter ipaddress)
+sed -r -i "s/^.*$fqdn.*$/$ipaddress\t$fqdn\t$host_name/" "/etc/hosts"
 
 
