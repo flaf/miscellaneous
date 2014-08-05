@@ -5,6 +5,11 @@ class ceph_lab {
     ensure => present,
   }
 
+  # xfs is needed for the storage fs.
+  package { 'xfsprogs':
+    ensure => present,
+  }
+
   file { '/usr/local/sbin/Ceph_ready':
     ensure => present,
     owner  => 'root',
