@@ -1,4 +1,4 @@
-ceph_lab {
+class ceph_lab {
 
   # Python 2.7 must be installed.
   package { 'python':
