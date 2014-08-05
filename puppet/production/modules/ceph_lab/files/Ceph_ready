@@ -8,17 +8,6 @@ wget -q -O- "$URL" | apt-key add -
 CEPH_RELEASE="firefly"
 echo "deb http://ceph.com/debian-$CEPH_RELEASE/ $(lsb_release -sc) main" > "/etc/apt/sources.list.d/ceph.list"
 
-# Create the "ceph" account if it does not exist.
-if ! getent passwd ceph >/dev/null
-then
-    adduser --disabled-password --gecos "" ceph
-    echo "ceph:ceph" | chpasswd
-fi
-
-# "ceph" will be sudoer.
-echo "ceph ALL = (root) NOPASSWD:ALL" > "/etc/sudoers.d/ceph"
-sudo chmod 0440 "/etc/sudoers.d/ceph"
-
 # Configure /etc/hosts. The hostname must be
 # resolved with a non loopback IP address.
 host_name=$(hostname)

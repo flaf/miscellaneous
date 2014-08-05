@@ -18,6 +18,14 @@ class ceph_lab {
     source => 'puppet:///modules/ceph_lab/Ceph_ready',
   }
 
+  file { '/usr/local/sbin/Ceph_create_user':
+    ensure => present,
+    owner  => 'root',
+    group  => 'root',
+    mode   => 755,
+    source => 'puppet:///modules/ceph_lab/Ceph_create_user',
+  }
+
 }
 
 
