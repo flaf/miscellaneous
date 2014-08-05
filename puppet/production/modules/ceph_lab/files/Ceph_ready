@@ -1,0 +1,22 @@
+#!/bin/sh
+
+# Add the release key.
+URL='https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc'
+wget -q -O- "$URL" | apt-key add -
+
+# Add the Ceph repository.
+CEPH_RELEASE="firefly"
+echo "deb http://ceph.com/debian-$CEPH_RELEASE/ $(lsb_release -sc) main" > "/etc/apt/sources.list.d/ceph.list"
+
+# Create the "ceph" account if it does not exist.
+if !getent passwd ceph >/dev/null
+then
+    adduser --disabled-password --gecos "" ceph
+    echo "ceph:ceph" | chpasswd
+fi
+
+# "ceph" will be sudoer.
+echo "ceph ALL = (root) NOPASSWD:ALL" > "/etc/sudoers.d/ceph"
+sudo chmod 0440 "/etc/sudoers.d/ceph"
+
+
