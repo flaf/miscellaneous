@@ -26,6 +26,14 @@ class ceph_lab {
     source => 'puppet:///modules/ceph_lab/Ceph_create_user',
   }
 
+  file { '/usr/local/sbin/Ceph_mon_bootstrapping':
+    ensure => present,
+    owner  => 'root',
+    group  => 'root',
+    mode   => 755,
+    source => 'puppet:///modules/ceph_lab/Ceph_mon_bootstrapping',
+  }
+
 }
 
 
