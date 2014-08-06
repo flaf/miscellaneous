@@ -23,7 +23,7 @@ Ceph_ready
 
 if ! (dpkg -l ceph | grep -q '^ii')
 then
-    apt-get update && apt-get install ceph
+    apt-get update && apt-get install -y ceph
 fi
 
 cat > "/etc/ceph/$cluster.conf" <<EOF
