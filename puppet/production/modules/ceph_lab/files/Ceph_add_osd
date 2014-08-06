@@ -12,7 +12,7 @@ scp "root@$mon:/etc/ceph/$cluster.conf" "/etc/ceph/"
 scp "root@$mon:/var/lib/ceph/bootstrap-osd/$cluster.keyring" "/var/lib/ceph/bootstrap-osd/"
 chmod 600 "/var/lib/ceph/bootstrap-osd/$cluster.keyring"
 
-$cluster_uuid=$(sed -rn "s/fsid[[:space:]]*=(.*)$/\1/p" /etc/ceph/big.conf | tr -d ' ')
+cluster_uuid=$(sed -rn "s/fsid[[:space:]]*=(.*)$/\1/p" /etc/ceph/big.conf | tr -d ' ')
 
 ceph-disk prepare --cluster "$cluster" --cluster-uuid "$cluster_uuid" \
                   --fs-type "$fs" "$device"
