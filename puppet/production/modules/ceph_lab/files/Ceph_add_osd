@@ -30,7 +30,7 @@ id=$(printf "$output\n" | grep '^added key for osd\.' | cut -d'.' -f2)
 eval $(blkid | awk '$0 ~ "^'"$device"'" { print $2}')
 
 printf "\n\n" >> "/etc/fstab"
-printf "UUID=$UUID /var/lib/ceph/osd/$cluser-$id/ $fs defaults,noatime 0 2\n" >> "/etc/fstab"
+printf "UUID=$UUID /var/lib/ceph/osd/$cluster-$id/ $fs defaults,noatime 0 2\n" >> "/etc/fstab"
 
 
 # To check the result:
