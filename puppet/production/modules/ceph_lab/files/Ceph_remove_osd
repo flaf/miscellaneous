@@ -1,0 +1,17 @@
+#!/bin/sh
+
+cluster="$1"
+id="$2"
+
+ceph osd  crush remove "osd.$id" --cluster "$cluster"
+ceph auth del          "osd.$id" --cluster "$cluster"
+ceph osd  rm           "$id"     --cluster "$cluster"
+
+printf "Don't forget to update /etc/fstab.\n"
+
+# To check the result:
+#
+#   ceph osd tree --cluster "$cluster"
+#   ceph status --cluster "$cluster
+#
+

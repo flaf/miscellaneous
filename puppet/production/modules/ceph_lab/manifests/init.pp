@@ -26,6 +26,7 @@ class ceph_lab {
              'Ceph_create_user',
              'Ceph_mon_bootstrapping',
              'Ceph_add_osd',
+             'Ceph_remove_osd',
            ]
 
   tools { $tools: }
