@@ -10,29 +10,25 @@ class ceph_lab {
     ensure => present,
   }
 
-  file { '/usr/local/sbin/Ceph_ready':
-    ensure => present,
-    owner  => 'root',
-    group  => 'root',
-    mode   => 755,
-    source => 'puppet:///modules/ceph_lab/Ceph_ready',
+  define tools() {
+    file { $name:
+      ensure => present,
+      path   => "/usr/local/sbin/${name}",
+      owner  => 'root',
+      group  => 'root',
+      mode   => 755,
+      source => "puppet:///modules/ceph_lab/${name}",
+    }
   }
 
-  file { '/usr/local/sbin/Ceph_create_user':
-    ensure => present,
-    owner  => 'root',
-    group  => 'root',
-    mode   => 755,
-    source => 'puppet:///modules/ceph_lab/Ceph_create_user',
-  }
+  $tools = [ 'Ceph_ready',
+             'Ceph_install',
+             'Ceph_create_user',
+             'Ceph_mon_bootstrapping',
+             'Ceph_add_osd',
+           ]
 
-  file { '/usr/local/sbin/Ceph_mon_bootstrapping':
-    ensure => present,
-    owner  => 'root',
-    group  => 'root',
-    mode   => 755,
-    source => 'puppet:///modules/ceph_lab/Ceph_mon_bootstrapping',
-  }
+  tools { $tools: }
 
 }
 

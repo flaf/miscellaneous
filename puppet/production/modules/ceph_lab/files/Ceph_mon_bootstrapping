@@ -20,11 +20,7 @@ rm -f "/tmp/monmap"
 rm -fr "/var/lib/ceph/mon/$cluster-$hostname"
 
 Ceph_ready
-
-if ! (dpkg -l ceph | grep -q '^ii')
-then
-    apt-get update && apt-get install -y ceph
-fi
+Ceph_install
 
 cat > "/etc/ceph/$cluster.conf" <<EOF
 [global]

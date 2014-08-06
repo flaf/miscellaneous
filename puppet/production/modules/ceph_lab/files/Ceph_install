@@ -1,0 +1,8 @@
+#!/bin/sh
+
+if ! (dpkg -l ceph | grep -q '^ii')
+then
+    apt-get update && apt-get install -y ceph
+fi
+
+
