@@ -1,11 +1,23 @@
 #!/bin/sh
 
+
 # Characters just in [a-z0-9] for the cluster name.
 cluster="$1"
+
+if ! (printf "%s\n" "$cluster" | grep -Eq '^[a-z0-9]+$')
+then
+    printf "Error in the cluster name.\n"
+    exit 1
+fi
 
 fsid=$(uuidgen)
 hostname=$(hostname)
 ipaddress=$(facter ipaddress)
+
+# Cleaning.
+rm -f "/tmp/$cluster.mon.keyring"
+rm -f "/tmp/monmap"
+rm -fr "/var/lib/ceph/mon/$cluster-$hostname"
 
 Ceph_ready
 apt-get update && apt-get install ceph
