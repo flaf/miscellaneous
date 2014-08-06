@@ -1,11 +1,15 @@
 #!/bin/sh
 
-# Add the release key.
 URL='https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc'
-wget -q -O- "$URL" | apt-key add -
+CEPH_RELEASE="firefly"
+
+# Add the release key.
+if ! (apt-key list | grep -qi 'Ceph Release Key')
+then
+    wget -q -O- "$URL" | apt-key add -
+fi
 
 # Add the Ceph repository.
-CEPH_RELEASE="firefly"
 echo "deb http://ceph.com/debian-$CEPH_RELEASE/ $(lsb_release -sc) main" > "/etc/apt/sources.list.d/ceph.list"
 
 # Configure /etc/hosts. The hostname must be
