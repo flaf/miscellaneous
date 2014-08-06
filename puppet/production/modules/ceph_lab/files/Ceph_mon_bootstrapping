@@ -64,8 +64,9 @@ monmaptool --create --add "$hostname" "$ipaddress" \
 mkdir "/var/lib/ceph/mon/$cluster-$hostname"
 
 # Populate the monitor daemon(s) with the monitor map and keyring.
-ceph-mon --mkfs -i "$hostname" -c "/etc/ceph/$cluster.conf" \
-         --monmap "/tmp/monmap" --keyring "/tmp/$cluster.mon.keyring"
+ceph-mon --mkfs -i "$hostname" -c "/etc/ceph/$cluster.conf"           \
+         --monmap "/tmp/monmap" --keyring "/tmp/$cluster.mon.keyring" \
+         --cluster "$cluster"
 
 # To allow the stating of ceph-mon at each reboot.
 touch "/var/lib/ceph/mon/$cluster-$hostname/done"
