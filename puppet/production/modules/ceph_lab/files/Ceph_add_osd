@@ -22,8 +22,9 @@ ceph-disk prepare --cluster "$cluster" --cluster-uuid "$cluster_uuid" \
                   --fs-type "$fs" "$device"
 
 # Get the id of the osd.
-result=$(ceph-disk activate "$device" | grep '^added key for osd\.')
-id=$(printf "$result\n" | cut -d'.' -f2)
+result=$(ceph-disk activate "$device" 2>&1)
+printf "$result\n"
+id=$(printf "$result\n" | grep '^added key for osd\.' | cut -d'.' -f2)
 
 # Define UUID variable.
 eval $(blkid | awk '$0 ~ "^'"$device"'" { print $2}')
