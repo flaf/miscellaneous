@@ -14,7 +14,7 @@ fsid=$(uuidgen)
 hostname=$(hostname)
 ipaddress=$(facter ipaddress)
 
-# Cleaning.
+# Pre-cleaning.
 rm -f "/tmp/$cluster.mon.keyring"
 rm -f "/tmp/monmap"
 rm -fr "/var/lib/ceph/mon/$cluster-$hostname"
@@ -79,5 +79,9 @@ touch "/var/lib/ceph/mon/$cluster-$hostname/upstart"
 # Restart of the daemon.
 stop ceph-all
 start ceph-all
+
+# Post-cleaning.
+rm -f "/tmp/$cluster.mon.keyring"
+rm -f "/tmp/monmap"
 
 
