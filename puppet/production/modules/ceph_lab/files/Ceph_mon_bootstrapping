@@ -85,3 +85,10 @@ rm -f "/tmp/$cluster.mon.keyring"
 rm -f "/tmp/monmap"
 
 
+# You can check the installation with:
+#
+#  ceph osd lspools --cluster "$cluster"
+#  ceph status --cluster "$cluster"
+#
+
+
