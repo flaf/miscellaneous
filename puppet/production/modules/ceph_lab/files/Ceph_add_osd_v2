@@ -18,6 +18,53 @@ fi
 # UUID of the osd.
 uuid=$(uuidgen)
 
+# Create the OSD. The ommand will output the OSD number,
+# which we will need for subsequent steps.
+osd_id=$(ceph --cluster "$cluster" osd create "$uuid")
+
+# Creation of the osd data directory.
+mkdir "/var/lib/ceph/osd/$cluster-$osd_id/"
+mount -t "$fs" "$device" "/var/lib/ceph/osd/$cluster-$osd_id/"
+
+# Initialize the osd data directory (the keyring etc).
+ceph-osd -i "$osd_id" --mkfs --mkkey --osd-uuid "$uuid" --cluster "$cluster"
+
+# Register the OSD authentication key.
+ceph auth add "osd.$osd_id" osd 'allow *' mon 'allow profile osd' \
+     -i "/var/lib/ceph/osd/$cluster-$osd_id/keyring"              \
+     --cluster "$cluster"
+
+# Add your Ceph Node to the CRUSH map.
+ceph osd crush add-bucket $(hostname) host --cluster "$cluster"
+
+# Place the Ceph Node under the root default.
+ceph osd crush move $(hostname) root=default --cluster "$cluster"
+
+# Add the osd to the CRUSH map so that it can begin receiving data.
+# 1.0 is the weight of the osd.
+ceph osd crush add "osd.$osd_id" 1.0 host=$(hostname) --cluster "$cluster"
+
+# To allow the start of the daemon at each reboot.
+touch "/var/lib/ceph/osd/$cluster-$osd_id/ready"
+touch "/var/lib/ceph/osd/$cluster-$osd_id/upstart"
+
+# Restart of the daemon.
+stop ceph-all
+start ceph-all
+
+# Define UUID variable of the device (the partition in fact).
+eval $(blkid | awk '$0 ~ "^'"$device"'" { print $2}')
+
+printf "Update of /etc/fstab.\n"
+printf "\n# osd storage." >> "/etc/fstab"
+printf "UUID=$UUID /var/lib/ceph/osd/$cluster-$osd_id/ $fs defaults,noatime 0 2\n\n" >> "/etc/fstab"
+
+
+# To check the result:
+#
+#   ceph osd tree --cluster "$cluster"
+#   ceph status --cluster "$cluster
+#
 
 
 

@@ -11,7 +11,7 @@ device="$4"
 if [ "$mon" != "my self" ]
 then
     scp "root@$mon:/etc/ceph/$cluster.conf" "/etc/ceph/"
-    scp "root@$mon:/etc/ceph/$cluster.client.admin.keyring"
+    scp "root@$mon:/etc/ceph/$cluster.client.admin.keyring" "/etc/ceph"
     chmod 600 "/etc/ceph/$cluster.client.admin.keyring"
 fi
 
