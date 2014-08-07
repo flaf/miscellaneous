@@ -33,7 +33,7 @@ ceph-osd -i "$osd_id" --mkfs --mkkey --osd-uuid "$uuid" --cluster "$cluster"
 # Register the OSD authentication key.
 ceph auth add "osd.$osd_id" osd 'allow *' mon 'allow profile osd' \
      -i "/var/lib/ceph/osd/$cluster-$osd_id/keyring"              \
-     --cluster "$cluster"
+     --cluster "$cluster" --conf "/etc/ceph/$cluster.conf"
 
 # Add your Ceph Node to the CRUSH map.
 ceph osd crush add-bucket $(hostname) host --cluster "$cluster"
