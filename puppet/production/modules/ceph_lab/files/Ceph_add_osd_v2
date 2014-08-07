@@ -25,6 +25,7 @@ osd_id=$(ceph --cluster "$cluster" osd create "$uuid")
 # Creation of the osd data directory.
 mkdir "/var/lib/ceph/osd/$cluster-$osd_id/"
 mount -t "$fs" "$device" "/var/lib/ceph/osd/$cluster-$osd_id/"
+rm -rf "/var/lib/ceph/osd/$cluster-$osd_id/"* # cleaning of the partition.
 
 # Initialize the osd data directory (the keyring etc).
 ceph-osd -i "$osd_id" --mkfs --mkkey --osd-uuid "$uuid" --cluster "$cluster"
