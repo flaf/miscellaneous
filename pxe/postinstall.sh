@@ -1,0 +1,88 @@
+#!/bin/sh
+
+set -x
+exec >/root/postinstall.log 2>&1
+
+codename="$1"
+info="$2"
+
+# Set default locale.
+update-locale LANG="en_US.UTF-8"
+
+# Disable IPv6.
+sed -i -r 's/^GRUB_CMDLINE_LINUX=.*$/GRUB_CMDLINE_LINUX="ipv6.disable=1"/' \
+          /etc/default/grub
+update-grub
+
+if [ "$codename" = "wheezy" ]
+then
+    # Set the sources.list.
+    echo "deb http://repository/apt-mirror/ftp.fr.debian.org/debian wheezy         main contrib non-free" >  /etc/apt/sources.list
+    echo "deb http://repository/apt-mirror/ftp.fr.debian.org/debian wheezy-updates main contrib non-free" >> /etc/apt/sources.list
+    echo "deb http://repository/apt-mirror/security.debian.org      wheezy/updates main contrib non-free" >> /etc/apt/sources.list
+fi
+
+if [ "$codename" = "squeeze" ]
+then
+    # Set the sources.list.
+    echo "deb http://repository/mirror/ftp2.fr.debian.org/debian squeeze         main contrib non-free" >  /etc/apt/sources.list
+    echo "deb http://repository/mirror/ftp2.fr.debian.org/debian squeeze-updates main contrib non-free" >> /etc/apt/sources.list
+    echo "deb http://repository/mirror/security.debian.org       squeeze/updates main contrib non-free" >> /etc/apt/sources.list
+fi
+
+# Install classic packages.
+apt-get update
+apt-get dist-upgrade --yes
+apt-get install --yes puppet vim bash-completion less gawk \
+                      lsb-release openssl ca-certificates
+
+# Set the .vimrc profile.
+echo 'syntax on
+set number
+set tabstop=4
+set shiftwidth=4
+set expandtab
+set autoindent
+set laststatus=2
+set listchars=nbsp:¤,tab:>-,trail:¤,trail:·
+set list
+set ignorecase
+set smartcase
+set showcmd
+' > /root/.vimrc
+
+# Set the .bashrc profile.
+echo '
+
+PS1="${debian_chroot:+($debian_chroot)}\[\e[01;32m\]\u@\h \[\e[01;34m\]\A \[\e[01;37m\]\w\[\e[00m\]\n# "
+export EDITOR=vim
+alias vim="vim -p"
+alias ll="ls -al"
+alias upgrade="apt-get update && apt-get dist-upgrade"
+HISTSIZE=1000
+HISTFILESIZE=2000
+HISTCONTROL="ignoredups:ignorespace"
+' >> /root/.bashrc
+
+if [ "$codename" = "wheezy" ]
+then
+    # Don't clear tty1 after reboot.
+    sed -r -i 's|^(1.*/sbin/getty)(.*)$|\1 --noclear\2|' /etc/inittab
+fi
+
+if [ "$codename" = "trusty" ]
+then
+    # Allow ssh connection with root who has a password.
+    sed -i -r 's/^(PermitRootLogin without-password.*)$/#\1/' /etc/ssh/sshd_config
+    apt-get purge --yes mlocate
+fi
+
+# Specific to the RAID software.
+if [ "$info" = "raidsoft" ]
+then
+    gawk '!/^[[:space:]]*(#|$)/ { if ($2 == "/") {gsub($4,"noatime,"$4)} else if ($2 == "/boot") {gsub($4,"noatime")} }; { print }' /etc/fstab > /tmp/fstab.new
+    cat /tmp/fstab.new > /etc/fstab
+    lvremove --force /dev/vg1/dummylv1
+fi
+
+
