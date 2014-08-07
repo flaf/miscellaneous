@@ -28,7 +28,8 @@ mount -t "$fs" "$device" "/var/lib/ceph/osd/$cluster-$osd_id/"
 rm -rf "/var/lib/ceph/osd/$cluster-$osd_id/"* # cleaning of the partition.
 
 # Initialize the osd data directory (the keyring etc).
-ceph-osd -i "$osd_id" --mkfs --mkkey --osd-uuid "$uuid" --cluster "$cluster"
+ceph-osd -i "$osd_id" --mkfs --mkkey --osd-uuid "$uuid" --cluster "$cluster" \
+          --conf "/etc/ceph/$cluster.conf" >/dev/null 2>&1
 
 # Register the OSD authentication key.
 ceph auth add "osd.$osd_id" osd 'allow *' mon 'allow profile osd' \
