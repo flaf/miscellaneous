@@ -1,0 +1,23 @@
+#!/bin/sh
+
+Ceph_ready
+Ceph_install
+
+mon="$1"
+cluster="$2"
+fs="$3"
+device="$4"
+
+if [ "$mon" != "my self" ]
+then
+    scp "root@$mon:/etc/ceph/$cluster.conf" "/etc/ceph/"
+    scp "root@$mon:/etc/ceph/$cluster.client.admin.keyring"
+    chmod 600 "/etc/ceph/$cluster.client.admin.keyring"
+fi
+
+# UUID of the osd.
+uuid=$(uuidgen)
+
+
+
+
