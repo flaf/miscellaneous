@@ -24,7 +24,7 @@ Ceph_install
 
 other_mons_host=""
 other_mons_address=""
-for i in $another_mons
+for i in $other_mons
 do
     other_mons_host="$other_mons_host, "$(printf "$i\n" | cut -d":" -f1)
     other_mons_address="$other_mons_address, "$(printf "$i\n" | cut -d":" -f2)
