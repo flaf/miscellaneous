@@ -61,7 +61,7 @@ ceph-authtool --create-keyring "/etc/ceph/$cluster.client.admin.keyring" \
 #           --fsid "$fsid" "/tmp/monmap"
 
 # Create a default data directory (or directories) on the monitor host(s).
-mkdir "/var/lib/ceph/mon/$cluster-$hostname"
+#mkdir "/var/lib/ceph/mon/$cluster-$hostname"
 
 
 # /!\ En fait, je pense qu'on peut beaucoup simplifier.
