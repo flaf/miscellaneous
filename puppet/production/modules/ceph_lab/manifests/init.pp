@@ -29,6 +29,7 @@ class ceph_lab {
              'Ceph_add_osd_v2',
              'Ceph_add_mon',
              'Ceph_remove_osd',
+             'Ceph_create_rados_block_device',
            ]
 
   tools { $tools: }

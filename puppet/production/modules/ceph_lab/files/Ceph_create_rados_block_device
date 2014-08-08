@@ -1,0 +1,29 @@
+#!/bin/sh
+
+Ceph_ready
+Ceph_install
+
+mon="$1"
+cluster="$2"
+
+if [ "$mon" != "my self" ]
+then
+    scp "root@$mon:/etc/ceph/$cluster.conf" "/etc/ceph/"
+    scp "root@$mon:/etc/ceph/$cluster.client.admin.keyring" "/etc/ceph"
+    chmod 600 "/etc/ceph/$cluster.client.admin.keyring"
+fi
+
+# Create a block device image.
+rbd create "$cluster" --size 4096 -c "/etc/ceph/$cluster.conf" \
+                       -k "/etc/ceph/$cluster.client.admin.keyring"
+
+# Map the image to a block device.
+rbd map "$cluster" --pool rbd --name client.admin \
+    -c "/etc/ceph/$cluster.conf"                  \
+    -k "/etc/ceph/$cluster.client.admin.keyring"
+
+
+# A block device is available:
+#   mkfs.ext4 -m0 "/dev/rbd/rbd/$cluster"
+
+œ
