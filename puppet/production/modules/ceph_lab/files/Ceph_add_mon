@@ -16,7 +16,6 @@ if [ "$mon" != "my self" ]
 then
     scp "root@$mon:/etc/ceph/$cluster.conf" "/etc/ceph/"
     scp "root@$mon:/etc/ceph/$cluster.client.admin.keyring" "/etc/ceph"
-    chmod 600 "/etc/ceph/$cluster.client.admin.keyring"
 fi
 
 # Create a keyring file for the mon daemon with the secret key
