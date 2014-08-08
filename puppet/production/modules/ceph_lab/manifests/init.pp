@@ -27,6 +27,7 @@ class ceph_lab {
              'Ceph_mon_bootstrapping',
              'Ceph_add_osd',
              'Ceph_add_osd_v2',
+             'Ceph_add_mon',
              'Ceph_remove_osd',
            ]
 
