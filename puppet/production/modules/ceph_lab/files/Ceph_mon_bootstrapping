@@ -50,6 +50,12 @@ ceph-authtool --create-keyring "/etc/ceph/$cluster.client.admin.keyring" \
               --gen-key -n client.admin --set-uid=0                      \
               --cap mon 'allow *' --cap osd 'allow *' --cap mds 'allow'
 
+# Add the secret key of the client.admin user in the keyring
+# file of the monitor.
+printf "\n" >> "/tmp/$cluster.mon.keyring"
+cat "/etc/ceph/$cluster.client.admin.keyring" >> "/tmp/$cluster.mon.keyring"
+printf "\n" >> "/tmp/$cluster.mon.keyring"
+
 # Create the data directory on the monitor host.
 # Seems to be useless.
 #
@@ -58,8 +64,12 @@ ceph-authtool --create-keyring "/etc/ceph/$cluster.client.admin.keyring" \
 # Populate the monitor daemon directory. Three pieces of
 # information must be provided. [1] the cluster fsid (in
 # the $cluster.conf file) [2] the list of monitors (in the
-# $cluster.conf file) [3] the monitor secret key (in the
-# keyring file).
+# $cluster.conf file) [3] the monitor secret key and the
+# secret key of client.admin user (in the keyring file).
+# The secret key of client.admin user is a shared key
+# which must be present in client side
+# (in /etc/ceph/$cluster.client.admin.keyring) and in
+# server side (in /var/lib/mon/$cluster-$hostname/).
 ceph-mon --mkfs -i "$hostname" --conf "/etc/ceph/$cluster.conf" \
          --keyring "/tmp/$cluster.mon.keyring"                  \
          --cluster "$cluster"
