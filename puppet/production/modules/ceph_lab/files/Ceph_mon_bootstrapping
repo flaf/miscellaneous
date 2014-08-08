@@ -16,7 +16,6 @@ ipaddress=$(facter ipaddress)
 
 # Pre-cleaning.
 rm -f "/tmp/$cluster.mon.keyring"
-#rm -f "/tmp/monmap"
 rm -fr "/var/lib/ceph/mon/$cluster-$hostname"
 
 Ceph_ready
@@ -45,42 +44,24 @@ EOF
 ceph-authtool --create-keyring "/tmp/$cluster.mon.keyring" \
               --gen-key -n mon. --cap mon 'allow *'
 
-# Generate an administrator keyring, generate a client.admin user
+# Generate an administrator keyring: generate a client.admin user
 # and add the user to the keyring.
 ceph-authtool --create-keyring "/etc/ceph/$cluster.client.admin.keyring" \
               --gen-key -n client.admin --set-uid=0                      \
               --cap mon 'allow *' --cap osd 'allow *' --cap mds 'allow'
 
-# Add the client.admin key to the $cluster.mon.keyring.
-#ceph-authtool "/tmp/$cluster.mon.keyring" \
-#              --import-keyring "/etc/ceph/$cluster.client.admin.keyring"
+# Create the data directory on the monitor host.
+# Seems to be useless.
+#
+#   mkdir "/var/lib/ceph/mon/$cluster-$hostname"
 
-# Generate a monitor map using the hostname(s), host IP address(es)
-# and the FSID. Save it as /tmp/monmap.
-#monmaptool --create --add "$hostname" "$ipaddress" \
-#           --fsid "$fsid" "/tmp/monmap"
-
-# Create a default data directory (or directories) on the monitor host(s).
-#mkdir "/var/lib/ceph/mon/$cluster-$hostname"
-
-
-# /!\ En fait, je pense qu'on peut beaucoup simplifier.
-#     Ce /tmp/monmap, c'est de la connerie (voir page man
-#     de ceph-mon). De même, qu'ajouter la clé secrète de
-#     l'admin dans /tmp/$cluster.mon.keyring c'est juste
-#     n'importe quoi. D'après la page man, pour peupler
-#     le répertoire, il faut le keyring (avec juste la clé
-#     des monitors), le fsid du cluster (mais il est fourni
-#     par le fichier de $cluster.conf) et la liste des monitors
-#     (fournie dans le fichier $cluster.conf à nouveau).
-#     Bref, on peut simplifer pas mal.
-
-# Populate the monitor daemon(s) with the monitor map and keyring.
-#ceph-mon --mkfs -i "$hostname" -c "/etc/ceph/$cluster.conf"           \
-#         --monmap "/tmp/monmap" --keyring "/tmp/$cluster.mon.keyring" \
-#         --cluster "$cluster"
+# Populate the monitor daemon. Three pieces of information
+# must be provided. [1] the cluster fsid (in the $cluster.conf
+# file) [2] the list of monitors (in the $cluster.conf file)
+# [3] the monitor secret key (in the keyring file).
 ceph-mon --mkfs -i "$hostname" -c "/etc/ceph/$cluster.conf" \
-         --keyring "/tmp/$cluster.mon.keyring" --cluster "$cluster"
+         --keyring "/tmp/$cluster.mon.keyring"              \
+         --cluster "$cluster"
 
 # To allow the stating of ceph-mon at each reboot.
 touch "/var/lib/ceph/mon/$cluster-$hostname/done"
@@ -92,13 +73,10 @@ start ceph-all
 
 # Post-cleaning.
 rm -f "/tmp/$cluster.mon.keyring"
-#rm -f "/tmp/monmap"
-
 
 # You can check the installation with:
 #
 #  ceph osd lspools --cluster "$cluster"
 #  ceph status --cluster "$cluster"
-#
 
 
