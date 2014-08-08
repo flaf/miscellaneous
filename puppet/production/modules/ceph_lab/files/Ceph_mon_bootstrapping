@@ -3,7 +3,7 @@
 
 # Characters just in [a-z0-9] for the cluster name.
 cluster="$1"
-other_noms="$2" # ex: "ceph-node2:172.31.9.2 ceph-node3:172.31.9.3"
+other_mons="$2" # ex: "ceph-node2:172.31.9.2 ceph-node3:172.31.9.3"
 
 if ! (printf "%s\n" "$cluster" | grep -Eq '^[a-z0-9]+$')
 then
@@ -33,8 +33,8 @@ done
 cat > "/etc/ceph/$cluster.conf" <<EOF
 [global]
 fsid = $fsid
-mon initial members = $hostname, $other_mons_host
-mon host = $ipaddress, $other_mons_address
+mon initial members = ${hostname}${other_mons_host}
+mon host = ${ipaddress}${other_mons_address}
 #public network = <CIDR address>
 auth cluster required = cephx
 auth service required = cephx
