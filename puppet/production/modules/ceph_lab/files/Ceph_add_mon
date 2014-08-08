@@ -19,16 +19,19 @@ then
     chmod 600 "/etc/ceph/$cluster.client.admin.keyring"
 fi
 
-# Create a keyring for your cluster and generate a monitor secret key.
+# Create a keyring file for the mon daemon with the secret key
+# provided in the arguments of this script.
 ceph-authtool --create-keyring "/tmp/$cluster.mon.keyring" \
               --add-key "$secret_key" -n mon. --cap mon 'allow *'
 
-# Create a default data directory (or directories) on the monitor host(s).
-mkdir "/var/lib/ceph/mon/$cluster-$hostname"
+# Create the data directory on the monitor host.
+# Seems to be useless.
+#
+#   mkdir "/var/lib/ceph/mon/$cluster-$hostname"
 
-# Populate the monitor daemon(s) with the keyring.
-ceph-mon --mkfs -i "$hostname" -c "/etc/ceph/$cluster.conf" \
-         --keyring "/tmp/$cluster.mon.keyring"              \
+# Populate the monitor daemon directory.
+ceph-mon --mkfs -i "$hostname" --conf "/etc/ceph/$cluster.conf" \
+         --keyring "/tmp/$cluster.mon.keyring"                  \
          --cluster "$cluster"
 
 # To allow the stating of ceph-mon at each reboot.
@@ -46,7 +49,5 @@ rm -f "/tmp/$cluster.mon.keyring"
 #
 #  ceph osd lspools --cluster "$cluster"
 #  ceph status --cluster "$cluster"
-#
-
 
 

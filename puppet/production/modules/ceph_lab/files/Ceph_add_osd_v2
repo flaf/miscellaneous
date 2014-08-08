@@ -23,15 +23,17 @@ uuid=$(uuidgen)
 osd_id=$(ceph --cluster "$cluster" osd create "$uuid")
 printf "The id of this osd will be $osd_id.\n"
 
-
 # Creation of the osd data directory.
 mkdir "/var/lib/ceph/osd/$cluster-$osd_id/"
 mount -t "$fs" "$device" "/var/lib/ceph/osd/$cluster-$osd_id/"
 rm -rf "/var/lib/ceph/osd/$cluster-$osd_id/"* # cleaning of the partition.
 
-# Initialize the osd data directory (the keyring etc).
-ceph-osd -i "$osd_id" --mkfs --mkkey --osd-uuid "$uuid" --cluster "$cluster" \
-          --conf "/etc/ceph/$cluster.conf" >/dev/null 2>&1
+# Initialize the osd data directory. The keyring is generated
+# with the --mkkey option. Cluster fsid and list of monitors
+# are provided in the $cluster.conf file.
+ceph-osd -i "$osd_id" --mkfs --mkkey --cluster "$cluster"     \
+          --conf "/etc/ceph/$cluster.conf" --osd-uuid "$uuid" \
+    >/dev/null 2>&1
 
 # Register the OSD authentication key.
 ceph auth add "osd.$osd_id" osd 'allow *' mon 'allow profile osd' \
@@ -56,7 +58,7 @@ touch "/var/lib/ceph/osd/$cluster-$osd_id/upstart"
 stop ceph-all
 start ceph-all
 
-# Define UUID variable of the device (the partition in fact).
+# Define UUID variable of the device (the UUID partition in fact).
 eval $(blkid | awk '$0 ~ "^'"$device"'" { print $2}')
 
 printf "Update of /etc/fstab.\n"

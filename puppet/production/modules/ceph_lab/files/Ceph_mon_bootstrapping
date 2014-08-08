@@ -55,12 +55,13 @@ ceph-authtool --create-keyring "/etc/ceph/$cluster.client.admin.keyring" \
 #
 #   mkdir "/var/lib/ceph/mon/$cluster-$hostname"
 
-# Populate the monitor daemon. Three pieces of information
-# must be provided. [1] the cluster fsid (in the $cluster.conf
-# file) [2] the list of monitors (in the $cluster.conf file)
-# [3] the monitor secret key (in the keyring file).
-ceph-mon --mkfs -i "$hostname" -c "/etc/ceph/$cluster.conf" \
-         --keyring "/tmp/$cluster.mon.keyring"              \
+# Populate the monitor daemon directory. Three pieces of
+# information must be provided. [1] the cluster fsid (in
+# the $cluster.conf file) [2] the list of monitors (in the
+# $cluster.conf file) [3] the monitor secret key (in the
+# keyring file).
+ceph-mon --mkfs -i "$hostname" --conf "/etc/ceph/$cluster.conf" \
+         --keyring "/tmp/$cluster.mon.keyring"                  \
          --cluster "$cluster"
 
 # To allow the stating of ceph-mon at each reboot.
