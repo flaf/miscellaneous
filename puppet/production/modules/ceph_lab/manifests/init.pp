@@ -32,6 +32,7 @@ class ceph_lab {
              'Ceph_create_rados_block_device',
              'Ceph_grep_process',
              'Ceph_restart_all',
+             'Ceph_status',
            ]
 
   tools { $tools: }
