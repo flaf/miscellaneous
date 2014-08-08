@@ -63,6 +63,18 @@ monmaptool --create --add "$hostname" "$ipaddress" \
 # Create a default data directory (or directories) on the monitor host(s).
 mkdir "/var/lib/ceph/mon/$cluster-$hostname"
 
+
+# /!\ En fait, je pense qu'on peut beaucoup simplifier.
+#     Ce /tmp/monmap, c'est de la connerie (voir page man
+#     de ceph-mon). De même, qu'ajouter la clé secrète de
+#     l'admin dans /tmp/$cluster.mon.keyring c'est juste
+#     n'importe quoi. D'après la page man, pour peupler
+#     le répertoire, il faut le keyring (avec juste la clé
+#     des monitors), le fsid du cluster (mais il est fourni
+#     par le fichier de $cluster.conf) et la liste des monitors
+#     (fournie dans le fichier $cluster.conf à nouveau).
+#     Bref, on peut simplifer pas mal.
+
 # Populate the monitor daemon(s) with the monitor map and keyring.
 ceph-mon --mkfs -i "$hostname" -c "/etc/ceph/$cluster.conf"           \
          --monmap "/tmp/monmap" --keyring "/tmp/$cluster.mon.keyring" \
