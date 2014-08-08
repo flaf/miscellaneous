@@ -55,6 +55,7 @@ ceph-authtool --create-keyring "/etc/ceph/$cluster.client.admin.keyring" \
 printf "\n" >> "/tmp/$cluster.mon.keyring"
 cat "/etc/ceph/$cluster.client.admin.keyring" >> "/tmp/$cluster.mon.keyring"
 printf "\n" >> "/tmp/$cluster.mon.keyring"
+chmod 600 "/tmp/$cluster.mon.keyring"
 
 # Create the data directory on the monitor host.
 # Seems to be useless.
