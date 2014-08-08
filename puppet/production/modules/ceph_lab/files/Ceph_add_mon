@@ -1,0 +1,53 @@
+#!/bin/sh
+
+Ceph_ready
+Ceph_install
+
+mon="$1"
+cluster="$2"
+secret_key="$3"
+
+hostname=$(hostname)
+
+# Pre-cleaning.
+rm -f "/tmp/$cluster.mon.keyring"
+
+if [ "$mon" != "my self" ]
+then
+    scp "root@$mon:/etc/ceph/$cluster.conf" "/etc/ceph/"
+    scp "root@$mon:/var/lib/ceph/bootstrap-osd/$cluster.keyring" \
+        "/var/lib/ceph/bootstrap-osd/"
+    chmod 600 "/var/lib/ceph/bootstrap-osd/$cluster.keyring"
+fi
+
+# Create a keyring for your cluster and generate a monitor secret key.
+ceph-authtool --create-keyring "/tmp/$cluster.mon.keyring" \
+              --add-key "$secret_key" -n mon. --cap mon 'allow *'
+
+# Create a default data directory (or directories) on the monitor host(s).
+mkdir "/var/lib/ceph/mon/$cluster-$hostname"
+
+# Populate the monitor daemon(s) with the keyring.
+ceph-mon --mkfs -i "$hostname" -c "/etc/ceph/$cluster.conf" \
+         --keyring "/tmp/$cluster.mon.keyring"              \
+         --cluster "$cluster"
+
+# To allow the stating of ceph-mon at each reboot.
+touch "/var/lib/ceph/mon/$cluster-$hostname/done"
+touch "/var/lib/ceph/mon/$cluster-$hostname/upstart"
+
+# Restart of the daemon.
+stop ceph-all
+start ceph-all
+
+# Post-cleaning.
+rm -f "/tmp/$cluster.mon.keyring"
+
+# You can check the installation with:
+#
+#  ceph osd lspools --cluster "$cluster"
+#  ceph status --cluster "$cluster"
+#
+
+
+
