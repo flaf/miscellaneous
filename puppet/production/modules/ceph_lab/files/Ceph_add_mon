@@ -23,6 +23,12 @@ fi
 ceph-authtool --create-keyring "/tmp/$cluster.mon.keyring" \
               --add-key "$secret_key" -n mon. --cap mon 'allow *'
 
+# Add the secret key of the client.admin user in the keyring
+# file of the monitor.
+printf "\n" >> "/tmp/$cluster.mon.keyring"
+cat "/etc/ceph/$cluster.client.admin.keyring" >> "/tmp/$cluster.mon.keyring"
+printf "\n" >> "/tmp/$cluster.mon.keyring"
+
 # Create the data directory on the monitor host.
 # Seems to be useless.
 #
