@@ -26,4 +26,3 @@ rbd map "$cluster" --pool rbd --name client.admin \
 # A block device is available:
 #   mkfs.ext4 -m0 "/dev/rbd/rbd/$cluster"
 
-œ
