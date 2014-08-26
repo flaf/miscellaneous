@@ -6,7 +6,7 @@ Ceph_install
 mon="$1"
 cluster="$2"
 devicename="$3"
-size="$4"
+size="$4" # in MB.
 
 if [ "$mon" != "my self" ]
 then
