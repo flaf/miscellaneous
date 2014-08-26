@@ -5,6 +5,8 @@ Ceph_install
 
 mon="$1"
 cluster="$2"
+devicename="$3"
+size="$4"
 
 if [ "$mon" != "my self" ]
 then
@@ -14,12 +16,13 @@ then
 fi
 
 # Create a block device image.
-rbd create "$cluster" --size 4096 -c "/etc/ceph/$cluster.conf" \
-                       -k "/etc/ceph/$cluster.client.admin.keyring"
+rbd create "$devicename" --size "$size" \
+    -c "/etc/ceph/$cluster.conf"        \
+    -k "/etc/ceph/$cluster.client.admin.keyring"
 
 # Map the image to a block device.
-rbd map "$cluster" --pool rbd --name client.admin \
-    -c "/etc/ceph/$cluster.conf"                  \
+rbd map "$devicename" --pool rbd --name client.admin \
+    -c "/etc/ceph/$cluster.conf"                     \
     -k "/etc/ceph/$cluster.client.admin.keyring"
 
 
