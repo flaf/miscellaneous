@@ -105,7 +105,7 @@ pbuilder-wheezy-amd64 execute --bindmounts $TARGET_DIR -- $SCRIPT
 # le fichier hieradata/fqdn/jenkins-squeeze-amd64.crdp.ac-versailles.fr.yaml
 # et ajouter une entrée dans « dput: ».
 
-Attention, pour que la commande dput fonctionne
+# Attention, pour que la commande dput fonctionne
 # (upload des paquets sur repository), il faut :
 #    1. Créer le repertoire 
 (cd "$TARGET_DIR/$WORGING_DIR_IN_GIT/.." && debsign *.changes && dput "$TARGET_COMPONENT" *.changes)
