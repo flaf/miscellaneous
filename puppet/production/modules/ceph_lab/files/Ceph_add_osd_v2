@@ -18,7 +18,7 @@ fi
 # UUID of the osd.
 uuid=$(uuidgen)
 
-# Create the OSD. The ommand will output the OSD number,
+# Create the OSD. The command will output the OSD number,
 # which we will need for subsequent steps.
 osd_id=$(ceph --cluster "$cluster" osd create "$uuid")
 printf "The id of this osd will be $osd_id.\n"
