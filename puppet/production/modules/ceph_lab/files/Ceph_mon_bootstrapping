@@ -4,6 +4,7 @@
 # Characters just in [a-z0-9] for the cluster name.
 cluster="$1"
 mon_id="$2"
+other_mons="$3" # ex: "ceph-node1:m2:172.31.9.2 ceph-node3:m3:172.31.9.3"
 
 if ! (printf "%s\n" "$cluster" | grep -Eq '^[a-z0-9]+$')
 then
@@ -22,15 +23,6 @@ rm -fr "/var/lib/ceph/mon/$cluster-$mon_id"
 Ceph_ready
 Ceph_install
 
-#other_mons="$2" # ex: "ceph-node2:172.31.9.2 ceph-node3:172.31.9.3"
-#other_mons_host=""
-#other_mons_address=""
-#for i in $other_mons
-#do
-#    other_mons_host="$other_mons_host, "$(printf "$i\n" | cut -d":" -f1)
-#    other_mons_address="$other_mons_address, "$(printf "$i\n" | cut -d":" -f2)
-#done
-
 cat > "/etc/ceph/$cluster.conf" <<EOF
 [global]
     fsid = $fsid
@@ -48,7 +40,26 @@ cat > "/etc/ceph/$cluster.conf" <<EOF
     osd pool default pgp num = 333
     osd crush chooseleaf type = 1
 
+[mon.$mon_id]
+    host = $hostname
+    mon addr = $ipaddress
+
 EOF
+
+other_mons_host=""
+other_mons_address=""
+for i in $other_mons
+do
+    other_mon_name="$other_mons_host, "$(printf "$i\n" | cut -d":" -f1)
+    other_mon_id="$other_mons_host, "$(printf "$i\n" | cut -d":" -f2)
+    other_mon_address="$other_mons_address, "$(printf "$i\n" | cut -d":" -f3)
+    cat >> "/etc/ceph/$cluster.conf" <<EOF
+[mon.$other_mon_id]
+    host = $other_mon_name
+    mon addr = $other_mon_address
+
+EOF
+done
 
 # Create a keyring for the monitors of the cluster.
 ceph-authtool --create-keyring "/tmp/$cluster.mon.keyring" \
