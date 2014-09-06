@@ -7,7 +7,7 @@ mon="$1"
 cluster="$2"
 id="$3"
 
-printf "Be careful, an mon or osd must be already installed.\n"
+printf "Be careful, a mon or osd must be already installed in the server.\n"
 
 # Create the mds directory.
 mkdir "/var/lib/ceph/mds/$cluster-$id"
