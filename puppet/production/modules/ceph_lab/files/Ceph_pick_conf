@@ -1,0 +1,9 @@
+#!/bin/sh
+
+mon="$1"
+cluster="$2"
+
+scp "root@$mon:/etc/ceph/$cluster.conf" "/etc/ceph/"
+scp "root@$mon:/etc/ceph/$cluster.client.admin.keyring" "/etc/ceph"
+
+

@@ -23,6 +23,7 @@ class ceph_lab {
 
   $tools = [ 'Ceph_ready',
              'Ceph_install',
+             'Ceph_pick_conf',
              'Ceph_create_user',
              'Ceph_mon_bootstrapping',
              'Ceph_add_osd',
