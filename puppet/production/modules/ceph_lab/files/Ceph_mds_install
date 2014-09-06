@@ -21,7 +21,7 @@ ceph -m "$mon" --cluster "$cluster" --name client.bootstrap-mds \
     -o "/var/lib/ceph/mds/ceph-$id/keyring"
 
 touch "/var/lib/ceph/mds/$cluster-$id/done"
-touch "/var/lib/ceph/mds/$cluster-$id/start"
+touch "/var/lib/ceph/mds/$cluster-$id/upstart"
 
 if ! dpkg -l ceph-mds | grep -q '^ii'
 then
