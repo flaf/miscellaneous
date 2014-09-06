@@ -10,7 +10,7 @@ Ceph_install
 
 if ! dpkg -l ceph-fs-common | grep -q '^ii'
 then
-    apt-get install ceph-fs-common
+    apt-get install ceph ceph-fs-common
 fi
 
 mount -t ceph "$share_cephfs" "$mountpoint" -o name="$user",secret="$secret"
