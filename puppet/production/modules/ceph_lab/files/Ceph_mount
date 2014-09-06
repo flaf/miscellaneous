@@ -1,0 +1,20 @@
+#!/bin/sh
+
+share_cephfs="$1" # ex --> ceph ceph-node1,ceph-node2,ceph-node3:6789:/data/
+mountpoint="$2"   # ex --> /mnt/cephfs
+user="$3"         # ex --> admin
+secret="$4"       # The secret of the user.
+
+Ceph_ready
+Ceph_install
+
+if ! dpkg -l ceph-fs-common | grep -q '^ii'
+then
+    apt-get install ceph-fs-common
+fi
+
+mount -t ceph "$share_cephfs" "$mountpoint" -o name="$user",secret="$secret"
+
+# Rq : the option secretfile is possible.
+
+

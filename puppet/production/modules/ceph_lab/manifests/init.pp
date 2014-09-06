@@ -35,6 +35,7 @@ class ceph_lab {
              'Ceph_grep_process',
              'Ceph_restart_all',
              'Ceph_status',
+             'Ceph_mount',
            ]
 
   tools { $tools: }
