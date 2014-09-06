@@ -13,7 +13,7 @@ printf "Be careful, a mon or osd must be already installed in the server.\n"
 mkdir "/var/lib/ceph/mds/$cluster-$id"
 
 ceph -m "$mon" --cluster "$cluster" --name client.bootstrap-mds \
-    --keyring /var/lib/ceph/bootstrap-mds/ceph.keyring          \
+    --keyring "/var/lib/ceph/bootstrap-mds/$cluster.keyring"    \
     auth get-or-create "mds.$id"                                \
     mds 'allow'                                                 \
     osd 'allow rwx'                                             \
