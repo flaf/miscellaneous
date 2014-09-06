@@ -18,7 +18,7 @@ ceph -m "$mon" --cluster "$cluster" --name client.bootstrap-mds \
     mds 'allow'                                                 \
     osd 'allow rwx'                                             \
     mon 'allow profile mds'                                     \
-    -o "/var/lib/ceph/mds/ceph-$id/keyring"
+    -o "/var/lib/ceph/mds/$cluster-$id/keyring"
 
 touch "/var/lib/ceph/mds/$cluster-$id/done"
 touch "/var/lib/ceph/mds/$cluster-$id/upstart"
