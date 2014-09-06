@@ -8,7 +8,7 @@ cluster="$2"
 fs="$3"
 device="$4"
 
-Ceph_pick_conf
+Ceph_pick_conf "$mon" "$cluster"
 
 # UUID of the osd.
 uuid=$(uuidgen)
