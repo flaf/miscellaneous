@@ -3,7 +3,9 @@
 mon="$1"
 cluster="$2"
 
-scp "root@$mon:/etc/ceph/$cluster.conf" "/etc/ceph/"
-scp "root@$mon:/etc/ceph/$cluster.client.admin.keyring" "/etc/ceph"
-
+if [ "$mon" != "$(hostname)" ]
+then
+    scp "root@$mon:/etc/ceph/$cluster.conf" "/etc/ceph/"
+    scp "root@$mon:/etc/ceph/$cluster.client.admin.keyring" "/etc/ceph"
+fi
 

@@ -37,7 +37,7 @@ ceph mon getmap -o "/tmp/monmap" -m "$mon"
 
 # Populate the monitor daemon directory.
 ceph-mon --mkfs -i "$id" --conf "/etc/ceph/$cluster.conf"             \
-         --monmap "/tmp/monmap "--keyring "/tmp/$cluster.mon.keyring" \
+         --monmap "/tmp/monmap" --keyring "/tmp/$cluster.mon.keyring" \
          --cluster "$cluster"
 
 # To allow the stating of ceph-mon at each reboot.
