@@ -51,8 +51,8 @@ touch "/var/lib/ceph/osd/$cluster-$osd_id/ready"
 touch "/var/lib/ceph/osd/$cluster-$osd_id/upstart"
 
 # Restart of the daemon.
-stop ceph-all
-start ceph-all
+stop ceph-osd-all
+start ceph-osd-all
 
 # Define UUID variable of the device (the UUID partition in fact).
 eval $(blkid | grep ^$device | sed -r 's/.*(UUID=[^ ]*).*/\1/')

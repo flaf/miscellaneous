@@ -45,8 +45,8 @@ touch "/var/lib/ceph/mon/$cluster-$id/done"
 touch "/var/lib/ceph/mon/$cluster-$id/upstart"
 
 # Restart of the daemon.
-stop ceph-all
-start ceph-all
+stop ceph-mon-all
+start ceph-mon-all
 
 # Post-cleaning.
 rm -f "/tmp/$cluster.mon.keyring"

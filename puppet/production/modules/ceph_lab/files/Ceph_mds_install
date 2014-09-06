@@ -1,0 +1,32 @@
+#!/bin/sh
+
+Ceph_ready
+Ceph_install
+
+mon="$1"
+cluster="$2"
+id="$3"
+
+printf "Be careful, an mon or osd must be already installed.\n"
+
+# Create the mds directory.
+mkdir "/var/lib/ceph/mds/$cluster-$id"
+
+ceph -m "$mon" --cluster "$cluster" --name client.bootstrap-mds \
+    --keyring /var/lib/ceph/bootstrap-mds/ceph.keyring          \
+    auth get-or-create "mds.$id"                                \
+    mds 'allow'                                                 \
+    osd 'allow rwx'                                             \
+    mon 'allow profile mds'                                     \
+    -o "/var/lib/ceph/mds/ceph-$id/keyring"
+
+
+if ! dpkg -l ceph-mds | grep -q '^ii'
+then
+    apt-get install ceph-mds
+else
+    restart ceph-mds-all
+fi
+
+
+
