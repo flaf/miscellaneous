@@ -5,29 +5,30 @@ Ceph_install
 
 mon="$1"
 cluster="$2"
-secret_key="$3"
+id="$3"
 
 hostname=$(hostname)
 
-# Pre-cleaning.
-rm -f "/tmp/$cluster.mon.keyring"
-
-if [ "$mon" != "my self" ]
-then
-    scp "root@$mon:/etc/ceph/$cluster.conf" "/etc/ceph/"
-    scp "root@$mon:/etc/ceph/$cluster.client.admin.keyring" "/etc/ceph"
-fi
+Ceph_pick_conf "$mon" "$cluster"
 
 # Create a keyring file for the mon daemon with the secret key
 # provided in the arguments of this script.
-ceph-authtool --create-keyring "/tmp/$cluster.mon.keyring" \
-              --add-key "$secret_key" -n mon. --cap mon 'allow *'
+#ceph-authtool --create-keyring "/tmp/$cluster.mon.keyring" \
+#              --add-key "$secret_key" -n mon. --cap mon 'allow *'
+
+
+# Get the mon keyring by a request to the iniatial mon.
+ceph auth get mon. -o "/tmp/$cluster.mon.keyring" -m "$mon"
+
+# Cet the mon map by a request to the initial mon too.
+ceph mon getmap -o "/tmp/monmap" -m "$mon"
+
 
 # Add the secret key of the client.admin user in the keyring
 # file of the monitor.
-printf "\n" >> "/tmp/$cluster.mon.keyring"
-cat "/etc/ceph/$cluster.client.admin.keyring" >> "/tmp/$cluster.mon.keyring"
-printf "\n" >> "/tmp/$cluster.mon.keyring"
+#printf "\n" >> "/tmp/$cluster.mon.keyring"
+#cat "/etc/ceph/$cluster.client.admin.keyring" >> "/tmp/$cluster.mon.keyring"
+#printf "\n" >> "/tmp/$cluster.mon.keyring"
 
 # Create the data directory on the monitor host.
 # Seems to be useless.
@@ -35,13 +36,13 @@ printf "\n" >> "/tmp/$cluster.mon.keyring"
 #   mkdir "/var/lib/ceph/mon/$cluster-$hostname"
 
 # Populate the monitor daemon directory.
-ceph-mon --mkfs -i "$hostname" --conf "/etc/ceph/$cluster.conf" \
-         --keyring "/tmp/$cluster.mon.keyring"                  \
+ceph-mon --mkfs -i "$id" --conf "/etc/ceph/$cluster.conf"             \
+         --monmap "/tmp/monmap "--keyring "/tmp/$cluster.mon.keyring" \
          --cluster "$cluster"
 
 # To allow the stating of ceph-mon at each reboot.
-touch "/var/lib/ceph/mon/$cluster-$hostname/done"
-touch "/var/lib/ceph/mon/$cluster-$hostname/upstart"
+touch "/var/lib/ceph/mon/$cluster-$id/done"
+touch "/var/lib/ceph/mon/$cluster-$id/upstart"
 
 # Restart of the daemon.
 stop ceph-all
@@ -49,6 +50,7 @@ start ceph-all
 
 # Post-cleaning.
 rm -f "/tmp/$cluster.mon.keyring"
+rm -f "/tmp/monmap"
 
 # You can check the installation with:
 #
