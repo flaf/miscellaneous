@@ -28,22 +28,23 @@ rm -rf "/var/lib/ceph/osd/$cluster-$osd_id/"* # cleaning of the partition.
 # are provided in the $cluster.conf file.
 ceph-osd -i "$osd_id" --mkfs --mkkey --cluster "$cluster"     \
           --conf "/etc/ceph/$cluster.conf" --osd-uuid "$uuid" \
-    >/dev/null 2>&1
+          -m "$mon" >/dev/null 2>&1
 
 # Register the OSD authentication key.
 ceph auth add "osd.$osd_id" osd 'allow *' mon 'allow profile osd' \
      -i "/var/lib/ceph/osd/$cluster-$osd_id/keyring"              \
-     --cluster "$cluster" --conf "/etc/ceph/$cluster.conf"
+     --cluster "$cluster" --conf "/etc/ceph/$cluster.conf"        \
+     -m "$mon"
 
 # Add your Ceph Node to the CRUSH map.
-ceph osd crush add-bucket $(hostname) host --cluster "$cluster"
+ceph osd crush add-bucket $(hostname) host --cluster "$cluster" -m "$mon"
 
 # Place the Ceph Node under the root default.
-ceph osd crush move $(hostname) root=default --cluster "$cluster"
+ceph osd crush move $(hostname) root=default --cluster "$cluster" -m "$mon"
 
 # Add the osd to the CRUSH map so that it can begin receiving data.
 # 1.0 is the weight of the osd.
-ceph osd crush add "osd.$osd_id" 1.0 host=$(hostname) --cluster "$cluster"
+ceph osd crush add "osd.$osd_id" 1.0 host=$(hostname) --cluster "$cluster" -m "$mon"
 
 # To allow the start of the daemon at each reboot.
 touch "/var/lib/ceph/osd/$cluster-$osd_id/ready"
