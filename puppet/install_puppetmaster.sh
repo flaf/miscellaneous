@@ -1,3 +1,30 @@
+# /!\ Attention, cet imbécile de puppetmaster
+#     quand il voit un lien symbolique au niveau
+#     de /etc/puppet/environments/production
+#     (qui pointe vers un dépôt local git par
+#     exemple), il remplace ce lien par un répertoire
+#     vide et donc je pers toute ma conf. Super !
+#     Problème signalé ici :
+#     https://www.mail-archive.com/puppet-bugs@googlegroups.com/msg73413.html
+#
+#     Du coup, par rapport à l'installation ci-dessous
+#     il faut :
+#       - modifier le fichier /etc/puppet/puppet.conf
+#         et remplacer la ligne 1 par la 2 :
+#
+#         1. environmentpath = $confdir/environments
+#         2. environmentpath = /usr/local/src/git/miscellaneous/puppet
+#
+#     Et ne pas oublier d'aller modifier le fichier
+#     /etc/puppet/hiera.yaml en remplaçant 1 par 2 :
+#
+#         1. :datadir: "/etc/puppet/environments"
+#         2.  :datadir: "/usr/local/src/git/miscellaneous/puppet"
+
+
+
+
+
 # Installation de puppetmaster dernière version.
 wget http://apt.puppetlabs.com/puppetlabs-release-wheezy.deb
 dpkg -i puppetlabs-release-wheezy.deb
