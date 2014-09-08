@@ -9,8 +9,18 @@ class shinken::server::install {
 
   # If we use LDAPS for the authentifications, we need
   # these package.
-  package { ['openssl', 'ca-certificates']:
-    ensure => latest,
+  if ! defined(Package['openssl']) {
+    package { 'openssl for shinken':
+      name   => 'openssl',
+      ensure => present,
+    }
+  }
+
+  if ! defined(Package['ca-certificates']) {
+    package { 'ca-certificates for shinken':
+      name   => 'ca-certificates',
+      ensure => present,
+    }
   }
 
 }
