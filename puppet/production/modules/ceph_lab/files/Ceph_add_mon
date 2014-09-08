@@ -20,7 +20,7 @@ Ceph_pick_conf "$mon" "$cluster"
 # Get the mon keyring by a request to the iniatial mon.
 ceph auth get mon. -o "/tmp/$cluster.mon.keyring" -m "$mon" --cluster "$cluster"
 
-# Cet the mon map by a request to the initial mon too.
+# Get the mon map by a request to the initial mon too.
 ceph mon getmap -o "/tmp/monmap" -m "$mon" --cluster "$cluster"
 
 
