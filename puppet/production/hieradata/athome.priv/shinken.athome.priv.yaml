@@ -5,6 +5,9 @@ classes:
   - exim4
 
 
+shinken_node_properties:
+  _STORAGE_EXCEPTIONS: '/backups:95:97 /boot:90:95 /data:60:80'
+
 ##################################
 # Hiera data for the server site #
 ##################################
