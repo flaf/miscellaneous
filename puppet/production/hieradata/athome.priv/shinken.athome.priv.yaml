@@ -6,7 +6,7 @@ classes:
 
 
 shinken_node_properties:
-  _STORAGE_EXCEPTIONS: '/backups:95:97 /boot:90:95 /data:60:80'
+  _STORAGE_EXCEPTIONS: '/backups:90:95 /boot:90:95 '
 
 ##################################
 # Hiera data for the server site #
