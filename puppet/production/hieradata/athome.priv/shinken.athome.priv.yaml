@@ -68,7 +68,8 @@ shinken_misc:
         - |
            _http_pages http sdz1$(url->fr.openclassrooms.com:80/informatique/c/cours!1)$, \
                            http sdz2$(url->fr.openclassrooms.com:80/informatique/c/cours!2)$,
-        - '_macro test'
+        - '_macro1 test1'
+        - '_macro2 test2'
 
 disable_ipmi_check: 'true'
 
