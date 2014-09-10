@@ -6,8 +6,8 @@ class shinken::node::raid {
   $tag                  = $shinken::node::params::tag
 
   # The exported file collected by the shinken server.
-  @@file { "${::hostname}_raid":
-    path    => "$exported_dir/${::hostname}_raid.exp",
+  @@file { "${::fqdn}_raid":
+    path    => "$exported_dir/${::fqdn}_raid.exp",
     content => template('shinken/node/hostname_raid.exp.erb'),
     tag     => "$tag",
   }

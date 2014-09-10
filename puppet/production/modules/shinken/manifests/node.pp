@@ -74,8 +74,8 @@ class shinken::node {
   }
 
   # The exported file collected by the shinken server.
-  @@file { "${::hostname}_linux":
-    path    => "$exported_dir/${::hostname}_linux.exp",
+  @@file { "${::fqdn}_linux":
+    path    => "$exported_dir/${::fqdn}_linux.exp",
     content => template('shinken/node/hostname_linux.exp.erb'),
     tag     => "$tag",
   }
@@ -84,8 +84,8 @@ class shinken::node {
 
     # The exported file collected by the shinken server.
     # /!\ Currently not used. Just for information. /!\
-    @@file { "${::hostname}_ipmi":
-      path    => "$exported_dir/${::hostname}_ipmi.info",
+    @@file { "${::fqdn}_ipmi":
+      path    => "$exported_dir/${::fqdn}_ipmi.info",
       content => template('shinken/node/hostname_ipmi.exp.erb'),
       tag     => "$tag",
     }
