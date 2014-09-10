@@ -65,7 +65,7 @@ shinken_misc:
       custom:                  # Optional. Add customized properties for this host.
         - '_HTTPS_WARN 5'
         - '_HTTPS_CRIT 8'
-        - '_https_pages test1$(url->www.google.fr/index.php:80!google)$'
+        - '_http_pages http sdz$(url->fr.openclassrooms.com:80/informatique/c/cours!programmer en C)$'
 
 disable_ipmi_check: 'true'
 
