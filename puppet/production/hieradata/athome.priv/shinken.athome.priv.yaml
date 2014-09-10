@@ -65,8 +65,9 @@ shinken_misc:
       custom:                  # Optional. Add customized properties for this host.
         - '_HTTPS_WARN 5'
         - '_HTTPS_CRIT 8'
-        - '_http_pages http sdz1$(url->fr.openclassrooms.com:80/informatique/c/cours!1)$'
-        - '_http_pages http sdz2$(url->fr.openclassrooms.com:80/informatique/c/cours!2)$'
+        - >
+          '_http_pages http sdz1$(url->fr.openclassrooms.com:80/informatique/c/cours!1)$,
+          _http sdz2$(url->fr.openclassrooms.com:80/informatique/c/cours!2)$'
 
 disable_ipmi_check: 'true'
 
