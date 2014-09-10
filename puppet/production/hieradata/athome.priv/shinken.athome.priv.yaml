@@ -59,9 +59,9 @@ shinken_misc:
   # This entry is optional. Useful to add hosts that don't use a puppet
   # client and that we want to check anyway.
   manual_hosts:
-    google:                    # The host_name in the shinken configuration.
-      address: 'www.google.fr' # Required for each manual host (if exists).
-      templates: 'https_tpl'   # Required for each manual host (if exists).
+    google:                             # The host_name in the shinken configuration.
+      address: 'www.google.fr'          # Required for each manual host (if exists).
+      templates: 'https_tpl,http_tpl'   # Required for each manual host (if exists).
       custom:                  # Optional. Add customized properties for this host.
         - '_HTTPS_WARN 5'
         - '_HTTPS_CRIT 8'
