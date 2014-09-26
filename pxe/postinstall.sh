@@ -9,6 +9,25 @@ info="$2"
 # Set default locale.
 update-locale LANG="en_US.UTF-8"
 
+# Set keyboard configuration.
+# https://wiki.debian.org/Keyboard
+cat >/etc/default/keyboard <<EOF
+### Set by postinstall.sh ###
+
+# KEYBOARD CONFIGURATION FILE
+# Consult the keyboard(5) manual page.
+
+XKBMODEL="pc105"
+XKBLAYOUT="fr"
+XKBVARIANT="latin9"
+XKBOPTIONS=""
+BACKSPACE="guess"
+
+EOF
+
+service keyboard-setup restart
+
+
 # Disable IPv6.
 sed -i -r 's/^GRUB_CMDLINE_LINUX=.*$/GRUB_CMDLINE_LINUX="ipv6.disable=1"/' \
           /etc/default/grub
