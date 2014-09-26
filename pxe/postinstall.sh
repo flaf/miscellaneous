@@ -89,7 +89,7 @@ then
     sed -r -i 's|^(1.*/sbin/getty)(.*)$|\1 --noclear\2|' /etc/inittab
 fi
 
-if [ "$codename" = "trusty" ]
+if [ "$codename" = "trusty" ] || [ "$codename" = "jessie" ]
 then
     # Allow ssh connection with root who has a password.
     sed -i -r 's/^(PermitRootLogin without-password.*)$/#\1/' /etc/ssh/sshd_config
