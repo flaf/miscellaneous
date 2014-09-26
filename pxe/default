@@ -92,4 +92,22 @@ LABEL trusty-amd64-preseed
     hostname == "trusty-vm" if there is no DNS entry.
     ENDTEXT
 
+LABEL jessie-amd64
+    MENU LABEL Debian Jessie amd64: expert installation
+    KERNEL  jessie/debian-installer/amd64/linux
+    APPEND priority=low initrd=jessie/debian-installer/amd64/initrd.gz --
+    TEXT HELP
+    Classic installation of Debian Jessie.
+    ENDTEXT
+
+LABEL jessie-amd64-preseed
+    MENU LABEL Debian Jessie amd64: installation with preseed
+    KERNEL  jessie/debian-installer/amd64/linux
+    APPEND language=fr keymap=fr country=FR locale=fr_FR.UTF-8 interface=eth0 hostname=jessie-vm ipv6.disable=1 url=http://pxe/jessie-preseed-amd64.cfg initrd=jessie/debian-installer/amd64/initrd.gz --
+    TEXT HELP
+    Fully automatic installation of Debian Jessie.
+    hostname == DNS entry of the host IP, if exists.
+    hostname == "jessie-vm" if there is no DNS entry.
+    ENDTEXT
+
 
