@@ -33,6 +33,8 @@ MENU COLOR timeout_msg 31;41    #90ffff00 #00000000 std
 LABEL local
     menu label Local boot (for classic computers)
     localboot 0
+    # The default entry if the user just presses Enter before the timeout
+    MENU DEFAULT
 
 #LABEL local2
 #    menu label Local boot (for virtualbox computers)
@@ -42,51 +44,36 @@ LABEL local
 #    KERNEL chain.c32
 #    APPEND hd0 0
 
-LABEL wheezy-amd64
-    MENU LABEL Debian Wheezy amd64: expert installation
-    KERNEL  debian-installer/amd64/linux
-    APPEND priority=low initrd=debian-installer/amd64/initrd.gz --
+LABEL jessie-amd64-preseed
+    MENU LABEL Debian Jessie amd64: installation with preseed
+    KERNEL  jessie/debian-installer/amd64/linux
+    # hostname and domain are defined here to avoid questions
+    # during installation but the DNS entry (if exists) take precedence.
+    APPEND language=fr keymap=fr country=FR locale=fr_FR.UTF-8 interface=eth0 hostname=jessie-vm domain=domain.tld ipv6.disable=1 url=http://pxe/jessie-preseed-amd64.cfg initrd=jessie/debian-installer/amd64/initrd.gz --
     TEXT HELP
-    Classic installation of Debian Wheezy.
+    Fully automatic installation of Debian Jessie.
+    hostname == DNS entry of the host IP, if exists.
+    hostname == "jessie-vm" if there is no DNS entry.
     ENDTEXT
 
 LABEL wheezy-amd64-preseed
     MENU LABEL Debian Wheezy amd64: installation with preseed
-    KERNEL debian-installer/amd64/linux
-    #APPEND language=en keymap=fr country=FR locale=fr_FR.UTF-8 interface=eth0 hostname=wheezy-vm domain=athome.priv ipv6.disable=1 url=http://pxe/wheezy-preseed-amd64.cfg initrd=debian-installer/amd64/initrd.gz --
-    #APPEND language=en keymap=fr country=FR locale=fr_FR.UTF-8 interface=eth0 hostname=wheezy-vm ipv6.disable=1 url=http://pxe/wheezy-preseed-amd64.cfg initrd=debian-installer/amd64/initrd.gz --
-    APPEND language=en keymap=fr country=FR locale=fr_FR.UTF-8 interface=eth0 ipv6.disable=1 url=http://pxe/wheezy-preseed-amd64.cfg initrd=debian-installer/amd64/initrd.gz --
+    KERNEL wheezy/debian-installer/amd64/linux
+    # hostname and domain are defined here to avoid questions
+    # during installation but the DNS entry (if exists) take precedence.
+    APPEND language=fr keymap=fr country=FR locale=fr_FR.UTF-8 interface=eth0 hostname=wheezy-vm domain=domain.tld ipv6.disable=1 url=http://pxe/wheezy-preseed-amd64.cfg initrd=wheezy/debian-installer/amd64/initrd.gz --
     TEXT HELP
     Fully automatic installation of Debian Wheezy.
     hostname == DNS entry of the host IP, if exists.
     hostname == "wheezy-vm" if there is no DNS entry.
     ENDTEXT
-    # The default entry if the user just presses Enter before the timeout
-    MENU DEFAULT
-
-LABEL squeeze-amd64-preseed
-    MENU LABEL Debian Squeeze amd64: installation with preseed
-    KERNEL  debian-installer/amd64/linux
-    #APPEND language=en keymap=fr country=FR locale=fr_FR.UTF-8 interface=eth0 hostname=squeeze-vm domain=athome.priv ipv6.disable=1 url=http://pxe/squeeze-preseed-amd64.cfg initrd=debian-installer/amd64/initrd.gz --
-    APPEND language=en keymap=fr country=FR locale=fr_FR.UTF-8 interface=eth0 hostname=squeeze-vm ipv6.disable=1 url=http://pxe/squeeze-preseed-amd64.cfg initrd=debian-installer/amd64/initrd.gz --
-    TEXT HELP
-    Fully automatic installation of Debian Squeeze.
-    hostname == DNS entry of the host IP, if exists.
-    hostname == "squeeze-vm" if there is no DNS entry.
-    ENDTEXT
-
-LABEL trusty-amd64
-    MENU LABEL Ubuntu Trusty amd64: expert installation
-    KERNEL  trusty/ubuntu-installer/amd64/linux
-    APPEND priority=low initrd=trusty/ubuntu-installer/amd64/initrd.gz --
-    TEXT HELP
-    Classic installation of Ubuntu Trusty.
-    ENDTEXT
 
 LABEL trusty-amd64-preseed
     MENU LABEL Ubuntu Trusty amd64: installation with preseed
     KERNEL  trusty/ubuntu-installer/amd64/linux
-    APPEND language=fr keymap=fr country=FR locale=fr_FR.UTF-8 interface=eth0 hostname=trusty-vm ipv6.disable=1 url=http://pxe/trusty-preseed-amd64.cfg initrd=trusty/ubuntu-installer/amd64/initrd.gz --
+    # hostname and domain are defined here to avoid questions
+    # during installation but the DNS entry (if exists) take precedence.
+    APPEND language=fr keymap=fr country=FR locale=fr_FR.UTF-8 interface=eth0 hostname=trusty-vm domain=domain.tld ipv6.disable=1 url=http://pxe/trusty-preseed-amd64.cfg initrd=trusty/ubuntu-installer/amd64/initrd.gz --
     TEXT HELP
     Fully automatic installation of Ubuntu Trusty.
     hostname == DNS entry of the host IP, if exists.
@@ -101,14 +88,20 @@ LABEL jessie-amd64
     Classic installation of Debian Jessie.
     ENDTEXT
 
-LABEL jessie-amd64-preseed
-    MENU LABEL Debian Jessie amd64: installation with preseed
-    KERNEL  jessie/debian-installer/amd64/linux
-    APPEND language=fr keymap=fr country=FR locale=fr_FR.UTF-8 interface=eth0 hostname=jessie-vm ipv6.disable=1 url=http://pxe/jessie-preseed-amd64.cfg initrd=jessie/debian-installer/amd64/initrd.gz --
+LABEL wheezy-amd64
+    MENU LABEL Debian Wheezy amd64: expert installation
+    KERNEL  wheezy/debian-installer/amd64/linux
+    APPEND priority=low initrd=wheezy/debian-installer/amd64/initrd.gz --
     TEXT HELP
-    Fully automatic installation of Debian Jessie.
-    hostname == DNS entry of the host IP, if exists.
-    hostname == "jessie-vm" if there is no DNS entry.
+    Classic installation of Debian Wheezy.
+    ENDTEXT
+
+LABEL trusty-amd64
+    MENU LABEL Ubuntu Trusty amd64: expert installation
+    KERNEL  trusty/ubuntu-installer/amd64/linux
+    APPEND priority=low initrd=trusty/ubuntu-installer/amd64/initrd.gz --
+    TEXT HELP
+    Classic installation of Ubuntu Trusty.
     ENDTEXT
 
 
