@@ -54,7 +54,7 @@ fi
 # Install classic packages.
 apt-get update
 apt-get dist-upgrade --yes
-apt-get install --yes vim bash-completion less gawk \
+apt-get install --yes vim bash-completion less gawk tree \
                       lsb-release openssl ca-certificates
 
 # Set the .vimrc profile.
