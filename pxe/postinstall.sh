@@ -33,13 +33,15 @@ sed -i -r 's/^GRUB_CMDLINE_LINUX=.*$/GRUB_CMDLINE_LINUX="ipv6.disable=1"/' \
           /etc/default/grub
 update-grub
 
-if [ "$codename" = "wheezy" ]
-then
-    # Set the sources.list.
-    echo "deb http://repository/apt-mirror/ftp.fr.debian.org/debian wheezy         main contrib non-free" >  /etc/apt/sources.list
-    echo "deb http://repository/apt-mirror/ftp.fr.debian.org/debian wheezy-updates main contrib non-free" >> /etc/apt/sources.list
-    echo "deb http://repository/apt-mirror/security.debian.org      wheezy/updates main contrib non-free" >> /etc/apt/sources.list
-fi
+# I think it's a bad idea to use local repository in fact...
+
+#if [ "$codename" = "wheezy" ]
+#then
+#    # Set the sources.list.
+#    echo "deb http://repository/apt-mirror/ftp.fr.debian.org/debian wheezy         main contrib non-free" >  /etc/apt/sources.list
+#    echo "deb http://repository/apt-mirror/ftp.fr.debian.org/debian wheezy-updates main contrib non-free" >> /etc/apt/sources.list
+#    echo "deb http://repository/apt-mirror/security.debian.org      wheezy/updates main contrib non-free" >> /etc/apt/sources.list
+#fi
 
 if [ "$codename" = "squeeze" ]
 then
