@@ -46,7 +46,7 @@ LABEL local
 
 LABEL jessie-amd64-preseed
     MENU LABEL Debian Jessie amd64: installation with preseed
-    KERNEL  jessie/debian-installer/amd64/linux
+    KERNEL jessie/debian-installer/amd64/linux
     # hostname and domain are defined here to avoid questions
     # during installation but the DNS entry (if exists) take precedence.
     APPEND language=fr keymap=fr country=FR locale=fr_FR.UTF-8 interface=eth0 hostname=jessie-vm domain=domain.tld ipv6.disable=1 url=http://pxe/jessie-preseed-amd64.cfg initrd=jessie/debian-installer/amd64/initrd.gz --
@@ -70,7 +70,7 @@ LABEL wheezy-amd64-preseed
 
 LABEL trusty-amd64-preseed
     MENU LABEL Ubuntu Trusty amd64: installation with preseed
-    KERNEL  trusty/ubuntu-installer/amd64/linux
+    KERNEL trusty/ubuntu-installer/amd64/linux
     # hostname and domain are defined here to avoid questions
     # during installation but the DNS entry (if exists) take precedence.
     APPEND language=fr keymap=fr country=FR locale=fr_FR.UTF-8 interface=eth0 hostname=trusty-vm domain=domain.tld ipv6.disable=1 url=http://pxe/trusty-preseed-amd64.cfg initrd=trusty/ubuntu-installer/amd64/initrd.gz --
