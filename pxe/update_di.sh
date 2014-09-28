@@ -2,7 +2,7 @@
 
 set -e
 
-ditrib="$1"
+distrib="$1"
 temp_dir=$(mktemp -d)
 cd "$temp_dir"
 
