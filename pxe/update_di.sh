@@ -66,5 +66,7 @@ else
     ln -s "../../../miscellaneous/pxe/default" default
 fi
 
+printf "All is Ok.\n"
+
 
 
