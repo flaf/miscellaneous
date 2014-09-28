@@ -33,29 +33,20 @@ sed -i -r 's/^GRUB_CMDLINE_LINUX=.*$/GRUB_CMDLINE_LINUX="ipv6.disable=1"/' \
           /etc/default/grub
 update-grub
 
-# I think it's a bad idea to use local repository in fact...
-
-#if [ "$codename" = "wheezy" ]
-#then
-#    # Set the sources.list.
-#    echo "deb http://repository/apt-mirror/ftp.fr.debian.org/debian wheezy         main contrib non-free" >  /etc/apt/sources.list
-#    echo "deb http://repository/apt-mirror/ftp.fr.debian.org/debian wheezy-updates main contrib non-free" >> /etc/apt/sources.list
-#    echo "deb http://repository/apt-mirror/security.debian.org      wheezy/updates main contrib non-free" >> /etc/apt/sources.list
-#fi
-
-if [ "$codename" = "squeeze" ]
-then
-    # Set the sources.list.
-    echo "deb http://repository/mirror/ftp2.fr.debian.org/debian squeeze         main contrib non-free" >  /etc/apt/sources.list
-    echo "deb http://repository/mirror/ftp2.fr.debian.org/debian squeeze-updates main contrib non-free" >> /etc/apt/sources.list
-    echo "deb http://repository/mirror/security.debian.org       squeeze/updates main contrib non-free" >> /etc/apt/sources.list
-fi
-
 # Install classic packages.
 apt-get update
 apt-get dist-upgrade --yes
-apt-get install --yes vim bash-completion less gawk tree \
+apt-get install --yes vim bash-completion less gawk \
                       lsb-release openssl ca-certificates
+
+# On Trusty, tree is not in main and restricted but in
+# universe which is maybe not in the source.list.
+n=$(apt-cache search --names-only '^tree$' | wc -l)
+if [ "$n" != 0 ]
+then
+    apt-get install --yes tree
+fi
+
 
 # Set the .vimrc profile.
 echo 'syntax on
