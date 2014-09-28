@@ -10,14 +10,21 @@ cd "$temp_dir"
 # le noyau et le initrd.gz
 if [ -n "$distrib" ]
 then
+    if [ "$distrib" = "trusty" ]
+    then
+        family="ubuntu"
+        url="http://archive.ubuntu.com/ubuntu/dists/$distrib/main/installer-amd64/current/images/netboot/netboot.tar.gz"
+    else
+        family="debian"
+        url="http://ftp.debian.org/debian/dists/$distrib/main/installer-amd64/current/images/netboot/netboot.tar.gz"
+    fi
     printf "Update only linux kernel and initrd.gz of /srv/tftp/$distrib.\n"
-    url="http://ftp.debian.org/debian/dists/$distrib/main/installer-amd64/current/images/netboot/netboot.tar.gz"
     wget "$url"
     tar -xf netboot.tar.gz
     rm -rf "/srv/tftp/$distrib"
-    mkdir -p "/srv/tftp/$distrib/debian-installer/amd64"
-    mv "$temp_dir/debian-installer/amd64/initrd.gz" "/srv/tftp/$distrib/debian-installer/amd64/"
-    mv "$temp_dir/debian-installer/amd64/linux" "/srv/tftp/$distrib/debian-installer/amd64/"
+    mkdir -p "/srv/tftp/$distrib/$family-installer/amd64"
+    mv "$temp_dir/$family-installer/amd64/initrd.gz" "/srv/tftp/$distrib/$family-installer/amd64/"
+    mv "$temp_dir/$family-installer/amd64/linux" "/srv/tftp/$distrib/$family-installer/amd64/"
     chmod -R a+r "/srv/tftp/$distrib"
     cd /tmp
 else
