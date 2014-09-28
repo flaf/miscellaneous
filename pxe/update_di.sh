@@ -6,6 +6,13 @@ distrib="$1"
 temp_dir=$(mktemp -d)
 cd "$temp_dir"
 
+clean () {
+    rm -rf "$temp_dir"
+}
+
+trap clean EXIT
+
+
 # Si on a spécifié une distribution alors on met à jour uniquement
 # le noyau et le initrd.gz
 if [ -n "$distrib" ]
@@ -47,6 +54,5 @@ else
     ln -s "../../../miscellaneous/pxe/default" default
 fi
 
-rm -rf "$temp_dir"
 
 
