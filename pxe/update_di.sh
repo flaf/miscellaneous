@@ -20,7 +20,6 @@ then
     mv "$temp_dir/debian-installer/amd64/linux" "/srv/tftp/$distrib/debian-installer/amd64/"
     chmod -R a+r "/srv/tftp/$distrib"
     cd /tmp
-    exit 0
 else
     printf "Update /srv/tftp/debian-installer.\n"
     # Actuellement le netboot de Jessie est complètement bugué.
