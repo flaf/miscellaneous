@@ -12,6 +12,16 @@ clean () {
 
 trap clean EXIT
 
+print_title () {
+    local title n line
+    title="$1"
+    n=$(printf "$title" | wc --chars)
+    line=$(printf "%${n}s" '' | tr ' ' '#')
+    printf "$line\n"
+    printf "$title\n"
+    printf "$line\n"
+}
+
 
 # Si on a spécifié une distribution alors on met à jour uniquement
 # le noyau et le initrd.gz
@@ -25,7 +35,8 @@ then
         family="debian"
         url="http://ftp.debian.org/debian/dists/$distrib/main/installer-amd64/current/images/netboot/netboot.tar.gz"
     fi
-    printf "Update only linux kernel and initrd.gz of /srv/tftp/$distrib.\n"
+    print_title "# Update only linux kernel and initrd.gz of /srv/tftp/$distrib #"
+    printf "\n"
     wget "$url"
     tar -xf netboot.tar.gz
     rm -rf "/srv/tftp/$distrib"
@@ -35,7 +46,8 @@ then
     chmod -R a+r "/srv/tftp/$distrib"
     cd /tmp
 else
-    printf "Update /srv/tftp/debian-installer.\n"
+    print_title "# Update /srv/tftp/debian-installer #"
+    printf "\n"
     # Actuellement le netboot de Jessie est complètement bugué.
     url="http://ftp.debian.org/debian/dists/wheezy/main/installer-amd64/current/images/netboot/netboot.tar.gz"
     wget "$url"
