@@ -34,7 +34,12 @@ else
     wget "$url"
     tar -xf netboot.tar.gz
     rm -fr "/srv/tftp/debian-installer"
-    mv debian-installer /srv/tftp/
+    rm -f "/srv/tftp/pxelinux.0"
+    rm -f "/srv/tftp/pxelinux.cfg"
+    cd "/srv/tftp"
+    ln -s "debian-installer/amd64/pxelinux.0" "pxelinux.0"
+    ln -s "debian-installer/amd64/pxelinux.cfg" "pxelinux.cfg"
+    mv "$temp_dir/debian-installer" /srv/tftp/
     chmod -R a+r "/srv/tftp/debian-installer"
     # Il faut mettre en place notre fichier "default" issu de git.
     cd "/srv/tftp/debian-installer/amd64/pxelinux.cfg/"
