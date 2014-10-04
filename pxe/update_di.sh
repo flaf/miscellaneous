@@ -50,7 +50,6 @@ then
 else
     print_title "# Update /srv/tftp/debian-installer #"
     printf "\n"
-    # Actuellement le netboot de Jessie est complètement bugué.
     url="http://ftp.debian.org/debian/dists/wheezy/main/installer-amd64/current/images/netboot/netboot.tar.gz"
     wget "$url"
     tar -xf netboot.tar.gz
