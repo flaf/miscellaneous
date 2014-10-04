@@ -7,10 +7,12 @@ temp_dir=$(mktemp -d)
 cd "$temp_dir"
 
 clean () {
+    rv="$?"
     rm -rf "$temp_dir"
+    exit "$rv"
 }
 
-trap clean EXIT
+trap clean EXIT INT TERM
 
 print_title () {
     local title n line
