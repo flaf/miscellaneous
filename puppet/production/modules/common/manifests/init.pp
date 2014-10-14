@@ -18,11 +18,11 @@ class common ($stage = 'base_packages')  {
     }
   }
 
-  if ! defined(Package['tree']) {
-    package { 'tree':
-      ensure => present,
-    }
-  }
+  #if ! defined(Package['tree']) {
+  #  package { 'tree':
+  #    ensure => present,
+  #  }
+  #}
 
   if ! defined(Package['git']) {
     package { 'git':
@@ -60,11 +60,11 @@ class common ($stage = 'base_packages')  {
     }
   }
 
-  if ! defined(Package['iftop']) {
-    package { 'iftop':
-      ensure => present,
-    }
-  }
+  #if ! defined(Package['iftop']) {
+  #  package { 'iftop':
+  #    ensure => present,
+  #  }
+  #}
 
   if ! defined(Package['rsync']) {
     package { 'rsync':
