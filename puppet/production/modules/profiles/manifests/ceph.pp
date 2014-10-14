@@ -10,7 +10,7 @@ class profiles::ceph {
   $ceph_release = "firefly"
 
   apt::source { 'ceph':
-    location          => "http://ceph.com/debian-/$ceph_release",
+    location          => "http://ceph.com/debian-${ceph_release}/",
     release           => $::lsbdistcodename,
     repos             => 'main',
     include_src       => true
