@@ -16,6 +16,7 @@ class profiles::ceph {
     package { 'ceph':
       ensure  => present,
       require => Apt::Source['ceph'],
+    }
   }
 
 }
