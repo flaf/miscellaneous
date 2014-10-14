@@ -1,4 +1,4 @@
 ---
 classes:
-  - 'ceph_lab'
+  - 'profiles::ceph'
 
