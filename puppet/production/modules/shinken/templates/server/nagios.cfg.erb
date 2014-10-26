@@ -34,9 +34,10 @@ retention_update_interval=30
 max_service_check_spread=60
 max_host_check_spread=60
 
-# After 20s, checks are killed and exit with CRITICAL state.
+# After 20s, host checks are killed and exit with CRITICAL state.
+# After 600s, service checks are killed and exit with CRITICAL state.
 host_check_timeout=20
-service_check_timeout=20
+service_check_timeout=600
 
 # flap_history is the lengh of history states we keep to look for
 # flapping. See:
