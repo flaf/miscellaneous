@@ -114,10 +114,10 @@
 #    monitoring_password: '__pwd__{"salt" => ["$datacenter", "windows", "monitoring"]}'
 #
 #  # This entry is optional. If you want to add macros in shinken configuration,
-#  # you can put an array as below:
+#  # you can put an hash as below:
 #  shinken_additional_macros:
-#    - ['$MACRO_NAME$', 'macro_value' ]
-#    - ['$SENSITIVE_MACRO_NAME$', '__pwd__{"salt" => ["foo"]}' ] # You can use the __pwd__ syntax for the value.
+#    MACRO_NAME: 'macro_value'
+#    SENSITIVE_MACRO_NAME: '__pwd__{"salt" => ["foo"]}' # You can use the __pwd__ syntax for the value.
 #
 #
 class shinken::server {
