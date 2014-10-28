@@ -15,6 +15,7 @@
 #
 # Parameters:
 # - $dongle_device, default value is '/dev/ttyUSB0'
+#   (Unfortunately the device name is difficult to guess safely.)
 #
 # Sample Usages:
 #
