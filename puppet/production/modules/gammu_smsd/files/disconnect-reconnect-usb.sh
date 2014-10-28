@@ -17,6 +17,7 @@ printf "Now, USB restart...\n"
 SYSUHCI=/sys/bus/pci/drivers/uhci_hcd
 if cd "$SYSUHCI" 2>/dev/null
 then
+    printf "Directory $SYSUHCI found.\n"
     for i in ????:??:??.?
     do
        printf "$i" > unbind
@@ -30,6 +31,7 @@ fi
 SYSEHCI=/sys/bus/pci/drivers/ehci_hcd
 if cd $SYSEHCI 2>/dev/null
 then
+    printf "Directory $SYSEHCI found.\n"
     for i in ????:??:??.?
     do
        printf "$i" > unbind
