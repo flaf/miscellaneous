@@ -1,9 +1,26 @@
+# Class: gammu_smsd
+#
+# Tested with Debian Wheezy and the 3G dongle "Huawei E1750".
+# /!\ The PIN code in the SIM card must be disabled. /!\.
+# This class installs and configures the 'gammu-smsd' package
+# with the 'files' backend for the storage of SMS.
+# Old files in the backend are cleaned with a cron task.
+#
+# Parameters:
+# - $dongle_device, default value is '/dev/ttyUSB0'
+#
+# Sample Usages:
+#
+#  include 'gammu_smsd'
+#
+#  class { 'gammu_smsd':
+#    dongle_device => '/dev/ttyUSB1',
+#  }
+#
 class gammu_smsd (
   $dongle_device = '/dev/ttyUSB0',
 ) {
 
-  # Currently, the class is just tested on Wheezy with the
-  # 3G dongle "Huawei E1750".
   case $::lsbdistcodename {
     wheezy: {}
     default: {
