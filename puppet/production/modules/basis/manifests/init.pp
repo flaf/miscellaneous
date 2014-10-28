@@ -1,4 +1,4 @@
-class common ($stage = 'base_packages')  {
+class basis ($stage = 'base_packages')  {
 
   if ! defined(Package['vim']) {
     package { 'vim':
