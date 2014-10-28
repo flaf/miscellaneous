@@ -5,6 +5,13 @@
 # This class installs and configures the 'gammu-smsd' package
 # with the 'files' backend for the storage of SMS.
 # Old files in the backend are cleaned with a cron task.
+# You can send SMS with the command:
+#
+#   gammu-smsd-inject TEXT 0666666666 -text "Hello world."
+#
+# as root or as account which is member of "gammu" group.
+# The class provides a command in /usr/local/sbin/ to
+# disconnect and reconnect the 3G dongle USB.
 #
 # Parameters:
 # - $dongle_device, default value is '/dev/ttyUSB0'
@@ -68,6 +75,14 @@ class gammu_smsd (
     hour        => 6,
     weekday     => 0,
     require     => Service['gammu-smsd'],
+  }
+
+  file { '/usr/local/sbin/disconnect-reconnect-usb.sh':
+    ensure => present,
+    owner  => 'root',
+    group  => 'root',
+    mode   => 0754,
+    source => "puppet:///modules/${module_name}/disconnect-reconnect-usb.sh",
   }
 
 }
