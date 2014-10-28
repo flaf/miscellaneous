@@ -1,5 +1,5 @@
 ---
 classes:
-  - '::roles:smssender'
+  - '::roles::smssender'
 
 

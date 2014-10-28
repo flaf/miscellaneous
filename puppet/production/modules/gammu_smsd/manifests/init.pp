@@ -11,13 +11,13 @@ class gammu_smsd (
     }
   }
 
-  if ! define(Package['usb-modeswitch']) {
+  if ! defined(Package['usb-modeswitch']) {
     package { 'usb-modeswitch':
       ensure => present,
     }
   }
 
-  if ! define(Package['gammu-smsd']) {
+  if ! defined(Package['gammu-smsd']) {
     package { 'gammu-smsd':
       ensure  => present,
       require => Package['usb-modeswitch'],
