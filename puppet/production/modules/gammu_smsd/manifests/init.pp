@@ -61,7 +61,7 @@ class gammu_smsd (
 
   service { 'gammu-smsd':
     ensure     => running,
-    hasrestart => false, # "restart" command works not well
+    hasrestart => false, # "restart" command doesn't work well
     hasstatus  => false,
     require    => File['/etc/gammu-smsdrc'],
   }
