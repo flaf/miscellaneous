@@ -41,5 +41,17 @@ class gammu_smsd (
     require    => File['/etc/gammu-smsdrc'],
   }
 
+  # Sunday, cleaning of the old files.
+  cron { 'remove-old-sms-files':
+    environment => 'PATH=/bin:/usr/bin',
+    ensure      => present,
+    command     => 'find /var/spool/gammu/ -type f -mtime +20 -exec rm -f {} \+',
+    user        => 'gammu',
+    minute      => 0,
+    hour        => 6,
+    weekday     => 0,
+    require     => Service['gammu-smsd'],
+  }
+
 }
 
