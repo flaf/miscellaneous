@@ -1,7 +1,11 @@
 ---
-classes:
-  - 'common'
-  - 'debian::apt::sources'
+# Attention, ça va casser des choses. Je pense que l'abscence
+# de debian::apt::sources va sûrement casser le build d'un shinken
+# par exemple. Mais bon, je décide de passer par les rôles maintenant.
+
+#classes:
+#  - 'common'
+#  - 'debian::apt::sources'
 
 samba4:
   ntp_server: '172.31.0.1'
