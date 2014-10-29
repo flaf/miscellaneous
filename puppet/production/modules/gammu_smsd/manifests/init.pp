@@ -17,7 +17,7 @@
 # - $dongle_device, default value is '/dev/ttyUSB0'
 #   (Unfortunately the device name is difficult to guess safely.)
 # - $phones_to_test, default value is false.
-#   If not false, this parameter must be an array
+#   If not false, this parameter must be a non empty array
 #   of phone numbers like [ '0612345678', '0698765432' ].
 #   In this case, for each number, a SMS will be sent
 #   at 11:59 AM to check that gammu-smsd is working well.
@@ -85,7 +85,7 @@ class gammu_smsd (
     status     => '/usr/local/sbin/wgammu-smsd.sh status',
     require    => [ File['/etc/gammu-smsdrc'],
                     File['/usr/local/sbin/wgammu-smsd.sh'],
-                  ]
+                  ],
   }
 
   # Sunday, cleaning of the old files.
@@ -101,14 +101,27 @@ class gammu_smsd (
   }
 
   if $phones_to_test {
-    cron { 'phones-to-test':
-      ensure      => present,
-      command     => '/bin/true',
-      user        => 'gammu',
-      minute      => 59,
-      hour        => 11,
-      require     => Service['gammu-smsd'],
+
+    file { '/usr/local/bin/phones_to_test.sh':
+      ensure  => present,
+      owner   => 'root',
+      group   => 'root',
+      mode    => 0755,
+      content => template("${module_name}/phones_to_test.sh.erb"),
+      require => Service['gammu-smsd'],
     }
+
+    cron { 'phones-to-test':
+      ensure  => present,
+      command => '/usr/local/bin/phones_to_test.sh',
+      user    => 'gammu',
+      minute  => 59,
+      hour    => 11,
+      require => [ Service['gammu-smsd'],
+                   File['/usr/local/bin/phones_to_test.sh'],
+                 ],
+    }
+
   }
 
 }

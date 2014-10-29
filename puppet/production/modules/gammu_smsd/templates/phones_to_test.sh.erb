@@ -1,0 +1,17 @@
+#!/bin/sh
+
+export PATH='/usr/sbin:/usr/bin:/sbin:/bin'
+export LC_ALL='C'
+
+phones_to_test="
+<%- @phones_to_test.each do |phone| -%>
+<%= phone %>
+<%- end -%>
+"
+
+for phone in $phones_to_test
+do
+    message="$(date): SMS from $(hostname -f)."
+    gammu-smsd-inject TEXT "$phone" -text "$message" >/dev/null 2>&1
+done
+
