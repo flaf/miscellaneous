@@ -16,17 +16,24 @@
 # Parameters:
 # - $dongle_device, default value is '/dev/ttyUSB0'
 #   (Unfortunately the device name is difficult to guess safely.)
+# - $phones_to_test, default value is false.
+#   If not false, this parameter must be an array
+#   of phone numbers like [ '0612345678', '0698765432' ].
+#   In this case, for each number, a SMS will be sent
+#   at 11:59 AM to check that gammu-smsd is working well.
 #
 # Sample Usages:
 #
 #  include 'gammu_smsd'
 #
 #  class { 'gammu_smsd':
-#    dongle_device => '/dev/ttyUSB1',
+#    dongle_device  => '/dev/ttyUSB1',
+#    phones_to_test => [ '0612345678', '0698765432' ],
 #  }
 #
 class gammu_smsd (
-  $dongle_device = '/dev/ttyUSB0',
+  $dongle_device  = '/dev/ttyUSB0',
+  $phones_to_test = false,
 ) {
 
   case $::lsbdistcodename {
@@ -91,6 +98,17 @@ class gammu_smsd (
     hour        => 6,
     weekday     => 0,
     require     => Service['gammu-smsd'],
+  }
+
+  if ! $phones_to_test {
+    cron { 'phones-to-test':
+      ensure      => present,
+      command     => '/bin/true',
+      user        => 'gammu',
+      minute      => 59,
+      hour        => 11,
+      require     => Service['gammu-smsd'],
+    }
   }
 
 }
