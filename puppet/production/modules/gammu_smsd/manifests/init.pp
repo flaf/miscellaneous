@@ -100,7 +100,7 @@ class gammu_smsd (
     require     => Service['gammu-smsd'],
   }
 
-  if ! $phones_to_test {
+  if $phones_to_test {
     cron { 'phones-to-test':
       ensure      => present,
       command     => '/bin/true',
