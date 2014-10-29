@@ -29,6 +29,16 @@ class gammu_smsd::web_service {
     notify  => Service['apache2'],
   }
 
+  file { '/etc/apache2/envvars':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => 0644,
+    source  => "puppet:///modules/${module_name}/envvars",
+    require => Package['libapache2-mod-perl2'],
+    notify  => Service['apache2'],
+  }
+
   exec { 'disable default vhost':
     path    => '/usr/sbin:/usr/bin:/sbin:/bin',
     user    => 'root',

@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+### File managed by Puppet. Please, don't edit it manually! ###
 
 use strict;
 use warnings;

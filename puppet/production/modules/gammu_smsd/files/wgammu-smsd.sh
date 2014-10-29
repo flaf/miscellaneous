@@ -1,4 +1,5 @@
 #!/bin/sh
+### File managed by Puppet. Please, don't edit it manually! ###
 
 export PATH='/usr/sbin:/usr/bin:/sbin:/bin'
 export LC_ALL='C'
