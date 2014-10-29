@@ -21,6 +21,12 @@
 #   of phone numbers like [ '0612345678', '0698765432' ].
 #   In this case, for each number, a SMS will be sent
 #   at 11:59 AM to check that gammu-smsd is working well.
+# - $web_service, default value is false.
+#   If the value is true, then apache2 is installed and
+#   it's possible to send SMS with curl:
+#       curl --data "phone=0666666666"          \
+#            --data "msg=Hello, how do you do?" \
+#            http://<address>/cgi-bin/sendsms.pl
 #
 # Sample Usages:
 #
