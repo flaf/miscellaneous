@@ -9,8 +9,9 @@
     <Directory /var/www/>
         Options Indexes FollowSymLinks MultiViews
         AllowOverride None
+        # The access of this site is useless.
         Order allow,deny
-        allow from all
+        Deny from all
     </Directory>
 
     ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/
@@ -20,8 +21,16 @@
         PerlResponseHandler ModPerl::Registry
         PerlOptions -ParseHeaders
         Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
+        <%- if @limit_access.is_a?(Array) and not @limit_acces.empty? -%>
+        Order deny,allow
+        Deny from all
+        <%- @limit_access.each do |address| -%>
+        Allow from <%= address %>
+        <%- end -%>
+        <%- else -%>
         Order allow,deny
         Allow from all
+        <%- end -%>
     </Directory>
 
     ErrorLog ${APACHE_LOG_DIR}/error.log

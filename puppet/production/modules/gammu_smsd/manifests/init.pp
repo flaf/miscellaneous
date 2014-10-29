@@ -27,6 +27,10 @@
 #       curl --data "phone=0666666666"          \
 #            --data "msg=Hello, how do you do?" \
 #            http://<address>/cgi-bin/sendsms.pl
+# - $limit_acces, default value is false.
+#   You can set this parameter to an non empty array
+#   of IP addresses which will be allowed to access to
+#   the service. For instance [ '172.31.0.1', '172.31.0.2' ].
 #
 # Sample Usages:
 #
@@ -35,12 +39,14 @@
 #  class { 'gammu_smsd':
 #    dongle_device  => '/dev/ttyUSB1',
 #    phones_to_test => [ '0612345678', '0698765432' ],
+#    $web_service   => true,
 #  }
 #
 class gammu_smsd (
   $dongle_device  = '/dev/ttyUSB0',
   $phones_to_test = false,
   $web_service    = false,
+  $limit_access   = false,
 ) {
 
   case $::lsbdistcodename {

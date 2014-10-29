@@ -6,6 +6,8 @@ class gammu_smsd::web_service {
 
   require '::gammu_smsd'
 
+  $limit_access = $::gammu_smsd:limit_access
+
   if ! defined(Package['libapache2-mod-perl2']) {
     package { 'libapache2-mod-perl2':
       ensure => present,
@@ -56,7 +58,7 @@ class gammu_smsd::web_service {
     owner   => 'root',
     group   => 'root',
     mode    => 644,
-    source  => "puppet:///modules/${module_name}/sms_vhost",
+    content => template("${module_name}/sms_vhost.erb"),
     require => Package['libapache2-mod-perl2'],
     notify  => Service['apache2'],
   }
