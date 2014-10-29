@@ -7,7 +7,7 @@ use 5.010;
 use CGI;
 
 my $q = CGI->new;
-print $q->header(-expires => 'now',);
+print $q->header(-expires => 'now', -charset => 'UTF-8');
 
 my $phone = $q->param('phone');
 my $msg = $q->param('msg');
