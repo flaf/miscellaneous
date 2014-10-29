@@ -11,7 +11,7 @@
 #
 # as root or as account which is member of "gammu" group.
 # The class provides a command in /usr/local/sbin/ to
-# disconnect and reconnect the 3G dongle USB.
+# start and restart the "gammu-smsd" service.
 #
 # Parameters:
 # - $dongle_device, default value is '/dev/ttyUSB0'
@@ -59,11 +59,26 @@ class gammu_smsd (
     notify  => Service['gammu-smsd'],
   }
 
+  # It's a wrapper of the init script because (re)starting
+  # of gammu-smsd is a little sensitive.
+  file { '/usr/local/sbin/wgammu-smsd.sh':
+    ensure => present,
+    owner  => 'root',
+    group  => 'root',
+    mode   => 0754,
+    source => "puppet:///modules/${module_name}/wgammu-smsd.sh",
+  }
+
   service { 'gammu-smsd':
     ensure     => running,
-    hasrestart => false, # "restart" command doesn't work well
+    hasrestart => false,
     hasstatus  => false,
-    require    => File['/etc/gammu-smsdrc'],
+    start      => '/usr/local/sbin/wgammu-smsd.sh start',
+    restart    => '/usr/local/sbin/wgammu-smsd.sh restart',
+    status     => '/usr/local/sbin/wgammu-smsd.sh status',
+    require    => [ File['/etc/gammu-smsdrc'],
+                    File['/usr/local/sbin/wgammu-smsd.sh'],
+                  ]
   }
 
   # Sunday, cleaning of the old files.
@@ -76,14 +91,6 @@ class gammu_smsd (
     hour        => 6,
     weekday     => 0,
     require     => Service['gammu-smsd'],
-  }
-
-  file { '/usr/local/sbin/disconnect-reconnect-usb.sh':
-    ensure => present,
-    owner  => 'root',
-    group  => 'root',
-    mode   => 0754,
-    source => "puppet:///modules/${module_name}/disconnect-reconnect-usb.sh",
   }
 
 }
