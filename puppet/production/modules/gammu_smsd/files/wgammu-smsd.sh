@@ -71,7 +71,7 @@ case $cmd in
     ;;
 
     status)
-        if ps -e -o command | grep -q '^gammu-sms[d]'
+        if ps -e -o comm | grep -q '^gammu-sms[d]'
         then
             printf "gammu-smsd is running...\n"
             exit 0
