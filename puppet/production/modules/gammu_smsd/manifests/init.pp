@@ -34,6 +34,7 @@
 class gammu_smsd (
   $dongle_device  = '/dev/ttyUSB0',
   $phones_to_test = false,
+  $web_service    = false,
 ) {
 
   case $::lsbdistcodename {
@@ -122,6 +123,10 @@ class gammu_smsd (
                  ],
     }
 
+  }
+
+  if $web_service {
+    include '::gammu_smsd::web_service'
   }
 
 }
