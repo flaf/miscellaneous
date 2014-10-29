@@ -45,27 +45,33 @@ disconnect_reconnect_usb () {
 
 }
 
+sleep_fct () {
+
+    printf "Sleeping during $1 second(s)...\n"
+    sleep "$1"
+
+}
 
 case $cmd in
 
     start|restart)
         service gammu-smsd stop
-        sleep 5
+        sleep_fct 5
         disconnect_reconnect_usb
-        sleep 20
+        sleep_fct 20
         service gammu-smsd start
-        sleep 5
+        sleep_fct 5
         exit 0
     ;;
 
     stop)
         service gammu-smsd stop
-        sleep 5
+        sleep_fct 5
         exit 0
     ;;
 
     status)
-        if ps aux | grep -q gammu-sms[d]
+        if ps -e -o command | grep -q '^gammu-sms[d]'
         then
             printf "gammu-smsd is running...\n"
             exit 0
