@@ -1,6 +1,8 @@
 class profiles::smssender {
 
-  include '::gammu_smsd'
+  class {'::gammu_smsd':
+    phones_to_test => []
+  }
 
 }
 
