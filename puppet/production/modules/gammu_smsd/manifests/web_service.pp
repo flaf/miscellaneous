@@ -6,7 +6,7 @@ class gammu_smsd::web_service {
 
   require '::gammu_smsd'
 
-  $limit_access = $::gammu_smsd:limit_access
+  $limit_access = $::gammu_smsd::limit_access
 
   if ! defined(Package['libapache2-mod-perl2']) {
     package { 'libapache2-mod-perl2':

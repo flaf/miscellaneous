@@ -21,7 +21,7 @@
         PerlResponseHandler ModPerl::Registry
         PerlOptions -ParseHeaders
         Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
-        <%- if @limit_access.is_a?(Array) and not @limit_acces.empty? -%>
+        <%- if @limit_access.is_a?(Array) and not @limit_access.empty? -%>
         Order deny,allow
         Deny from all
         <%- @limit_access.each do |address| -%>
