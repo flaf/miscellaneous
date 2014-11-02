@@ -25,6 +25,9 @@ define contact {
     <%- if properties['tel'].is_a?(String) -%>
     address1 <%= properties['tel'] %>
     <%- end -%>
+    <%- if properties['min_business_impact'].is_a?(String) -%>
+    min_business_impact <%= properties['min_business_impact'] %>
+    <%- end -%>
 
     <%- if properties['is_admin'] == 'true' -%>
     # The contact see all in the WebUI.
