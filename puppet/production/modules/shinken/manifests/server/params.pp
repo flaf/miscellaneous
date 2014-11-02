@@ -99,7 +99,7 @@ class shinken::server::params {
   $contacts              = hiera_hash('shinken_contacts', {})
   $black_list            = hiera_array('shinken_black_list', [])
   $additional_macros     = hiera_hash('shinken_additional_macros', {})
-  $email_for_sms         = $misc['email_for_sms']
+  $url_for_sms           = $misc['url_for_sms']
   $sms_threshold         = $misc['sms_threshold']
   $rarefaction_threshold = $misc['rarefaction_threshold']
   $manual_hosts          = $misc['manual_hosts']

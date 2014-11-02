@@ -47,9 +47,9 @@
 #                          # If equal to '_EMPTY_', the WebUI can be directly reachable
 #                          # on the port 80 with this address http://shinken.domain.tld.
 #
-#    email_for_sms: 'sms@domain.tld' # email used to send SMS.
-#    sms_threshold: '3'              # If the business impact of the check is lower than this value, no SMS.
-#    rarefaction_threshold: '7'      # After n notification for the same problem, the notification become rarefied.
+#    url_for_sms: 'http://foo/sendsms.pl' # url used to send SMS.
+#    sms_threshold: '3'                   # If the business impact of the check is lower than this value, no SMS.
+#    rarefaction_threshold: '7'           # After n notification for the same problem, the notification become rarefied.
 #
 #    # Used to define the IRC bot contact in shinken.
 #    irc_server: 'irc.domain.tld'

@@ -50,7 +50,7 @@ class shinken::server::config {
   $windows_password      = $shinken::server::params::windows_password
 
   $contacts              = $shinken::server::params::contacts
-  $email_for_sms         = $shinken::server::params::email_for_sms
+  $url_for_sms           = $shinken::server::params::url_for_sms
   $sms_threshold         = $shinken::server::params::sms_threshold
   $rarefaction_threshold = $shinken::server::params::rarefaction_threshold
   $additional_macros     = $shinken::server::params::additional_macros

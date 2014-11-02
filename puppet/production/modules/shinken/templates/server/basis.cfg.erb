@@ -22,7 +22,8 @@ define command {
         --rarefaction-threshold="$RAREFACTION_THRESHOLD$" \
         --contact-email="$CONTACTEMAIL$" \
         --contact-number="$CONTACTADDRESS1$" \
-        --sms-threshold="$SMS_THRESHOLD$"
+        --sms-threshold="$SMS_THRESHOLD$" \
+        --sms-url="$SMS_URL$"
 }
 
 define command {
@@ -41,7 +42,8 @@ define command {
         --rarefaction-threshold="$RAREFACTION_THRESHOLD$" \
         --contact-email="$CONTACTEMAIL$" \
         --contact-number="$CONTACTADDRESS1$" \
-        --sms-threshold="$SMS_THRESHOLD$"
+        --sms-threshold="$SMS_THRESHOLD$" \
+        --sms-url="$SMS_URL$"
 }
 
 # Command to send host notifications by IRC.
@@ -60,7 +62,8 @@ define command {
         --rarefaction-threshold="$RAREFACTION_THRESHOLD$" \
         --file-name="$IRC_PIPE$" \
         --contact-number="$CONTACTADDRESS1$" \
-        --sms-threshold="$SMS_THRESHOLD$"
+        --sms-threshold="$SMS_THRESHOLD$" \
+        --sms-url="$SMS_URL$"
 }
 
 # Command to send service notifications by IRC.
@@ -80,7 +83,8 @@ define command {
         --rarefaction-threshold="$RAREFACTION_THRESHOLD$" \
         --file-name="$IRC_PIPE$" \
         --contact-number="$CONTACTADDRESS1$" \
-        --sms-threshold="$SMS_THRESHOLD$"
+        --sms-threshold="$SMS_THRESHOLD$" \
+        --sms-url="$SMS_URL$"
 }
 
 # Command to check if an host is alive. Very important.
@@ -194,7 +198,7 @@ define host {
     # The -t option is the timeout in seconds.
     _CHECK_ICMP_OPTIONS -w "1000,50%" -c "8000,100%" -n 10 -i 250 -t 10
 
-    business_impact 3
+    business_impact 4
 }
 
 # The generic "service" template.
