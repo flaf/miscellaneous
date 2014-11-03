@@ -196,7 +196,7 @@ define host {
     # icmp reply of a packet is received before this interval, the
     # next packet is sent).
     # The -t option is the timeout in seconds.
-    _CHECK_ICMP_OPTIONS -w "1000,50%" -c "8000,100%" -n 10 -i 250 -t 10
+    _CHECK_ICMP_OPTIONS -w "1000,50%" -c "8000,100%" -n 20 -i 250 -t 10
 
     business_impact 4
 }
