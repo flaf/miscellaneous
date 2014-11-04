@@ -7,6 +7,11 @@
 #  - 'common'
 #  - 'debian::apt::sources'
 
+# Maintenant, je mets le master password dans hiera.
+# Faudrait utiliser hiera-eyaml etc. mais pour ce
+# serveur puppet, je m'en moque qu'il soit en clair.
+master_password: 'd3ce45c4fc8cfdaecc47688a72ebb71d'
+
 samba4:
   ntp_server: '172.31.0.1'
 
