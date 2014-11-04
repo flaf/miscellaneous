@@ -1,0 +1,16 @@
+---
+:backends:
+  - "eyaml"
+
+:hierarchy:
+  - "%{environment}/hieradata/fqdn/%{::datacenter}/%{::clientcert}"
+  - "%{environment}/hieradata/group/%{::group}"
+  - "%{environment}/hieradata/datacenter/%{::datacenter}"
+  - "%{environment}/hieradata/common"
+
+:eyaml:
+  :extension: "yaml"
+  :datadir: "/usr/local/src/puppet"
+  :pkcs7_private_key: "/etc/puppet/keys/private_key.pkcs7.pem"
+  :pkcs7_public_key: "/etc/puppet/keys/public_key.pkcs7.pem"
+
