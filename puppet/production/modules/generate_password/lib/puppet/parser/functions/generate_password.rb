@@ -1,55 +1,56 @@
 # Copyright: 2014 Francois Lafont <francois.lafont@ac-versailles.fr>
 
 module Puppet::Parser::Functions
-  newfunction(:generate_password, :type => :rvalue, :doc => "
-  Usage
-  -----
-    * In a yaml file (in hieradata):
-          password: '__pwd__{<syntax explained below>}'
-    * In a manifest:
-          $password = hiera('password')
-       or $password = generate_password(hiera('password'))
-    * In a template:
-          <%= scope.function_generate_password([@password]) %>
-       or <%= @password %>
+  newfunction(:generate_password, :type => :rvalue, :doc => <<-EOS
+Usage
+-----
+  1. In a yaml file (in hieradata):
+        password: '__pwd__{<syntax explained below>}'
+  2. Either
+        $password = hiera('password')                         # in the manifest
+        <%= scope.function_generate_password([@password]) %>  # in the template
+     or
+        $password = generate_password(hiera('password')) # in the manifest
+        <%= @password %>                                 # in the template
 
-  Possible syntax in a yaml file
-  ------------------------------
-      key: '__pwd__{}'
-      key: '__pwd__{ \"pwd\" => \"master_password\", \"salt\" => [\"$fqdn\"], \"nice\" => false, \"max_length\" => 0, \"case\" => \"\" }'
-      key: '__pwd__{ \"pwd\" => \"other_password\", \"salt\" => [\"$datacenter\"], \"nice\" => true, \"case\" => \"lower\" }'
-      key: '__pwd__{ \"salt\" => [\"$datacenter\", \"snmp\"], \"case\" => \"upper\" }'
+Possible syntax in a yaml file
+------------------------------
+    key: '__pwd__{}'
+    key: '__pwd__{ "pwd" => "master_password", "salt" => ["$fqdn"], "nice" => false, "max_length" => 0, "case" => "" }'
+    key: '__pwd__{ "pwd" => "other_password", "salt" => ["$datacenter"], "nice" => true, "case" => "lower" }'
+    key: '__pwd__{ "salt" => ["$datacenter", "snmp"], "case" => "upper" }'
 
-  Each key and value must be surrounded by single or double quotes
-  even $fqdn, $datacenter, etc. variables.
-  The only exception to this rules are:
-    - the value of \"max_length\" which is an interger;
-    - the value of \"nice\" which is an boolean (false or true).
+Each key and value must be surrounded by single or double quotes
+even $fqdn, $datacenter, etc. variables.
+The only exception to this rules are:
+  - the value of "max_length" which is an interger;
+  - the value of "nice" which is an boolean (false or true).
 
-  Parameters in yaml file
-  -----------------------
-      \"pwd\"
-          gives the key name of a password in hiera
-          Default value: \"master_password\"
+Parameters in yaml file
+-----------------------
+    "pwd"
+        gives the key name of a password in hiera
+        Default value: "master_password"
 
-      \"salt\"
-          an array of strings which gives the salt.
-          Default value: [\"$fqdn\"]
+    "salt"
+        an array of strings which gives the salt.
+        Default value: ["$fqdn"]
 
-      \"nice\"
-          if equal to true, the password is nice, ie ~ /[a-zA-Z0-9]/.
-          Default value: false
+    "nice"
+        if equal to true, the password is nice, ie ~ /[a-zA-Z0-9]/.
+        Default value: false
 
-      \"max_length\"
-          truncates the password to N characters if the length
-          of the password is greater than N.
-          Default value: 0 (ie no truncation)
+    "max_length"
+        truncates the password to N characters if the length
+        of the password is greater than N.
+        Default value: 0 (ie no truncation)
 
-      \"case\"
-          Force the case of the password. Possible value are \"lower\",
-          \"upper\" or \"\" (empty string).
-          Default value: \"\" (do not change the password)
-  ") do |args|
+    "case"
+        Force the case of the password. Possible value are "lower",
+        "upper" or "" (empty string).
+        Default value: "" (do not change the password)
+EOS
+  ) do |args|
 
     # Need to "hiera" puppet function.
     Puppet::Parser::Functions.function('hiera')
@@ -107,11 +108,11 @@ module Puppet::Parser::Functions
         password = Digest::MD5.hexdigest("#{clear}")
       else
         pass = []
-        CHARS = ("a".."z").to_a + ("A".."Z").to_a + (0..9).to_a + ["!","@","&","*","-","_","=","+",":","<",">",".",",","?","~"]
+        chars_list = ("a".."z").to_a + ("A".."Z").to_a + (0..9).to_a + ["!","@","&","*","-","_","=","+",":","<",">",".",",","?","~"]
         n = Digest::MD5.hexdigest("#{clear}").hex
         while n > 0
-          pass << CHARS[n.divmod(CHARS.size)[1]]
-          n = n.divmod(CHARS.size)[0]
+          pass << chars_list[n.divmod(chars_list.size)[1]]
+          n = n.divmod(chars_list.size)[0]
         end
         password = pass.join
       end
