@@ -93,6 +93,16 @@ define command {
     command_line $PLUGINSDIR$/check_icmp -H "$HOSTADDRESS$" $_HOSTCHECK_ICMP_OPTIONS$
 }
 
+# This a wrapper of check_icmp wich allows several attempts of the
+# check check_icmp before to return the exit code.
+# See the generic-host_tpl below for more explanations.
+define command {
+    command_name check_icmp_wrapper
+    command_line '$SHINKEN_PACKS_PLUGINSDIR$/check_icmp_wrapper' \
+                 $_HOSTCHECK_ICMP_WRAPPER_OPTIONS$ --            \
+                 -H "$HOSTADDRESS$" $_HOSTCHECK_ICMP_OPTIONS$
+}
+
 # Dummy check returns the same exit code as its argument.
 # Useful for testing.
 define command {
@@ -196,7 +206,12 @@ define host {
     # icmp reply of a packet is received before this interval, the
     # next packet is sent).
     # The -t option is the timeout in seconds.
-    _CHECK_ICMP_OPTIONS -w "1000,50%" -c "8000,100%" -n 20 -i 250 -t 10
+    _CHECK_ICMP_OPTIONS -w "1000,50%" -c "8000,100%" -n 5 -i 250 -t 4
+
+    # Options for the wrapper check_icmp_wrapper. The --attempts
+    # option gives the number of attempts of the check check_icmp,
+    # and --pause gives in seconds the time between 2 attempts.
+    _CHECK_ICMP_WRAPPER_OPTIONS --attempts 3 --pause 3
 
     business_impact 4
 }
