@@ -193,7 +193,6 @@ define host {
     flap_detection_enabled 0
     notification_options d,u,r,f
 
-    check_command check_icmp
     # The -n option gives the number of sent packets. With this
     # options below, if 100% of packets are lost or if the rta
     # (round trip average) is greater than 8000 ms, the check
@@ -213,6 +212,7 @@ define host {
     # and --pause gives in seconds the time between 2 attempts.
     _CHECK_ICMP_WRAPPER_OPTIONS --attempts 3 --pause 3
 
+    check_command check_icmp_wrapper
     business_impact 4
 }
 
