@@ -20,9 +20,9 @@ output = '{
 # Search for the yaml file in hieradata.
 files_array = Dir.glob("#{env_dir}/*/hieradata/fqdn/#{fqdn}.yaml")
 if files_array.length != 1
-    puts "Sorry, in hieradata, the file `#{fqdn}.yaml' " \
-         "is not present or is duplicated."
-    exit(1)
+  puts "Sorry, in hieradata, the file `#{fqdn}.yaml' " \
+       "is not present or is duplicated."
+  exit(1)
 end
 
 # There is just one fqdn.yaml file in hieradata.
@@ -38,19 +38,38 @@ hash = YAML.load_file(yaml_file)
 parameters = ''
 
 hash.each do |key, value|
-    if key =~ /^enc_/
-        if value.is_a?(String)
-            key = key.sub(/^enc_/, '')
-            # Escape " in value.
-            value = value.gsub('"', '\\"')
-            parameters += "\"#{key}\": \"#{value}\",\n    "
-        end
+
+  if key =~ /^enc_/
+
+    key = key.sub(/^enc_/, '')
+
+    # Handle when the value is a string.
+    if value.is_a?(String) or value.is_a?(Numeric)
+      if value.is_a?(Numeric) then value = value.to_s() end
+      value = value.gsub('"', '\\"') # Escape " in value.
+      parameters += "\"#{key}\": \"#{value}\",\n    "
     end
+
+    # Handle when the value is a array.
+    if value.is_a?(Array)
+      c = 0
+      for e in value
+        if e.is_a?(String) or e.is_a?(Numeric)
+          if e.is_a?(Numeric) then e = e.to_s() end
+          e = e.gsub('"', '\\"') # Escape " in e.
+          parameters += "\"#{key}_#{c}\": \"#{e}\",\n    "
+          c += 1
+        end
+      end
+    end
+
+  end
+
 end
 parameters = parameters.strip()
 
-output = output.sub('###parameters###', parameters)
 output = output.sub('###environment###', environment)
+output = output.sub('###parameters###', parameters)
 puts output
 exit(0)
 
