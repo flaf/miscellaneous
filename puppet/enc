@@ -37,6 +37,18 @@ environment = yaml_file.sub(/^#{env_dir}\//, '').sub(/#{regex_end}$/, '')
 hash = YAML.load_file(yaml_file)
 parameters = ''
 
+# If the yaml file is empty, hash is nil.
+# Then, we convert nil to an empty hash.
+if hash.is_a?(NilClass)
+  hash = {}
+end
+
+if not hash.is_a?(Hash)
+  puts "Sorry, in hieradata, the file `#{fqdn}.yaml' " \
+       "exists but has a bad yaml syntax."
+  exit(1)
+end
+
 hash.each do |key, value|
 
   if key =~ /^enc_/
