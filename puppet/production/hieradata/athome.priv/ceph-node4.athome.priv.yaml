@@ -1,4 +1,4 @@
 ---
 classes:
-  - 'profiles::ceph'
+  - '::roles::ceph_lab'
 

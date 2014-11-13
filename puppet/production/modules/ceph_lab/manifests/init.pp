@@ -1,13 +1,36 @@
 class ceph_lab {
 
+  include '::apt'
+
   # Python 2.7 must be installed.
-  package { 'python':
-    ensure => present,
+  if ! defined(Package['python']) {
+    package { 'python':
+      ensure => present,
+    }
   }
 
   # xfs is needed for the storage fs.
-  package { 'xfsprogs':
-    ensure => present,
+  if ! defined(Package['xfsprogs']) {
+    package { 'xfsprogs':
+      ensure => present,
+    }
+  }
+
+  $ceph_release = "firefly"
+
+  apt::source { 'ceph':
+    location    => "http://ceph.com/debian-${ceph_release}/",
+    release     => $::lsbdistcodename,
+    repos       => 'main',
+    key         => '17ED316D',
+    include_src => false,
+  }
+
+  if ! defined(Package['ceph']) {
+    package { 'ceph':
+      ensure  => present,
+      require => Apt::Source['ceph'],
+    }
   }
 
   define tools() {
