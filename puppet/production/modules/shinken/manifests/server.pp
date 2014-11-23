@@ -64,7 +64,7 @@
 #        address: 'www.server-1.domain.tld' # Required for each manual host (if exists).
 #        templates: 'http_tpl,https_tpl'    # Required for each manual host (if exists).
 #        custom:                            # Optional. Add customized properties for this host.
-#          - '_http_pages ping.php$(vhost.domain.tld!regex)$,'
+#          - '_http_pages ping.php $(vhost.domain.tld)$ $(regex)$,'
 #          - '_HTTP_WARN 5'
 #      google:
 #        address: 'www.google.fr'
