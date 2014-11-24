@@ -11,7 +11,7 @@ output = '{
   "parameters":
   {
     "environment": "###environment###",
-    "admin_email": "admin@crdp.ac-versailles.fr",
+    "admin_email": "francois.lafont@ac-versailles.fr",
     ###parameters###
   }
 }
