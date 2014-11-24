@@ -3,7 +3,7 @@
 
 require 'yaml'
 
-env_dir = '/usr/local/src/puppet'
+env_dir = '/usr/local/src/git/miscellaneous/puppet'
 fqdn = ARGV[0]
 
 # Ouput of the ENC which must be completed.
