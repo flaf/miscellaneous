@@ -1,0 +1,16 @@
+#!/bin/sh
+### This file is managed by Puppet, don't edit it. ###
+
+export LC_ALL='C'
+export PATH='/usr/sbin:/usr/bin:/sbin:/bin'
+
+# Stop the network.
+service networking stop
+sleep 1
+
+# Refresh the names of interfaces.
+udevadm trigger
+sleep 1
+
+service networking start
+
