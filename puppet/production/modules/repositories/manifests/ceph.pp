@@ -3,7 +3,6 @@ class repositories::ceph (
 ) {
 
   case $::lsbdistcodename {
-    wheezy: {}
     trusty: {}
     default: {
       fail("Module `${module_name}` is not supported or not yet tested on ${::lsbdistcodename}.")
