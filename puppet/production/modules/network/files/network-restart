@@ -9,7 +9,8 @@ service networking stop
 sleep 1
 
 # Refresh the names of interfaces.
-udevadm trigger
+udevadm control --reload-rules # Reload the new rules.
+udevadm trigger                # Trigger the new rules.
 sleep 1
 
 service networking start
