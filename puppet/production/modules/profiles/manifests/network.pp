@@ -2,7 +2,7 @@ class profiles::network {
 
   $interfaces = hiera_hash('interfaces')
 
-  class { '::network':
+  class { '::network::interfaces':
     interfaces => $interfaces,
   }
 
