@@ -4,7 +4,11 @@ classes:
 
 interfaces:
   eth0:
-    macaddress: '08:00:27:bc:ce:f1'
+    macaddress: '08:00:27:bc:cf:01'
+    method: 'dhcp'
   eth1:
-    macaddress: '08:00:27:bc:ce:f2'
+    macaddress: '08:00:27:bc:cf:02'
+    method: 'static'
+    address: '172.31.20.2'
+    netmask: '255.255.0.0'
 

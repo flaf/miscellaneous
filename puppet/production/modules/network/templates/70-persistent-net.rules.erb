@@ -1,0 +1,10 @@
+### This file is managed by Puppet, don't edit it. ###
+
+<%- @interfaces.each do |interface, properties| -%>
+<%- if properties['macaddress'] -%>
+SUBSYSTEM=="net", DRIVERS=="?*", \
+ATTR{address}=="<%= properties['macaddress'] %>", NAME="<%= interface %>"
+
+<%- end -%>
+<%- end -%>
+

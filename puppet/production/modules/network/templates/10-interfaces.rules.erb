@@ -1,6 +1,0 @@
-### This file is managed by Puppet, don't edit it. ###
-
-<% @interfaces.each do |interface, properties| -%>
-KERNEL=="eth*", ATTR{address}=="<%= properties['macaddress'] %>", NAME="<%= interface %>"
-<% end -%>
-

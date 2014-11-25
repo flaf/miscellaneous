@@ -4,14 +4,27 @@
 export LC_ALL='C'
 export PATH='/usr/sbin:/usr/bin:/sbin:/bin'
 
-# Stop the network.
 service networking stop
-sleep 1
+sleep 0.2
 
-# Refresh the names of interfaces.
-udevadm control --reload-rules # Reload the new rules.
-udevadm trigger                # Trigger the new rules.
-sleep 1
+if [ -f '/etc/network/interfaces.puppet' ]
+then
+    cat '/etc/network/interfaces.puppet' > '/etc/network/interfaces'
+fi
+
+# Refresh the names of interfaces. The commands below
+# doesn't work according to my tests.
+#
+#   udevadm control --reload-rules
+#   udevadm trigger
+#
+# The command `service udev restart` doesn't work too.
+service udev stop
+sleep 0.2
+
+service udev start
+sleep 0.2
 
 service networking start
+sleep 0.2
 

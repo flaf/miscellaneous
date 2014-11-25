@@ -1,0 +1,17 @@
+### This file is managed by Puppet, don't edit it. ###
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+<%- @interfaces.each do |interface, properties| -%>
+auto <%= interface %>
+iface <%= interface %> inet <%= properties['method'] %>
+<%- properties.each do |key, value| -%>
+  <%- if key != 'macaddress' and key != 'method' -%>
+  <%= key %> <%= value %>
+  <%- end -%>
+<%- end -%>
+
+<%- end -%>
+
