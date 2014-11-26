@@ -81,7 +81,7 @@ LABEL trusty-amd64-preseed
     ENDTEXT
 
 LABEL trusty-amd64-preseed-silo-3
-    MENU LABEL Ubuntu Trusty amd64: installation with preseed for silo-3
+    MENU LABEL Ubuntu Trusty amd64 preseed for silo-3
     KERNEL trusty/ubuntu-installer/amd64/linux
     # hostname and domain are defined here to avoid questions
     # during installation but the DNS entry (if exists) take precedence.
