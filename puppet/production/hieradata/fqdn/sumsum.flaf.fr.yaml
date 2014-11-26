@@ -1,4 +1,5 @@
 ---
 classes:
   - '::roles::nothing'
+enc_datacenter: 'ovh'
 

@@ -4,7 +4,9 @@
 
 :hierarchy:
   - "%{environment}/hieradata/fqdn/%{::clientcert}"
-  - "%{environment}/hieradata/group/%{::group}"
+  - "%{environment}/hieradata/group/%{::group_0}"
+  - "%{environment}/hieradata/group/%{::group_1}"
+  - "%{environment}/hieradata/group/%{::group_2}"
   - "%{environment}/hieradata/datacenter/%{::datacenter}"
   - "%{environment}/hieradata/common"
 

@@ -1,6 +1,7 @@
 ---
 classes:
   - '::roles::sandbox'
+enc_datacenter: 'vbox-home'
 
 interfaces:
   eth0:
