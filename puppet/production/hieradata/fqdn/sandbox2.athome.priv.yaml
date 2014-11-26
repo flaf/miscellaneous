@@ -1,0 +1,14 @@
+---
+classes:
+  - '::roles::sandbox'
+
+interfaces:
+  eth0:
+    macaddress: '08:00:27:bc:cf:03'
+    method: 'dhcp'
+  eth1:
+    macaddress: '08:00:27:bc:cf:04'
+    method: 'static'
+    address: '10.0.0.102'
+    netmask: '255.0.0.0'
+
