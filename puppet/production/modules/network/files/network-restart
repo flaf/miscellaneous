@@ -7,27 +7,21 @@ export PATH='/usr/sbin:/usr/bin:/sbin:/bin'
 # Deconfigure all interfaces except lo.
 # Note: with Ubuntu 14.04, the init script doesn't work.
 ifdown --all
-sleep 0.2
+sleep 1
 
 if [ -f '/etc/network/interfaces.puppet' ]
 then
     cat '/etc/network/interfaces.puppet' > '/etc/network/interfaces'
 fi
 
-# Refresh the names of interfaces. The commands below
-# doesn't work according to my tests.
-#
-#   udevadm control --reload-rules
-#   udevadm trigger
-#
-# The command `service udev restart` doesn't work too.
-service udev stop
-sleep 0.2
-
-service udev start
-sleep 0.2
+# Refresh the names of interfaces.
+udevadm control --reload-rules
+sleep 1
+udevadm trigger --subsystem-match='net' --action='add'
+sleep 1
 
 # Configure all interfaces marked 'auto'
 ifup --all
-sleep 0.2
+sleep 1
+
 
