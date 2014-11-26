@@ -80,6 +80,13 @@ LABEL trusty-amd64-preseed
     hostname == "trusty-vm" if there is no DNS entry.
     ENDTEXT
 
+LABEL trusty-amd64-preseed-silo-3
+    MENU LABEL Ubuntu Trusty amd64: installation with preseed for silo-3
+    KERNEL trusty/ubuntu-installer/amd64/linux
+    # hostname and domain are defined here to avoid questions
+    # during installation but the DNS entry (if exists) take precedence.
+    APPEND language=fr keymap=fr country=FR locale=fr_FR.UTF-8 interface=eth2 hostname=silo-3 domain=labs.ac-versailles.fr ipv6.disable=1 url=http://172.31.0.1/trusty-preseed-amd64.cfg initrd=trusty/ubuntu-installer/amd64/initrd.gz --
+
 LABEL jessie-amd64
     MENU LABEL Debian Jessie amd64: expert installation
     KERNEL  jessie/debian-installer/amd64/linux
