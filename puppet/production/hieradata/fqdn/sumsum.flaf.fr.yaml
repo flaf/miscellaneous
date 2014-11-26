@@ -1,5 +1,7 @@
 ---
 classes:
   - '::roles::nothing'
+enc_groups:
+  - 'puppetmaster'
 enc_datacenter: 'ovh'
 

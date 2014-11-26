@@ -1,6 +1,8 @@
 ---
 classes:
   - '::roles::sandbox'
+enc_groups:
+  - 'vbox'
 enc_datacenter: 'vbox-work'
 
 interfaces:
