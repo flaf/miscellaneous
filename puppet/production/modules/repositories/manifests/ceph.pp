@@ -11,7 +11,7 @@ class repositories::ceph (
 
   include '::apt'
 
-  apt::source { 'ceph-repository':
+  apt::source { 'ceph':
     location    => "http://ceph.com/debian-${version}/",
     release     => $::lsbdistcodename,
     repos       => 'main',

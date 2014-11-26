@@ -4,7 +4,9 @@
 export LC_ALL='C'
 export PATH='/usr/sbin:/usr/bin:/sbin:/bin'
 
-service networking stop
+# Deconfigure all interfaces except lo.
+# Note: with Ubuntu 14.04, the init script doesn't work.
+ifdown --all
 sleep 0.2
 
 if [ -f '/etc/network/interfaces.puppet' ]
@@ -25,6 +27,7 @@ sleep 0.2
 service udev start
 sleep 0.2
 
-service networking start
+# Configure all interfaces marked 'auto'
+ifup --all
 sleep 0.2
 
