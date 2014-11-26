@@ -5,7 +5,7 @@ class repositories::ceph (
   case $::lsbdistcodename {
     trusty: {}
     default: {
-      fail("Module `${module_name}` is not supported or not yet tested on ${::lsbdistcodename}.")
+      fail("Class ${title} has never been tested on ${::lsbdistcodename}.")
     }
   }
 
