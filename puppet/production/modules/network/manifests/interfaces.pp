@@ -12,6 +12,17 @@ class network::interfaces (
     }
   }
 
+  # To make uniform between Wheezy and Trusty.
+  # Trusty uses resolvconf by default but not Wheezy.
+  # And it's not recommended to remove resolvconf
+  # in Trusty (if you do that, you will remove the
+  # "ubuntu-minimal" package that is not recommended).
+  if ! defined(Package['resolvconf']) {
+    package { 'resolvconf':
+      ensure => present,
+    }
+  }
+
   file { '/etc/udev/rules.d/70-persistent-net.rules':
     ensure  => present,
     owner   => 'root',
