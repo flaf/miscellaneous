@@ -2,7 +2,7 @@
 classes:
   - '::roles::sandbox'
 enc_groups:
-  - 'vbox'
+  - 'virtual-labs'
 enc_datacenter: 'vbox-home'
 
 interfaces:
