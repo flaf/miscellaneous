@@ -1,11 +1,12 @@
 class network::interfaces (
   $stage           = 'network',
-  $meta_options = [
-                    'macaddress',
-                    'vlan_name',
-                    'vlan_id',
-                    'comment',
-                  ],
+  $meta_options    = [
+                       'macaddress',
+                       'vlan_name',
+                       'vlan_id',
+                       'comment',
+                     ],
+  $force_ifnames   = false,
   $restart_network = false,
   $interfaces,
 ) {
@@ -29,12 +30,21 @@ class network::interfaces (
     }
   }
 
+  if $force_ifnames {
+    $content_rule = template('network/70-persistent-net.rules.erb')
+    $replace_rule = true
+  } else {
+    $content_rule = "# File managed by Puppet but no interface renaming.\n"
+    $replace_rule = false
+  }
+
   file { '/etc/udev/rules.d/70-persistent-net.rules':
     ensure  => present,
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    content => template('network/70-persistent-net.rules.erb'),
+    replace => $replace_rule,
+    content => $content_rule,
   }
 
   file { '/etc/network/interfaces.puppet':
