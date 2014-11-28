@@ -4,6 +4,7 @@ class profiles::network {
 
   class { '::network::interfaces':
     interfaces      => $interfaces,
+    force_ifnames   => true,
     restart_network => true,
     before          => Class['::network::hosts'],
   }

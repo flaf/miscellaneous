@@ -34,7 +34,7 @@ class network::interfaces (
     $content_rule = template('network/70-persistent-net.rules.erb')
     $replace_rule = true
   } else {
-    $content_rule = "# File managed by Puppet but no interface renaming.\n"
+    $content_rule = "# Empty file created by Puppet because no interface renaming.\n"
     $replace_rule = false
   }
 
