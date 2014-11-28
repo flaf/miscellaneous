@@ -1,3 +1,4 @@
+<%- meta_options = [ 'macaddress', 'vlan_name', 'vlan_id', 'comment' ] -%>
 ### This file is managed by Puppet, don't edit it. ###
 
 # The loopback network interface
@@ -5,13 +6,18 @@ auto lo
 iface lo inet loopback
 
 <%- @interfaces.each do |interface, properties| -%>
+  <%- @meta_options.each do |meta_option| -%>
+    <%- if properties[meta_option] -%>
+# <%= meta_option %>: <%- properties[met_option] %>
+    <%- end -%>
+  <%- end -%>
 auto <%= interface %>
 iface <%= interface %> inet <%= properties['method'] %>
-<%- properties.each do |key, value| -%>
-  <%- if key != 'macaddress' and key != 'method' -%>
-  <%= key %> <%= value %>
+  <%- properties.each do |option_name, option_value| -%>
+    <%- if not @meta_options.include?(option_name) -%>
+    <%= option_name %> <%= option_value %>
+    <%- end -%>
   <%- end -%>
-<%- end -%>
 
 <%- end -%>
 
