@@ -1,6 +1,6 @@
 class roles::nothing {
 
-  # This roles does nothing.
+  # This role does nothing.
 
 }
 
