@@ -20,7 +20,7 @@ sleep 1
 udevadm trigger --subsystem-match='net' --action='add'
 sleep 1
 
-# Configure all interfaces marked 'auto'
+# Configure all interfaces marked 'auto'.
 ifup --all
 sleep 1
 
