@@ -4,8 +4,8 @@ class profiles::network::basic {
 
   class { '::network::interfaces':
     interfaces      => $interfaces,
-    force_ifnames   => true, # It's a moot point.
-    restart_network => true, # It's a moot point.
+    force_ifnames   => true,  # It's a moot point.
+    restart_network => false, # More secure.
     before          => Class['::network::hosts'],
   }
 
