@@ -1,6 +1,11 @@
 class network::interfaces (
   $stage           = 'network',
-  $meta_options = [ 'macaddress', 'vlan_name', 'vlan_id', 'comment' ],
+  $meta_options = [
+                    'macaddress',
+                    'vlan_name',
+                    'vlan_id',
+                    'comment',
+                  ],
   $restart_network = false,
   $interfaces,
 ) {
