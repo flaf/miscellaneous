@@ -20,8 +20,42 @@ EOS
 
     ifhash.each do |iface, properties|
 
-      if not properties.has_key?('address') then next end
-      if not properties['address'].include?('/') then next end
+      # For each interface, `properties` must be a hash.
+      unless properties.is_a?(Hash)
+        raise(Puppet::ParseError, 'fill_ifhash(): the properties of ' +
+              "the `#{iface}` interface is not a hash")
+      end
+
+      # For each interface, the 'method' key must exist.
+      unless properties.has_key?('method')
+        raise(Puppet::ParseError, "fill_ifhash(): the `#{iface}` interface " +
+              'has not `method` property')
+      end
+
+      # The values of `properties` must be a string or an array
+      # of strings. If the value is an array, we update the value
+      # to value.join(' ').
+      properties.each do |key, value|
+        unless value.is_a?(String) or value.is_a?(Array)
+        end
+
+        if value.is_a?(Array)
+          value.each do |elt|
+            if elt.is_a?(String)
+              next
+            else
+              raise(Puppet::ParseError, 'fill_ifhash(): there is one ' +
+                    'interface (at least) where the properties contain ' +
+                    'an array with a non string value')
+            end
+          end
+          # properties[key] is a valid array, we can update this value.
+          properties[key] = value.join(' ')
+        end
+      end
+
+      unless properties.has_key?('address') then next end
+      unless properties['address'].include?('/') then next end
 
       array_address = properties['address'].split('/')
       address = array_address[0]

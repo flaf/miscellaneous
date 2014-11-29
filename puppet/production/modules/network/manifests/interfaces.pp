@@ -19,7 +19,40 @@ class network::interfaces (
     }
   }
 
+  # Checking of parameters.
+  unless is_string($stage) {
+    fail("In the ${title} class, `stage` parameter must be a string.")
+  }
+
+  if empty($stage) {
+    fail("In the ${tilte} class, `stage` parameter must not be empty.")
+  }
+
+  unless is_array($meta_options) {
+    fail("In the ${title} class, `meta_options` parameter must be an array.")
+  }
+
+  unless is_bool($force_ifnames) {
+    fail("In the ${title} class, `force_ifnames` parameter must be a boolean.")
+  }
+
+  unless is_bool($restart_network) {
+    fail("In the ${title} class, `restart_network` parameter must be a boolean.")
+  }
+
+  unless is_hash($interfaces) {
+    fail("In the ${title} class, `interfaces` parameter must be a hash.")
+  }
+
+  if empty($interfaces) {
+    fail("In the ${tilte} class, `interfaces` parameter must not be empty.")
+  }
+
+  #------------------------------------------------------
   $a =  {
+          "em0"  => {
+                      "titi" => "toto",
+                    },
           "eth0" => {
                       "macaddress" => "08:00:27:bc:cf:03",
                       "method"     =>"dhcp"
@@ -32,12 +65,14 @@ class network::interfaces (
                     },
            }
 
-
-  $interfaces_filled = fill_ifhash($interfaces)
+  $interfaces_filled = fill_ifhash($a)
 
   notify { 'test':
     message => "\n\n $interfaces_filled \n\n"
   }
+  #------------------------------------------------------
+
+  #$interfaces_filled = fill_ifhash($interfaces)
 
   # To make uniform between Wheezy and Trusty.
   # Trusty uses resolvconf by default but not Wheezy.
