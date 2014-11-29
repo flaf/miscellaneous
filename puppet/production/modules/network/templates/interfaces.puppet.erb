@@ -4,7 +4,7 @@
 auto lo
 iface lo inet loopback
 
-<%- @interfaces.each do |interface, properties| -%>
+<%- @interfaces_filled.each do |interface, properties| -%>
   <%- @meta_options.each do |meta_option| -%>
     <%- if properties[meta_option] -%>
 # <%= meta_option %>: <%= properties[meta_option] %>

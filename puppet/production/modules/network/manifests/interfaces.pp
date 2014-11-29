@@ -19,6 +19,26 @@ class network::interfaces (
     }
   }
 
+  $a =  {
+          "eth0" => {
+                      "macaddress" => "08:00:27:bc:cf:03",
+                      "method"     =>"dhcp"
+                    },
+          "eth1" => { "macaddress" => "08:00:27:bc:cf:04",
+                      "method"     => "static",
+                      "address"    => "172.30.240.12/20",
+                      "netmask"    => "255.0.0.0",
+                      #"network"    => "10.0.7.0",
+                    },
+           }
+
+
+  $interfaces_filled = fill_ifhash($interfaces)
+
+  notify { 'test':
+    message => "\n\n $interfaces_filled \n\n"
+  }
+
   # To make uniform between Wheezy and Trusty.
   # Trusty uses resolvconf by default but not Wheezy.
   # And it's not recommended to remove resolvconf

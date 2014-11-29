@@ -12,6 +12,6 @@ interfaces:
   eth1:
     macaddress: '08:00:27:bc:cf:04'
     method: 'static'
-    address: '10.0.0.102'
-    netmask: '255.0.0.0'
+    address: '172.30.240.12/20'
+    dns-nameservers: "8.8.8.8 4.4.4.4"
 
