@@ -1,0 +1,5 @@
+---
+restart_network: false  # It's a moot point.
+rename_interfaces: true # Same remark.
+
+
