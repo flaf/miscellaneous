@@ -3,12 +3,12 @@
   - "eyaml"
 
 :hierarchy:
-  - "%{environment}/hieradata/fqdn/%{::clientcert}"
-  - "%{environment}/hieradata/group/%{::groups_0}"
-  - "%{environment}/hieradata/group/%{::groups_1}"
-  - "%{environment}/hieradata/group/%{::groups_2}"
-  - "%{environment}/hieradata/datacenter/%{::datacenter}"
-  - "%{environment}/hieradata/common"
+  - "%{::environment}/hieradata/fqdn/%{::clientcert}"
+  - "%{::environment}/hieradata/group/%{::groups_0}"
+  - "%{::environment}/hieradata/group/%{::groups_1}"
+  - "%{::environment}/hieradata/group/%{::groups_2}"
+  - "%{::environment}/hieradata/datacenter/%{::datacenter}"
+  - "%{::environment}/hieradata/common"
 
 :merge_behavior: "deeper"
 

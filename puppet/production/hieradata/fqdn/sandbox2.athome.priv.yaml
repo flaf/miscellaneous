@@ -16,4 +16,8 @@ interfaces:
     comment: 'useless interface'
     network_name: 'private'
 
+hosts_entries:
+  - [ '8.8.8.8', 'google.com', 'foo' ]
+  - [ '8.8.4.4', 'google.fr', 'bar' ]
+
 
