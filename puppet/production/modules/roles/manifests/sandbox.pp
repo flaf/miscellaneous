@@ -1,6 +1,6 @@
 class roles::sandbox {
 
-  include '::profiles::network::basic'
+  include '::profiles::network::standard'
 
 }
 

@@ -1,4 +1,4 @@
-class profiles::network::basic {
+class profiles::network::standard {
 
   $rename_interfaces    = hiera('rename_interfaces')
   $restart_network      = hiera('restart_network')
