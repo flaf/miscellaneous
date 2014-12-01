@@ -9,9 +9,11 @@ interfaces:
   eth0:
     macaddress: '08:00:27:bc:cf:03'
     method: 'dhcp'
+    network_name: 'private'
   eth1:
     macaddress: '08:00:27:bc:cf:04'
-    method: 'static'
-    address: '172.30.240.12/20'
-    dns-nameservers: "8.8.8.8 4.4.4.4"
+    method: 'manual'
+    comment: 'useless interface'
+    network_name: 'private'
+
 

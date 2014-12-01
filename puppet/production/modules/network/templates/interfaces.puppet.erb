@@ -5,14 +5,14 @@ auto lo
 iface lo inet loopback
 
 <%- @interfaces_filled.each do |interface, properties| -%>
-  <%- @meta_options.each do |meta_option| -%>
+  <%- @meta_options.sort.each do |meta_option| -%>
     <%- if properties[meta_option] -%>
 # <%= meta_option %>: <%= properties[meta_option] %>
     <%- end -%>
   <%- end -%>
 auto <%= interface %>
 iface <%= interface %> inet <%= properties['method'] %>
-  <%- properties.each do |option_name, option_value| -%>
+  <%- Hash[properties.sort].each do |option_name, option_value| -%>
     <%- if not @meta_options.include?(option_name) and option_name != 'method' -%>
   <%= option_name %> <%= option_value %>
     <%- end -%>

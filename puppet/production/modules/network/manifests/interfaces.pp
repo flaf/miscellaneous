@@ -1,13 +1,8 @@
 class network::interfaces (
-  $stage           = 'network',
-  $meta_options    = [
-                       'macaddress',
-                       'vlan_name',
-                       'vlan_id',
-                       'comment',
-                     ],
-  $force_ifnames   = false,
-  $restart_network = false,
+  $stage                = 'network',
+  $force_ifnames        = false,
+  $restart_network      = false,
+  $inventoried_networks = {},
   $interfaces,
 ) {
 
@@ -19,17 +14,24 @@ class network::interfaces (
     }
   }
 
-  # Checking of parameters.
+  # This options will be not used as stanza in the `interfaces` file,
+  # but as comment for each interface.
+  $meta_options = [
+                   'macaddress',
+                   'network_name',
+                   'vlan_name',
+                   'vlan_id',
+                   'cidr_address',
+                   'comment',
+                  ]
+
+  ### Checking of parameters. ###
   unless is_string($stage) {
     fail("In the ${title} class, `stage` parameter must be a string.")
   }
 
   if empty($stage) {
     fail("In the ${tilte} class, `stage` parameter must not be empty.")
-  }
-
-  unless is_array($meta_options) {
-    fail("In the ${title} class, `meta_options` parameter must be an array.")
   }
 
   unless is_bool($force_ifnames) {
@@ -44,35 +46,24 @@ class network::interfaces (
     fail("In the ${title} class, `interfaces` parameter must be a hash.")
   }
 
+  unless is_hash($inventoried_networks) {
+    fail("In the ${title} class, `inventoried_networks` parameter must be a hash.")
+  }
+
   if empty($interfaces) {
     fail("In the ${tilte} class, `interfaces` parameter must not be empty.")
   }
 
-  #------------------------------------------------------
-  $a =  {
-          "em0"  => {
-                      "titi" => "toto",
-                    },
-          "eth0" => {
-                      "macaddress" => "08:00:27:bc:cf:03",
-                      "method"     =>"dhcp"
-                    },
-          "eth1" => { "macaddress" => "08:00:27:bc:cf:04",
-                      "method"     => "static",
-                      "address"    => "172.30.240.12/20",
-                      "netmask"    => "255.0.0.0",
-                      #"network"    => "10.0.7.0",
-                    },
-           }
+  check_netif_hash($interfaces)
 
-  $interfaces_filled = fill_ifhash($a)
-
-  notify { 'test':
-    message => "\n\n $interfaces_filled \n\n"
+  unless empty($inventoried_networks) {
+    check_netif_hash($inventoried_networks)
   }
-  #------------------------------------------------------
+  #---------------------------------------------------------------------------#
 
-  #$interfaces_filled = fill_ifhash($interfaces)
+  $interfaces_filled = fill_ifhash($interfaces,
+                                   $inventoried_networks,
+                                   $meta_options)
 
   # To make uniform between Wheezy and Trusty.
   # Trusty uses resolvconf by default but not Wheezy.
