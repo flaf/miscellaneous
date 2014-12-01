@@ -1,5 +1,6 @@
 class network::hosts (
-  $stage = 'network',
+  $stage         = 'network',
+  $hosts_entries = [],
 ) {
 
   case $::lsbdistcodename {
