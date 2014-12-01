@@ -1,4 +1,7 @@
 ---
+restart_network: false
+rename_interfaces: true
+
 networks:
   private:
     vlan_name: 'private'

@@ -1,6 +1,6 @@
 class network::interfaces (
   $stage                = 'network',
-  $force_ifnames        = false,
+  $rename_interfaces    = false,
   $restart_network      = false,
   $inventoried_networks = {},
   $interfaces,
@@ -34,8 +34,8 @@ class network::interfaces (
     fail("In the ${tilte} class, `stage` parameter must not be empty.")
   }
 
-  unless is_bool($force_ifnames) {
-    fail("In the ${title} class, `force_ifnames` parameter must be a boolean.")
+  unless is_bool($rename_interfaces) {
+    fail("In the ${title} class, `rename_interfaces` parameter must be a boolean.")
   }
 
   unless is_bool($restart_network) {
@@ -76,7 +76,7 @@ class network::interfaces (
     }
   }
 
-  if $force_ifnames {
+  if $rename_interfaces {
     $content_rule = template('network/70-persistent-net.rules.erb')
     $replace_rule = true
   } else {

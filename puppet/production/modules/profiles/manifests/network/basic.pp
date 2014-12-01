@@ -1,13 +1,15 @@
 class profiles::network::basic {
 
-  $interfaces           = hiera_hash('interfaces')
+  $rename_interfaces    = hiera('rename_interfaces')
+  $restart_network      = hiera('restart_network')
   $inventoried_networks = hiera_hash('networks')
+  $interfaces           = hiera_hash('interfaces')
 
   class { '::network::interfaces':
-    interfaces           => $interfaces,
-    force_ifnames        => true,  # It's a moot point.
-    restart_network      => false, # More secure.
+    rename_interfaces    => $rename_interfaces,
+    restart_network      => $restart_network,
     inventoried_networks => $inventoried_networks,
+    interfaces           => $interfaces,
     before               => Class['::network::hosts'],
   }
 
