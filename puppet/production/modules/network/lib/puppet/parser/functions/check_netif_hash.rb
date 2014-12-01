@@ -26,9 +26,10 @@ function raises an error.
     EOS
   ) do |args|
 
-    unless(args.size == 1)
+    num_args = 1
+    unless(args.size == num_args)
       raise(Puppet::ParseError, 'check_netif_hash(): wrong number of ' +
-            "arguments given (#{args.size} instead of 1)")
+            "arguments given (#{args.size} instead of #{num_args})")
     end
 
     hash = args[0]

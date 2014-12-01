@@ -4,6 +4,7 @@ class profiles::network::standard {
   $restart_network      = hiera('restart_network')
   $inventoried_networks = hiera_hash('networks')
   $interfaces           = hiera_hash('interfaces')
+  $hosts_entries        = hiera_array('hosts_entries', [])
 
   class { '::network::interfaces':
     rename_interfaces    => $rename_interfaces,
@@ -13,7 +14,9 @@ class profiles::network::standard {
     before               => Class['::network::hosts'],
   }
 
-  include '::network::hosts'
+  class { '::network::hosts':
+    hosts_entries => $hosts_entries,
+  }
 
 }
 

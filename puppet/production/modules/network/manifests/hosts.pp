@@ -3,6 +3,8 @@ class network::hosts (
   $hosts_entries = [],
 ) {
 
+  check_hosts_entries_array($hosts_entries)
+
   case $::lsbdistcodename {
     wheezy: {}
     trusty: {}
@@ -20,4 +22,5 @@ class network::hosts (
   }
 
 }
+
 
