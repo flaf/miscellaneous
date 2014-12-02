@@ -5,19 +5,18 @@ enc_groups:
   - 'virtual-labs'
 enc_datacenter: 'vbox-home'
 
-interfaces:
-  eth0:
-    macaddress: '08:00:27:bc:cf:03'
-    method: 'dhcp'
-    network_name: 'private'
-  eth1:
-    macaddress: '08:00:27:bc:cf:04'
-    method: 'manual'
-    comment: 'useless interface'
-    network_name: 'private'
-
-hosts_entries:
-  - [ '8.8.8.8', 'google.com', 'foo' ]
-  - [ '8.8.4.4', 'google.fr', 'bar' ]
+network:
+  restart_network: true
+  rename_interfaces: true
+  interfaces:
+    eth0:
+      macaddress: '08:00:27:bc:cf:03'
+      method: 'dhcp'
+      network_name: 'private'
+    eth1:
+      macaddress: '08:00:27:bc:cf:04'
+      method: 'manual'
+      comment: 'useless interface'
+      network_name: 'private'
 
 

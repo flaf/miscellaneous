@@ -1,10 +1,11 @@
 class profiles::network::standard {
 
-  $rename_interfaces    = hiera('rename_interfaces')
-  $restart_network      = hiera('restart_network')
   $inventoried_networks = hiera_hash('networks')
-  $interfaces           = hiera_hash('interfaces')
-  $hosts_entries        = hiera_array('hosts_entries', [])
+  $network_conf         = hiera_hash('network')
+  $interfaces           = $network_conf['interfaces']
+  $rename_interfaces    = $network_conf['rename_interfaces']
+  $restart_network      = $network_conf['restart_network']
+  $hosts_entries        = $network_conf['hosts_entries']
 
   class { '::network::interfaces':
     rename_interfaces    => $rename_interfaces,
