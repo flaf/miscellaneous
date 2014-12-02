@@ -33,7 +33,7 @@ function raises an error.
     hosts_entries.each do |name, entry|
       unless entry.is_a?(Array) and entry.length > 1
         raise(Puppet::ParseError, 'update_hosts_entries(): in the ' +
-              "`hosts_entries` parameter, the `#{name}` entry is not an " +
+              "`hosts_entries` parameter, the `#{name}` entry is not " +
               'an array of 2 elements at least')
       end
 

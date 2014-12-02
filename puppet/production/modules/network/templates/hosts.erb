@@ -1,8 +1,8 @@
 ### This file is managed by Puppet, don't edit it. ###
 
-127.0.0.1    localhost
+127.0.0.1	localhost
 <%- Hash[@hosts_entries_updated.sort].each do |name, entry| -%>
-<%= entry.join('    ') %>
+<%= entry.join("\t") %>
 <%- end -%>
 
 # The following lines are desirable for IPv6 capable hosts
