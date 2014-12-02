@@ -1,9 +1,9 @@
 class network::hosts (
   $stage         = 'network',
-  $hosts_entries = [],
+  $hosts_entries = {},
 ) {
 
-  check_hosts_entries_array($hosts_entries)
+  $hosts_entries_updated = update_hosts_entries($hosts_entries)
 
   case $::lsbdistcodename {
     wheezy: {}

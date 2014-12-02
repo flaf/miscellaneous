@@ -1,8 +1,7 @@
 ### This file is managed by Puppet, don't edit it. ###
 
 127.0.0.1    localhost
-<%= @ipaddress %>    <%= @fqdn %>    <%= @hostname %>
-<%- @hosts_entries.sort.each do |entry| -%>
+<%- Hash[@hosts_entries_updated.sort].each do |name, entry| -%>
 <%= entry.join('    ') %>
 <%- end -%>
 
