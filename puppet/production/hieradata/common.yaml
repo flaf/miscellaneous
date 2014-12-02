@@ -1,5 +1,6 @@
 ---
 timezone: 'Europe/Paris'
+default_locale: 'en_US.UTF-8'
 
 network:
   restart_network: false  # It's a moot point.
