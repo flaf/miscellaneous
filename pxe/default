@@ -95,6 +95,13 @@ LABEL trusty-preseed-amd64-CL302LXA5-ceph.cfg
     # during installation but the DNS entry (if exists) take precedence.
     APPEND language=fr keymap=fr country=FR locale=fr_FR.UTF-8 interface=eth0 hostname=silo-3 domain=labs.ac-versailles.fr ipv6.disable=1 url=http://172.31.0.1/trusty-preseed-amd64-CL302LXA5-ceph.cfg initrd=trusty/ubuntu-installer/amd64/initrd.gz --
 
+LABEL trusty-preseed-amd64-simpleRAIDsoft.cfg
+    MENU LABEL Trusty preseed for simple RAID1 soft on 2 disks
+    KERNEL trusty/ubuntu-installer/amd64/linux
+    # hostname and domain are defined here to avoid questions
+    # during installation but the DNS entry (if exists) take precedence.
+    APPEND language=fr keymap=fr country=FR locale=fr_FR.UTF-8 interface=eth0 hostname=trusty-vm domain=domain.tld ipv6.disable=1 url=http://172.31.0.1/trusty-preseed-amd64-simpleRAIDsoft.cfg initrd=trusty/ubuntu-installer/amd64/initrd.gz --
+
 LABEL wheezy-amd64-preseed-raidsoft2disks
     MENU LABEL Wheezy preseed for raidsoft 2 disks
     KERNEL wheezy/debian-installer/amd64/linux
