@@ -49,6 +49,11 @@ function raises an error.
         value = value.strip()
         if value =~ /^@[a-z0-9_]+$/
           value = lookupvar(value.gsub('@', ''))
+          unless value.is_a?(String) and not value.empty?()
+            raise(Puppet::ParseError, 'update_hosts_entries(): in the ' +
+                  '`hosts_entries` parameter, there is a problem of ' +
+                  "variable substitution in the `#{name}` entry")
+          end
           entry[index] = value
         end
 
