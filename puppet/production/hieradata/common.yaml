@@ -1,8 +1,9 @@
 ---
+timezone: 'Europe/Paris'
+
 network:
   restart_network: false  # It's a moot point.
   rename_interfaces: true # Same remark.
   hosts_entries:
     self: [ '@ipaddress', '@fqdn', '@hostname' ]
-
 
