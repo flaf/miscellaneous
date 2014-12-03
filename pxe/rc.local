@@ -1,0 +1,27 @@
+#!/bin/sh
+
+printf "\ngit pull\n"
+printf   "========\n"
+cd "/srv/tftp/miscellaneous/" && git pull
+
+printf "\nUpdate symlinks in /var/www/\n"
+printf   "============================\n"
+cd "/srv/tftp/miscellaneous/pxe" && cfg=$(\ls *.cfg)
+cd /var/www/ && {
+    rm -f *.cfg postinstall.sh
+    for f in $cfg
+    do
+      ln -s "/srv/tftp/miscellaneous/pxe/$f" "$f"
+    done
+    ln -s "/srv/tftp/miscellaneous/pxe/postinstall.sh" postinstall.sh
+}
+cd /var/www && find . -type l -name '*.cfg'
+n=$(\ls -1 /var/www/*.cfg | wc -l)
+echo "---------------------------------------"
+echo "$n preseed file(s) in /var/www/"
+
+printf "\nAddresses\n"
+printf   "=========\n"
+ip address show | grep inet
+
+
