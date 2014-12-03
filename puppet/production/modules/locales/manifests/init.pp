@@ -2,6 +2,7 @@
 #
 # Public class which allow to only set the default
 # locale of the system.
+# Depends on Puppetlabs-stdlib.
 #
 # Parameters:
 # - $default_locale: the value of the default locale.
@@ -28,6 +29,11 @@ class locales (
     default: {
       fail("Class ${title} has never been tested on ${::lsbdistcodename}.")
     }
+  }
+
+  # Check parameters.
+  unless is_string($default_locale) and (! empty($default_locale)) {
+    fail("Problem in class ${title}, the `default_locale` must be a non empty string.")
   }
 
   file { '/etc/default/locale':

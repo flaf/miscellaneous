@@ -2,6 +2,7 @@
 #
 # Public class which allow to set the timezone of the
 # system.
+# Depends on Puppetlabs-stdlib.
 #
 # Parameters:
 # - $timezone: the value of the timezone.
@@ -28,6 +29,11 @@ class timezone (
     default: {
       fail("Class ${title} has never been tested on ${::lsbdistcodename}.")
     }
+  }
+
+  # Check parameters.
+  unless is_string($timezone) and (! empty($timezone)) {
+    fail("Problem in class ${title}, the `timezone` must be a non empty string.")
   }
 
   file { '/etc/timezone':

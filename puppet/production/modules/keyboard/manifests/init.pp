@@ -1,6 +1,7 @@
 # Class: keyboard
 #
 # Public class which allow to only configure the keyboard.
+# Depends on Puppetlabs-stdlib.
 #
 # Parameters:
 # - $xkbmodel: the value of XKBMODEL in the /etc/default/keyboard file.
@@ -41,6 +42,23 @@ class keyboard (
     default: {
       fail("Class ${title} has never been tested on ${::lsbdistcodename}.")
     }
+  }
+
+  # Check parameters.
+  unless is_string($xkbmodel) and (! empty($xkbmodel)) {
+    fail("Problem in class ${title}, the `xkbmodel` must be a non empty string.")
+  }
+  unless is_string($xkblayout) and (! empty($xkblayout)) {
+    fail("Problem in class ${title}, the `xkblayout` must be a non empty string.")
+  }
+  unless is_string($xkbvariant) and (! empty($xkbvariant)) {
+    fail("Problem in class ${title}, the `xkbvariant` must be a non empty string.")
+  }
+  unless is_string($xkboptions) {
+    fail("Problem in class ${title}, the `xkboptions` must be a string.")
+  }
+  unless is_string($backspace) and (! empty($backspace)) {
+    fail("Problem in class ${title}, the `backspace` must be a non empty string.")
   }
 
   file { '/etc/default/keyboard':
