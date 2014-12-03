@@ -1,4 +1,4 @@
-class roles::sandbox {
+class roles::standard {
 
   include '::profiles::network::standard'
   include '::profiles::timezone::standard'
