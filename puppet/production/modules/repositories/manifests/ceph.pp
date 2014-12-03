@@ -14,7 +14,8 @@ class repositories::ceph (
     }
   }
 
-  include '::apt'
+  # Sans doute inutile.
+  # include '::apt'
 
   apt::source { 'ceph':
     location    => "http://ceph.com/debian-${version}/",
