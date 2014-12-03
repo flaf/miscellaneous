@@ -33,7 +33,7 @@ class locales (
 
   # Check parameters.
   unless is_string($default_locale) and (! empty($default_locale)) {
-    fail("Problem in class ${title}, the `default_locale` must be a non empty string.")
+    fail("Problem in class ${title}, the `default_locale` parameter must be a non empty string.")
   }
 
   file { '/etc/default/locale':

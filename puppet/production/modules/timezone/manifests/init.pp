@@ -33,7 +33,7 @@ class timezone (
 
   # Check parameters.
   unless is_string($timezone) and (! empty($timezone)) {
-    fail("Problem in class ${title}, the `timezone` must be a non empty string.")
+    fail("Problem in class ${title}, the `timezone` parameter must be a non empty string.")
   }
 
   file { '/etc/timezone':

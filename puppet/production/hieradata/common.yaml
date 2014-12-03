@@ -12,3 +12,11 @@ network:
   hosts_entries:
     self: [ '@ipaddress', '@fqdn', '@hostname' ]
 
+apt:
+  sourceslist:
+    url:
+      wheezy: 'http://ftp.fr.debian.org/debian/'
+      trusty: 'http://fr.archive.ubuntu.com/ubuntu'
+    src: false
+
+
