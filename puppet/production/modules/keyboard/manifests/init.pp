@@ -51,7 +51,19 @@ class keyboard (
     content => template('keyboard/keyboard.erb'),
   }
 
-  $command = 'dpkg-reconfigure --frontend=noninteractive keyboard-configuration'
+  case $::lsbdistcodename {
+    wheezy: {
+      $command = 'service keyboard-setup restart'
+    }
+    trusty: {
+      $command = 'dpkg-reconfigure --frontend=noninteractive keyboard-configuration'
+    }
+    default: {
+      # Do nothing, change will be enabled in the next reboot.
+      $command = 'true'
+    }
+  }
+
   exec { 'update-keyboard-conf':
     path        => '/usr/sbin:/usr/bin:/sbin:/bin',
     command     => $command,
