@@ -1,0 +1,20 @@
+### This is a file managed by Puppet, don't edit it. ###
+
+deb <%= @url %> <%= scope['::lsbdistcodename'] %> main contrib non-free
+<%- if @add_src -%>
+deb-src <%= @url %> <%= scope['::lsbdistcodename'] %> main contrib non-free
+<%- end -%>
+
+# <%= scope['::lsbdistcodename'] %>-updates, previously known as 'volatile'.
+deb <%= @url %> <%= scope['::lsbdistcodename'] %>-updates main contrib non-free
+<%- if @add_src -%>
+deb-src <%= @url %> <%= scope['::lsbdistcodename'] %>-updates main contrib non-free
+<%- end -%>
+
+# Security updates.
+deb http://security.debian.org/ <%= scope['::lsbdistcodename'] %>/updates main contrib non-free
+<%- if @add_src -%>
+deb-src http://security.debian.org/ <%= scope['::lsbdistcodename'] %>/updates main contrib non-free
+<%- end -%>
+
+

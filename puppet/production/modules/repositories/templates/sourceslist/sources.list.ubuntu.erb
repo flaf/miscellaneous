@@ -5,20 +5,20 @@
 # universe and multiverse is ENTIRELY UNSUPPORTED by the Ubuntu team.
 # Also, please note that software in universe WILL NOT receive any
 # review or updates from the Ubuntu security team.
-deb <%= @url %> trusty main restricted
+deb <%= @url %> <%= scope['::lsbdistcodename'] %> main restricted
 <%- if @add_src -%>
-deb-src <%= @url %> trusty main restricted
+deb-src <%= @url %> <%= scope['::lsbdistcodename'] %> main restricted
 <%- end -%>
 
 # Major bug fix updates produced after the final release of the distribution.
-deb <%= @url %> trusty-updates main restricted
+deb <%= @url %> <%= scope['::lsbdistcodename'] %>-updates main restricted
 <%- if @add_src -%>
-deb-src <%= @url %> trusty-updates main restricted
+deb-src <%= @url %> <%= scope['::lsbdistcodename'] %>-updates main restricted
 <%- end -%>
 
 # Security updates.
-deb http://security.ubuntu.com/ubuntu trusty-security main restricted
+deb http://security.ubuntu.com/ubuntu <%= scope['::lsbdistcodename'] %>-security main restricted
 <%- if @add_src -%>
-deb-src http://security.ubuntu.com/ubuntu trusty-security main restricted
+deb-src http://security.ubuntu.com/ubuntu <%= scope['::lsbdistcodename'] %>-security main restricted
 <%- end -%>
 

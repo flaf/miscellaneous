@@ -20,12 +20,15 @@ class repositories::sourceslist (
     fail("Problem in class ${title}, the `add_src` parameter must be a boolean.")
   }
 
+  # Should be equal to "debian" or "ubuntu".
+  $os_family = downcase($::lsbdistid)
+
   file { '/etc/apt/sources.list':
     ensure  => present,
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    content => template("repositories/sourceslist/sources.list.${::lsbdistcodename}.erb"),
+    content => template("repositories/sourceslist/sources.list.${os_family}.erb"),
   }
 
   exec { 'sourceslist-apt-get-update':

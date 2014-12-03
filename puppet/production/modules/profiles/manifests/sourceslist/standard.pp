@@ -1,7 +1,10 @@
 class profiles::sourceslist::standard {
 
+  # Should be equal to "debian" or "ubuntu".
+  $os_family = downcase($::lsbdistid)
+
   $apt_conf        = hiera_hash('apt')
-  $sourceslist_url = $apt_conf['sourceslist']['url'][$::lsbdistcodename]
+  $sourceslist_url = $apt_conf['sourceslist']['url'][$os_family]
   $add_src         = $apt_conf['sourceslist']['src']
 
   # Test if the data has been well retrieved.

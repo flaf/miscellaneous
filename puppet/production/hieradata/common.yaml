@@ -15,8 +15,8 @@ network:
 apt:
   sourceslist:
     url:
-      wheezy: 'http://ftp.fr.debian.org/debian/'
-      trusty: 'http://fr.archive.ubuntu.com/ubuntu'
+      debian: 'http://ftp.fr.debian.org/debian/'
+      ubuntu: 'http://fr.archive.ubuntu.com/ubuntu'
     src: false
 
 
