@@ -1,0 +1,20 @@
+### This is a file managed by Puppet, don't edit it. ###
+
+deb <%= @url %> wheezy main contrib non-free
+<%- if @add_src -%>
+deb-src <%= @url %> wheezy main contrib non-free
+<%- end -%>
+
+# wheezy-updates, previously known as 'volatile'.
+deb <%= @url %> wheezy-updates main contrib non-free
+<%- if @add_src -%>
+deb-src <%= @url %> wheezy-updates main contrib non-free
+<%- end -%>
+
+# Security updates.
+deb http://security.debian.org/ wheezy/updates main contrib non-free
+<%- if @add_src -%>
+deb-src http://security.debian.org/ wheezy/updates main contrib non-free
+<%- end -%>
+
+

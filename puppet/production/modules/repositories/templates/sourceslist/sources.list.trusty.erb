@@ -1,0 +1,24 @@
+### This is a file managed by Puppet, don't edit it. ###
+
+# Notes: main = "free packages" and restricted = "non-free packages".
+# main and restricted are maintained by the Ubuntu developers but
+# universe and multiverse is ENTIRELY UNSUPPORTED by the Ubuntu team.
+# Also, please note that software in universe WILL NOT receive any
+# review or updates from the Ubuntu security team.
+deb <%= @url %> trusty main restricted
+<%- if @add_src -%>
+deb-src <%= @url %> trusty main restricted
+<%- end -%>
+
+# Major bug fix updates produced after the final release of the distribution.
+deb <%= @url %> trusty-updates main restricted
+<%- if @add_src -%>
+deb-src <%= @url %> trusty-updates main restricted
+<%- end -%>
+
+# Security updates.
+deb http://security.ubuntu.com/ubuntu trusty-security main restricted
+<%- if @add_src -%>
+deb-src http://security.ubuntu.com/ubuntu trusty-security main restricted
+<%- end -%>
+
