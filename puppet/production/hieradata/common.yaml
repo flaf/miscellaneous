@@ -1,6 +1,10 @@
 ---
 timezone: 'Europe/Paris'
 default_locale: 'en_US.UTF-8'
+keyboard:
+  xkbmodel: 'pc105'
+  xkblayout: 'fr'
+  xkbvariant: 'latin9'
 
 network:
   restart_network: false  # It's a moot point.

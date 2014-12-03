@@ -1,3 +1,7 @@
+# TODO: make a documentation header and add
+#       a is_string() test for the parameter
+#       and a empty() test (functions of stdlib).
+
 class repositories::ceph (
   $version = 'firefly',
 ) {
