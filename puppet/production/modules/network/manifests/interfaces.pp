@@ -26,14 +26,6 @@ class network::interfaces (
                   ]
 
   ### Checking of parameters. ###
-  unless is_string($stage) {
-    fail("In the ${title} class, `stage` parameter must be a string.")
-  }
-
-  if empty($stage) {
-    fail("In the ${tilte} class, `stage` parameter must not be empty.")
-  }
-
   unless is_bool($rename_interfaces) {
     fail("In the ${title} class, `rename_interfaces` parameter must be a boolean.")
   }
