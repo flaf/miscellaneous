@@ -3,9 +3,11 @@ $extlookup_precedence = ["common"]
 
 stage { 'basis': }
 stage { 'network': }
+stage { 'repository': }
 
 Stage['basis']
   -> Stage['network']
+  -> Stage['repository']
   -> Stage['main']
 
 hiera_include('classes')

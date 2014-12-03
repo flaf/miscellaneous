@@ -3,6 +3,7 @@
 #       and a empty() test (functions of stdlib).
 
 class repositories::ceph (
+  $stage   = 'repository',
   $version = 'firefly',
 ) {
 
