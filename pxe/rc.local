@@ -1,5 +1,13 @@
 #!/bin/sh
 
+printf "\nSync NTP\n"
+printf   "========\n"
+service ntp stop
+ntpd -gq ; sleep 1
+ntpd -gq ; sleep 1
+ntpd -gq ; sleep 1
+service ntp start
+
 printf "\ngit pull\n"
 printf   "========\n"
 cd "/srv/tftp/miscellaneous/" && git pull
