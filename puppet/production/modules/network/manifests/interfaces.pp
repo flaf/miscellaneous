@@ -1,3 +1,5 @@
+# TODO: write the documentation header.
+#
 class network::interfaces (
   $stage                = 'network',
   $rename_interfaces    = false,

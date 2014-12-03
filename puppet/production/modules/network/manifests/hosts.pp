@@ -1,3 +1,5 @@
+# TODO: write the documentation header.
+#
 class network::hosts (
   $stage         = 'network',
   $hosts_entries = {},

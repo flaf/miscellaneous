@@ -1,3 +1,5 @@
+# TODO: write the documentation header.
+#
 class repositories::sourceslist (
   $stage   = repository,
   $url     = $::repositories::sourceslist::params::url,
