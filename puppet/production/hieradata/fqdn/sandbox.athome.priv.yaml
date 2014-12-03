@@ -5,13 +5,18 @@ enc_groups:
   - 'virtual-labs'
 enc_datacenter: 'vbox-home'
 
-interfaces:
-  eth0:
-    macaddress: '08:00:27:bc:cf:01'
-    method: 'dhcp'
-  eth1:
-    macaddress: '08:00:27:bc:cf:02'
-    method: 'static'
-    address: '10.0.0.101'
-    netmask: '255.0.0.0'
+network:
+  restart_network: true
+  rename_interfaces: true
+  interfaces:
+    eth0:
+      macaddress: '08:00:27:bc:cf:01'
+      method: 'dhcp'
+      network_name: 'private'
+    eth1:
+      macaddress: '08:00:27:bc:cf:02'
+      method: 'manual'
+      comment: 'useless interface'
+      network_name: 'private'
+
 
