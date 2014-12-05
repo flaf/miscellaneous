@@ -23,7 +23,10 @@ function raises an error.
             "of arguments given (#{args.size} instead of #{num_args})")
     end
 
+    # The goal is to fill hosts_hash.
     hosts_entries  = args[0]
+    hosts_hash = {}
+    current_addr = ''
 
     unless hosts_entries.is_a?(Hash)
       raise(Puppet::ParseError, 'update_hosts_entries(): the ' +
@@ -54,7 +57,6 @@ function raises an error.
                   '`hosts_entries` parameter, there is a problem of ' +
                   "variable substitution in the `#{name}` entry")
           end
-          entry[index] = value
         end
 
         if index == 0
@@ -63,11 +65,32 @@ function raises an error.
                   "`hosts_entries` parameter, the `#{name}` entry has its " +
                   'first element which is not a IP address')
           end
+          current_addr = value
+          if not hosts_hash.has_key?(current_addr)
+            hosts_hash[current_addr] = Array.new
+          end
         else
           unless function_is_domain_name([value])
             raise(Puppet::ParseError, 'update_hosts_entries(): in the ' +
                   "`hosts_entries` parameter, the `#{name}` entry has one " +
                   'element which is not a domain name')
+          end
+          add = true
+          hosts_hash.each do |addr, hostnames|
+            if hostnames.include?(value)
+              if addr == current_addr
+                # "value" already exists with the same address.
+                # We do nothing.
+                add = false
+              else
+                # "value" already exists with a different address.
+                raise(Puppet::ParseError, 'update_hosts_entries(): the ' +
+                  "hostname `#{value}` duplicated in hosts entries.")
+              end
+            end
+          end
+          if add
+            hosts_hash[current_addr].push(value)
           end
         end
 
@@ -75,7 +98,7 @@ function raises an error.
 
     end
 
-    hosts_entries
+    hosts_hash
 
   end
 end
