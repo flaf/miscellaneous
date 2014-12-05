@@ -1,9 +1,9 @@
-# Class: network::hosts
+# = Class: network::hosts
 #
 # Public class which allows to set the content of the
 # /etc/hosts file.
 #
-# Parameters:
+# = Parameters:
 # - $hosts_entries: a hash which represents the hosts entries
 #   in /etc/hosts file.
 #   Default value is {} (empty hash) ie just the localhost
@@ -22,7 +22,7 @@
 # has this form "@xxxx", it will be replaced by the value
 # of the @xxxx variable.
 #
-# Sample Usages:
+# = Sample Usages:
 #
 #   class { '::network::hosts':
 #     hosts_entries => {
