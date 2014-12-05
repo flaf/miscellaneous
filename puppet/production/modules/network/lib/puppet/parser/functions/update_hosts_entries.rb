@@ -1,3 +1,4 @@
+#TODO: docstring outdated
 module Puppet::Parser::Functions
   newfunction(:update_hosts_entries, :type => :rvalue, :doc => <<-EOS
 Checks if the argument is:
