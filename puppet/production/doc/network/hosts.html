@@ -213,11 +213,11 @@
 
     <div id="description" class="description">
       
-<h1>Class: network::hosts</h1>
+<h2>Class: network::hosts</h2>
 
 <p>Public class which allows to set the content of the /etc/hosts file.</p>
 
-<h1>Parameters:</h1>
+<h2>Parameters:</h2>
 <ul><li>
 <p>$hosts_entries: a hash which represents the hosts entries in /etc/hosts
 file. Default value is {} (empty hash) ie just the localhost entry and some
@@ -236,7 +236,7 @@ address or the class fails if they have different IP addresses. In the
 arrays above, if a value has this form "@xxxx", it will be replaced by the
 value of the @xxxx variable.</p>
 
-<h1>Sample Usages:</h1>
+<h2>Sample Usages:</h2>
 
 <pre>class { '::network::hosts':
   hosts_entries =&gt; {
