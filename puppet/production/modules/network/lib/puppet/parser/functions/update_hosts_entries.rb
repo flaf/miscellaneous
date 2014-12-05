@@ -1,17 +1,28 @@
-#TODO: docstring outdated
 module Puppet::Parser::Functions
   newfunction(:update_hosts_entries, :type => :rvalue, :doc => <<-EOS
-Checks if the argument is:
+Take a hash of this form as argument:
 
-* An hash (can be empty).
-* Each value of this hash is an array of 2 elements
-  at least and each element is a non empty string.
-* Each value has this form:
+  {
+   'entryA' => [ '<ip_addrA>', '<nameA1>', '<nameA2>', ... ],
+   'entryB' => [ '<ip_addrB>', '<nameB1>', '<nameB2>', ... ],
+   ...
+  }
 
-  [ '<ip address>', '<domain_name1>', '<domain_name2>', ... ]
+The function checks the structure of the hash and returns this
+hash :
 
-If one (at least) of these conditions are not respected, the
-function raises an error.
+  {
+   '<ip_addrA>' => [ '<nameA1>', '<nameA2>', ... ],
+   '<ip_addrB>' => [ '<nameB1>', '<nameB2>', ... ],
+   ...
+  }
+
+The function deletes duplicated hostnames with the same
+IP address and raises an error if the IP addresses are
+different. In the argument, if a value of an array matchs
+with the /^@[a-z0-9_]+$/ regex, the function tries to
+replace the string by the value of the @myvar variable
+(or raises an error if it fails).
     EOS
   ) do |args|
 

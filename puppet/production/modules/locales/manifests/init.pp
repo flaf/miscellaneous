@@ -1,6 +1,6 @@
 # Class: locales
 #
-# Public class which allow to only set the default
+# Public class which allows to only set the default
 # locale of the system.
 # Depends on Puppetlabs-stdlib.
 #

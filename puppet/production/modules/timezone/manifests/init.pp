@@ -1,6 +1,6 @@
 # Class: timezone
 #
-# Public class which allow to set the timezone of the
+# Public class which allows to set the timezone of the
 # system.
 # Depends on Puppetlabs-stdlib.
 #

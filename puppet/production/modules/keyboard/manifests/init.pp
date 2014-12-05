@@ -1,6 +1,6 @@
 # Class: keyboard
 #
-# Public class which allow to only configure the keyboard.
+# Public class which allows to only configure the keyboard.
 # Depends on Puppetlabs-stdlib.
 #
 # Parameters:
