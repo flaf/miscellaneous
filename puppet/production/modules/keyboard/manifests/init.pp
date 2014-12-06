@@ -1,11 +1,19 @@
 # Public class which allows to only configure the keyboard.
+#
+# == Requirement/Dependencies
+#
 # Depends on Puppetlabs-stdlib.
 #
-# == Parameters:
-# - $xkbmodel: the value of XKBMODEL in the /etc/default/keyboard file.
-#   Default value is 'pc105'.
-# - $xkblayout: the value of XKBLAYOUT in the /etc/default/keyboard file.
-#   Default value is 'fr'.
+# == Parameters
+#
+# [*xkbmodel*]
+# The value of XKBMODEL in the /etc/default/keyboard file.
+# Default value is 'pc105'.
+#
+# [*xkblayout*]
+# The value of XKBLAYOUT in the /etc/default/keyboard file.
+# Default value is 'fr'.
+#
 # - $xkbvariant: the value of XKBVARIANT in the /etc/default/keyboard file.
 #   Default value is 'latin9'.
 # - $xkboptions: the value of XKBOPTIONS in the /etc/default/keyboard file.
@@ -13,7 +21,7 @@
 # - $backspace: the value of BACKSPACE in the /etc/default/keyboard file.
 #   Default value is 'guess'.
 #
-# == Sample Usages:
+# == Sample Usages
 #
 #   include '::keyboard'
 #

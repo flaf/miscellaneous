@@ -213,17 +213,22 @@
 
     <div id="description" class="description">
       
-<p>Public class which allows to only configure the keyboard. Depends on
-Puppetlabs-stdlib.</p>
+<p>Public class which allows to only configure the keyboard.</p>
 
-<h2>Parameters:</h2>
+<h2>Requirement/Dependencies</h2>
+
+<p>Depends on Puppetlabs-stdlib.</p>
+
+<h2>Parameters</h2>
+<dl class="rdoc-list"><dt><b>xkbmodel</b></dt>
+<dd>
+<p>The value of XKBMODEL in the /etc/default/keyboard file. Default value is
+'pc105'.</p>
+<dl class="rdoc-list"><dt><b>xkblayout</b></dt>
+<dd>
+<p>The value of XKBLAYOUT in the /etc/default/keyboard file. Default value is
+'fr'.</p>
 <ul><li>
-<p>$xkbmodel: the value of XKBMODEL in the /etc/default/keyboard file. Default
-value is 'pc105'.</p>
-</li><li>
-<p>$xkblayout: the value of XKBLAYOUT in the /etc/default/keyboard file.
-Default value is 'fr'.</p>
-</li><li>
 <p>$xkbvariant: the value of XKBVARIANT in the /etc/default/keyboard file.
 Default value is 'latin9'.</p>
 </li><li>
@@ -234,7 +239,7 @@ Default value is " (empty string).</p>
 Default value is 'guess'.</p>
 </li></ul>
 
-<h2>Sample Usages:</h2>
+<h2>Sample Usages</h2>
 
 <pre>include '::keyboard'</pre>
 
@@ -245,6 +250,8 @@ Default value is 'guess'.</p>
   xkblayout  =&gt; 'fr',
   xkbvariant =&gt; 'latin9',
 }</pre>
+</dd></dl>
+</dd></dl>
 
     </div><!-- description -->
 
