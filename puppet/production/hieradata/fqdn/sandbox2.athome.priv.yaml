@@ -6,8 +6,6 @@ enc_groups:
 enc_datacenter: 'vbox-home'
 
 network:
-  restart_network: true
-  rename_interfaces: true
   interfaces:
     eth0:
       macaddress: '08:00:27:bc:cf:03'

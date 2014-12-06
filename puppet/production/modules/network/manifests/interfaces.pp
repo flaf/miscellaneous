@@ -1,4 +1,52 @@
-# TODO: write the documentation header.
+# Puppet class to primarily manage the /etc/network/interfaces file.
+#
+# == Requirement/Dependencies
+#
+# Depends on Puppetlabs-stdlib.
+#
+# == Parameters
+#
+# *rename_interfaces*:
+# Boolean to choose if you want to rename the interfaces. If
+# true, the class will manage a udev rule with a file in the
+# /etc/udev/rules.d/ directory. If true, to be effective,
+# you must apply MAC addresses of the interfaces (see the
+# "interfaces" parameter below) because the rule is a
+# mapping "MAC address" to "interface name". The default
+# value of this parameter is false.
+#
+# *restart_network*:
+# Boolean to choose if you want to restart the network after
+# the configuration update. In fact, the class doesn't
+# really manage the /etc/network/interfaces file but the
+# /etc/network/interfaces.puppet file. So, after the
+# configuration update, if you don't restart the network,
+# changes are not realized. if the parameter is set to true,
+# after any change of the configuration, the whole network is
+# restarted automatically and the change will be realized.
+# Be careful, it could be dangerous to set this parameter to
+# true for servers in production environment because the
+# least configuration change will cause the restart of the
+# whole network and if your new configuration is buggy...
+# BANG!!! The default value of this parameter is false (more
+# secure).
+#
+# *interfaces*
+# This parameter is hash with this form:
+#
+#  {
+#   'eth0' => {
+#               'macaddress' => '08:00:27:bc:cf:03',
+#               'method'     => 'static',
+#               'address'    => '172.31.20.6',
+#               'netmask'    => '255.255.0.0',
+#             },
+#  }
+#
+# This parameter is mandatory and has no default value.
+#
+# *inventoried_networks*:
+# 
 #
 class network::interfaces (
   $stage                = 'network',
