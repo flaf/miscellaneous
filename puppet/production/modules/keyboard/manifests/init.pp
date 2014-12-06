@@ -6,23 +6,23 @@
 #
 # == Parameters
 #
-# [xkbmodel]
+# *xkbmodel*
 # The value of XKBMODEL in the /etc/default/keyboard file.
 # Default value is 'pc105'.
 #
-# [xkblayout]
+# *xkblayout*
 # The value of XKBLAYOUT in the /etc/default/keyboard file.
 # Default value is 'fr'.
 #
-# [xkbvariant]
+# *xkbvariant*
 # The value of XKBVARIANT in the /etc/default/keyboard file.
 # Default value is 'latin9'.
 #
-# [xkboptions]
+# *xkboptions*
 # The value of XKBOPTIONS in the /etc/default/keyboard file.
 # Default value is '' (empty string).
 #
-# [backspace]
+# *backspace*
 # The value of BACKSPACE in the /etc/default/keyboard file.
 # Default value is 'guess'.
 #
