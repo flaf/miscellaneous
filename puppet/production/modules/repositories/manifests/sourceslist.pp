@@ -1,5 +1,3 @@
-# Class: repositories::sourceslist
-#
 # Public class which configures a minimalist and secure
 # /etc/apt/sources.list file. For instance, with Ubuntu,
 # the universe and multiverse repositories are not present
@@ -8,23 +6,30 @@
 # another resource in /etc/apt/sources.list.d/ with the
 # apt puppet module.
 #
-# Parameters:
-# - $url: the url of an official repository.
-#   Default value depends on the OS (Debian or Ubuntu),
-#   see the repositories::sourceslist::params puppet class.
-# - $add_src: if you add source or not.
-#   Default value is false.
+# == Requirement/Dependencies
 #
-# Sample Usages:
+# Depends on Puppetlabs-stdlib.
 #
-#   include '::repositories::sourceslist'
+# == Parameters
+#
+# *$url:*
+# The url of an official repository. Default value depends on 
+# the OS (Debian or Ubuntu), see the repositories::sourceslist::params
+# puppet class.
+#
+# *add_src*:
+# If you add source or not. Default value is false.
+#
+# == Sample Usages
+#
+#  include '::repositories::sourceslist'
 #
 # or, for a Ubuntu server in France:
 #
-#   class { '::repositories::sourceslist':
-#     url     => 'http://fr.archive.ubuntu.com/ubuntu',
-#     add_src => true,
-#   }
+#  class { '::repositories::sourceslist':
+#    url     => 'http://fr.archive.ubuntu.com/ubuntu',
+#    add_src => true,
+#  }
 #
 class repositories::sourceslist (
   $stage   = repository,

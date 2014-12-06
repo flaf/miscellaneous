@@ -1,22 +1,23 @@
-# Class: timezone
+# Public class which allows to set the timezone of the system.
 #
-# Public class which allows to set the timezone of the
-# system.
+# == Requirement/Dependencies
+#
 # Depends on Puppetlabs-stdlib.
 #
-# Parameters:
-# - $timezone: the value of the timezone.
-#   Default value is 'Etc/UTC'.
+# == Parameters
 #
-# Sample Usages:
+# *timezone*:
+# The value of the timezone. Default value is 'Etc/UTC'.
 #
-#   include '::timezone'
+# == Sample Usages
+#
+#  include '::timezone'
 #
 # or
 #
-#   class { '::timezone':
-#     timezone => 'Europe/Paris',
-#   }
+#  class { '::timezone':
+#    timezone => 'Europe/Paris',
+#  }
 #
 class timezone (
   $stage    = 'basis',
