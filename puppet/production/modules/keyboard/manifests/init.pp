@@ -1,9 +1,7 @@
-# Class: keyboard
-#
 # Public class which allows to only configure the keyboard.
 # Depends on Puppetlabs-stdlib.
 #
-# Parameters:
+# == Parameters:
 # - $xkbmodel: the value of XKBMODEL in the /etc/default/keyboard file.
 #   Default value is 'pc105'.
 # - $xkblayout: the value of XKBLAYOUT in the /etc/default/keyboard file.
@@ -15,7 +13,7 @@
 # - $backspace: the value of BACKSPACE in the /etc/default/keyboard file.
 #   Default value is 'guess'.
 #
-# Sample Usages:
+# == Sample Usages:
 #
 #   include '::keyboard'
 #
@@ -27,6 +25,8 @@
 #     xkbvariant => 'latin9',
 #   }
 #
+#—
+
 class keyboard (
   $stage      = 'basis',
   $xkbmodel   = 'pc105',
