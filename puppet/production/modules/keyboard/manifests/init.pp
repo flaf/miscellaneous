@@ -20,7 +20,7 @@
 #
 # *xkboptions*:
 # The value of XKBOPTIONS in the /etc/default/keyboard file.
-#   Default value is '' (empty string).
+# Default value is '' (empty string).
 #
 # *backspace*:
 # The value of BACKSPACE in the /etc/default/keyboard file.
