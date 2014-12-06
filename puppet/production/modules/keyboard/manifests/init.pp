@@ -14,12 +14,17 @@
 # The value of XKBLAYOUT in the /etc/default/keyboard file.
 # Default value is 'fr'.
 #
-# - $xkbvariant: the value of XKBVARIANT in the /etc/default/keyboard file.
-#   Default value is 'latin9'.
-# - $xkboptions: the value of XKBOPTIONS in the /etc/default/keyboard file.
-#   Default value is '' (empty string).
-# - $backspace: the value of BACKSPACE in the /etc/default/keyboard file.
-#   Default value is 'guess'.
+# [*xkbvariant*]
+# The value of XKBVARIANT in the /etc/default/keyboard file.
+# Default value is 'latin9'.
+#
+# [*xkboptions*]
+# The value of XKBOPTIONS in the /etc/default/keyboard file.
+# Default value is '' (empty string).
+#
+# [*backspace*]
+# The value of BACKSPACE in the /etc/default/keyboard file.
+# Default value is 'guess'.
 #
 # == Sample Usages
 #
