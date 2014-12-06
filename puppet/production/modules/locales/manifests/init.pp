@@ -1,4 +1,5 @@
-# Public class which allows to only set the default locale of the system.
+# Public class which allows to set the default locale of the system.
+# Just set the default locale, that's all.
 #
 # == Requirement/Dependencies
 #
