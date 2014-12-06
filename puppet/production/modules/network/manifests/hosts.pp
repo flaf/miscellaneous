@@ -1,14 +1,16 @@
-# == Class: network::hosts
+# Public class which allows to set the content of the /etc/hosts file.
 #
-# Public class which allows to set the content of the
-# /etc/hosts file.
+# == Requirement/Dependencies
 #
-# == Parameters:
-# - $hosts_entries: a hash which represents the hosts entries
-#   in /etc/hosts file.
-#   Default value is {} (empty hash) ie just the localhost
-#   entry and some IPv6 basic entries in the /etc/hosts file.
-#   The hash must either be empty or have this structure:
+# Nothing.
+#
+# == Parameters
+#
+# *hosts_entries:*
+# A hash which represents the hosts entries in /etc/hosts file.
+# Default value is {} (empty hash) ie just the localhost
+# entry and some IPv6 basic entries in the /etc/hosts file.
+# The hash must either be empty or have this structure:
 #
 #  {
 #   'entryA' => [ '<ip_addrA>', '<nameA1>', '<nameA2>', ... ],
@@ -22,24 +24,24 @@
 # has this form "@xxxx", it will be replaced by the value
 # of the @xxxx variable.
 #
-# == Sample Usages:
+# == Sample Usages
 #
-#   class { '::network::hosts':
-#     hosts_entries => {
-#                       'self' => [ '@ipaddress', '@fqdn', '@hostname' ],
-#                      }
-#   }
+#  class { '::network::hosts':
+#    hosts_entries => {
+#                      'self' => [ '@ipaddress', '@fqdn', '@hostname' ],
+#                     }
+#  }
 #
 # or
 #
-#   class { '::network::hosts':
-#     hosts_entries => {
-#                       'self'          => [ '@ipaddress', '@fqdn', '@hostname' ],
-#                       'cluster_node1' => [ '172.31.10.21', 'node1' ],
-#                       'cluster_node2' => [ '172.31.10.22', 'node2' ],
-#                       'cluster_node3' => [ '172.31.10.23', 'node3' ],
-#                      }
-#   }
+#  class { '::network::hosts':
+#    hosts_entries => {
+#                      'self'          => [ '@ipaddress', '@fqdn', '@hostname' ],
+#                      'cluster_node1' => [ '172.31.10.21', 'node1' ],
+#                      'cluster_node2' => [ '172.31.10.22', 'node2' ],
+#                      'cluster_node3' => [ '172.31.10.23', 'node3' ],
+#                     }
+#  }
 #
 # In this example above, if @hostname == 'node1' and if
 # @ipaddress == '172.31.10.21', the 'self' entry and the

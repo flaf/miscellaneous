@@ -1,22 +1,23 @@
-# Class: locales
+# Public class which allows to only set the default locale of the system.
 #
-# Public class which allows to only set the default
-# locale of the system.
+# == Requirement/Dependencies
+#
 # Depends on Puppetlabs-stdlib.
 #
-# Parameters:
-# - $default_locale: the value of the default locale.
-#   Default value is 'en_US.UTF-8'.
+# == Parameters
 #
-# Sample Usages:
+# *default_locale*:
+# The value of the default locale. Default value is 'en_US.UTF-8'.
 #
-#   include '::locales'
+# == Sample Usages
+#
+#  include '::locales'
 #
 # or
 #
-#   class { '::locales':
-#     default_locale => 'fr_FR.UTF-8',
-#   }
+#  class { '::locales':
+#    default_locale => 'fr_FR.UTF-8',
+#  }
 #
 class locales (
   $stage          = 'basis',

@@ -1,4 +1,4 @@
-# Public class which allows to only configure the keyboard.
+# Public class which allows to configure the keyboard.
 #
 # == Requirement/Dependencies
 #
@@ -28,15 +28,15 @@
 #
 # == Sample Usages
 #
-#   include '::keyboard'
+#  include '::keyboard'
 #
 # or
 #
-#   class { '::keyboard':
-#     xkbmodel   => 'pc105',
-#     xkblayout  => 'fr',
-#     xkbvariant => 'latin9',
-#   }
+#  class { '::keyboard':
+#    xkbmodel   => 'pc105',
+#    xkblayout  => 'fr',
+#    xkbvariant => 'latin9',
+#  }
 #
 class keyboard (
   $stage      = 'basis',
