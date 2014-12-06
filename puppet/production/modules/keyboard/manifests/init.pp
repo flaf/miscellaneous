@@ -25,7 +25,7 @@
 #     xkbvariant => 'latin9',
 #   }
 #
-#—
+#--
 
 class keyboard (
   $stage      = 'basis',
