@@ -213,6 +213,39 @@
 
     <div id="description" class="description">
       
+<p>Public class which allows to only configure the keyboard. Depends on
+Puppetlabs-stdlib.</p>
+
+<h2>Parameters:</h2>
+<ul><li>
+<p>$xkbmodel: the value of XKBMODEL in the /etc/default/keyboard file. Default
+value is 'pc105'.</p>
+</li><li>
+<p>$xkblayout: the value of XKBLAYOUT in the /etc/default/keyboard file.
+Default value is 'fr'.</p>
+</li><li>
+<p>$xkbvariant: the value of XKBVARIANT in the /etc/default/keyboard file.
+Default value is 'latin9'.</p>
+</li><li>
+<p>$xkboptions: the value of XKBOPTIONS in the /etc/default/keyboard file.
+Default value is " (empty string).</p>
+</li><li>
+<p>$backspace: the value of BACKSPACE in the /etc/default/keyboard file.
+Default value is 'guess'.</p>
+</li></ul>
+
+<h2>Sample Usages:</h2>
+
+<pre>include '::keyboard'</pre>
+
+<p>or</p>
+
+<pre>class { '::keyboard':
+  xkbmodel   =&gt; 'pc105',
+  xkblayout  =&gt; 'fr',
+  xkbvariant =&gt; 'latin9',
+}</pre>
+
     </div><!-- description -->
 
     
