@@ -12,7 +12,7 @@
 #
 # == Parameters
 #
-# *$url:*
+# *url*:
 # The url of an official repository. Default value depends on 
 # the OS (Debian or Ubuntu), see the repositories::sourceslist::params
 # puppet class.
