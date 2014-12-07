@@ -1,3 +1,8 @@
+#
+# == Test
+#
+# Blabla.
+#
 module Puppet::Parser::Functions
   newfunction(:check_netif_hash, :doc => <<-EOS
 Checks if the argument is a hash with this form:
