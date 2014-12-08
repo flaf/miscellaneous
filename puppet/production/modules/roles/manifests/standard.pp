@@ -7,6 +7,7 @@ class roles::standard {
   include '::profiles::sourceslist::standard'
   include '::profiles::ntp::standard'
   include '::profiles::grub::standard'
+  include '::profiles::puppet::standard'
 
 }
 

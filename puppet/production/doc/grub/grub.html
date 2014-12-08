@@ -128,6 +128,10 @@
         
           <li><a href="../profiles/ntp/standard.html">profiles::ntp::standard</a></li>
         
+          <li><a href="../profiles/puppet.html">profiles::puppet</a></li>
+        
+          <li><a href="../profiles/puppet/standard.html">profiles::puppet::standard</a></li>
+        
           <li><a href="../profiles/sourceslist.html">profiles::sourceslist</a></li>
         
           <li><a href="../profiles/sourceslist/standard.html">profiles::sourceslist::standard</a></li>
@@ -210,6 +214,10 @@
         
           <li><a href="../ntp/ntp.html">ntp::ntp</a></li>
         
+          <li><a href="../puppet.html">puppet</a></li>
+        
+          <li><a href="../puppet/client.html">puppet::client</a></li>
+        
           <li><a href="../timezone.html">timezone</a></li>
         
           <li><a href="../timezone/timezone.html">timezone::timezone</a></li>
@@ -237,9 +245,7 @@
 
 <h2>Parameters</h2>
 
-<p><b>kernel_options</b></p>
-
-<p>A hash with this form:</p>
+<p><b>kernel_options:</b> A hash with this form:</p>
 
 <pre>kernel_options = {
                   'ipv6.disable' =&gt; '1',
@@ -251,12 +257,13 @@ to validate the changes.</p>
 
 <h2>Sample Usages</h2>
 
-<pre>include '::grub' # No kernel boot option.</pre>
+<pre># No kernel boot option.
+include '::grub'</pre>
 
 <p>or:</p>
 
 <pre>class { '::grub'
- kernel_options = { 'ipv6.disable' =&gt; '1', },
+  kernel_options = { 'ipv6.disable' =&gt; '1', },
 }</pre>
 
     </div><!-- description -->

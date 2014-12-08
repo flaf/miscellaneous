@@ -1,0 +1,34 @@
+### This is a file managed by Puppet, don't edit it. ###
+
+[main]
+logdir=/var/log/puppet
+vardir=/var/lib/puppet
+ssldir=/var/lib/puppet/ssl
+rundir=/var/run/puppet
+factpath=$vardir/lib/facter
+templatedir=$confdir/templates
+prerun_command=/etc/puppet/etckeeper-commit-pre
+postrun_command=/etc/puppet/etckeeper-commit-post
+
+# Plugins == "lib directories of all modules in the master".
+# The synchronisation from master to node is necessary for
+# codes that are executed in client side (like specific
+# resources types defined in modules). This is not the
+# case for custom functions, for instance, which are
+# executed in master side (any change of custom functions
+# required a restart of the master because the code is
+# loaded by the master during the restart only).
+#
+# In fact, since Puppet 3.0.2, the default value is true.
+# So, in Debian Wheezy, which use the version 2.7, you must
+# specify explicitly this parameter, and in Debian Ubuntu
+# Trusty (3.4.3), it isn't mandatory.
+pluginsync = true
+
+[master]
+# These are needed when the puppetmaster is run by passenger
+# and can safely be removed if webrick is used.
+ssl_client_header = SSL_CLIENT_S_DN 
+ssl_client_verify_header = SSL_CLIENT_VERIFY
+
+

@@ -5,7 +5,7 @@
 <head>
   <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
 
-  <title>Class: apt::apt</title>
+  <title>Class: puppet::client</title>
 
   <link rel="stylesheet" href="../rdoc.css" type="text/css" media="screen" />
 
@@ -34,8 +34,8 @@
         <div class="section-body">
           <ul>
           
-            <li><a href="..//usr/local/src/git/miscellaneous/puppet/production/modules/apt/manifests/init_pp.html?TB_iframe=true&amp;height=550&amp;width=785"
-              class="thickbox" title="/usr/local/src/git/miscellaneous/puppet/production/modules/apt/manifests/init.pp">/usr/local/src/git/miscellaneous/puppet/production/modules/apt/manifests/init.pp</a></li>
+            <li><a href="..//usr/local/src/git/miscellaneous/puppet/production/modules/puppet/manifests/client_pp.html?TB_iframe=true&amp;height=550&amp;width=785"
+              class="thickbox" title="/usr/local/src/git/miscellaneous/puppet/production/modules/puppet/manifests/client.pp">/usr/local/src/git/miscellaneous/puppet/production/modules/puppet/manifests/client.pp</a></li>
           
           </ul>
         </div>
@@ -61,22 +61,6 @@
 
       
 
-      
-      <!-- Included Modules -->
-      <div id="includes-section" class="section">
-        <h3 class="section-header">Included Modules</h3>
-        <ul class="link-list">
-        
-        
-          <li><span class="include">apt::params</span></li>
-        
-        
-        
-          <li><span class="include">apt::update</span></li>
-        
-        
-        </ul>
-      </div>
       
     </div>
 
@@ -249,10 +233,25 @@
   </div>
 
   <div id="documentation">
-    <h1 class="class">apt::apt</h1>
+    <h1 class="class">puppet::client</h1>
 
     <div id="description" class="description">
       
+<p>Very basic Puppet class to manage the /etc/puppet/puppet.conf file for a
+Puppet client.</p>
+
+<h2>Requirement/Dependencies</h2>
+
+<p>Nothing.</p>
+
+<h2>Parameters</h2>
+
+<p>No parameter.</p>
+
+<h2>Sample Usages</h2>
+
+<pre>include '::puppet::client'</pre>
+
     </div><!-- description -->
 
     

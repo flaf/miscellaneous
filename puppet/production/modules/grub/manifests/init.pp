@@ -6,8 +6,7 @@
 #
 # == Parameters
 #
-# *kernel_options*
-#
+# *kernel_options:*
 # A hash with this form:
 #
 #  kernel_options = {
@@ -61,12 +60,6 @@ class grub (
     user        => 'root',
     group       => 'root',
     refreshonly => true,
-  }
-
-  file_line { 'test':
-    path   => '/tmp/a',
-    line   => "aaa=bbb",
-    match  => '^aaa=.*$',
   }
 
 }
