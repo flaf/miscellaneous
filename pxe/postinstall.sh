@@ -1,5 +1,7 @@
 #!/bin/sh
 
+exit 0 # Now, I have Puppet!
+
 set -x
 exec >/root/postinstall.log 2>&1
 
