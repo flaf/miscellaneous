@@ -39,7 +39,7 @@ Checks if the argument is a valid "interfaces" hash.
       # (it can be an IP address or a CIDR address).
       if properties.has_key?('address')
         begin
-          tmp = IPAddr.new(properties['address'])
+          IPAddr.new(properties['address'])
         rescue ArgumentError
           raise(Puppet::ParseError, "check_ifaces_hash(): the `#{interface}` " +
                 'interface has a `address` property with a bad syntax')
@@ -47,17 +47,17 @@ Checks if the argument is a valid "interfaces" hash.
         # If the address is not a CIDR address, the netmask must be
         # defined.
         if not properties['address'].include?('/')
-          unless properties.hash_key?('netmask')
+          unless properties.has_key?('netmask')
             raise(Puppet::ParseError, 'check_ifaces_hash(): the ' +
                   "`#{interface}` interface has a `address` property but " + 
-                  'the `netmask` is not applied')
+                  'the `netmask` is not provided')
           end
           begin
-            tmp = IPAddr.new(properties['address'] + '/' + properties['netmask'])
+            IPAddr.new(properties['address'] + '/' + properties['netmask'])
           rescue ArgumentError
             raise(Puppet::ParseError, 'check_ifaces_hash(): in the ' +
                   "`#{interface}` interface, `address` and `netmask` " +
-                  'properties are invalid')
+                  'properties give an invalid CIDR address')
           end
         end
       end

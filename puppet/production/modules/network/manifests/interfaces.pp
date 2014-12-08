@@ -45,14 +45,11 @@
 #
 # This parameter is mandatory and has no default value.
 #
-# *inventoried_networks*:
-# 
 #
 class network::interfaces (
-  $stage                = 'network',
-  $rename_interfaces    = false,
-  $restart_network      = false,
-  $inventoried_networks = {},
+  $stage             = 'network',
+  $rename_interfaces = false,
+  $restart_network   = false,
   $interfaces,
 ) {
 
@@ -66,14 +63,7 @@ class network::interfaces (
 
   # This options will be not used as stanza in the `interfaces` file,
   # but as comment for each interface.
-  $meta_options = [
-                   'macaddress',
-                   'network_name',
-                   'vlan_name',
-                   'vlan_id',
-                   'cidr_address',
-                   'comment',
-                  ]
+  $meta_options = get_meta_options()
 
   ### Checking of parameters. ###
   unless is_bool($rename_interfaces) {
@@ -88,24 +78,16 @@ class network::interfaces (
     fail("In the ${title} class, `interfaces` parameter must be a hash.")
   }
 
-  unless is_hash($inventoried_networks) {
-    fail("In the ${title} class, `inventoried_networks` parameter must be a hash.")
-  }
-
   if empty($interfaces) {
     fail("In the ${tilte} class, `interfaces` parameter must not be empty.")
   }
 
-  check_netif_hash($interfaces)
+  check_ifaces_hash($interfaces)
 
-  unless empty($inventoried_networks) {
-    check_netif_hash($inventoried_networks)
-  }
-  #---------------------------------------------------------------------------#
-
-  $interfaces_filled = fill_ifhash($interfaces,
-                                   $inventoried_networks,
-                                   $meta_options)
+  # If a property is an array, the value is updated to v.join(' ').
+  # Furthermore, if a value has this form '@xxxx', it's replaced
+  # by the fact @xxxx. 
+  $interfaces_flattened = flatten_ifaces_hash($interfaces)
 
   # To make uniform between Wheezy and Trusty.
   # Trusty uses resolvconf by default but not Wheezy.
@@ -166,4 +148,5 @@ class network::interfaces (
   }
 
 }
+
 

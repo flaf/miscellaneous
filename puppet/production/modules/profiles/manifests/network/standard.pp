@@ -1,6 +1,6 @@
 class profiles::network::standard {
 
-  $inventoried_networks = hiera_hash('networks')
+  $inventoried_networks = hiera_hash('inventoried_networks')
   $network_conf         = hiera_hash('network')
 
   $interfaces           = $network_conf['interfaces']
@@ -22,12 +22,14 @@ class profiles::network::standard {
     fail("Problem in class ${title}, `hosts_entries` data not retrieved")
   }
 
+  $interfaces_updated = complete_ifaces_hash($interfaces,
+                                             $inventoried_networks)
+
   class { '::network::interfaces':
-    rename_interfaces    => $rename_interfaces,
-    restart_network      => $restart_network,
-    inventoried_networks => $inventoried_networks,
-    interfaces           => $interfaces,
-    before               => Class['::network::hosts'],
+    rename_interfaces => $rename_interfaces,
+    restart_network   => $restart_network,
+    interfaces        => $interfaces_updated,
+    before            => Class['::network::hosts'],
   }
 
   class { '::network::hosts':

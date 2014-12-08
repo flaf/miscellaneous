@@ -1,15 +1,15 @@
 ### This file is managed by Puppet, don't edit it. ###
-<%#
-max_columns, it's just comestic to justify metadata
-in comments. See below.
+<%-
+  # max_columns, it's just comestic to justify metadata
+  # in comments. See below.
+  max_columns = @meta_options.map{ |i| i.length }.max
 -%>
-<%- max_columns = @meta_options.map{ |i| i.length }.max -%>
 
 # The loopback network interface
 auto lo
 iface lo inet loopback
 
-<%- @interfaces_filled.each do |interface, properties| -%>
+<%- @interfaces_flattened.each do |interface, properties| -%>
   <%- @meta_options.sort.each do |meta_option| -%>
     <%- if properties[meta_option] -%>
 # <%= meta_option.ljust(max_columns, ' ') %> => <%= properties[meta_option] %>

@@ -5,8 +5,8 @@ This function takes 3 arguments:
   - a "networks" hash;
   - an array of meta options.
 This function returns a new version of the "interfaces" hash
-completed with information in the "networks" hash and the
-array of meta otions.
+completed with information in the "networks" hash and in the
+array of meta options.
     EOS
   ) do |args|
 
@@ -14,8 +14,9 @@ array of meta otions.
     Puppet::Parser::Functions.function('check_ifaces_hash')
     Puppet::Parser::Functions.function('check_networks_hash')
     Puppet::Parser::Functions.function('get_network_name')
+    Puppet::Parser::Functions.function('get_meta_options')
 
-    num_args = 3
+    num_args = 2
     unless(args.size == num_args)
       raise(Puppet::ParseError, 'complete_ifaces_hash(): wrong number of ' +
             "arguments given (#{args.size} instead of #{num_args})")
@@ -28,48 +29,46 @@ array of meta otions.
     nethash = args[1]
 
     # List of meta_options names.
-    meta_options = args[2]
+    meta_options = function_get_meta_options([])
 
     function_check_ifaces_hash([ifhash])
     function_check_networks_hash([nethash])
 
+    # Not useful the check `meta_options` variable because meta options
+    # belong to the code of this puppet module. Not a choice of the user.
+    #
     # Check the meta options too.
-    meta_options.each do |value|
-      unless value.is_a?(String) and not value.empty?()
-        raise(Puppet::ParseError, 'complete_ifaces_hash(): the ' +
-              '`meta_options` argument must be an array of non empty strings')
-      end
-    end
+    #unless meta_options.is_a?(Array) and not meta_options.empty?()
+    #  raise(Puppet::ParseError, 'complete_ifaces_hash(): the ' +
+    #        '`meta_options` argument must be a non empty array')
+    #end
+    #meta_options.each do |value|
+    #  unless value.is_a?(String) and not value.empty?()
+    #    raise(Puppet::ParseError, 'complete_ifaces_hash(): the ' +
+    #          '`meta_options` argument must be an array of non empty strings')
+    #  end
+    #end
 
-    # Update the nethash.
+    # Create the nethash_objects hash.
+    # It's better to not change the states of the arguments
+    # when it's not necessary.
+    nethash_objects = {}
     nethash.each do |network, properties|
-      properties['address_obj'] = IPAddr.new(properties['cidr_address'])
-      properties['network_name'] = network
-
-      # We update the nethash when a value is an array.
-      properties.each do |name, value|
-        if value.is_a?(Array)
-          properties[name] = value.join(' ')
-        end
-      end
-
+      nethash_objects[network] = IPAddr.new(properties['cidr_address'])
     end
 
     # Update the ifhash.
     ifhash.each do |iface, properties|
 
-      # If the value is an array, we update the value to value.join(' ').
-      properties.each do |name, value|
-        if value.is_a?(Array)
-          properties[name] = value.join(' ')
-        end
-      end
-
       # If there is a CIDR address, it's possible to complete
       # some properties.
-      use_cidr = false
       if properties.has_key?('address') and properties['address'].include?('/')
         use_cidr = true
+      else
+        use_cidr = false
+      end
+
+      if use_cidr
         ipaddr_network = IPAddr.new(properties['address'])
         array_address = properties['address'].split('/')
         address = array_address[0]
@@ -82,16 +81,35 @@ array of meta otions.
         # Add the network if it doesn't exist.
         if not properties.has_key?('network')
           properties['network'] = ipaddr_network.to_s()
+        else
+          unless properties['network'] == ipaddr_network.to_s()
+            raise(Puppet::ParseError, 'complete_ifaces_hash(): the ' +
+                  "`#{iface}` interface has a CIDR address not compatible " +
+                  'with the provided `network` property')
+          end
         end
 
         # Add the netmask if it doesn't exist.
         if not properties.has_key?('netmask')
           properties['netmask'] = ipaddr_netmask.to_s()
+        else
+          unless properties['netmask'] == ipaddr_netmask.to_s()
+            raise(Puppet::ParseError, 'complete_ifaces_hash(): the ' +
+                  "`#{iface}` interface has a CIDR address not compatible " +
+                  'with the provided `netmask` property')
+          end
         end
 
         # Add the broadcast if it doesn't exist.
+        broadcast = ipaddr_netmask.~().|(ipaddr_network).to_s()
         if not properties.has_key?('broadcast')
-          properties['broadcast'] = ipaddr_netmask.~().|(ipaddr_network).to_s()
+          properties['broadcast'] = broadcast
+        else
+          unless  properties['broadcast'] == broadcast
+            raise(Puppet::ParseError, 'complete_ifaces_hash(): the ' +
+                  "`#{iface}` interface has a CIDR address not compatible " +
+                  'with the provided `broadcast` property')
+          end
         end
       end
 
@@ -103,13 +121,16 @@ array of meta otions.
       if properties.has_key?('network_name')
         if nethash.has_key?(properties['network_name'])
           if properties.has_key?('address')
+            # If the "address" property exits, necessarily the
+            # "netmask" property exists too.
             ipnet = IPAddr.new(properties['address'] +
                                '/' + properties['netmask'])
-            if not ipnet.eql?(nethash[properties['network_name']][address_obj])
+            if not ipnet.eql?(nethash_objects[properties['network_name']])
               raise(Puppet::ParseError, 'complete_ifaces_hash(): the ' +
-                    "`#{iface}` interface has a matching network because " +
-                    'the `network_name` property is present but CIDR ' +
-                    'does not match between the interface and the network')
+                    "`#{iface}` interface has a matching network found " +
+                    'due to the `network_name` property but the CIDR ' +
+                    'addresses are not equal between the interface and ' +
+                    'the network')
             end
           end
           has_matching_network = true
@@ -122,7 +143,7 @@ array of meta otions.
         end
       else # There is no "network_name" property.
         if use_cidr
-          # The function will fail if there is not a uniq matching
+          # The function will fail if there is not a unique matching
           # network.
           matching_network = function_get_network_name([
                               properties['address'],
@@ -140,31 +161,31 @@ array of meta otions.
 
         # Update values equal to 'default'.
         properties.each do |name, value|
-          if value == 'default'
+          if value == '<default>'
             if default_properties.has_key?(name)
               properties[name] = default_properties[name]
             else
               raise(Puppet::ParseError, "complete_ifaces_hash(): the " +
                     "`#{iface}` interface has the `#{name}` property equal " +
-                    'to "default" but this property is not defined in the ' +
+                    'to "<default>" but this property is not defined in the ' +
                     "`#{matching_network}` matching network")
             end
           end
         end
 
-        # Add the meta_options values if defined in the matching network.
+        # Add the "network_name" property if it doesn't exist.
+        if not properties.has_key?('network_name')
+          properties['network_name'] = matching_network
+        end
+
+        # Add the meta_options values if defined in the matching network
+        # (and not defined in the interface).
         meta_options.each do |meta_option|
           if default_properties.has_key?(meta_option)
             if not properties.has_key?(meta_option)
               properties[meta_option] = default_properties[meta_option]
             end
           end
-        end
-
-        # This is a little exception, if the option is 'dns-search',
-        # we replace the '@domain' sub-string by the 'domain' fact.
-        if properties.has_key?('dns-search')
-          properties['dns-search'].gsub!('@domain', lookupvar('domain'))
         end
 
       end # End of has_matching_network.

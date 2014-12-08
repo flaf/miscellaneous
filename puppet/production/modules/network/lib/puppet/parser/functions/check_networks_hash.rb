@@ -18,17 +18,23 @@ Checks if the argument is a valid "networks" hash.
     # Test the structure of the nethash.
     function_check_netif_hash([nethash])
 
-    # Test is the "cidr_address" key is present for each network
+    # Test if the "cidr_address" key is present for each network
     # and if its value is correct.
     nethash.each do |network, properties|
 
       unless properties.has_key?('cidr_address')
         raise(Puppet::ParseError, "check_networks_hash(): the `#{network}` " +
-              'network has no "cidr_address" property')
+              'network has no `cidr_address` property')
+      end
+
+      unless  properties['cidr_address'].include?('/')
+        raise(Puppet::ParseError, "check_networks_hash(): the `#{network}` " +
+              'network has a `cidr_address` property which does not contain '+
+              'the "/" character')
       end
 
       begin
-        tmp = IPAddr.new(properties['cidr_address'])
+        IPAddr.new(properties['cidr_address'])
       rescue ArgumentError
         raise(Puppet::ParseError, "check_networks_hash(): the `#{network}` " +
               'network has a `cidr_address` property with a bad syntax')

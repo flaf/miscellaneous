@@ -1,7 +1,8 @@
 module Puppet::Parser::Functions
   newfunction(:check_netif_hash, :doc => <<-EOS
-Checks if the argument is a "networks" or "interfaces" hash with
-a correct structure, ie checks if it's a hash with this form:
+Checks if the argument is a "networks" or "interfaces" hash
+with a correct structure, ie the function checks if it's a
+hash with this form:
 
   {
     "key1" => {
@@ -87,7 +88,6 @@ function raises an error.
 
 
   end
-
 end
 
 

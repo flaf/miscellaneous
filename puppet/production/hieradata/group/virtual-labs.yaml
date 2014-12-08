@@ -1,5 +1,5 @@
 ---
-networks:
+inventoried_networks:
   private:
     vlan_name: 'private'
     vlan_id: '0'
