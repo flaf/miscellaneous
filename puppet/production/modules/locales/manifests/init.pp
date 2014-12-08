@@ -21,7 +21,6 @@
 #  }
 #
 class locales (
-  $stage          = 'basis',
   $default_locale = 'en_US.UTF-8',
 ) {
 

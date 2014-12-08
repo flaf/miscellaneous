@@ -4,7 +4,7 @@ class roles::standard {
   include '::profiles::timezone::standard'
   include '::profiles::locales::standard'
   include '::profiles::keyboard::standard'
-  include '::profiles::sourceslist::standard'
+  include '::profiles::apt::standard'
   include '::profiles::ntp::standard'
   include '::profiles::grub::standard'
   include '::profiles::puppet::standard'

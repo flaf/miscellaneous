@@ -49,7 +49,6 @@
 # in the /etc/hosts file.
 #
 class network::hosts (
-  $stage         = 'network',
   $hosts_entries = {},
 ) {
 

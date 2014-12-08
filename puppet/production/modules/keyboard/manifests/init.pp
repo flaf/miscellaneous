@@ -39,7 +39,6 @@
 #  }
 #
 class keyboard (
-  $stage      = 'basis',
   $xkbmodel   = 'pc105',
   $xkblayout  = 'fr',
   $xkbvariant = 'latin9',

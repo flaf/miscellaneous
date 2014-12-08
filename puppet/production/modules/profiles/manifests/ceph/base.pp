@@ -1,6 +1,7 @@
-class profiles::ceph::basis {
+class profiles::ceph::base {
 
   include '::repositories::ceph'
 
 }
+
 

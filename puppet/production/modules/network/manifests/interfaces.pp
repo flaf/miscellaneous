@@ -134,7 +134,6 @@
 #
 #
 class network::interfaces (
-  $stage             = 'network',
   $rename_interfaces = false,
   $restart_network   = false,
   $interfaces,

@@ -13,7 +13,7 @@ network:
     self: [ '@ipaddress', '@fqdn', '@hostname' ]
 
 apt:
-  sourceslist:
+  official_repositories:
     url:
       debian: 'http://ftp.fr.debian.org/debian/'
       ubuntu: 'http://fr.archive.ubuntu.com/ubuntu'

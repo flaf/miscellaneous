@@ -1,3 +1,8 @@
+### After all, this is not a good idea to manage the
+### /etc/apt/sources.list files without the '::apt'
+### module of Puppetlabs.
+
+
 # Public class which configures a minimalist and secure
 # /etc/apt/sources.list file. For instance, with Ubuntu,
 # the universe and multiverse repositories are not present
@@ -32,7 +37,6 @@
 #  }
 #
 class repositories::sourceslist (
-  $stage   = repository,
   $url     = $::repositories::sourceslist::params::url,
   $add_src = false,
 ) inherits ::repositories::sourceslist::params {

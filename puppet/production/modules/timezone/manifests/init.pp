@@ -20,7 +20,6 @@
 #  }
 #
 class timezone (
-  $stage    = 'basis',
   $timezone = 'Etc/UTC',
 ) {
 

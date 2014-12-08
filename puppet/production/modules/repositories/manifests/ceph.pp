@@ -3,7 +3,6 @@
 #       and a empty() test (functions of stdlib).
 
 class repositories::ceph (
-  $stage   = 'repository',
   $version = 'firefly',
 ) {
 
@@ -14,8 +13,12 @@ class repositories::ceph (
     }
   }
 
-  # Sans doute inutile.
-  # include '::apt'
+  validate_string($version)
+  unless member(['firefly'], $version) {
+    fail("Class ${title}, version `#{$version}` are not supported.")
+  }
+
+  include 'apt'
 
   apt::source { 'ceph':
     location    => "http://ceph.com/debian-${version}/",
