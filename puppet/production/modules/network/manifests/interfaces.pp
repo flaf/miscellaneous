@@ -105,7 +105,7 @@
 #                   'ntp_servers      => [ '192.168.0.1', ]
 #                 }
 #
-#  $new = complete_ifaces_hash($ifaces, $inventoried_networks)
+#  $new_ifaces = complete_ifaces_hash($ifaces, $inventoried_networks)
 #
 # In this example, the function use the CIDR address of eth0
 # to find the matching network. Then, each value equal to
@@ -116,7 +116,7 @@
 # address for an interface, but if you want to help the
 # function to find a matching network, you must use the
 # "network_name" property in the interface ('public' or
-# 'private' in the example above)..
+# 'private' in the example above).
 #
 # === get_network_name($ipaddr, $netmask, $inventoried_networks)
 #

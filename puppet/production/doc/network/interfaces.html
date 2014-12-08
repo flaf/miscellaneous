@@ -310,7 +310,7 @@ $inventoried_networks = {
                  'ntp_servers      =&gt; [ '192.168.0.1', ]
                }
 
-$new = complete_ifaces_hash($ifaces, $inventoried_networks)</pre>
+$new_ifaces = complete_ifaces_hash($ifaces, $inventoried_networks)</pre>
 
 <p>In this example, the function use the CIDR address of eth0 to find the
 matching network. Then, each value equal to '&lt;default&gt;' will be
@@ -319,7 +319,7 @@ a CIDR address, the "netmask", "network" and "broadcast" properties will be
 automatically appended. It's possible to don't use a CIDR address for an
 interface, but if you want to help the function to find a matching network,
 you must use the "network_name" property in the interface ('public' or
-'private' in the example above)..</p>
+'private' in the example above).</p>
 
 <h3>get_network_name($ipaddr, $netmask, $inventoried_networks)</h3>
 
