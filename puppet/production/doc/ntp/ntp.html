@@ -5,7 +5,7 @@
 <head>
   <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
 
-  <title>Module: stdlib::__facts__</title>
+  <title>Class: ntp::ntp</title>
 
   <link rel="stylesheet" href="../rdoc.css" type="text/css" media="screen" />
 
@@ -15,7 +15,7 @@
   <script src="../js/darkfish.js" type="text/javascript" charset="utf-8"></script>
 
 </head>
-<body id="top" class="module">
+<body id="top" class="class">
 
   <div id="metadata">
     <div id="home-metadata">
@@ -34,6 +34,9 @@
         <div class="section-body">
           <ul>
           
+            <li><a href="..//usr/local/src/git/miscellaneous/puppet/production/modules/ntp/manifests/init_pp.html?TB_iframe=true&amp;height=550&amp;width=785"
+              class="thickbox" title="/usr/local/src/git/miscellaneous/puppet/production/modules/ntp/manifests/init.pp">/usr/local/src/git/miscellaneous/puppet/production/modules/ntp/manifests/init.pp</a></li>
+          
           </ul>
         </div>
       </div>
@@ -42,6 +45,14 @@
     </div>
 
     <div id="class-metadata">
+      
+      <!-- Parent Class -->
+      <div id="parent-class-section" class="section">
+        <h3 class="section-header">Parent</h3>
+        
+        <p class="link"></p>
+        
+      </div>
       
 
       
@@ -214,10 +225,49 @@
   </div>
 
   <div id="documentation">
-    <h1 class="module">stdlib::__facts__</h1>
+    <h1 class="class">ntp::ntp</h1>
 
     <div id="description" class="description">
       
+<p>Public class to manage the NTP service.</p>
+
+<h2>Requirement/Dependencies</h2>
+
+<p>Depends on Puppetlabs-stdlib.</p>
+
+<h2>Parameters</h2>
+
+<p><b>interfaces:</b> An array of interfaces names used by the NTP service.
+The default value is [] (empty array) which means all interfaces are used.</p>
+
+<p><b>subnets_authorized:</b> An array of CIDR addresses of only subnets
+authorized to exchange time with the NTP service. If this array contains
+the string 'all', then any host for any subnet can exchange time with the
+NTP service. The default value of this parameter is [] (empty array) ie no
+host can exchange time with the NTP service (ie a selfish NTP server).</p>
+
+<p><b>ipv6:</b> A boolean. If true, IPv6 is taken into account in the
+/etc/ntp.conf file. If false, just IPv4 stanza are used in this file. The
+default value is true.</p>
+
+<p><b>ntp_servers:</b> An array of ntp servers addresses. This parameter is
+mandatory and has no default value.</p>
+
+<h2>Sample Usages</h2>
+
+<pre>class { '::ntp'
+  interfaces         =&gt; [ 'eth0' ],
+  subnets_authorized =&gt; [ '172.31.0.0/16', ],
+  ipv6               =&gt; false,
+  ntp_servers        =&gt; [ '172.31.5.1', '172.31.5.2', '172.31.5.3', ]
+}</pre>
+
+<p>or more simple (a basic and selfish NTP server) :</p>
+
+<pre>class { '::ntp'
+  ntp_servers =&gt; [ '172.31.5.1', '172.31.5.2', '172.31.5.3', ]
+}</pre>
+
     </div><!-- description -->
 
     
@@ -228,53 +278,6 @@
 
       
 
-      
-      <!-- Constants -->
-      <div id="constants-list" class="section">
-        <h3 class="section-header">Constants</h3>
-        <dl>
-        
-          <dt><a name="is_pe">is_pe</a></dt>
-          
-          <dd class="description"></dd>
-          
-        
-          <dt><a name="pe_major_version">pe_major_version</a></dt>
-          
-          <dd class="description"></dd>
-          
-        
-          <dt><a name="pe_minor_version">pe_minor_version</a></dt>
-          
-          <dd class="description"></dd>
-          
-        
-          <dt><a name="pe_patch_version">pe_patch_version</a></dt>
-          
-          <dd class="description"></dd>
-          
-        
-          <dt><a name="pe_version">pe_version</a></dt>
-          
-          <dd class="description"><p>Fact: <a href="__facts__.html#is_pe">is_pe</a>, <a
-href="__facts__.html#pe_version">pe_version</a>, <a
-href="__facts__.html#pe_major_version">pe_major_version</a>, <a
-href="__facts__.html#pe_minor_version">pe_minor_version</a>, <a
-href="__facts__.html#pe_patch_version">pe_patch_version</a></p>
-
-<p>Purpose: Return various facts about the PE state of the system</p>
-
-<p>Resolution: Uses a regex match against puppetversion to determine whether
-the</p>
-
-<pre>machine has Puppet Enterprise installed, and what version (overall, major,
-minor, patch) is installed.</pre>
-
-<p>Caveats:</p></dd>
-          
-        
-        </dl>
-      </div>
       
 
       
