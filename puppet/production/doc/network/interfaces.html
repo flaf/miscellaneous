@@ -240,7 +240,7 @@ environment because the least configuration change will cause the restart
 of the whole network and if your new configuration is buggy... BANG!!! The
 default value of this parameter is false (more secure).</p>
 
-<p><b>interfaces</b> This parameter is mandatory and has no default value.
+<p><b>interfaces</b>: This parameter is mandatory and has no default value.
 This parameter is a hash with this form:</p>
 
 <pre>{
@@ -264,8 +264,8 @@ a property can be an array of strings. In this case, the value is updated
 to value.join(' '). If a value is a string with this form '@xxxx', it's
 automatically replaced by the @xxxx fact.</p>
 
-<p>There are some properties, the meta options, which are just puts in
-comments. Here is the list of meta options :</p>
+<p>There are some properties, the meta options, which are just put in
+comments. Here is the list of these meta options:</p>
 
 <pre>meta_options = [
                 'macaddress',
@@ -278,7 +278,7 @@ comments. Here is the list of meta options :</p>
 
 <h2>Useful public functions</h2>
 
-<p>*complete_ifaces_hash($ifaces, $inventoried_networks)*</p>
+<h3>complete_ifaces_hash($ifaces, $inventoried_networks)</h3>
 
 <p>The function returns an updated version of $ifaces with the informations
 inside $inventoried_networks which must contain the "cidr_address". Here is
@@ -321,7 +321,7 @@ interface, but if you want to help the function to find a matching network,
 you must use the "network_name" property in the interface ('public' or
 'private' in the example above)..</p>
 
-<p>*get_network_name($ipaddr, $netmask, $inventoried_networks)*</p>
+<h3>get_network_name($ipaddr, $netmask, $inventoried_networks)</h3>
 
 <p>Returns the name of the network which matches with the $ipaddr and
 $netmask. Here is an example:</p>

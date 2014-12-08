@@ -31,7 +31,7 @@
 # BANG!!! The default value of this parameter is false (more
 # secure).
 #
-# *interfaces*
+# *interfaces*:
 # This parameter is mandatory and has no default value.
 # This parameter is a hash with this form:
 #
@@ -59,7 +59,7 @@
 # the @xxxx fact.
 #
 # There are some properties, the meta options, which are
-# just puts in comments. Here is the list of meta options :
+# just put in comments. Here is the list of these meta options:
 #
 #  meta_options = [
 #                  'macaddress',
@@ -73,7 +73,7 @@
 #
 # == Useful public functions
 #
-# *complete_ifaces_hash($ifaces, $inventoried_networks)*
+# === complete_ifaces_hash($ifaces, $inventoried_networks)
 #
 # The function returns an updated version of $ifaces with
 # the informations inside $inventoried_networks which must
@@ -118,7 +118,7 @@
 # "network_name" property in the interface ('public' or
 # 'private' in the example above)..
 #
-# *get_network_name($ipaddr, $netmask, $inventoried_networks)*
+# === get_network_name($ipaddr, $netmask, $inventoried_networks)
 #
 # Returns the name of the network which matches with the
 # $ipaddr and $netmask. Here is an example:
