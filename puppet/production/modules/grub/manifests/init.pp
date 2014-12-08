@@ -20,12 +20,13 @@
 #
 # == Sample Usages
 #
-#  include '::grub' # No kernel boot option.
+#  # No kernel boot option.
+#  include '::grub'
 #
 # or:
 #
 #  class { '::grub'
-#   kernel_options = { 'ipv6.disable' => '1', },
+#    kernel_options = { 'ipv6.disable' => '1', },
 #  }
 #
 class grub (
