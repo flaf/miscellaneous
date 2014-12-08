@@ -7,6 +7,6 @@ inventoried_networks:
     gateway: '172.31.0.1'
     dns-nameservers: [ '172.31.0.1', ]
     dns-search: [ '@domain', ]
-    ntp-servers: [ '172.31.0.1', ]
+    ntp_servers: [ '172.31.0.1', ]
 
 

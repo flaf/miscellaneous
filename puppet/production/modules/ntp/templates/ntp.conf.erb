@@ -1,0 +1,67 @@
+### This file is managed by Puppet, don't edit it. ###
+
+# /etc/ntp.conf, configuration for ntpd; see ntp.conf(5) for help
+
+driftfile /var/lib/ntp/ntp.drift
+
+<%- if not @all_interfaces -%>
+interface ignore wildcard
+  <%- @interfaces.sort.each do |iface| -%>
+interface listen <%= iface %>
+  <%- end -%>
+
+<%- end -%>
+# Enable this if you want statistics to be logged.
+#statsdir /var/log/ntpstats/
+
+statistics loopstats peerstats clockstats
+filegen loopstats file loopstats type day enable
+filegen peerstats file peerstats type day enable
+filegen clockstats file clockstats type day enable
+
+# NTP server(s) to use.
+<%- @ntp_servers.sort.each do |ntp_server| -%>
+server <%= ntp_server %> iburst
+<%- end -%>
+
+<%- if @selfish -%>
+# By default, exchange time are not allowed.
+restrict -4 default ignore
+  <%- if @ipv6 -%>
+restrict -6 default ignore
+  <%- end -%>
+
+# Allow exchange time with the NPT server(s) above.
+  <%- @ntp_servers.sort.each do |ntp_server| -%>
+restrict <%= ntp_server %> kod notrap nomodify nopeer noquery
+  <%- end -%>
+
+  <%- if not @subnets_authorized.empty?() -%>
+# Subnet(s) allowed to exchange time with the NTP service.
+    <%- @subnets_authorized.sort.each do |cidr_addr| -%>
+      <%-
+         require 'ipaddr'
+         addr_array = cidr_addr.split('/')
+         addr = addr_array[0]
+         bitmask_num = addr_array[1]
+         netmask = IPAddr.new('255.255.255.255/' + bitmask_num).to_s()
+      -%>
+restrict <%= addr %>  mask <%= netmask %> kod notrap nomodify nopeer noquery
+    <%- end -%>
+
+  <%- end -%>
+<%- else -%>
+# By default, exchange time with everybody, but don't allow configuration.
+restrict -4 default kod notrap nomodify nopeer noquery
+  <%- if @ipv6 -%>
+restrict -6 default kod notrap nomodify nopeer noquery
+  <%- end -%>
+
+<%- end -%>
+# Local users may interrogate the ntp server more closely.
+restrict 127.0.0.1
+<%- if @ipv6 -%>
+restrict ::1
+<%- end -%>
+
+
