@@ -5,7 +5,7 @@
 <head>
   <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
 
-  <title>Class: apt::debian</title>
+  <title>Class: roles::ceph_cluster</title>
 
   <link rel="stylesheet" href="../rdoc.css" type="text/css" media="screen" />
 
@@ -34,6 +34,9 @@
         <div class="section-body">
           <ul>
           
+            <li><a href="..//usr/local/src/git/miscellaneous/puppet/production/modules/roles/manifests/ceph_cluster_pp.html?TB_iframe=true&amp;height=550&amp;width=785"
+              class="thickbox" title="/usr/local/src/git/miscellaneous/puppet/production/modules/roles/manifests/ceph_cluster.pp">/usr/local/src/git/miscellaneous/puppet/production/modules/roles/manifests/ceph_cluster.pp</a></li>
+          
           </ul>
         </div>
       </div>
@@ -47,7 +50,7 @@
       <div id="parent-class-section" class="section">
         <h3 class="section-header">Parent</h3>
         
-        <p class="link"></p>
+        <p class="link">::roles::standard</p>
         
       </div>
       
@@ -55,21 +58,21 @@
       
 
       
-      <!-- Namespace Contents -->
-      <div id="namespace-list-section" class="section">
-        <h3 class="section-header">Namespace</h3>
+
+      
+
+      
+      <!-- Included Modules -->
+      <div id="includes-section" class="section">
+        <h3 class="section-header">Included Modules</h3>
         <ul class="link-list">
-          
-          <li><span class="type">CLASS</span> <a href="debian/testing.html">apt::debian::testing</a></li>
-          
-          <li><span class="type">CLASS</span> <a href="debian/unstable.html">apt::debian::unstable</a></li>
-          
+        
+        
+          <li><span class="include">"::profiles::ceph::repository"</span></li>
+        
+        
         </ul>
       </div>
-      
-
-      
-
       
     </div>
 
@@ -262,7 +265,7 @@
   </div>
 
   <div id="documentation">
-    <h1 class="class">apt::debian</h1>
+    <h1 class="class">roles::ceph_cluster</h1>
 
     <div id="description" class="description">
       

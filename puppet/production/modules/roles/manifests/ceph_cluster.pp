@@ -1,6 +1,6 @@
 class roles::ceph_cluster inherits ::roles::standard {
 
-  #include '::profiles::ceph::base'
+  include '::profiles::ceph::repository'
 
 }
 

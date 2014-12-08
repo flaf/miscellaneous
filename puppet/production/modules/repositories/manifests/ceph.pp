@@ -18,8 +18,6 @@ class repositories::ceph (
     fail("Class ${title}, version `#{$version}` are not supported.")
   }
 
-  include 'apt'
-
   apt::source { 'ceph':
     location    => "http://ceph.com/debian-${version}/",
     release     => $::lsbdistcodename,
