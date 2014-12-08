@@ -32,7 +32,8 @@
 # secure).
 #
 # *interfaces*
-# This parameter is hash with this form:
+# This parameter is mandatory and has no default value.
+# This parameter is a hash with this form:
 #
 #  {
 #   'eth0' => {
@@ -50,7 +51,6 @@
 #  }
 #
 # For each interface, the "method" property is mandatory.
-# This parameter is mandatory and has no default value.
 # If the method is "static" the "address" and "netmask"
 # properties are mandatory. The value of a property can
 # be an array of strings. In this case, the value is

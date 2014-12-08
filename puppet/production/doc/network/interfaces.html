@@ -240,7 +240,8 @@ environment because the least configuration change will cause the restart
 of the whole network and if your new configuration is buggy... BANG!!! The
 default value of this parameter is false (more secure).</p>
 
-<p><b>interfaces</b> This parameter is hash with this form:</p>
+<p><b>interfaces</b> This parameter is mandatory and has no default value.
+This parameter is a hash with this form:</p>
 
 <pre>{
  'eth0' =&gt; {
@@ -257,12 +258,11 @@ default value of this parameter is false (more secure).</p>
            },
 }</pre>
 
-<p>For each interface, the "method" property is mandatory. This parameter is
-mandatory and has no default value. If the method is "static" the "address"
-and "netmask" properties are mandatory. The value of a property can be an
-array of strings. In this case, the value is updated to value.join(' '). If
-a value is a string with this form '@xxxx', it's automatically replaced by
-the @xxxx fact.</p>
+<p>For each interface, the "method" property is mandatory. If the method is
+"static" the "address" and "netmask" properties are mandatory. The value of
+a property can be an array of strings. In this case, the value is updated
+to value.join(' '). If a value is a string with this form '@xxxx', it's
+automatically replaced by the @xxxx fact.</p>
 
 <p>There are some properties, the meta options, which are just puts in
 comments. Here is the list of meta options :</p>
