@@ -8,6 +8,8 @@ class roles::standard {
   include '::profiles::ntp::standard'
   include '::profiles::grub::standard'
   include '::profiles::puppet::standard'
+  include '::profiles::ssh::standard'
+  include '::profiles::misc::standard'
 
 }
 

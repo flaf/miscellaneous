@@ -48,7 +48,7 @@ class grub (
 
   file_line { 'ensure-kernel-options':
     path   => '/etc/default/grub',
-    line   => "GRUB_CMDLINE_LINUX=\"${options}\"",
+    line   => "GRUB_CMDLINE_LINUX=\"${options}\" # Edited by Puppet.",
     match  => '^GRUB_CMDLINE_LINUX=.*$',
     before => Exec['update-grub'],
     notify => Exec['update-grub'],
