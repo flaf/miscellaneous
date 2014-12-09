@@ -1,26 +1,26 @@
 ### This file is managed by Puppet, don't edit it. ###
 
-red="\[\e[01;31m\]"
-green="\[\e[01;32m\]"
-blue="\[\e[01;34m\]"
-white="\[\e[01;37m\]"
-reset="\[\e[00m\]"
+red='\[\e[01;31m\]'
+green='\[\e[01;32m\]'
+blue='\[\e[01;34m\]'
+white='\[\e[01;37m\]'
+reset='\[\e[00m\]'
 
-environment="<%= scope['::environment'] %>"
+environment='<%= scope['::environment'] %>'
 
-if [ "$environment" = "production" ]
+if [ "$environment" = 'production' ]
 then
   PS1="${debian_chroot:+($debian_chroot)}$red\u@\h $blue\A $white\w$reset\n# "
 else
   PS1="${debian_chroot:+($debian_chroot)}$green\u@\h $blue\A $white\w$reset\n# "
 fi
 
-export EDITOR=vim
-alias vim="vim -p"
-alias ll="ls -al"
-alias upgrade="apt-get update && apt-get dist-upgrade"
-HISTSIZE=1000
-HISTFILESIZE=2000
-HISTCONTROL="ignoredups:ignorespace"
+export EDITOR='vim'
+alias vim='vim -p'
+alias ll='ls -al'
+alias upgrade='apt-get update && apt-get dist-upgrade'
+HISTSIZE='1000'
+HISTFILESIZE='2000'
+HISTCONTROL='ignoredups:ignorespace'
 
 
