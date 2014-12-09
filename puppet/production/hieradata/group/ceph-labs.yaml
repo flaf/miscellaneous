@@ -31,8 +31,8 @@ ceph:
 #
 network:
   hosts_entries:
-    monitor-1: [ 'ceph-node1', '172.31.10.1' ]
-    monitor-2: [ 'ceph-node2', '172.31.10.2' ]
-    monitor-3: [ 'ceph-node3', '172.31.10.3' ]
+    monitor-1: [ '172.31.10.1', 'ceph-node1' ]
+    monitor-2: [ '172.31.10.2', 'ceph-node2' ]
+    monitor-3: [ '172.31.10.3', 'ceph-node3' ]
 
 
