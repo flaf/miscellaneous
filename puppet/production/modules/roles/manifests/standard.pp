@@ -1,5 +1,6 @@
 class roles::standard {
 
+  include '::profiles::hosts::standard'
   include '::profiles::network::standard'
   include '::profiles::timezone::standard'
   include '::profiles::locales::standard'

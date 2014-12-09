@@ -1,8 +1,27 @@
-# TODO: make a documentation header and add
-#       a is_string() test for the parameter
-#       and a empty() test (functions of stdlib).
-
-class repositories::ceph (
+# Puppet class to manage a ceph APT repository.
+#
+# == Requirement/Dependencies
+#
+# Depends on Puppetlabs-stdlib and Puppetlabs-apt.
+#
+# == Parameters
+#
+# *version:*
+# The version of Ceph to use.
+# Currently, it can be only set to 'firefly' which is
+# the default value.
+#
+# == Sample Usages
+#
+#  include '::repository::ceph'
+#
+# or:
+#
+#  class { '::repository::ceph':
+#   version => 'firefly',
+#  }
+#
+class repository::ceph (
   $version = 'firefly',
 ) {
 
@@ -27,4 +46,5 @@ class repositories::ceph (
   }
 
 }
+
 

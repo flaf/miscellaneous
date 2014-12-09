@@ -9,16 +9,4 @@ inventoried_networks:
     dns-search: [ '@domain', ]
     ntp_servers: [ '172.31.0.1', ]
 
-ceph:
-  cluster_name: 'ceph'
-  fsid: 'e865b3d0-535a-4f18-9883-2793079d400b'
-  default_replication_num: '2'
-  default_pg_num: '256'
-  monitor_init: 'ceph-node1'
-  nodes:
-    ceph-node1:
-      addr: '172.31.10.1'
-    ceph-node2:
-      addr: '172.31.10.2'
-    ceph-node3:
-      addr: '172.31.10.3'
+

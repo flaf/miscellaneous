@@ -6,7 +6,6 @@ class profiles::network::standard ($stage = 'network', ) {
   $interfaces           = $network_conf['interfaces']
   $rename_interfaces    = $network_conf['rename_interfaces']
   $restart_network      = $network_conf['restart_network']
-  $hosts_entries        = $network_conf['hosts_entries']
 
   # Test if the data has been well retrieved.
   if $interfaces == undef {
@@ -18,9 +17,6 @@ class profiles::network::standard ($stage = 'network', ) {
   if $restart_network == undef {
     fail("Problem in class ${title}, `restart_network` data not retrieved")
   }
-  if $hosts_entries == undef {
-    fail("Problem in class ${title}, `hosts_entries` data not retrieved")
-  }
 
   $interfaces_updated = complete_ifaces_hash($interfaces,
                                              $inventoried_networks)
@@ -29,11 +25,6 @@ class profiles::network::standard ($stage = 'network', ) {
     rename_interfaces => $rename_interfaces,
     restart_network   => $restart_network,
     interfaces        => $interfaces_updated,
-    before            => Class['::network::hosts'],
-  }
-
-  class { '::network::hosts':
-    hosts_entries => $hosts_entries,
   }
 
 }
