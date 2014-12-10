@@ -1,3 +1,10 @@
+#
+# For the "osd pool default pg num" parameter:
+# http://ceph.com/docs/master/rados/operations/placement-groups/#a-preselection-of-pg-num
+#
+# For the "osd pool default pgp num" parameter:
+# http://ceph.com/docs/master/rados/operations/placement-groups/#set-the-number-of-placement-groups
+#
 class ceph (
   $cluster_name          = 'ceph',
   $osd_journal_size      = 1024,

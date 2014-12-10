@@ -10,6 +10,8 @@ templatedir=$confdir/templates
 prerun_command=/etc/puppet/etckeeper-commit-pre
 postrun_command=/etc/puppet/etckeeper-commit-post
 
+runinterval = <%= @runinterval %>
+
 # Plugins == "lib directories of all modules in the master".
 # The synchronisation from master to node is necessary for
 # codes that are executed in client side (like specific
@@ -23,7 +25,7 @@ postrun_command=/etc/puppet/etckeeper-commit-post
 # So, in Debian Wheezy, which use the version 2.7, you must
 # specify explicitly this parameter, and in Debian Ubuntu
 # Trusty (3.4.3), it isn't mandatory.
-pluginsync = true
+pluginsync = <%= @pluginsync %>
 
 [master]
 # These are needed when the puppetmaster is run by passenger

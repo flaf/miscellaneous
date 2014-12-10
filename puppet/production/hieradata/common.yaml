@@ -1,6 +1,7 @@
 ---
 timezone: 'Europe/Paris'
 default_locale: 'en_US.UTF-8'
+
 keyboard:
   xkbmodel: 'pc105'
   xkblayout: 'fr'
@@ -18,5 +19,11 @@ apt:
       debian: 'http://ftp.fr.debian.org/debian/'
       ubuntu: 'http://fr.archive.ubuntu.com/ubuntu'
     src: false
+
+puppet:
+  client:
+    service_enable: false
+    runinterval: '30m'
+    pluginsync: true
 
 
