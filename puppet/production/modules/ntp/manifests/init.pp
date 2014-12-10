@@ -84,11 +84,7 @@ class ntp (
 
 
 
-  if ! defined(Package['ntp']) {
-    package { 'ntp':
-      ensure => present,
-    }
-  }
+  ensure_packages(['ntp', ], { ensure => present, })
 
   file { '/etc/ntp.conf':
     ensure  => present,

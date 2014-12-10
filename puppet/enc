@@ -64,6 +64,7 @@ hash.each do |key, value|
 
     # Handle when the value is a array.
     if value.is_a?(Array)
+      parameters += "\"#{key}\": #{value.to_s()},\n    "
       c = 0
       for e in value
         if e.is_a?(String) or e.is_a?(Numeric)
@@ -84,4 +85,5 @@ output = output.sub('###environment###', environment)
 output = output.sub('###parameters###', parameters)
 puts output
 exit(0)
+
 

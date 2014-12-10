@@ -180,11 +180,7 @@ class network::interfaces (
   # And it's not recommended to remove resolvconf
   # in Trusty (if you do that, you will remove the
   # "ubuntu-minimal" package that is not recommended).
-  if ! defined(Package['resolvconf']) {
-    package { 'resolvconf':
-      ensure => present,
-    }
-  }
+  ensure_packages(['resolvconf', ], { ensure => present, })
 
   if $rename_interfaces {
     $content_rule = template('network/70-persistent-net.rules.erb')
@@ -225,7 +221,10 @@ class network::interfaces (
       user        => 'root',
       group       => 'root',
       refreshonly => true,
-      require     => File['/usr/local/sbin/network-restart'],
+      require     => [
+                       File['/usr/local/sbin/network-restart'],
+                       Package['resolvconf'],
+                     ],
       subscribe   => [
                        File['/etc/udev/rules.d/70-persistent-net.rules'],
                        File['/etc/network/interfaces.puppet'],

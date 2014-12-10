@@ -8,23 +8,13 @@ class profiles::misc::standard {
     ensure => purged,
   }
 
-  if ! defined(Package['gawk']) {
-    package { 'gawk':
-      ensure => present,
-    }
-  }
+  $packages = [
+                'gawk',
+                'less',
+                'lsb-release',
+              ]
 
-  if ! defined(Package['less']) {
-    package { 'less':
-      ensure => present,
-    }
-  }
-
-  if ! defined(Package['lsb-release']) {
-    package { 'lsb-release':
-      ensure => present,
-    }
-  }
+  ensure_packages($packages, { ensure => present, })
 
 }
 

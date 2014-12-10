@@ -5,7 +5,7 @@
     auth cluster required     = cephx
     auth service required     = cephx
     auth client required      = cephx
-    osd journal size          = <%= @osd_journal_size %>4
+    osd journal size          = <%= @osd_journal_size %>
     filestore xattr use omap  = true
     osd pool default size     = <%= @osd_pool_default_size %>
     osd pool default min size = 1

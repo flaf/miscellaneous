@@ -3,7 +3,7 @@
 #
 # == Requirement/Dependencies
 #
-# Nothing.
+# Depends on Puppetlabs-stdlib.
 #
 # == Parameters
 #
@@ -23,12 +23,7 @@ class puppet::client {
     }
   }
 
-  if ! defined(Package['puppet']) {
-    package { 'puppet':
-      ensure => present,
-      before => File['/etc/puppet/puppet.conf'],
-    }
-  }
+  ensure_packages(['puppet', ], { ensure => present, })
 
   file { '/etc/puppet/puppet.conf':
     ensure  => present,
@@ -36,6 +31,7 @@ class puppet::client {
     group   => 'root',
     mode    => '0644',
     content => template('puppet/puppet.conf.client.erb'),
+    require => Package['puppet'],
   }
 
 }

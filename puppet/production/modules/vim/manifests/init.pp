@@ -4,7 +4,7 @@
 #
 # == Requirement/Dependencies
 #
-# Nothing.
+# Depends on Puppetlabs-stdlib.
 #
 # == Parameters
 #
@@ -24,11 +24,7 @@ class vim {
     }
   }
 
-  if ! defined(Package['vim']) {
-    package { 'vim':
-      ensure => present,
-    }
-  }
+  ensure_packages(['vim', ], { ensure => present, })
 
   file { '/root/.vimrc':
     ensure  => present,

@@ -24,17 +24,7 @@ class bash {
     }
   }
 
-  if ! defined(Package['bash']) {
-    package { 'bash':
-      ensure => present,
-    }
-  }
-
-  if ! defined(Package['bash-completion']) {
-    package { 'bash-completion':
-      ensure => present,
-    }
-  }
+  ensure_packages(['bash', 'bash-completion', ], { ensure => present, })
 
   file_line { 'edit-bashrc-of-root':
     path => '/root/.bashrc',

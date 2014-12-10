@@ -3,7 +3,7 @@
 #
 # == Requirement/Dependencies
 #
-# Nothing.
+# Depends on Puppetlabs-stdlib.
 #
 # == Parameters
 #
@@ -35,11 +35,7 @@ class ssh::server (
 
   validate_string($permitrootlogin)
 
-  if ! defined(Package['openssh-server']) {
-    package { 'openssh-server':
-      ensure => present,
-    }
-  }
+  ensure_packages(['openssh-server', ], { ensure => present, })
 
   file_line { 'edit-PermitRootLogin-param':
     path    => '/etc/ssh/sshd_config',

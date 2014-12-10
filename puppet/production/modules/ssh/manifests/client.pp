@@ -3,7 +3,7 @@
 #
 # == Requirement/Dependencies
 #
-# Nothing.
+# Depends on Puppetlabs-stdlib.
 #
 # == Parameters
 #
@@ -23,11 +23,7 @@ class ssh::client {
     }
   }
 
-  if ! defined(Package['openssh-client']) {
-    package { 'openssh-client':
-      ensure => present,
-    }
-  }
+  ensure_packages(['openssh-client', ], { ensure => present, })
 
 }
 

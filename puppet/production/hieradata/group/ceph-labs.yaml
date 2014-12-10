@@ -16,23 +16,4 @@ ceph:
       id: '3'
       address: '172.31.10.3'
 
-# TODO: it socks. In a perfect world, these data
-# don't exist because already present in the "ceph"
-# hash. But there are 2 problems:
-#
-#   1. It's difficult to extract data in "ceph" hash
-#      to have "hosts" entries structure like below.
-#
-#   2. The '::profiles::hosts::standard' manage the unique
-#      /etc/hosts files so I think it's impossible to
-#      coexist '::profiles::hosts::standard' and
-#      '::profiles::hosts::ceph' to cumulate "hosts"
-#      entries in "network" hash and in "ceph" hash.
-#
-network:
-  hosts_entries:
-    monitor-1: [ '172.31.10.1', 'ceph-node1' ]
-    monitor-2: [ '172.31.10.2', 'ceph-node2' ]
-    monitor-3: [ '172.31.10.3', 'ceph-node3' ]
-
 
