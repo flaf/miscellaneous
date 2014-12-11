@@ -1,68 +1,83 @@
 #!/bin/sh
 ### This is a file managed by Puppet, don't edit it. ###
+<%- monitor_init = scope['::ceph::monitor_init'] -%>
 
-# This first argument is the name of the cluster.
-cluster="$1"
+# The name of the cluster.
+cluster='<%= scope['::ceph::cluster_name'] %>'
 
-# The second argument is the ID of the monitor.
-mon_id="$2"
+# The hostname of the initial monitor.
+monitor_init='<%= scope['::ceph::monitor_init'] %>'
 
-# On crée un fichier qui définit les droits des daemons
-# monitor dans le cluster avec une même clé que se partageront
-# tous les daemons monitors (pour s'authentifier entre eux
-# comme appartenant bien au cluster).
+# The ID of the initial monitor.
+monitor_id='<%= scope['::ceph::monitors'][monitor_init]['id'] %>'
+
+# The IP address of the initial monitor.
+monitor_address='<%= scope['::ceph::monitors'][monitor_init]['address'] %>'
+
+# The shared monitors key.
+monitors_key='<%= scope['::ceph::monitors_key'] %>'
+
+if [ -e "/var/lib/ceph/mon/$cluster-$monitor_id/upstart" ]
+then
+    echo "Sorry but the monior initialization seems to have already been launched."
+    echo "End of the script."
+    exit 1
+fi
+
+# Create a file which defines the rights of the monitors in
+# the cluster. The same key will be shared with the monitors
+# to ensure authentication between them (to ensure that the
+# monitors belong to the same cluster).
 ceph-authtool --create-keyring "/tmp/$cluster.mon.keyring" \
-    --gen-key -n mon. --cap mon 'allow *'
+    -n mon. --cap mon 'allow *' -a "$monitors_key"
 
-# On crée dans la configuration du cluster Ceph les droits
-# du compte client.admin au niveau du cluster. Ce compte
-# est le compte utilisé par défaut par les outils de monitoring
-# Ceph.
-ceph-authtool --create-keyring "/etc/ceph/$cluster.client.admin.keyring" \
-    --gen-key -n client.admin --set-uid=0                                \
-    --cap mon 'allow *' --cap osd 'allow *' --cap mds 'allow'
+# Below, the same command as above where the key is generated
+# automatically.
+#
+#   ceph-authtool --create-keyring "/tmp/$cluster.mon.keyring" \
+#       -n mon. --cap mon 'allow *' --gen-key
 
-# Cette commande ajoute simplement le contenu du fichier donné
-# par l'option --import-keyring dans le fichier donné en argument.
+# This command just appends the contents of the file given by
+# the --import-keyring option to the file given as argument.
 ceph-authtool --import-keyring "/etc/ceph/$cluster.client.admin.keyring" \
      "/tmp/$cluster.mon.keyring"
 
-# On génère une « monitor map » qui représente la topologie
-# du cluster au niveau des monitors, sachant que la topologie
-# actuelle du cluster va indiquer pour l'instant l'existence
-# d'un daemon monitor d'ID 1 qui tourne sur ceph-node1 et c'est
-# tout (le fichier généré est totalement inintelligible pour un
-# humain).
-monmaptool --create --add "$mon_id" "172.31.10.1" --fsid "$fsid" "/tmp/monmap"
+# Generate a monitor map which represents the cluster
+# topology regarding the monitors. Currently, the topology
+# will be very simple: just one monitor. The generated file
+# is non human readable.
+monmaptool --create --add "$monitor_id" "$monitor_address" \
+    --fsid "$fsid" "/tmp/monmap"
 
-# On initialise le répertoire de travail du monitor
-# qui se trouve dans "/var/lib/ceph/mon/$cluster-$mon_id".
-# Pour ce faire on fournit à la commande les éléments suivants :
-#   - le fsid du cluster (à travers le fichier de conf);
-#   - la clé secrète des monitors et celle du compte client.admin
-#     (via le fichier /tmp/$cluster.mon.keyring);
-#   - la monitor map de départ.
-# La clé secrète du compte client.admin est une clé partagée
-# entre les clients et les daemons monitors.
-ceph-mon --mkfs -i "$mon_id" --conf "/etc/ceph/$cluster.conf"    \
-    --monmap "/tmp/monmap" --keyring "/tmp/$cluster.mon.keyring" \
+# Initialization of the monitor working directory in
+# "/var/lib/ceph/mon/$cluster-$monitor_id". To do that, the command
+# provides:
+#       - the fsid of the cluster (in the conf file);
+#       - the secret shared monitor key and the key of client.admin
+#         (in /tmp/$cluster.mon.keyring);
+#       - the initial monitor map (in /tmp/monmap)
+#
+# Note: the key of client.admin is a key shared between the
+# administrator (which will use ceph clients in command lines)
+# and the monitors.
+#
+ceph-mon --mkfs -i "$monitor_id" --conf "/etc/ceph/$cluster.conf" \
+    --monmap "/tmp/monmap" --keyring "/tmp/$cluster.mon.keyring"  \
     --cluster "$cluster"
 
-# On supprime les 2 fichiers temporaires qu'on a utilisés.
+# Delete the files in /tmp/.
 rm "/tmp/$cluster.mon.keyring"
 rm "/tmp/monmap"
 
-# Notre daemon monitor est prêt à être démarré mais avant,
-# il faut ajouter ces 2 fichiers vides, sans quoi le daemon
-# ne se lance tout simplement pas.
-touch "/var/lib/ceph/mon/$cluster-$mon_id/done"
-touch "/var/lib/ceph/mon/$cluster-$mon_id/upstart"
+# Without these files, the monitor daemon doesn't start.
+touch "/var/lib/ceph/mon/$cluster-$monitor_id/done"
+touch "/var/lib/ceph/mon/$cluster-$monitor_id/upstart"
 
-# Avec cette commande sous Ubuntu, on redémarre tous les services
-# liés à ceph sans discrimination. Sinon, pour relancer un monitor
-# en particulier, on pourrait faire : 
-#       stop ceph-mon-all cluster=cluster id=1 \
-#           && start ceph-mon-all cluster=cluster id=1
-stop ceph-all
-start ceph-all
+# Start the monitor daemon.
+stop ceph-mon-all cluster="$cluster" id="$monitor_id"
+start ceph-mon-all cluster="$cluster" id="$monitor_id"
+# Another way (more radical)
+#   stop ceph-all
+#   start ceph-all
+
 

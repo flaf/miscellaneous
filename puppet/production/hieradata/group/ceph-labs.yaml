@@ -6,7 +6,7 @@ ceph:
   osd_pool_default_size: '2'
   osd_pool_default_pg_num: '256'
   admin_key: 'AQAi+ohUiIuQOBAAfhWdmSz8++KiFXESYEC7kg=='
-  monitor_key: 'AQB+8YhUcAWvDRAAqPU8YpN0rpV2SGwobcO23g=='
+  monitors_key: 'AQB+8YhUcAWvDRAAqPU8YpN0rpV2SGwobcO23g=='
   monitor_init: 'ceph-node1'
   monitors:
     ceph-node1:

@@ -12,31 +12,25 @@ class ceph (
   $osd_pool_default_pg_num = '256',
   $monitor_init,
   $monitors,
+  $monitors_key,
+  $admin_key,
   $fsid,
 ) {
 
-  validate_string($cluster_name,)
+  validate_string(
+    $cluster_name,
+    $osd_journal_size,
+    $osd_pool_default_size,
+    $osd_pool_default_pg_num,
+    $monitor_init,
+    $monitors_key,
+    $admin_key,
+    $fsid,
+  )
+  validate_hash($monitors)
 
   require '::ceph::packages'
-
-
-  file { "/etc/ceph/${cluster_name}.conf":
-    ensure  => present,
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0644',
-    content => template('ceph/ceph.conf.erb'),
-  }
-
-  if $::hostname == $monitor_init {
-    file { '/usr/local/sbin/monitor_init':
-      ensure  => present,
-      owner   => 'root',
-      group   => 'root',
-      mode    => '0744',
-      content => template('ceph/monitor_init.erb'),
-    }
-  }
+  require '::ceph::config'
 
 }
 
