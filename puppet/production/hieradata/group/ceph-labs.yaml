@@ -2,8 +2,11 @@
 ceph:
   cluster_name: 'ceph'
   fsid: 'e865b3d0-535a-4f18-9883-2793079d400b'
-  default_replication_num: '2'
-  default_pg_num: '256'
+  osd_journal_size: '1024'
+  osd_pool_default_size: '2'
+  osd_pool_default_pg_num: '256'
+  admin_key: 'AQAi+ohUiIuQOBAAfhWdmSz8++KiFXESYEC7kg=='
+  monitor_key: 'AQB+8YhUcAWvDRAAqPU8YpN0rpV2SGwobcO23g=='
   monitor_init: 'ceph-node1'
   monitors:
     ceph-node1:

@@ -29,8 +29,8 @@ Examples:
   ) do |args|
 
     unless(args.size > 0)
-      raise(Puppet::ParseError, ':eval_ruby_code,(): needs to ' +
-            "at least one arguments")
+      raise(Puppet::ParseError, ':eval_ruby_code(): needs to ' +
+            "at least one argument")
     end
 
     args.each_with_index do |value, i|

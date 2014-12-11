@@ -9,21 +9,14 @@
     filestore xattr use omap  = true
     osd pool default size     = <%= @osd_pool_default_size %>
     osd pool default min size = 1
-    # http://ceph.com/docs/master/rados/operations/placement-groups/#a-preselection-of-pg-num
-    osd pool default pg num   = 256
-    osd pool default pgp num  = 256
+    osd pool default pg num   = <%= @osd_pool_default_pg_num %>
+    osd pool default pgp num  = <%= @osd_pool_default_pg_num %>
     osd crush chooseleaf type = 1
 
-[mon.1]
-    host     = ceph-node1
-    mon addr = 172.31.10.1
+<%- @monitors.each do |name, v| -%>
+[mon.<%= v['id'] %>]
+    host     = <%= name %>
+    mon addr = <%= v['address'] %>
 
-[mon.2]
-    host     = ceph-node2
-    mon addr = 172.31.10.2
-
-[mon.3]
-    host     = ceph-node3
-    mon addr = 172.31.10.3
-
+<%- end %>
 
