@@ -1,25 +1,33 @@
 #!/bin/sh
 ### This is a file managed by Puppet, don't edit it. ###
 <%-
-    # Just for convenience.
-    monitor_init    = scope['::hostname']
-    cluster_name    = scope['::ceph::cluster_name']
-    monitors        = scope['::ceph::monitors']
-    monitor_id      = monitors[monitor_init]['id']
-    monitor_address = monitors[monitor_init]['address']
+    monitors = scope['::ceph::monitors']
+
+    monitor_init = ''
+    monitors.each do |mon, params|
+      if params.has_key?('initial') and params['initial'] == true
+        monitor_init = mon
+        break
+      end
+    end
+    if monitor_init == ''
+      raise 'Initial monitor not found'
+    end
+
+    cluster_name         = scope['::ceph::cluster_name']
+    hostname             = scope['::hostname']
+    monitor_id           = monitors[hostname]['id']
+    monitor_init_address = monitors[monitor_init]['address']
 -%>
 
 # The name of the cluster.
 cluster='<%= cluster_name %>'
 
-# The hostname of the initial monitor.
-monitor_init='<%= monitor_init %>'
-
-# The ID of the initial monitor.
+# The ID of the monitor which you want to create.
 monitor_id='<%= monitor_id %>'
 
-# The IP address of the initial monitor.
-monitor_address='<%= monitor_address %>'
+# The IP address of the inital monitor.
+monitor_init_address='<%= monitor_init_address %>'
 
 
 SCRIPT_NAME=${0##*/}
@@ -55,8 +63,8 @@ do
             echo "    1. $SCRIPT_NAME --test"
             echo "    2. $SCRIPT_NAME"
             echo ""
-            echo "1. To test if it's possible to initialize monitor."
-            echo "2. To initialize monitor."
+            echo "1. To test if it's possible to create a monitor."
+            echo "2. To create a monitor."
             exit 0
         ;;
 
@@ -99,44 +107,28 @@ else
     fi
 fi
 
-# Create a file which defines the rights of the monitors in
-# the cluster. A key is automatically generated. This key
-# will be shared with the monitors to ensure authentication
-# between them (to ensure that the monitors belong to the
-# same cluster).
-ceph-authtool --create-keyring "/tmp/$cluster.mon.keyring" \
-    -n mon. --cap mon 'allow *' --gen-key
+# Retrieve the shared monitors key with a request to
+# the initial monitor of the cluster. By default the
+# command uses the client.admin account and normally
+# the /etc/ceph/$cluster.client.admin.conf is already
+# present in the local host.
+if ! timeout --signal=TERM --kill-after=20 5s ceph auth \
+    get mon. -o "/tmp/$cluster.mon.keyring"             \
+    -m "$monitor_init_address" --cluster "$cluster"
+then
+    printf "Request to the initial monitor failed.\n"
+    printf "End of the script.\n"
+    exit 1
+fi
 
-# Below, the same command where the key is explicitly provided
-# with the --add-key option.
-#
-#   ceph-authtool --create-keyring "/tmp/$cluster.mon.keyring" \
-#        -n mon. --cap mon 'allow *' --add-key "$monitors_key"
+# Retrieve the monitor map with a request to the initial
+# monitor in order to initialize the monitor working
+# directory this the local host.
+ceph mon getmap -o "/tmp/monmap" -m "$monitor_init_address" \
+    --cluster "$cluster"
 
-# This command just appends the contents of the file given by
-# the --import-keyring option to the file given as argument.
-ceph-authtool --import-keyring "/etc/ceph/$cluster.client.admin.keyring" \
-     "/tmp/$cluster.mon.keyring"
-
-# Generate a monitor map which represents the cluster
-# topology regarding the monitors. Currently, the topology
-# will be very simple: just one monitor. The generated file
-# is non human readable.
-monmaptool --create --add "$monitor_id" "$monitor_address" \
-    --fsid "$fsid" "/tmp/monmap"
-
-# Initialization of the monitor working directory in
-# "/var/lib/ceph/mon/$cluster-$monitor_id". To do that, the command
-# provides:
-#       - the fsid of the cluster (in the conf file);
-#       - the secret shared monitor key and the key of client.admin
-#         (in /tmp/$cluster.mon.keyring);
-#       - the initial monitor map (in /tmp/monmap)
-#
-# Note: the key of client.admin is a key shared between the
-# administrator (which will use ceph clients in command lines)
-# and the monitors.
-#
+# Creation and initialization of the monitor working directory
+# which will be "/var/lib/ceph/mon/$cluster-$monitor_id".
 ceph-mon --mkfs -i "$monitor_id" --conf "/etc/ceph/$cluster.conf" \
     --monmap "/tmp/monmap" --keyring "/tmp/$cluster.mon.keyring"  \
     --cluster "$cluster"

@@ -4,8 +4,6 @@ class profiles::ceph::cluster {
   $cluster_name            = $ceph_conf['cluster_name']
   $fsid                    = $ceph_conf['fsid']
   $monitors                = $ceph_conf['monitors']
-  $monitors_key            = $ceph_conf['monitors_key']
-  $monitor_init            = $ceph_conf['monitor_init']
   $admin_key               = $ceph_conf['admin_key']
   $osd_journal_size        = $ceph_conf['osd_journal_size']
   $osd_pool_default_size   = $ceph_conf['osd_pool_default_size']
@@ -16,8 +14,6 @@ class profiles::ceph::cluster {
     $cluster_name,
     $fsid,
     $monitors,
-    $monitor_init,
-    $monitors_key,
     $admin_key,
     $osd_journal_size,
     $osd_pool_default_size,
@@ -28,8 +24,6 @@ class profiles::ceph::cluster {
     cluster_name            => $cluster_name,
     fsid                    => $fsid,
     monitors                => $monitors,
-    monitors_key            => $monitors_key,
-    monitor_init            => $monitor_init,
     admin_key               => $admin_key,
     osd_journal_size        => $osd_journal_size,
     osd_pool_default_size   => $osd_pool_default_size,
