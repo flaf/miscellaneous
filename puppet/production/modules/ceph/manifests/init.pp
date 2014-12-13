@@ -25,6 +25,8 @@ class ceph (
   )
   validate_hash($monitors)
 
+  $monitor_init = get_monitor_init_($monitors)
+
   require '::ceph::packages'
   require '::ceph::config'
 

@@ -1,8 +1,7 @@
 #!/bin/sh
 ### This is a file managed by Puppet, don't edit it. ###
 <%-
-    # Just for convenience.
-    monitor_init    = scope['::hostname']
+    monitor_init    = scope['::ceph::monitor_init']
     cluster_name    = scope['::ceph::cluster_name']
     monitors        = scope['::ceph::monitors']
     monitor_id      = monitors[monitor_init]['id']
@@ -150,12 +149,8 @@ touch "/var/lib/ceph/mon/$cluster-$monitor_id/done"
 touch "/var/lib/ceph/mon/$cluster-$monitor_id/upstart"
 
 # Start the monitor daemon.
-stop ceph-mon-all cluster="$cluster" id="$monitor_id"
+stop ceph-mon cluster="$cluster" id="$monitor_id"
 sleep 0.5
-start ceph-mon-all cluster="$cluster" id="$monitor_id"
-# Another way (more radical)
-#   stop ceph-all
-#   sleep 0.5
-#   start ceph-all
+start ceph-mon cluster="$cluster" id="$monitor_id"
 
 

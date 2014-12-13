@@ -1,20 +1,9 @@
 #!/bin/sh
 ### This is a file managed by Puppet, don't edit it. ###
 <%-
-    monitors = scope['::ceph::monitors']
-
-    monitor_init = ''
-    monitors.each do |mon, params|
-      if params.has_key?('initial') and params['initial'] == true
-        monitor_init = mon
-        break
-      end
-    end
-    if monitor_init == ''
-      raise 'Initial monitor not found'
-    end
-
     cluster_name         = scope['::ceph::cluster_name']
+    monitor_init         = scope['::ceph::monitor_init']
+    monitors             = scope['::ceph::monitors']
     hostname             = scope['::hostname']
     monitor_id           = monitors[hostname]['id']
     monitor_init_address = monitors[monitor_init]['address']
@@ -142,12 +131,8 @@ touch "/var/lib/ceph/mon/$cluster-$monitor_id/done"
 touch "/var/lib/ceph/mon/$cluster-$monitor_id/upstart"
 
 # Start the monitor daemon.
-stop ceph-mon-all cluster="$cluster" id="$monitor_id"
+stop ceph-mon cluster="$cluster" id="$monitor_id"
 sleep 0.5
-start ceph-mon-all cluster="$cluster" id="$monitor_id"
-# Another way (more radical)
-#   stop ceph-all
-#   sleep 0.5
-#   start ceph-all
+start ceph-mon cluster="$cluster" id="$monitor_id"
 
 
