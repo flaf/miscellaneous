@@ -1,14 +1,37 @@
-#!/bin/sh
+#!/bin/s
 ### This is a file managed by Puppet, don't edit it. ###
 <%-
     monitor_init    = scope['::ceph::monitor_init']
-    cluster_name    = scope['::ceph::cluster_name']
     monitors        = scope['::ceph::monitors']
-    monitor_id      = monitors[monitor_init]['id']
     monitor_address = monitors[monitor_init]['address']
 -%>
 
+SPECIFIC_SHORT_OPTIONS='i:'
+SPECIFIC_LONG_OPTIONS='id:'
+SPECIFIC_SYNOPSIS='[--id <num>]'
 
+GET_SPECIFIC_OPTIONS () {
+    case "$1" in
+
+        --id|-i)
+            id="$2"
+            return 2
+        ;;
+
+    esac
+    return 0
+}
+
+. <%= @ceph_script_common %>
+
+if ! check_id "$id"
+then
+    printf "The value of the option --id must be a integer.\n"
+    printf "End of the script.\n"
+    exit 1
+fi
+
+check_working_dir "$id"
 
 
 # The name of the cluster.

@@ -16,12 +16,12 @@ class ceph::monitor_init {
     before  => Exec['monitor-initialization'],
   }
 
-  exec { 'monitor-initialization':
-    command => $monitor_init_cmd,
-    user    => 'root',
-    group   => 'root',
-    onlyif  => "$monitor_init_cmd --test",
-  }
+  #exec { 'monitor-initialization':
+  #  command => $monitor_init_cmd,
+  #  user    => 'root',
+  #  group   => 'root',
+  #  onlyif  => "$monitor_init_cmd --test",
+  #}
 
 }
 

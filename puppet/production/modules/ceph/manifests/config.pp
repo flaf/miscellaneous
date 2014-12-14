@@ -31,13 +31,13 @@ class ceph::config {
     force   => true,
   }
 
-  $ceph_script_common = '/usr/local/share/ceph/ceph.sh'
+  $ceph_script_common = '/usr/local/share/ceph/ceph_common.sh'
   file { $ceph_script_common:
     ensure  => present,
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    source  => 'puppet:///modules/ceph/ceph.sh',
+    content => template('ceph/ceph_common.sh.erb'),
   }
 
 }
