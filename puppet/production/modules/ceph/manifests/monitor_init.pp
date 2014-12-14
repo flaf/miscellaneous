@@ -5,14 +5,14 @@ class ceph::monitor_init {
 
   private("Sorry, ${title} is a private class.")
 
-  $monitor_init_cmd = '/usr/local/sbin/monitor_init'
+  $monitor_init_cmd = '/usr/local/sbin/ceph_monitor_init'
 
   file { $monitor_init_cmd:
     ensure  => present,
     owner   => 'root',
     group   => 'root',
     mode    => '0700',
-    content => template('ceph/monitor_init.erb'),
+    content => template('ceph/ceph_monitor_init.erb'),
     before  => Exec['monitor-initialization'],
   }
 

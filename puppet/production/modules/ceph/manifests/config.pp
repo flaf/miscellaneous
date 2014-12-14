@@ -21,6 +21,25 @@ class ceph::config {
     content => template('ceph/ceph.client.admin.keyring.erb'),
   }
 
+  file { '/usr/local/share/ceph':
+    ensure  => directory,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0755',
+    recurse => true,
+    purge   => true,
+    force   => true,
+  }
+
+  $ceph_script_common = '/usr/local/share/ceph/ceph.sh'
+  file { $ceph_script_common:
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    source  => 'puppet:///modules/ceph/ceph.sh',
+  }
+
 }
 
 
