@@ -1,4 +1,25 @@
-# User defined type to create Ceph clusters.
+# User defined type to create Ceph clusters. This module has
+# been tested with Ceph Firefly (0.8.7) on Ubuntu Trusty.
+#
+# Warning 1: this module manages the installation of ceph
+# but it doesn't manage the configuration of APT to be able
+# to install the right version of Ceph. It's up to you to
+# handle this part (with the ::apt Puppet module for
+# instance).
+#
+# Warning 2: you should run puppet on the host which is
+# declared the "initial" monitor via the parameters. And,
+# after, you can run puppet on the other hosts.
+#
+# Normally, after the puppet run, monitors will be installed
+# and osds will not. You can installed osds with the command
+# ceph_osd_add. Run:
+#
+#   ceph_osd_add --help
+#
+# to see the options. It's possible to add monitors with
+# the command ceph_monitor_add (see the --help option too
+# for more information).
 #
 # == Requirement/Dependencies
 #
@@ -114,6 +135,13 @@ define ceph (
   $admin_key,
   $fsid,
 ) {
+
+  case $::lsbdistcodename {
+    trusty: {}
+    default: {
+      fail("Class ${title} has never been tested on ${::lsbdistcodename}.")
+    }
+  }
 
   validate_string(
     $cluster_name,
