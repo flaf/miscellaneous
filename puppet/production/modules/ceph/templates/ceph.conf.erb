@@ -1,19 +1,23 @@
 ### This file is managed by Puppet, don't edit it. ###
 
 [global]
-  fsid                      = <%= scope['::ceph::fsid'] %>
+  fsid                      = <%= @fsid %>
   auth cluster required     = cephx
   auth service required     = cephx
   auth client required      = cephx
-  osd journal size          = <%= scope['::ceph::osd_journal_size'] %>
+  osd journal size          = <%= @osd_journal_size %>
   filestore xattr use omap  = true
-  osd pool default size     = <%= scope['::ceph::osd_pool_default_size'] %>
+  osd pool default size     = <%= @osd_pool_default_size %>
   osd pool default min size = 1
-  osd pool default pg num   = <%= scope['::ceph::osd_pool_default_pg_num'] %>
-  osd pool default pgp num  = <%= scope['::ceph::osd_pool_default_pg_num'] %>
+  osd pool default pg num   = <%= @osd_pool_default_pg_num %>
+  osd pool default pgp num  = <%= @osd_pool_default_pg_num %>
   osd crush chooseleaf type = 1
+<%- if @public_network and @cluster_network -%>
+  public network            = <%= @public_network %>
+  cluster network           = <%= @cluster_network %>
+<%- end -%>
 
-<%- scope['::ceph::monitors'].each do |name, v| -%>
+<%- @monitors.each do |name, v| -%>
 [mon.<%= v['id'] %>]
   host     = <%= name %>
   mon addr = <%= v['address'] %>

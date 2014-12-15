@@ -1,17 +1,9 @@
 #!/bin/sh
 ### This is a file managed by Puppet, don't edit it. ###
-<%-
-    monitor_init         = scope['::ceph::monitor_init']
-    monitors             = scope['::ceph::monitors']
-    monitor_init_address = monitors[monitor_init]['address']
--%>
 
-# The IP address of the inital monitor.
-monitor_init_address='<%= monitor_init_address %>'
-
-SPECIFIC_SHORT_OPTIONS='i:'
-SPECIFIC_LONG_OPTIONS='id:'
-SPECIFIC_SYNOPSIS='--id <num>'
+SPECIFIC_SHORT_OPTIONS='i:,m:'
+SPECIFIC_LONG_OPTIONS='id:,monitor-addr:'
+SPECIFIC_SYNOPSIS='--id <num> --monitor-addr <address>'
 
 GET_SPECIFIC_OPTIONS () {
     case "$1" in
@@ -21,14 +13,41 @@ GET_SPECIFIC_OPTIONS () {
             return 2
         ;;
 
+        --monitor-addr|-m)
+            monitor_addr="$2"
+            if [ -z "$monitor_addr" ]
+            then
+                printf "The --monitor-addr option must be provided with a non empty value.\n"
+                printf "End of the script.\n"
+                exit 1
+            fi
+            return 2
+        ;;
+
     esac
     return 0
 }
 
 . <%= @ceph_script_common %>
 
+if [ -z "$id" ]
+then
+    printf "The --id option is mandatory.\n"
+    printf "End of the script.\n"
+    exit 1
+fi
+
+if [ -z "$monitor_addr" ]
+then
+    printf "The --monitor-addr option is mandatory.\n"
+    printf "End of the script.\n"
+    exit 1
+fi
+
 if check_working_dir "$id"
 then
+    printf "The working directory seems to be available for creation "
+    printf "and initialization.\n"
     if "$test"
     then
         # If it's just a test, we stop the script here.
@@ -77,7 +96,9 @@ ceph-authtool --import-keyring "/etc/ceph/$cluster.client.admin.keyring" \
 # topology regarding the monitors. Currently, the topology
 # will be very simple: just one monitor. The generated file
 # is non human readable.
-monmaptool --create --add "$id" "$monitor_init_address" \
+fsid=$(grep -E '[[:space:]]*fsid[[:space:]]*=.*$' /etc/ceph/$cluster.conf  | \
+       awk '{print $3}')
+monmaptool --create --add "$id" "$monitor_addr" \
     --fsid "$fsid" "/tmp/monmap"
 
 # Initialization of the monitor working directory in

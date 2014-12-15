@@ -1,25 +1,9 @@
 #
 # Private class.
 #
-class ceph::config {
+class ceph::scripts {
 
   private("Sorry, ${title} is a private class.")
-
-  file { "/etc/ceph/${::ceph::cluster_name}.conf":
-    ensure  => present,
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0644',
-    content => template('ceph/ceph.conf.erb'),
-  }
-
-  file { "/etc/ceph/${::ceph::cluster_name}.client.admin.keyring":
-    ensure  => present,
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0600',
-    content => template('ceph/ceph.client.admin.keyring.erb'),
-  }
 
   file { '/usr/local/share/ceph':
     ensure  => directory,
@@ -41,7 +25,7 @@ class ceph::config {
     content => template('ceph/ceph_common.sh.erb'),
   }
 
-  file { $::ceph::monitor_init_cmd:
+  file { '/usr/local/sbin/ceph_monitor_init':
     ensure  => present,
     owner   => 'root',
     group   => 'root',
@@ -49,7 +33,7 @@ class ceph::config {
     content => template('ceph/ceph_monitor_init.erb'),
   }
 
-  file { $::ceph::monitor_add_cmd:
+  file { '/usr/local/sbin/ceph_monitor_add':
     ensure  => present,
     owner   => 'root',
     group   => 'root',

@@ -53,8 +53,8 @@ fi
 uuid=$(uuidgen)
 
 # Creation of an osd. The osd ID will be generated automatically.
-if ! timeout --signal=TERM --kill-after=20 5s                  \
-   id=$(ceph --cluster "$cluster" $mon_opt osd create "$uuid")
+if ! id=$(timeout --signal=TERM --kill-after=20 10s ceph \
+    --cluster "$cluster" $mon_opt osd create "$uuid")
 then
     printf "Request to monitor(s) to create OSD failed.\n"
     printf "End of the script.\n"
@@ -65,6 +65,8 @@ printf "The id of this OSD will be $id.\n"
 
 if check_working_dir "$id"
 then
+    printf "The working directory seems to be available for creation "
+    printf "and initialization.\n"
     if "$test"
     then
         # If it's just a test, we stop the script here.
@@ -116,7 +118,7 @@ ceph osd crush add-bucket $(hostname) host --cluster "$cluster" $mon_opt
 ceph osd crush move $(hostname) root=default --cluster "$cluster" $mon_opt
 
 # Declare in the cluster the osd with the weight equal to $weight.
-ceph osd crush add "osd.$id" "$weigth" host=$(hostname) \
+ceph osd crush add "osd.$id" "$weight" host=$(hostname) \
     --cluster "$cluster" $mon_opt
 
 # Without these files, the osd daemon doesn't start.

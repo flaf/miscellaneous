@@ -226,8 +226,6 @@ check_working_dir () {
     fi
 
     # All tests were successful.
-    printf "The working directory seems to be available for creation "
-    printf "and initialization.\n"
     return 0
 
 }
@@ -256,6 +254,7 @@ create_new_working_dir () {
     # but if there is a specific device, the /etc/fstab file
     # must be updated.
     if "$use_device"
+    then
 
         printf "Be careful, updating of /etc/fstab...\n"
 

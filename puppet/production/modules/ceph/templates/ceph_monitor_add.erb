@@ -18,7 +18,7 @@ GET_SPECIFIC_OPTIONS () {
             if [ -z "$monitor" ]
             then
                 printf "The --monitor option must be provided with a non empty value.\n"
-                printf "End of the script\n"
+                printf "End of the script.\n"
                 exit 1
             fi
             return 2
@@ -39,8 +39,17 @@ fi
 
 . <%= @ceph_script_common %>
 
+if [ -z "$id" ]
+then
+    printf "The --id option is mandatory.\n"
+    printf "End of the script.\n"
+    exit 1
+fi
+
 if check_working_dir "$id"
 then
+    printf "The working directory seems to be available for creation "
+    printf "and initialization.\n"
     if "$test"
     then
         # If it's just a test, we stop the script here.
@@ -72,8 +81,8 @@ fi
 # command uses the client.admin account and normally
 # the /etc/ceph/$cluster.client.admin.conf is already
 # present in the local host.
-if ! timeout --signal=TERM --kill-after=20 5s ceph auth \
-    get mon. -o "/tmp/$cluster.mon.keyring"             \
+if ! timeout --signal=TERM --kill-after=20 10s ceph auth \
+    get mon. -o "/tmp/$cluster.mon.keyring"              \
     $mon_opt --cluster "$cluster"
 then
     printf "Request to retrieved the shared monitors key failed.\n"
