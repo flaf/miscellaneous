@@ -1,7 +1,17 @@
 class profiles::hosts::ceph ($stage = 'network', ) {
 
-  include '::profiles::hosts::params'
-  $hosts_entries = $::profiles::hosts::params::hosts_entries
+  #include '::profiles::hosts::params'
+  #$hosts_entries = $::profiles::hosts::params::hosts_entries
+
+  # The hostname (ie the short name) may be linked to 2
+  # different IP addresses: $::ipaddress and the IP
+  # of the monitor which can be different (not in the
+  # same network). So, we don't append $::hostname
+  # in the 'self' hosts entry.
+  $hosts_entries = {
+                    'self' => [ $::ipaddress, $::fqdn, ],
+                   }
+
 
   # The goal is to add monitors in the hosts entries.
   $ceph_conf = hiera_hash('ceph')
