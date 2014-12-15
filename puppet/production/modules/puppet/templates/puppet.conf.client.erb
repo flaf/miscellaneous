@@ -10,6 +10,9 @@ templatedir=$confdir/templates
 prerun_command=/etc/puppet/etckeeper-commit-pre
 postrun_command=/etc/puppet/etckeeper-commit-post
 
+<%- if @server -%>
+server = <%= @server %>
+<%- end -%>
 runinterval = <%= @runinterval %>
 
 # Plugins == "lib directories of all modules in the master".

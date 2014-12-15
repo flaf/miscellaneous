@@ -14,14 +14,20 @@
 # boot of the OS, it won't start). The default value is false.
 #
 # *runinterval:*
-# A string who tells how often puppet agent applies the catalog.
+# A string which tells how often puppet agent applies the catalog.
 # The default value is '30m' (ie 30 minutes). Of we don't care
 # about this parameter if the service is disabled.
 #
 # *pluginsync:*
-# A boolean parameter.Whether plugins should be synced with the
-# central server. It's recommended to set this parameter to true.
-# The default value is true.
+# A boolean parameter which tells whether plugins should be
+# synced with the central server. It's recommended to set
+# this parameter to true. The default value is true.
+#
+# *server*:
+# The address of the puppetmaster. The default value is
+# undef, ie the puppet agent will try to reach the server
+# called "puppet" (the default value of the "server"
+# parameter in /etc/puppet.conf).
 #
 # == Sample Usages
 #
@@ -38,6 +44,7 @@ class puppet::client (
   $service_enable = false,
   $runinterval    = '30m',
   $pluginsync     = true,
+  $server         = undef,
 ) {
 
   case $::lsbdistcodename {
@@ -53,16 +60,6 @@ class puppet::client (
 
   ensure_packages(['puppet', ], { ensure => present, })
 
-  file { '/etc/puppet/puppet.conf':
-    ensure  => present,
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0644',
-    content => template('puppet/puppet.conf.client.erb'),
-    require => Package['puppet'],
-    before  => Service['puppet'],
-  }
-
   # Command to test if we should disable or enable the service.
   $test_cmd = "ls /etc/rc?.d | grep -qE 'S[0-9]{,2}puppet'"
 
@@ -72,12 +69,25 @@ class puppet::client (
     $unless       = $test_cmd
     $onlyif       = undef
     $start        = 'yes'
+    $notify       = Service['puppet']
   } else {
     $ensure_value = 'stopped'
     $cmd          = 'update-rc.d puppet disable'
     $unless       = undef
     $onlyif       = $test_cmd
     $start        = 'no'
+    $notify       = undef # Do not refresh the service in this case.
+  }
+
+  file { '/etc/puppet/puppet.conf':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    content => template('puppet/puppet.conf.client.erb'),
+    require => Package['puppet'],
+    before  => Service['puppet'],
+    notify  => $notify,
   }
 
   # Disable of enable the service.
@@ -101,6 +111,7 @@ class puppet::client (
       content => template('puppet/puppet.default.client.erb'),
       require => Package['puppet'],
       before  => Service['puppet'],
+      notify  => $notify,
     }
   }
 
