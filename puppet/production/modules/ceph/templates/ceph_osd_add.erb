@@ -1,0 +1,131 @@
+#!/bin/sh
+### This is a file managed by Puppet, don't edit it. ###
+
+SPECIFIC_SHORT_OPTIONS='m:,w:'
+SPECIFIC_LONG_OPTIONS='monitor:,weight:'
+SPECIFIC_SYNOPSIS='[--monitor <address>] [--weight <float>]'
+
+# Default value of weight.
+weight='1.0'
+
+GET_SPECIFIC_OPTIONS () {
+    case "$1" in
+
+        --monitor|-m)
+            monitor="$2"
+            if [ -z "$monitor" ]
+            then
+                printf "The --monitor option must be provided with a non empty value.\n"
+                printf "End of the script\n"
+                exit 1
+            fi
+            return 2
+        ;;
+
+        --weight|-w)
+            weight="$2"
+            if echo "$weight" | grep -Eq '^[0-9]+\.[0-9]+$'
+            then
+                return 2
+            else
+                printf "The --weight option must be provided with a float value.\n"
+                printf "End of the script\n"
+                exit 1
+            fi
+        ;;
+
+    esac
+    return 0
+}
+
+if [ -z "$monitor" ]
+then
+    # The ceph client will choose himself the monotor to request.
+    mon_opt=""
+else
+    # Request a specific monitor.
+    mon_opt="-m $monitor"
+fi
+
+. <%= @ceph_script_common %>
+
+# Each osd has its owned uuid.
+uuid=$(uuidgen)
+
+# Creation of an osd. The osd ID will be generated automatically.
+if ! timeout --signal=TERM --kill-after=20 5s                  \
+   id=$(ceph --cluster "$cluster" $mon_opt osd create "$uuid")
+then
+    printf "Request to monitor(s) to create OSD failed.\n"
+    printf "End of the script.\n"
+    exit 1
+fi
+
+printf "The id of this OSD will be $id.\n"
+
+if check_working_dir "$id"
+then
+    if "$test"
+    then
+        # If it's just a test, we stop the script here.
+        exit 0
+    else
+        # This is not a test, so we continue.
+        true
+    fi
+else
+    if "$test"
+    then
+        # If it's just a test, we stop the script here.
+        exit 1
+    else
+        # This is not a test but checking failed. We stop.
+        printf "End of the script.\n"
+        exit 1
+    fi
+fi
+
+if ! create_new_working_dir "$id"
+then
+    printf "End of the script.\n"
+    exit 1
+fi
+
+# Initialization of the osd working directory. The --mkkey
+# generates automatically the keyring of this osd. The fsid
+# and the monitors list are provided in the /etc/ceph/$cluster.conf
+# file.
+# Normally, this command displays curious messages which
+# looks like error message but this is not the case.
+ceph-osd -i "$id" --mkfs --mkkey --cluster "$cluster"   \
+    --conf "/etc/ceph/$cluster.conf" --osd-uuid "$uuid"
+
+# Recording in the cluster of the osd keyring.
+ceph auth add "osd.$id" osd 'allow *' mon 'allow profile osd' \
+    -i "/var/lib/ceph/osd/$cluster-$id/keyring" $mon_opt      \
+    --cluster "$cluster" --conf "/etc/ceph/$cluster.conf"
+
+# Add the the current host in the CRUSH map.
+# If the host is already in the CRUSH map, the command
+# prints a message and returns 0.
+ceph osd crush add-bucket $(hostname) host --cluster "$cluster" $mon_opt
+
+# Put the current host in the "default" root of the CRUSH
+# map. If the host is already in the "default" root, the
+# command prints a message and returns 0.
+ceph osd crush move $(hostname) root=default --cluster "$cluster" $mon_opt
+
+# Declare in the cluster the osd with the weight equal to $weight.
+ceph osd crush add "osd.$id" "$weigth" host=$(hostname) \
+    --cluster "$cluster" $mon_opt
+
+# Without these files, the osd daemon doesn't start.
+touch "/var/lib/ceph/osd/$cluster-$id/ready"
+touch "/var/lib/ceph/osd/$cluster-$id/upstart"
+
+# Start the osd daemon.
+stop ceph-osd cluster="$cluster" id="$id"
+sleep 0.5
+start ceph-osd cluster="$cluster" id="$id"
+
+

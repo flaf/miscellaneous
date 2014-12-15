@@ -25,20 +25,40 @@ class ceph (
   )
   validate_hash($monitors)
 
-  $monitor_init = get_monitor_init_($monitors)
+  # Internal variables.
+  $monitor_init      = get_monitor_init_($monitors)
+  $monitor_init_addr = $monitors[$monitor_init]['address']
+  $id                = $monitors[$::hostname]['id']
+  $monitor_init_cmd  = '/usr/local/sbin/ceph_monitor_init'
+  $monitor_add_cmd   = '/usr/local/sbin/ceph_monitor_add'
 
   require '::ceph::packages'
   require '::ceph::config'
 
   if has_key($monitors, $::hostname) {
+
     if has_key($monitors[$::hostname], 'initial') {
-      include '::ceph::monitor_init'
+
+      exec { "monitor-init-${cluster_name}":
+        command => "$monitor_init_cmd --cluster $cluster_name --id $id",
+        user    => 'root',
+        group   => 'root',
+        #onlyif  => "$monitor_init_cmd -c '$cluster_name' -i $id --test",
+        onlyif  => "false",
+      }
+
     } else {
-      include '::ceph::monitors'
+
+      exec { "monitor-add-${cluster_name}":
+        command => "$monitor_add_cmd -c $cluster_name -i $id -m $monitor_init_addr",
+        user    => 'root',
+        group   => 'root',
+        #onlyif  => "$monitor_add_cmd --test -c ${luster_name -i $id -m $monitor_init_addr",
+        onlyif  => "false",
+      }
+
     }
   }
-
-  include '::ceph::osds'
 
 }
 

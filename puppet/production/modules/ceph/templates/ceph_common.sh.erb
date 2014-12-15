@@ -129,13 +129,35 @@ then
     fi
 fi
 
+# Check if the id is a number string.
+check_id () {
+
+    local id
+    id="$1"
+
+    if echo "$id" | grep -Eq '^[0-9]+$'
+    then
+        return 0
+    else
+        printf "The value of the option --id must be a integer.\n"
+        return 1
+    fi
+
+}
+
 # Check if the working directory of the service (monitor or osd)
 # if available and check the device if provided.
 check_working_dir () {
 
     # This function takes one argument which is the ID
     # of the monitor or osd service.
+    local id
     id="$1"
+
+    if ! check_id "$id"
+    then
+        return 1
+    fi
 
     # Check if ceph directories are present.
     if [ ! -d '/var/lib/ceph' ]
@@ -204,16 +226,9 @@ check_working_dir () {
     fi
 
     # All tests were successful.
-    printf "The working directory seems to be OK for initialization.\n"
+    printf "The working directory seems to be available for creation "
+    printf "and initialization.\n"
     return 0
-
-}
-
-# Check if the id is a number string.
-check_id () {
-
-    id="$1"
-    echo "$id" | grep -Eq '^[0-9]+$'
 
 }
 
@@ -225,17 +240,72 @@ create_new_working_dir () {
 
     # This function takes one argument which is the ID
     # of the monitor or osd service.
+    local id
     id="$1"
+
+    check_working_dir "$id"
 
     if ! mkdir "/var/lib/ceph/$service/$cluster-$id"
     then
         printf "Impossible to create the directory "
         printf "/var/lib/ceph/$service/$cluster-$id.\n"
-        printf "Enf of the script.\n"
-        exit 1
+        return 1
     fi
 
+    # mkdir command is enough if there is no specific device
+    # but if there is a specific device, the /etc/fstab file
+    # must be updated.
+    if "$use_device"
 
+        printf "Be careful, updating of /etc/fstab...\n"
+
+        # Get the UUID and the filesystem type of the partition.
+        # Checking has already been launched.
+        UUID=''
+        TYPE=''
+        eval $(blkid -o export "$device")
+
+        printf "\n# $service working directory in $device\n" >> '/etc/fstab'
+        printf "UUID=$UUID /var/lib/ceph/$service/$cluster-$id/ " >> '/etc/fstab'
+        printf "$TYPE $mount_options 0 2\n\n"  >> '/etc/fstab'
+
+        if ! mount "/var/lib/ceph/$service/$cluster-$id/"
+        then
+            printf "Sorry, \`mount /var/lib/ceph/$service/$cluster-$id/\` "
+            printf "failed. See the file /etc/fstab for more information.\n"
+            return 1
+        fi
+
+        if "$yes"
+        then
+            printf "The --yes is provided so, no checking of the content of "
+            printf "$device.\n"
+        else
+
+            printf "Here is the content of $device mounted "
+            printf "on /var/lib/ceph/$service/$cluster-$id/:\n\n"
+
+            ls -al "/var/lib/ceph/$service/$cluster-$id/"
+
+            printf "\nNormally, it should be empty. This content will be "
+            printf "modified during the initialization of the $service "
+            printf "working directory.\n"
+            printf "Do you want to continue (either \"yes\" or whatever)? "
+
+            read continue
+
+            if [ "$continue" != 'yes' ]
+            then
+                return 1
+            fi
+
+        fi
+
+    fi # End of the $use_device condition.
+
+    # All tests were successful and the creation of the new
+    # working directory is OK.
+    return 0
 
 }
 

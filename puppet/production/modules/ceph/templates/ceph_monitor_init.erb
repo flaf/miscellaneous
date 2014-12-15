@@ -1,14 +1,17 @@
-#!/bin/s
+#!/bin/sh
 ### This is a file managed by Puppet, don't edit it. ###
 <%-
-    monitor_init    = scope['::ceph::monitor_init']
-    monitors        = scope['::ceph::monitors']
-    monitor_address = monitors[monitor_init]['address']
+    monitor_init         = scope['::ceph::monitor_init']
+    monitors             = scope['::ceph::monitors']
+    monitor_init_address = monitors[monitor_init]['address']
 -%>
+
+# The IP address of the inital monitor.
+monitor_init_address='<%= monitor_init_address %>'
 
 SPECIFIC_SHORT_OPTIONS='i:'
 SPECIFIC_LONG_OPTIONS='id:'
-SPECIFIC_SYNOPSIS='[--id <num>]'
+SPECIFIC_SYNOPSIS='--id <num>'
 
 GET_SPECIFIC_OPTIONS () {
     case "$1" in
@@ -24,104 +27,32 @@ GET_SPECIFIC_OPTIONS () {
 
 . <%= @ceph_script_common %>
 
-if ! check_id "$id"
+if check_working_dir "$id"
 then
-    printf "The value of the option --id must be a integer.\n"
-    printf "End of the script.\n"
-    exit 1
-fi
-
-check_working_dir "$id"
-
-
-# The name of the cluster.
-cluster='<%= cluster_name %>'
-
-# The hostname of the initial monitor.
-monitor_init='<%= monitor_init %>'
-
-# The ID of the initial monitor.
-monitor_id='<%= monitor_id %>'
-
-# The IP address of the initial monitor.
-monitor_address='<%= monitor_address %>'
-
-
-SCRIPT_NAME=${0##*/}
-export LC_ALL=C
-export PATH='/usr/sbin:/usr/bin:/sbin:/bin'
-
-options_list='help,test'
-
-if ! TEMP=$(getopt -o "h" -l "$options_list" -n "$SCRIPT_NAME" -- "$@")
-then
-    echo "Syntax error with $SCRIPT_NAME command." >&2
-    exit 1
-fi
-
-eval set -- "$TEMP"
-unset TEMP
-
-# Default value.
-test=false
-
-while true
-do
-    case "$1" in
-
-        --test)
-            test=true
-            shift 1
-        ;;
-
-        --help|-h)
-            echo "The syntax is:"
-            echo ""
-            echo "    1. $SCRIPT_NAME --test"
-            echo "    2. $SCRIPT_NAME"
-            echo ""
-            echo "1. To test if it's possible to initialize monitor."
-            echo "2. To initialize monitor."
-            exit 0
-        ;;
-
-        --)
-            shift 1
-            break
-        ;;
-
-    esac
-done
-
-test_mon_dir () {
-    if [ -d "/var/lib/ceph/mon/$cluster-$monitor_id" ]
+    if "$test"
     then
-        # The monitor working directory already exists.
-        return 0
-    else
-        # The monitor working directory doesn't exist.
-        return 1
-    fi
-}
-
-if "$test"
-then
-    if test_mon_dir
-    then
-        printf "The monitor working directory already exists.\n"
-        exit 1
-    else
-        printf "Ok, the monitor working directory doesn't exist yet.\n"
+        # If it's just a test, we stop the script here.
         exit 0
+    else
+        # This is not a test, so we continue.
+        true
     fi
 else
-    # No test, but we are still going to test.
-    if test_mon_dir
+    if "$test"
     then
-        printf "Sorry but the monitor working directory already exists.\n"
+        # If it's just a test, we stop the script here.
+        exit 1
+    else
+        # This is not a test but checking failed. We stop.
         printf "End of the script.\n"
         exit 1
     fi
+fi
+
+if ! create_new_working_dir "$id"
+then
+    printf "End of the script.\n"
+    exit 1
 fi
 
 # Create a file which defines the rights of the monitors in
@@ -131,7 +62,6 @@ fi
 # same cluster).
 ceph-authtool --create-keyring "/tmp/$cluster.mon.keyring" \
     -n mon. --cap mon 'allow *' --gen-key
-
 # Below, the same command where the key is explicitly provided
 # with the --add-key option.
 #
@@ -147,11 +77,11 @@ ceph-authtool --import-keyring "/etc/ceph/$cluster.client.admin.keyring" \
 # topology regarding the monitors. Currently, the topology
 # will be very simple: just one monitor. The generated file
 # is non human readable.
-monmaptool --create --add "$monitor_id" "$monitor_address" \
+monmaptool --create --add "$id" "$monitor_init_address" \
     --fsid "$fsid" "/tmp/monmap"
 
 # Initialization of the monitor working directory in
-# "/var/lib/ceph/mon/$cluster-$monitor_id". To do that, the command
+# "/var/lib/ceph/mon/$cluster-$id". To do that, the command
 # provides:
 #       - the fsid of the cluster (in the conf file);
 #       - the secret shared monitor key and the key of client.admin
@@ -162,7 +92,7 @@ monmaptool --create --add "$monitor_id" "$monitor_address" \
 # administrator (which will use ceph clients in command lines)
 # and the monitors.
 #
-ceph-mon --mkfs -i "$monitor_id" --conf "/etc/ceph/$cluster.conf" \
+ceph-mon --mkfs -i "$id" --conf "/etc/ceph/$cluster.conf"         \
     --monmap "/tmp/monmap" --keyring "/tmp/$cluster.mon.keyring"  \
     --cluster "$cluster"
 
@@ -171,12 +101,12 @@ rm "/tmp/$cluster.mon.keyring"
 rm "/tmp/monmap"
 
 # Without these files, the monitor daemon doesn't start.
-touch "/var/lib/ceph/mon/$cluster-$monitor_id/done"
-touch "/var/lib/ceph/mon/$cluster-$monitor_id/upstart"
+touch "/var/lib/ceph/mon/$cluster-$id/done"
+touch "/var/lib/ceph/mon/$cluster-$id/upstart"
 
 # Start the monitor daemon.
-stop ceph-mon cluster="$cluster" id="$monitor_id"
+stop ceph-mon cluster="$cluster" id="$id"
 sleep 0.5
-start ceph-mon cluster="$cluster" id="$monitor_id"
+start ceph-mon cluster="$cluster" id="$id"
 
 
