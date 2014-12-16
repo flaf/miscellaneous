@@ -1,27 +1,43 @@
 ### This file is managed by Puppet, don't edit it. ###
 
-red='\[\e[01;31m\]'
-green='\[\e[01;32m\]'
-blue='\[\e[01;34m\]'
-white='\[\e[01;37m\]'
-reset='\[\e[00m\]'
+# Emphasis.
+regular=0
+bold=1
+underline=4
+background=7
 
-environment='<%= scope['::environment'] %>'
+# Choice for the emphasis.
+emphasis="$bold"
 
-if [ "$environment" = 'production' ]
-then
-  PS1="${debian_chroot:+($debian_chroot)}$red\u@\h $blue\A $white\w$reset\n# "
-else
-  PS1="${debian_chroot:+($debian_chroot)}$green\u@\h $blue\A $white\w$reset\n# "
-fi
+# Available colors.
+<%- @colors.each do |name, number| -%>
+<%= name %>="\e[$emphasis;<%= number %>m"
+<%- end -%>
+reset="\e[00m"
+
+color="$<%= @root_prompt_color %>"
+PS1="${debian_chroot:+($debian_chroot)}$color\u@\h $blue\A $white\w$reset\n# "
 
 export EDITOR='vim'
 alias vim='vim -p'
 alias ll='\ls --color -lap'
 alias grep='grep --color'
 alias upgrade='apt-get update && apt-get dist-upgrade'
+alias rp='puppet agent --test' # rp means "Run Puppet"
 HISTSIZE='1000'
 HISTFILESIZE='2000'
 HISTCONTROL='ignoredups:ignorespace'
+
+# To avoid to pollute the shell with useless variables.
+unset regular
+unset bold
+unset underline
+unset background
+unset emphasis
+<%- @colors.each do |name, number| -%>
+unset <%= name %>
+<%- end -%>
+unset reset
+unset color
 
 

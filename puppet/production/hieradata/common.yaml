@@ -7,8 +7,11 @@ keyboard:
   xkblayout: 'fr'
   xkbvariant: 'latin9'
 
+bash:
+  root_prompt_color: 'purple'
+
 network:
-  restart_network: false  # It's a moot point.
+  restart_network: true # It's a moot point.
   rename_interfaces: true # Same remark.
   hosts_entries:
     self: [ '@ipaddress', '@fqdn', '@hostname' ]

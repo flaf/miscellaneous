@@ -1,6 +1,6 @@
 ---
 classes:
-  - '::roles::ostack_controller'
+  - '::roles::ostack_compute'
 enc_groups:
   - 'virtual-labs'
   - 'ostack-labs'

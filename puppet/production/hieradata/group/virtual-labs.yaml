@@ -9,4 +9,7 @@ inventoried_networks:
     dns-search: [ '@domain', ]
     ntp_servers: [ '172.31.0.1', ]
 
+bash:
+  root_prompt_color: 'green'
+
 
