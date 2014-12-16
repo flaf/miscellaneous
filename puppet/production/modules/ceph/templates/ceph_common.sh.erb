@@ -149,6 +149,20 @@ check_id () {
 # if available and check the device if provided.
 check_working_dir () {
 
+    # Specific case for the monitor service. One monitor per
+    # host is enough. So if "ceph-mon" is already running in
+    # the host, we should not run another ceph-mon and the
+    # current check will return 1.
+    if [ "$service" == "mon" ]
+    then
+        # The package procps must be installed.
+        if pgrep 'ceph-mon' >/dev/null
+        then
+            printf "There is already a running monitor in this host.\n"
+            return 1
+        fi
+    fi
+
     # This function takes one argument which is the ID
     # of the monitor or osd service.
     local id
