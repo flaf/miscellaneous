@@ -15,17 +15,29 @@ emphasis="$bold"
 <%- end -%>
 reset="\e[00m"
 
+# The prompt.
 color="$<%= @root_prompt_color %>"
 PS1="${debian_chroot:+($debian_chroot)}$color\u@\h $blue\A $white\w$reset\n# "
 
+# Default editor.
 export EDITOR='vim'
+
+# Aliases.
 alias vim='vim -p'
 alias ll='\ls --color -lap'
 alias grep='grep --color'
 alias upgrade='apt-get update && apt-get dist-upgrade'
 alias rp='puppet agent --test' # rp means "Run Puppet"
+
+# The number of commands to remember in the command history.
 HISTSIZE='1000'
+
+# The maximum number of lines contained in the history file
+# (ie ~/.bash_history).
 HISTFILESIZE='2000'
+
+# ignoredups  => lines matching the previous history entry is not saved.
+# ignorespace => lines which begin with a space character are not saved.
 HISTCONTROL='ignoredups:ignorespace'
 
 # To avoid to pollute the shell with useless variables.

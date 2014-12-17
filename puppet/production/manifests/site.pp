@@ -13,3 +13,12 @@ Stage['basis']
 hiera_include('classes')
 
 
+ini_setting { "sample setting":
+  ensure  => absent,
+  path    => '/tmp/a.ini',
+  section => 'ccc',
+  #setting => 'c3',
+  #value   => 'super new!!!!!!',
+}
+
+
