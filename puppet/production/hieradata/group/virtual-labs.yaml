@@ -8,6 +8,10 @@ inventoried_networks:
     dns-nameservers: [ '172.31.0.1', ]
     dns-search: [ '@domain', ]
     ntp_servers: [ '172.31.0.1', ]
+  cluster_ceph:
+    vlan_name: 'cluster_ceph'
+    vlan_id: '1'
+    cidr_address: '10.0.0.0/24'
 
 bash:
   root_prompt_color: 'green'
