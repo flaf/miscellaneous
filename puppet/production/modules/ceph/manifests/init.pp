@@ -216,37 +216,37 @@ be defined together.")
 
   if has_key($monitors, $::hostname) {
 
-    if has_key($monitors[$::hostname], 'initial') {
+    #if has_key($monitors[$::hostname], 'initial') {
 
-      exec { "monitor-init-${cluster_name}":
-        path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin',
-        command => "ceph_monitor_init $opt_base $opt_device",
-        user    => 'root',
-        group   => 'root',
-        onlyif  => "ceph_monitor_init $opt_base $opt_device --test",
-        require => [
-                     File["/etc/ceph/${cluster_name}.conf"],
-                     File["/etc/ceph/${cluster_name}.client.admin.keyring"],
-                     Exec['restart-ceph-all'],
-                   ],
-      }
+    #  exec { "monitor-init-${cluster_name}":
+    #    path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin',
+    #    command => "ceph_monitor_init $opt_base $opt_device",
+    #    user    => 'root',
+    #    group   => 'root',
+    #    onlyif  => "ceph_monitor_init $opt_base $opt_device --test",
+    #    require => [
+    #                 File["/etc/ceph/${cluster_name}.conf"],
+    #                 File["/etc/ceph/${cluster_name}.client.admin.keyring"],
+    #                 Exec['restart-ceph-all'],
+    #               ],
+    #  }
 
-    } else {
+    #} else {
 
-      exec { "monitor-add-${cluster_name}":
-        path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin',
-        command => "ceph_monitor_add $opt_base $opt_device",
-        user    => 'root',
-        group   => 'root',
-        onlyif  => "ceph_monitor_add $opt_base $opt_device --test",
-        require => [
-                     File["/etc/ceph/${cluster_name}.conf"],
-                     File["/etc/ceph/${cluster_name}.client.admin.keyring"],
-                     Exec['restart-ceph-all'],
-                   ],
-      }
+    #  exec { "monitor-add-${cluster_name}":
+    #    path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin',
+    #    command => "ceph_monitor_add $opt_base $opt_device",
+    #    user    => 'root',
+    #    group   => 'root',
+    #    onlyif  => "ceph_monitor_add $opt_base $opt_device --test",
+    #    require => [
+    #                 File["/etc/ceph/${cluster_name}.conf"],
+    #                 File["/etc/ceph/${cluster_name}.client.admin.keyring"],
+    #                 Exec['restart-ceph-all'],
+    #               ],
+    #  }
 
-    }
+    #}
   }
 
 }
