@@ -1,6 +1,5 @@
 ---
-classes:
-  - '::roles::standard'
+classes: [ '::roles::generic' ]
 enc_groups:
   - 'virtual-labs'
 enc_datacenter: 'vbox-work'

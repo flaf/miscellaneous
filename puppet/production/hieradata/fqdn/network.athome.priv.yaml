@@ -1,6 +1,5 @@
 ---
-classes:
-  - '::roles::ostack_network'
+classes: [ '::roles::ostack_network' ]
 enc_groups:
   - 'virtual-labs'
   - 'ostack-labs'
