@@ -1,4 +1,4 @@
-class profiles::keyboard::standard ($stage = 'basis', ) {
+class profiles::keyboard::generic ($stage = 'basis', ) {
 
   $keyboard   = hiera('keyboard')
 

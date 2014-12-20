@@ -1,4 +1,4 @@
-class profiles::ntp::standard {
+class profiles::ntp::generic {
 
   $inventoried_networks = hiera_hash('inventoried_networks')
   $network_name         = get_network_name($ipaddress, $netmask,

@@ -1,4 +1,4 @@
-class profiles::misc::standard {
+class profiles::misc::generic {
 
   $bash_conf         = hiera_hash('bash')
   $root_prompt_color = $bash_conf['root_prompt_color']

@@ -1,4 +1,4 @@
-class roles::ceph_cluster inherits ::roles::standard_without_hosts {
+class roles::ceph_cluster inherits ::roles::generic_without_hosts {
 
   include '::profiles::hosts::ceph'
   include '::profiles::apt::ceph'

@@ -1,4 +1,4 @@
-class profiles::apt::standard ($stage = 'repository', ) {
+class profiles::apt::generic ($stage = 'repository', ) {
 
   # Should be equal to "debian" or "ubuntu".
   $os_family = downcase($::lsbdistid)

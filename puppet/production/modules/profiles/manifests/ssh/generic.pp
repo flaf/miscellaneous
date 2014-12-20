@@ -1,4 +1,4 @@
-class profiles::ssh::standard {
+class profiles::ssh::generic {
 
   include '::ssh::client'
 

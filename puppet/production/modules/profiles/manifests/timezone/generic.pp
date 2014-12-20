@@ -1,4 +1,4 @@
-class profiles::timezone::standard ($stage = 'basis', ) {
+class profiles::timezone::generic ($stage = 'basis', ) {
 
   $timezone = hiera('timezone')
 

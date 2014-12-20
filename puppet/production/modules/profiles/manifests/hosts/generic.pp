@@ -1,4 +1,4 @@
-class profiles::hosts::standard ($stage = 'network', ) {
+class profiles::hosts::generic ($stage = 'network', ) {
 
   include '::profiles::hosts::params'
   $hosts_entries = $::profiles::hosts::params::hosts_entries

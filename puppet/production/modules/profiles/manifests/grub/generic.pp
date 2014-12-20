@@ -1,4 +1,4 @@
-class profiles::grub::standard {
+class profiles::grub::generic {
 
   # No option provided.
   include '::grub'

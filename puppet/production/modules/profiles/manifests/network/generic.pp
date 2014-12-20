@@ -1,4 +1,4 @@
-class profiles::network::standard ($stage = 'network', ) {
+class profiles::network::generic ($stage = 'network', ) {
 
   $inventoried_networks = hiera_hash('inventoried_networks')
   $network_conf         = hiera_hash('network')

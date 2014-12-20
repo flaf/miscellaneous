@@ -1,4 +1,4 @@
-class profiles::locales::standard ($stage = 'basis', ) {
+class profiles::locales::generic ($stage = 'basis', ) {
 
   $default_locale = hiera('default_locale')
 

@@ -1,4 +1,4 @@
-class profiles::puppet::standard {
+class profiles::puppet::generic {
 
   $puppet_conf    = hiera_hash('puppet')
 
