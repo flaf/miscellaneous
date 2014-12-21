@@ -50,9 +50,8 @@
 #
 class network::hosts (
   $hosts_entries = {},
+  $imported_tag  = undef,
 ) {
-
-  $hosts_entries_updated = update_hosts_entries($hosts_entries)
 
   case $::lsbdistcodename {
     wheezy: {}
@@ -61,6 +60,46 @@ class network::hosts (
       fail("Class ${title} has never been tested on ${::lsbdistcodename}.")
     }
   }
+
+  file { '/etc/hosts.puppet.d':
+    ensure  => directory,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0755',
+    recurse => true,
+    purge   => true,
+    force   => true,
+    before  => File['/etc/hosts'],
+  }
+
+  file {'/etc/hosts.puppet.d/README':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    content => "Directory managed by Puppet, don't touch it.\n",
+  }
+
+  if $imported_tag != undef {
+
+    validate_string($imported_tag)
+
+    File <<| tag == $imported_tag and tag == 'hosts_entry' |>> {
+      require => File['/etc/hosts.puppet.d'],
+      before  => File['/etc/hosts'],
+    }
+
+    $exported_hosts_entries = get_exported_hosts_entries()
+
+  }
+
+  if $exported_hosts_entries != undef {
+    $global_hosts_entries = merge($hosts_entries, $exported_hosts_entries)
+  } else {
+    $global_hosts_entries = $hosts_entries
+  }
+
+  $hosts_entries_updated = update_hosts_entries($global_hosts_entries)
 
   file { '/etc/hosts':
     ensure  => present,

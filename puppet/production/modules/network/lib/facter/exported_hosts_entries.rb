@@ -1,4 +1,4 @@
-Facter.add("additional_hosts_entries") do
+Facter.add("exported_hosts_entries") do
   setcode do
 
     hosts_entries = {}

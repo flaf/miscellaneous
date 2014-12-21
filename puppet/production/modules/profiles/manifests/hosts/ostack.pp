@@ -1,4 +1,4 @@
-class profiles::hosts::ostack {
+class profiles::hosts::ostack ($stage = 'network', ) {
 
   $ostack_conf = hiera_hash('ostack')
   $ostack_name = $ostack_conf['name']
@@ -10,32 +10,15 @@ class profiles::hosts::ostack {
   include '::profiles::hosts::params'
   $hosts_entries = $::profiles::hosts::params::hosts_entries
 
-  @@::network::hosts_entry { $::fqdn:
+  ::network::hosts_entry { $::fqdn:
     tag       => $ostack_name,
     address   => $::ipaddress,
     hostnames => [ $::hostname ],
   }
 
-  ::Network::Hosts_entry <<| tag == $ostack_name |>>
-
-  if is_string($::additional_hosts_entries) {
-    $additional = {}
-    eval_ruby_code ('
-               hosts_entries = eval($arg1)
-               additional = $arg2
-               hosts_entries.each do |key, val|
-                 additional[key] = val
-               end
-      ', $::additional_hosts_entries, $additional)
-  } else {
-    $additional = $::additional_hosts_entries
-  }
-
-  $merged_hash = merge($hosts_entries, $additional)
-  #$merged_hash = merge($hosts_entries, $::additional_hosts_entries)
-
   class { '::network::hosts':
-    hosts_entries => $merged_hash,
+    hosts_entries => $hosts_entries,
+    imported_tag  => $ostack_name,
   }
 
 }
