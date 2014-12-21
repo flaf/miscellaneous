@@ -1,4 +1,4 @@
-class roles::ostack_network inherits ::roles::generic {
+class roles::ostack_network inherits ::roles::ostack_generic {
 
   # TODO...
 

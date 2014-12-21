@@ -1,4 +1,4 @@
-class roles::ostack_controller inherits ::roles::generic {
+class roles::ostack_controller inherits ::roles::ostack_generic {
 
   # TODO...
 
