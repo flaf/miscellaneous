@@ -2,7 +2,7 @@
 #
 # == Requirement/Dependencies
 #
-# Nothing.
+# Depends on Puppetlabs-stdlib.
 #
 # == Parameters
 #
@@ -24,6 +24,12 @@
 # has this form "@xxxx", it will be replaced by the value
 # of the @xxxx variable.
 #
+# *imported_tag:*
+# A string that represents the tag of all the ::network::host_entry
+# user-defined resources which will be imported. The default value
+# is undef (ie no imported hosts entries). See the header of the
+# file network/manifests/host_entry.pp for more information.
+#
 # == Sample Usages
 #
 #  class { '::network::hosts':
@@ -40,7 +46,8 @@
 #                      'cluster_node1' => [ '172.31.10.21', 'node1' ],
 #                      'cluster_node2' => [ '172.31.10.22', 'node2' ],
 #                      'cluster_node3' => [ '172.31.10.23', 'node3' ],
-#                     }
+#                     },
+#    imported_tag  => 'cluster-foo',
 #  }
 #
 # In this example above, if @hostname == 'node1' and if
@@ -59,6 +66,14 @@ class network::hosts (
     default: {
       fail("Class ${title} has never been tested on ${::lsbdistcodename}.")
     }
+  }
+
+  # Normally, it's useless because the parameter has
+  # a default value, and currently the we call the
+  # class with `$hosts_entries = undef`, Puppet sets
+  # this variable to its default value.
+  if $hosts_entries == undef {
+    fail("Class ${title}, `hosts_entries` is undef, should be {} at least.")
   }
 
   file { '/etc/hosts.puppet.d':
@@ -89,12 +104,28 @@ class network::hosts (
       before  => File['/etc/hosts'],
     }
 
-    $exported_hosts_entries = get_exported_hosts_entries()
+    # /!\ Don't use "exported_hosts_entries" for the variable
+    # name because, it's a fact now, always defined (equal to
+    # {} if there is no exported hosts entries).
+    # Here, we use a function because generally a fact is not
+    # structured and is a basic string (if the fact returns a
+    # hash, Puppet will handle the fact as a flattened string
+    # which represents a hash). Here, the function convert the
+    # fact to a hash if we are in this case.
+    #
+    # To have structured facts:
+    #   - With Puppet 3 (in node side), we must use
+    #     the "stringify_facts = false" parameter in
+    #     puppet.conf and the nodes must use facter
+    #     version >= 2.
+    #   - With Puppet 4, facts will be structured by
+    #     default and the function below will be useless.
+    $exported_ht = get_exported_hosts_entries()
 
   }
 
-  if $exported_hosts_entries != undef {
-    $global_hosts_entries = merge($hosts_entries, $exported_hosts_entries)
+  if $exported_ht != undef {
+    $global_hosts_entries = merge($hosts_entries, $exported_ht)
   } else {
     $global_hosts_entries = $hosts_entries
   }

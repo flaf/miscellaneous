@@ -25,6 +25,7 @@ class profiles::hosts::ceph ($stage = 'network', ) {
   # Update the $hosts_entries array.
   # TODO: is it possible to do that just with the puppetlabs-stdlib?
   #       I don't believe...
+  # TODO: change eval_ruby_code, it must be a rvalue (more secure).
   eval_ruby_code('
       hosts_entries = $arg1
       monitors      = $arg2

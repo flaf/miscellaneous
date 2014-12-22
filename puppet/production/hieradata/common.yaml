@@ -15,6 +15,9 @@ network:
   rename_interfaces: true # Same remark.
   hosts_entries:
     self: [ '@ipaddress', '@fqdn', '@hostname' ]
+  #hosts_entries_tag: 'cluster-foo'
+  #exported_hosts_entries:
+  #  vip: [ '172.31.100.0', 'vip-name' ]
 
 apt:
   official_repositories:

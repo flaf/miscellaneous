@@ -22,4 +22,8 @@ ceph:
       id: '3'
       address: '172.31.10.3'
 
+network:
+  hosts_entries_tag: '@datacenter-ceph'
+  exported_hosts_entries:
+    self: [ '@ipaddress', '@fqdn', '@hostname' ]
 

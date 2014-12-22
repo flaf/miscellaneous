@@ -19,10 +19,10 @@ Examples:
                 key3 => 'value3', }
 
   eval_ruby_code('
-          hash_foo = $arg1
-          hash_foo.each do |key, value|
-            hash_foo[key] += " " + "xxx"
-          end', $hash_foo)
+      hash_foo = $arg1
+      hash_foo.each do |key, value|
+        hash_foo[key] += " " + "xxx"
+      end', $hash_foo)
 
   # And now the hash is updated.
     EOS
