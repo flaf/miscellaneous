@@ -1,0 +1,6 @@
+network:
+  hosts_entries_tag: '@datacenter-ostack'
+  exported_hosts_entries:
+    self: [ '@ipaddress', '@fqdn', '@hostname' ]
+
+

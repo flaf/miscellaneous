@@ -1,5 +1,21 @@
 module Puppet::Parser::Functions
   newfunction(:str2erb, :type => :rvalue, :doc => <<-EOS
+This function replaces in a string each substring like
+"@xxxx" by "<%= @xxxx %>" (see the code to have the exact
+regexp). This function can take 2 arguments. The first
+argument is the string to handle. This argument is mandatory
+and the string mustn't be empty. The second argument is
+optional and must be a boolean. If true, the function checks
+each variable and raises an error if one of them is not
+mapped to a non empty string. If false, the function makes
+no check. The default value of this second parameter is true
+(ie it checks variables).
+
+Example:
+
+  $erb_str = str2erb("@datacenter-tagfoo")
+  $tag     = inline_template($erb_str)
+
     EOS
   ) do |args|
 
