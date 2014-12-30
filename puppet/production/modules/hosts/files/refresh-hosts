@@ -1,0 +1,52 @@
+#!/usr/bin/ruby
+
+hosts_entries = {}
+files_array = Dir.glob("/etc/hosts.puppet.d/*.conf")
+
+files_array.each do |f|
+
+  fo = open(f)
+  array = fo.read.split(' ')
+  addr = array[0]
+  array.shift # Remove the first element (the address).
+
+  if not hosts_entries.has_key?(addr)
+    hosts_entries[addr] = []
+  end
+
+  # Add the hostname only if it doesn't already exist.
+  array.each do |hostname|
+    if not hosts_entries[addr].member?(hostname)
+      hosts_entries[addr].push(hostname)
+    end
+  end
+
+  fo.close
+
+  # Sort to have, for instance, [ 'foo.dom.tld', 'foo' ]
+  # instead of [ 'foo', 'foo.dom.tld' ].
+  hosts_entries[addr] = hosts_entries[addr].sort.reverse
+
+end
+
+# The lines of hosts entries.
+str = ''
+hosts_entries.keys.sort.each do |addr|
+  str += addr + "  " + hosts_entries[addr].join("  ") + "\n"
+end
+
+hosts_content = "### This file is managed by Puppet, don't edit it. ###
+
+127.0.0.1  localhost
+#{str}
+
+# The following lines are desirable for IPv6 capable hosts
+::1     localhost ip6-localhost ip6-loopback
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+
+"
+
+File.open('/etc/hosts', 'w') { |file| file.write(hosts_content) }
+
+

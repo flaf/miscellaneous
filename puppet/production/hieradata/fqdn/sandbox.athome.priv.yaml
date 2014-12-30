@@ -16,4 +16,11 @@ network:
       comment: 'useless interface'
       network_name: 'private'
 
+hosts_entries:
+  self:
+    address: '@ipaddress'
+    hostnames:
+      - '@fqdn'
+      - '@hostname'
+
 

@@ -50,7 +50,7 @@ Example:
         var_expanded = lookupvar(var.gsub('@', ''))
         unless var_expanded.is_a?(String) and not var_expanded.empty?()
           raise(Puppet::ParseError, 'str2erb(): in the string argument ' +
-                "`#{str}`, the variable `#{var}` will be not a non empty " +
+                "`#{str}`, the variable `#{var}` must be a non empty " +
                 'string after substitution')
         end
       end

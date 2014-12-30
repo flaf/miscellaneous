@@ -2,9 +2,24 @@ class roles::test {
 
   #include '::profiles::hosts::generic'
 
+  $ht = hiera('hosts_entries')
+
   ::hosts::entry { 'self':
-    address   => '@ipaddress',
-    hostnames => [ '@fqdn'],
+    address   => $ht['self']['address'],
+    hostnames => $ht['self']['hostnames'],
+    exported  => true,
+    tag       => 'test',
+  }
+
+  #::hosts::entry { 'google':
+  #  address   => '8.8.8.8',
+  #  hostnames => [ 'google' ],
+  #  exported  => true,
+  #  tag       => 'test',
+  #}
+
+  class { '::hosts::collect':
+    tag => 'test',
   }
 
   include '::profiles::network::generic'
