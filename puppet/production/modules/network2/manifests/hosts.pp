@@ -1,4 +1,4 @@
-class network::hosts (
+class network2::hosts (
 ) {
 
   case $::lsbdistcodename {

@@ -1,5 +1,5 @@
 ---
-classes: [ '::roles::generic' ]
+classes: [ '::roles::test' ]
 enc_groups:
   - 'virtual-labs'
 enc_datacenter: 'vbox-home'
