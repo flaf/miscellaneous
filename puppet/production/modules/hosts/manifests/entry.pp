@@ -1,8 +1,10 @@
-define network::hosts_entry (
+define hosts::entry (
   $address,
   $hostnames,
   $only_exported = false,
 ) {
+
+  require '::hosts'
 
   validate_string($address)
 

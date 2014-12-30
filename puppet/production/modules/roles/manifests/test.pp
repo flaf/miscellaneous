@@ -2,6 +2,11 @@ class roles::test {
 
   #include '::profiles::hosts::generic'
 
+  ::hosts::entry { 'self':
+    address   => '@ipaddress',
+    hostnames => [ '@fqdn'],
+  }
+
   include '::profiles::network::generic'
   include '::profiles::timezone::generic'
   include '::profiles::locales::generic'
