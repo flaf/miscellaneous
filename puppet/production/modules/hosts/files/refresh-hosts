@@ -2,7 +2,7 @@
 ### This file is managed by Puppet, don't edit it. ###
 
 # Automatically, we insert the localhost host entry.
-hosts_entries = { '127.0.0.1' => 'localhost' }
+hosts_entries = { '127.0.0.1' => ['localhost'] }
 
 files_array = Dir.glob("/etc/hosts.puppet.d/*.conf")
 

@@ -1,8 +1,8 @@
 network:
+  hosts_entries_tag: '@datacenter-ostack'
   hosts_entries:
     self:
       exported: true
-      tag: '@datacenter-ostack'
       address: '@ipaddress'
       hostnames:
         - '@fqdn'

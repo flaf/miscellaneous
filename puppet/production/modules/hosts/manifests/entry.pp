@@ -1,7 +1,14 @@
+# TODO: write documentation.
+#       Impossible to use the metaparameter because
+#       "@datacenter-foo" is invalid tag for puppet.
+#       Depends on puppetlabs-stdlib and homemade_functions
+#       modules.
+#
 define hosts::entry (
   $address,
   $hostnames,
-  $exported = false,
+  $exported  = false,
+  $magic_tag = undef,
 ) {
 
   require '::hosts'
@@ -11,16 +18,16 @@ define hosts::entry (
 
   if $exported {
 
-    if $tag == undef {
+    if $magic_tag == undef {
       fail("hosts::entry ${title}, `exported` parameter is set to true \
-but no tag is defined for this resource.")
+but no magic_tag is defined for this resource.")
     }
 
-    # In this module, $tag must be a string.
-    validate_string($tag)
+    # In this module, $magic_tag must be a string.
+    validate_string($magic_tag)
 
-    # "@xxx" variables are allowed in tag string.
-    $tag_expanded = inline_template(str2erb($tag))
+    # "@xxx" variables are allowed in $magic_tag string.
+    $tag_expanded = inline_template(str2erb($magic_tag))
 
   }
 

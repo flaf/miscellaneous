@@ -23,10 +23,10 @@ ceph:
       address: '172.31.10.3'
 
 network:
+  hosts_entries_tag: '@datacenter-ceph'
   hosts_entries:
     self:
       exported: true
-      tag: '@datacenter-ceph'
       address: '@ipaddress'
       hostnames:
         - '@fqdn'
