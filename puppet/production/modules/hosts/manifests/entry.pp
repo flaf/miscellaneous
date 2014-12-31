@@ -10,10 +10,18 @@ define hosts::entry (
   validate_bool($exported)
 
   if $exported {
+
     if $tag == undef {
       fail("hosts::entry ${title}, `exported` parameter is set to true \
 but no tag is defined for this resource.")
     }
+
+    # In this module, $tag must be a string.
+    validate_string($tag)
+
+    # "@xxx" variables are allowed in tag string.
+    $tag_expanded = inline_template(str2erb($tag))
+
   }
 
   ### Checking of the $address parameter. ###
@@ -71,12 +79,15 @@ empty array.")
   $hosts_entry_str = "${addr} ${hostnames_str}\n"
 
   if $exported {
-    @@file { "/etc/hosts.puppet.d/${title}.conf":
+    # If the resource is exported, we insert the fqdn
+    # in the file name to avoid duplicated resources.
+    @@file { "/etc/hosts.puppet.d/${::fqdn}--${title}.conf":
       ensure  => present,
       owner   => 'root',
       group   => 'root',
       mode    => '0644',
       content => $hosts_entry_str,
+      tag     => $tag_expanded,
     }
   } else {
     file { "/etc/hosts.puppet.d/${title}.conf":

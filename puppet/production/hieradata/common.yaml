@@ -14,10 +14,12 @@ network:
   restart_network: true # It's a moot point.
   rename_interfaces: true # Same remark.
   hosts_entries:
-    self: [ '@ipaddress', '@fqdn', '@hostname' ]
-  #hosts_entries_tag: 'cluster-foo'
-  #exported_hosts_entries:
-  #  vip: [ '172.31.100.0', 'vip-name' ]
+    self:
+      exported: false
+      address: '@ipaddress'
+      hostnames:
+        - '@fqdn'
+        - '@hostname'
 
 apt:
   official_repositories:
