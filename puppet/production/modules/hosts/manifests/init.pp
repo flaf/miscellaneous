@@ -1,5 +1,4 @@
-class hosts (
-) {
+class hosts {
 
   private("Sorry, ${title} is a private class.")
 

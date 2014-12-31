@@ -1,12 +1,15 @@
 #!/usr/bin/ruby
+### This file is managed by Puppet, don't edit it. ###
 
-hosts_entries = {}
+# Automatically, we insert the localhost host entry.
+hosts_entries = { '127.0.0.1' => 'localhost' }
+
 files_array = Dir.glob("/etc/hosts.puppet.d/*.conf")
 
 files_array.each do |f|
 
   fo = open(f)
-  array = fo.read.split(' ')
+  array = fo.read.strip.split(/[[:space:]]/)
   addr = array[0]
   array.shift # Remove the first element (the address).
 
@@ -29,15 +32,19 @@ files_array.each do |f|
 
 end
 
+# The max length as string among the addresses.
+# It's just cosmetic.
+column_width = hosts_entries.keys.map(&:length).max + 2
+
 # The lines of hosts entries.
 str = ''
 hosts_entries.keys.sort.each do |addr|
-  str += addr + "  " + hosts_entries[addr].join("  ") + "\n"
+  str += addr.ljust(column_width) + hosts_entries[addr].join(" ") + "\n"
 end
+str = str.strip
 
 hosts_content = "### This file is managed by Puppet, don't edit it. ###
 
-127.0.0.1  localhost
 #{str}
 
 # The following lines are desirable for IPv6 capable hosts
@@ -48,5 +55,18 @@ ff02::2 ip6-allrouters
 "
 
 File.open('/etc/hosts', 'w') { |file| file.write(hosts_content) }
+
+# Check if there are duplicated entries.
+hostnames = hosts_entries.values.flatten # Array of all hostnames.
+duplicated = hostnames.select { |h| hostnames.count(h) > 1 }.uniq
+
+if duplicated.empty?
+  msg = "Ok, /etc/hosts has been updated."
+  puts msg
+else
+  msg = "Warning, /etc/hosts updated with duplicated hostname(s): " + \
+        duplicated.join(', ') + '.'
+  abort(msg)
+end
 
 

@@ -13,7 +13,7 @@ class roles::test {
 
   #::hosts::entry { 'google':
   #  address   => '8.8.8.8',
-  #  hostnames => [ 'google' ],
+  #  hostnames => [ 'google', ],
   #  exported  => true,
   #  tag       => 'test',
   #}
