@@ -1,8 +1,59 @@
-# TODO: write documentation.
-#       Impossible to use the metaparameter because
-#       "@datacenter-foo" is invalid tag for puppet.
-#       Depends on puppetlabs-stdlib and homemade_functions
-#       modules.
+# A user defined class to manage a host entry in the
+# /etc/hosts files.
+#
+# == Requirement/Dependencies
+#
+# Depends on Puppetlabs-stdlib and homemade_functions
+# modules.
+#
+# == Parameters
+#
+# *address:*
+# A string which must be an IP address. The string can contain
+# specific substrings like @ipaddress etc. which will be
+# expanded. After expand, the parameter must be a valid IP
+# address. This parameter is mandatory, no default value.
+#
+# *hostnames:*
+# An array of at least one hostname associated to the address.
+# This parameter is mandatory, no default value.
+#
+# *exported:*
+# A boolean to tell if the hosts entry must be exported
+# or not. This parameter is optional and the default
+# value is false (ie not exported). If this parameter is
+# set to true, you must provide the magic_tag parameter.
+#
+# *magic_tag:*
+# If you set the "exported" parameter to true, you must
+# provide this parameter. This parameter must be a string
+# to tag the hosts entry. Impossible to use directly the
+# metaparameter "tag" because strings like "@datacenter-foo"
+# are invalid tag for puppet. On the contrary, this string
+# is valid for the magic_tag parameter and will be expanded.
+# This parameter is optional and the default value is undef.
+#
+# == Sample Usages
+#
+#  '::hosts::entry' { 'self':
+#    address   => '@ipaddress',
+#    hostnames => [ '@fqdn' ],
+#  }
+#
+# or
+#
+#  $tag = '@datacenter-cluster-foo'
+#
+#  '::hosts::entry' { 'self':
+#    address   => '@ipaddress',
+#    hostnames => [ '@fqdn' ],
+#    exported  => true,
+#    magic_tag => $tag,
+#  }
+#
+#  class { '::hosts::collect':
+#    magic_tag => $tag,
+#  }
 #
 define hosts::entry (
   $address,

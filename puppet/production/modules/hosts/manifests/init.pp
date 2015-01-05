@@ -1,12 +1,8 @@
-# TODO: write documentation.
-#       Impossible to use the metaparameter because
-#       "@datacenter-foo" is invalid tag for puppet.
-#       Depends on puppetlabs-stdlib and homemade_functions
-#       modules.
-#       Should be a private class, but when encapsulated
-#       in a "profiles" class with a specific stage metaparameter,
-#       you need to explicitly include this class in the
-#       "profiles" class.
+# This class should be a private class but but when it's
+# encapsulated in a "profiles" class with a specific stage
+# metaparameter, you need to explicitly include this class
+# in the "profiles" class.
+#
 class hosts {
 
   #private("Sorry, ${title} is a private class.")

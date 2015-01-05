@@ -1,11 +1,38 @@
-# TODO: write documentation.
-#       Impossible to use the metaparameter because
-#       "@datacenter-foo" is invalid tag for puppet.
-#       Depends on puppetlabs-stdlib and homemade_functions
-#       modules.
+# A class to collect the exported hosts entries.
+#
+# == Requirement/Dependencies
+#
+# Depends on Puppetlabs-stdlib and homemade_functions
+# modules.
+#
+# == Parameters
+#
+# *magic_tag:*
+# This parameter must be a string to select the exported
+# hosts entries which will be collected. Impossible to use
+# directly the metaparameter "tag" because strings like
+# "@datacenter-foo" are invalid tag for puppet. On the
+# contrary, this string is valid for the magic_tag parameter
+# and will be expanded. This parameter is mandatory and has
+# no default value.
+#
+# == Sample Usages
+#
+#  $tag = '@datacenter-cluster-foo'
+#
+#  '::hosts::entry' { 'self':
+#    address   => '@ipaddress',
+#    hostnames => [ '@fqdn' ],
+#    exported  => true,
+#    magic_tag => $tag,
+#  }
+#
+#  class { '::hosts::collect':
+#    magic_tag => $tag,
+#  }
 #
 class hosts::collect (
-  $magic_tag = undef,
+  $magic_tag,
 ) {
 
   require '::hosts'
