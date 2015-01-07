@@ -4,7 +4,7 @@ ceph:
   cluster_tag: '@datacenter-ceph'
   fsid: 'e865b3d0-535a-4f18-9883-2793079d400b'
   osd_journal_size: '1024'
-  osd_pool_default_size: '2'
+  sd_pool_default_size: '2'
   osd_pool_default_pg_num: '256'
   admin_key: 'AQAi+ohUiIuQOBAAfhWdmSz8++KiFXESYEC7kg=='
   cluster_network: '10.0.0.0/24'

@@ -16,6 +16,5 @@ ceph:
   client:
     accounts:
       - 'cinder'
-      - 'test'
 
 
