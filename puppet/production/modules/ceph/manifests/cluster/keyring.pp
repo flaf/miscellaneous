@@ -1,4 +1,18 @@
-# TODO: write doc header.
+# User defined type to manage the keyring of a specific ceph account
+# in a ceph server node.
+#
+# == Requirement/Dependencies
+#
+# Depends on Puppetlabs-stdlib and homemade_function.
+#
+# == Parameters
+#
+# *cluster_name:*
+# The name of the ceph cluster. The default value of this
+# parameter is 'ceph'.
+#
+# *magic_tag:*
+# 
 #
 define ceph::cluster::keyring (
   $cluster_name = 'ceph',
@@ -11,6 +25,15 @@ define ceph::cluster::keyring (
 
   validate_bool($exported)
 
+  validate_string(
+    $cluster_name,
+    $magic_tag,
+    $account,
+    $key,
+  )
+
+  validate_array($properties)
+
   if $exported {
 
     if $magic_tag == undef {
@@ -18,22 +41,10 @@ define ceph::cluster::keyring (
 true but no magic_tag is defined for this resource.")
     }
 
-    # In this module, $magic_tag must be a string.
-    validate_string($magic_tag)
-
     # "@xxx" variables are allowed in $magic_tag string.
     $tag_expanded = inline_template(str2erb($magic_tag))
 
   }
-
-  validate_string(
-    $cluster_name,
-    $account,
-    $key,
-  )
-
-  validate_array($properties)
-
 
   if $exported {
 
