@@ -1,3 +1,5 @@
+# TODO: write doc header.
+#
 define ceph::cluster::keyring (
   $cluster_name = 'ceph',
   $magic_tag    = $cluster_name,
