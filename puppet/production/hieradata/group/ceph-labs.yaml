@@ -28,11 +28,6 @@ ceph:
       properties:
         - 'caps mon = "allow r"'
         - 'caps osd = "allow class-read object_prefix rbd_children, allow rwx pool=volumes"'
-    test:
-      key: 'AQB046xU4A26FhAAhKKaJNRg32NkGREISClQqw=='
-      properties:
-        - 'caps mon = "allow r"'
-        - 'caps osd = "allow class-read object_prefix rbd_children, allow rwx pool=rbd"'
 
 network:
   hosts_entries_tag: '@datacenter-ceph'
