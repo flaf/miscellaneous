@@ -14,7 +14,10 @@ network:
 
 ceph:
   client:
-    accounts:
-      - 'cinder'
+    keyrings:
+      cinder:
+        owner: 'root'
+        group: 'root'
+        mode: '0640'
 
 
