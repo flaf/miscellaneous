@@ -1,0 +1,133 @@
+#!/bin/sh
+### This is a file managed by Puppet, don't edit it. ###
+
+SPECIFIC_SHORT_OPTIONS='i:,m:'
+SPECIFIC_LONG_OPTIONS='id:,monitor-addr:'
+SPECIFIC_SYNOPSIS='--id <num> --monitor-addr <address>'
+
+GET_SPECIFIC_OPTIONS () {
+    case "$1" in
+
+        --id|-i)
+            id="$2"
+            return 2
+        ;;
+
+        --monitor-addr|-m)
+            monitor_addr="$2"
+            if [ -z "$monitor_addr" ]
+            then
+                printf "The --monitor-addr option must be provided with a non empty value.\n"
+                printf "End of the script.\n"
+                exit 1
+            fi
+            return 2
+        ;;
+
+    esac
+    return 0
+}
+
+. <%= @ceph_script_common %>
+
+if [ -z "$id" ]
+then
+    printf "The --id option is mandatory.\n"
+    printf "End of the script.\n"
+    exit 1
+fi
+
+if [ -z "$monitor_addr" ]
+then
+    printf "The --monitor-addr option is mandatory.\n"
+    printf "End of the script.\n"
+    exit 1
+fi
+
+if check_working_dir "$id"
+then
+    printf "The working directory seems to be available for creation "
+    printf "and initialization.\n"
+    if "$test"
+    then
+        # If it's just a test, we stop the script here.
+        exit 0
+    else
+        # This is not a test, so we continue.
+        true
+    fi
+else
+    if "$test"
+    then
+        # If it's just a test, we stop the script here.
+        exit 1
+    else
+        # This is not a test but checking failed. We stop.
+        printf "End of the script.\n"
+        exit 1
+    fi
+fi
+
+if ! create_new_working_dir "$id"
+then
+    printf "End of the script.\n"
+    exit 1
+fi
+
+# Create a file which defines the rights of the monitors in
+# the cluster. A key is automatically generated. This key
+# will be shared with the monitors to ensure authentication
+# between them (to ensure that the monitors belong to the
+# same cluster).
+ceph-authtool --create-keyring "/tmp/$cluster.mon.keyring" \
+    -n mon. --cap mon 'allow *' --gen-key
+# Below, the same command where the key is explicitly provided
+# with the --add-key option.
+#
+#   ceph-authtool --create-keyring "/tmp/$cluster.mon.keyring" \
+#        -n mon. --cap mon 'allow *' --add-key "$monitors_key"
+
+# This command just appends the contents of the file given by
+# the --import-keyring option to the file given as argument.
+ceph-authtool --import-keyring "/etc/ceph/$cluster.client.admin.keyring" \
+     "/tmp/$cluster.mon.keyring"
+
+# Generate a monitor map which represents the cluster
+# topology regarding the monitors. Currently, the topology
+# will be very simple: just one monitor. The generated file
+# is non human readable.
+fsid=$(grep -E '[[:space:]]*fsid[[:space:]]*=.*$' /etc/ceph/$cluster.conf  | \
+       awk '{print $3}')
+monmaptool --create --add "$id" "$monitor_addr" \
+    --fsid "$fsid" "/tmp/monmap"
+
+# Initialization of the monitor working directory in
+# "/var/lib/ceph/mon/$cluster-$id". To do that, the command
+# provides:
+#       - the fsid of the cluster (in the conf file);
+#       - the secret shared monitor key and the key of client.admin
+#         (in /tmp/$cluster.mon.keyring);
+#       - the initial monitor map (in /tmp/monmap)
+#
+# Note: the key of client.admin is a key shared between the
+# administrator (which will use ceph clients in command lines)
+# and the monitors.
+#
+ceph-mon --mkfs -i "$id" --conf "/etc/ceph/$cluster.conf"         \
+    --monmap "/tmp/monmap" --keyring "/tmp/$cluster.mon.keyring"  \
+    --cluster "$cluster"
+
+# Delete the files in /tmp/.
+rm "/tmp/$cluster.mon.keyring"
+rm "/tmp/monmap"
+
+# Without these files, the monitor daemon doesn't start.
+touch "/var/lib/ceph/mon/$cluster-$id/done"
+touch "/var/lib/ceph/mon/$cluster-$id/upstart"
+
+# Start the monitor daemon.
+stop ceph-mon cluster="$cluster" id="$id"
+sleep 0.5
+start ceph-mon cluster="$cluster" id="$id"
+
+

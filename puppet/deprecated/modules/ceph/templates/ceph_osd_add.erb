@@ -38,8 +38,6 @@ GET_SPECIFIC_OPTIONS () {
     return 0
 }
 
-. <%= @ceph_script_common %>
-
 if [ -z "$monitor" ]
 then
     # The ceph client will choose himself the monotor to request.
@@ -48,6 +46,8 @@ else
     # Request a specific monitor.
     mon_opt="-m $monitor"
 fi
+
+. <%= @ceph_script_common %>
 
 # Each osd has its owned uuid.
 uuid=$(uuidgen)

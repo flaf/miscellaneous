@@ -1,6 +1,7 @@
 ---
 ceph:
-  cluster_name: 'ceph'
+  cluster_name: 'cluster'
+  cluster_tag: '@datacenter-ceph'
   fsid: 'e865b3d0-535a-4f18-9883-2793079d400b'
   osd_journal_size: '1024'
   osd_pool_default_size: '2'
@@ -21,6 +22,17 @@ ceph:
     ceph-node3:
       id: '3'
       address: '172.31.10.3'
+  keyrings:
+    cinder:
+      key: 'AQDN3ZJUUHKwGRAAgqki1QW271BYlhGfnwzREA=='
+      properties:
+        - 'caps mon = "allow r"'
+        - 'caps osd = "allow class-read object_prefix rbd_children, allow rwx pool=volumes"'
+    test:
+      key: 'AQB046xU4A26FhAAhKKaJNRg32NkGREISClQqw=='
+      properties:
+        - 'caps mon = "allow r"'
+        - 'caps osd = "allow class-read object_prefix rbd_children, allow rwx pool=rbd"'
 
 network:
   hosts_entries_tag: '@datacenter-ceph'

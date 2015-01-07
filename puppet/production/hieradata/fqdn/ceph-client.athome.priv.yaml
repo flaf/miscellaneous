@@ -1,5 +1,5 @@
 ---
-classes: [ '::roles::ceph::cluster' ]
+classes: [ '::roles::ceph::client' ]
 enc_groups:
   - 'virtual-labs'
   - 'ceph-labs'
@@ -8,7 +8,14 @@ enc_datacenter: 'vbox-home'
 network:
   interfaces:
     eth0:
-      macaddress: '08:00:27:bc:cd:85'
+      macaddress: '08:00:27:bc:cd:f0'
       method: 'dhcp'
       network_name: 'private'
+
+ceph:
+  client:
+    accounts:
+      - 'cinder'
+      - 'test'
+
 
