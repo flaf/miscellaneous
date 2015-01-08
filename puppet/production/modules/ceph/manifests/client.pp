@@ -1,4 +1,4 @@
-# TODO: write doc.
+# TODO: write doc header.
 #       Put the management of ceph.conf in a specific file.
 #
 define ceph::client (
