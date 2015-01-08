@@ -3,7 +3,7 @@
 #
 # == Requirement/Dependencies
 #
-# Depends on Puppetlabs-stdlib and homemade_function.
+# Depends on Puppetlabs-stdlib and homemade_functions modules.
 #
 # == Parameters
 #
@@ -12,7 +12,51 @@
 # parameter is 'ceph'.
 #
 # *magic_tag:*
-# 
+# The keyring is exported in order to be imported by ceph
+# clients. The keyring is tagged with these strings:
+# 'ceph-keyring', 'account' and the magic_tag (after
+# expansion). This parameter is optional and the default
+# value is "$cluster_name". A possible value for this
+# parameter is '@datacenter-ceph' where @datacenter will be
+# expanded (if the variable is defined).
+#
+# *exported:*
+# A boolean to tell if the keyring must be exported.
+# This parameter is optional and the default value is
+# false (not exported).
+#
+# *account:*
+# String which gives the name of the ceph account.
+# This parameter is mandatory.
+#
+# *key:*
+# The key of the account. This parameter is mandatory.
+# You can generate a key value with this command:
+#
+#     ceph-authtool --gen-print-key
+#
+#
+# *properties:*
+# This parameter is an array of strings. Each string is
+# a line in the keyring file. This parameter is mandatory.
+#
+# == Sample Usages
+#
+#  ::ceph::cluster::keyring { 'ceph.client.cinder':
+#    cluster_name => ceph,
+#    magic_tag    => '@datacenter-ceph',
+#    exported     => true,
+#    account      => 'cinder',
+#    key          => 'AQDN3ZJUUHKwGRAAgqki1QW271BYliGfmwzREA==',
+#    # In properties, we define the capabilities of the account.
+#    # Below typical capabilities to create and mount rbd images
+#    # in a specific pool ("volumes" in this example).
+#    properties   => [
+#      'caps mon = "allow r"',
+#      'caps osd = "allow class-read object_prefix rbd_children, allow rwx pool=volumes"'
+#    ],
+#  }
+#
 #
 define ceph::cluster::keyring (
   $cluster_name = 'ceph',
