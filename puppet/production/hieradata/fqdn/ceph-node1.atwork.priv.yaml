@@ -11,4 +11,8 @@ network:
       macaddress: '08:00:27:bc:cd:81'
       method: 'dhcp'
       network_name: 'private'
+    eth1:
+      macaddress: '08:00:27:bc:ce:81'
+      method: 'static'
+      address: '10.0.0.1/24'
 
