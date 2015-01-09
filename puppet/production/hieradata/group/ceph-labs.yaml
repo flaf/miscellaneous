@@ -19,9 +19,9 @@ ceph:
     ceph-node2:
       id: '2'
       address: '172.31.10.2'
-    ceph-node3:
-      id: '3'
-      address: '172.31.10.3'
+    #ceph-node3:
+    #  id: '3'
+    #  address: '172.31.10.3'
   keyrings:
     cinder:
       key: 'AQDN3ZJUUHKwGRAAgqki1QW271BYlhGfnwzREA=='
