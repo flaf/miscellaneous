@@ -1,0 +1,12 @@
+---
+network:
+  hosts_entries_tag: '@datacenter-ceph'
+  hosts_entries:
+    self:
+      exported: true
+      address: '@ipaddress'
+      hostnames:
+        - '@fqdn'
+        - '@hostname'
+
+

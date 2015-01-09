@@ -11,9 +11,6 @@ network:
       macaddress: '08:00:27:bc:cd:f0'
       method: 'dhcp'
       network_name: 'private'
-  hosts_entries:
-    self:
-      exported: false
 
 ceph:
   client:
