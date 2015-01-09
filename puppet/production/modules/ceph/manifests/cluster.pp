@@ -52,7 +52,7 @@
 # == Parameters
 #
 # *cluster_name*:
-# The name of the cluster. this parameter is optional and
+# The name of the cluster. This parameter is optional and
 # the default value is "ceph".
 #
 # *osd_journal_size*:
