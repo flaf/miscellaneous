@@ -1,0 +1,63 @@
+#!/usr/bin/ruby
+# Copyright: 2015 Francois Lafont <francois.lafont@ac-versailles.fr>
+
+require 'yaml'
+require 'optparse'
+
+options = {}
+
+OptionParser.new do |opts|
+  opts.banner = "Usage: print_groups [options]"
+
+  opts.on("--fh REGEX", "--filter-hosts REGEX",
+          "Regex on the host names to filter the result") do |arg|
+    options['filter-hosts'] = arg
+  end
+
+  opts.on("--fg REGEX", "--filter-groups REGEX",
+          "Regex on the group names to filter the result") do |arg|
+    options['filter-groups'] = arg
+  end
+end.parse!
+
+env_dir = '/usr/local/src/git/miscellaneous/puppet'
+
+files_array = Dir.glob("#{env_dir}/*/hieradata/fqdn/*.yaml")
+
+if files_array.length == 0
+  puts "Sorry, no file <fqdn>.yaml found."
+  exit(1)
+end
+
+groups = {}
+hosts_without_group = []
+
+files_array.each do |yaml_file|
+
+  fqdn = yaml_file.sub(/.*\//, '').sub(/\.yaml$/, '')
+  hash = YAML.load_file(yaml_file)
+
+  hash['enc_groups'].each do |g|
+    if groups.has_key?(g)
+      groups[g].push(fqdn)
+    else
+      groups[g] = [fqdn]
+    end
+  end
+
+end
+
+
+groups.sort.map do |group,fqdns|
+  puts "group `#{group}'"
+  fqdns_sorted = fqdns.sort
+  fqdns_sorted.each do |fqdn|
+    puts "   " + fqdn
+  end
+  puts ""
+end
+
+p options
+p ARGV
+
+
