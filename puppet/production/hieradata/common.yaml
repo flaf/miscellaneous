@@ -33,5 +33,6 @@ puppet:
     service_enable: false
     runinterval: '30m'
     pluginsync: true
+    server: 'puppet'
 
 
