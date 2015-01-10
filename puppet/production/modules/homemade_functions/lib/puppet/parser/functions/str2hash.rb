@@ -28,7 +28,7 @@ Example:
 
     begin
       hash = eval(str)
-    rescue
+    rescue Exception => exc
       raise(Puppet::ParseError, message)
     end
 

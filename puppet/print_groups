@@ -4,19 +4,57 @@
 require 'yaml'
 require 'optparse'
 
+# Test if a string is a valid ruby regex like '/aa?b/i'
+# for instance.
+def is_valid_regex(str)
+  r = /\/.*\/[a-z]?/
+  if not r.match(str)
+    return false
+  end
+  # Quick test of the regex.
+  begin
+    regex = eval(str)
+    regex.match('foo')
+  rescue Exception => exc
+    return false
+  end
+  return true
+end
+
 options = {}
 
 OptionParser.new do |opts|
-  opts.banner = "Usage: print_groups [options]"
+  opts.banner = "Usage: print_groups [--rh REGEX] [--rg REGEX]\n" +
+                "Regex must be a valid ruby regex like /aa?b/i."
 
-  opts.on("--fh REGEX", "--filter-hosts REGEX",
-          "Regex on the host names to filter the result") do |arg|
-    options['filter-hosts'] = arg
+  # --rh options.
+  opts.on("--rh REGEX", "--regex-hosts REGEX",
+          "Regex on the host names to filter the result") do |regex|
+    if options.has_key?('regex-hosts')
+      # the --rh options is provided several times.
+      abort("You must provide the --rh option zero or one time.")
+    else
+      if is_valid_regex(regex)
+        options['regex-hosts'] = eval(regex)
+      else
+        abort("Sorry, `#{regex}' is not a valid regex.")
+      end
+    end
   end
 
-  opts.on("--fg REGEX", "--filter-groups REGEX",
-          "Regex on the group names to filter the result") do |arg|
-    options['filter-groups'] = arg
+  # --rg options.
+  opts.on("--rg REGEX", "--regex-groups REGEX",
+          "Regex on the group names to filter the result") do |regex|
+    if options.has_key?('regex-groups')
+      # the --rg options is provided several times.
+      abort("You must provide the --rg option zero or one time.")
+    else
+      if is_valid_regex(regex)
+        options['regex-groups'] = eval(regex)
+      else
+        abort("Sorry, `#{regex}' is not a valid regex.")
+      end
+    end
   end
 end.parse!
 
@@ -25,8 +63,7 @@ env_dir = '/usr/local/src/git/miscellaneous/puppet'
 files_array = Dir.glob("#{env_dir}/*/hieradata/fqdn/*.yaml")
 
 if files_array.length == 0
-  puts "Sorry, no file <fqdn>.yaml found."
-  exit(1)
+  abort("Sorry, no file <fqdn>.yaml found.")
 end
 
 groups = {}
@@ -35,7 +72,16 @@ hosts_without_group = []
 files_array.each do |yaml_file|
 
   fqdn = yaml_file.sub(/.*\//, '').sub(/\.yaml$/, '')
-  hash = YAML.load_file(yaml_file)
+  begin
+    hash = YAML.load_file(yaml_file)
+  rescue Exception => exc
+    abort("Sorry impossible to load the yaml file #{yaml_file}.")
+  end
+
+  if not hash.has_key?('enc_groups')
+    hosts_without_group.push(fqdn)
+    next
+  end
 
   hash['enc_groups'].each do |g|
     if groups.has_key?(g)
@@ -47,17 +93,38 @@ files_array.each do |yaml_file|
 
 end
 
-
+# "groups" hash is completed, now printing.
 groups.sort.map do |group,fqdns|
+
+  if options.has_key?('regex-groups')
+    if not options['regex-groups'].match(group)
+      next
+    end
+  end
+
   puts "group `#{group}'"
   fqdns_sorted = fqdns.sort
   fqdns_sorted.each do |fqdn|
+    if options.has_key?('regex-hosts')
+      if not options['regex-hosts'].match(fqdn)
+        next
+      end
+    end
     puts "   " + fqdn
   end
   puts ""
 end
 
-p options
-p ARGV
+if not hosts_without_group.empty?
+puts "Warning, there are hosts without group:\n"
+hosts_without_group.each do |fqdn|
+  puts "    " + fqdn
+end
+puts ""
+end
+
+# To debug...
+#p options
+#p ARGV
 
 

@@ -28,7 +28,7 @@ Example:
 
     begin
       array = eval(str)
-    rescue
+    rescue Exception => exc
       raise(Puppet::ParseError, message)
     end
 
