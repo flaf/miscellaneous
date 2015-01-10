@@ -83,6 +83,24 @@ files_array.each do |yaml_file|
     next
   end
 
+  msg = "Sorry, in the yaml file #{yaml_file}, the `enc_groups' entry " +
+        "must be a non empty array of strings"
+
+  if not hash['enc_groups'].is_a?(Array)
+    abort(msg)
+    next
+  end
+
+  if hash['enc_groups'].empty?
+    abort(msg)
+    next
+  end
+
+  if hash['enc_groups'].map(&:class).uniq. != [String]
+    abort(msg)
+    next
+  end
+
   hash['enc_groups'].each do |g|
     if groups.has_key?(g)
       groups[g].push(fqdn)
