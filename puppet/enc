@@ -3,7 +3,7 @@
 
 require 'yaml'
 
-env_dir = '/usr/local/src/git/miscellaneous/puppet'
+ENV_DIR = '/usr/local/src/git/miscellaneous/puppet'
 fqdn = ARGV[0]
 
 # Ouput of the ENC which must be completed.
@@ -18,7 +18,7 @@ output = '{
 '
 
 # Search for the yaml file in hieradata.
-files_array = Dir.glob("#{env_dir}/*/hieradata/fqdn/#{fqdn}.yaml")
+files_array = Dir.glob("#{ENV_DIR}/*/hieradata/fqdn/#{fqdn}.yaml")
 if files_array.length != 1
   puts "Sorry, in hieradata, the file `#{fqdn}.yaml' " \
        "is not present or is duplicated."
@@ -30,7 +30,7 @@ yaml_file = files_array[0]
 
 # Get the environment variable.
 regex_end = "/hieradata/fqdn/#{fqdn}.yaml"
-environment = yaml_file.sub(/^#{env_dir}\//, '').sub(/#{regex_end}$/, '')
+environment = yaml_file.sub(/^#{ENV_DIR}\//, '').sub(/#{regex_end}$/, '')
 
 # Search for keys which match /^enc_/ in the yaml file to
 # define the global paramters.
