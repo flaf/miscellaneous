@@ -1,0 +1,15 @@
+---
+classes: [ '::roles::generic' ]
+enc_groups:
+  - 'virtual-labs'
+  - 'ceph-labs'
+  #- 'ceph-cluster-nodes'
+enc_datacenter: 'vbox-home'
+
+network:
+  interfaces:
+    eth0:
+      macaddress: '08:00:27:bc:cd:86'
+      method: 'dhcp'
+      network_name: 'private'
+
