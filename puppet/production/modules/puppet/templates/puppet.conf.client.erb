@@ -6,9 +6,8 @@ vardir=/var/lib/puppet
 ssldir=/var/lib/puppet/ssl
 rundir=/var/run/puppet
 factpath=$vardir/lib/facter
-templatedir=$confdir/templates
-prerun_command=/etc/puppet/etckeeper-commit-pre
-postrun_command=/etc/puppet/etckeeper-commit-post
+#prerun_command=/etc/puppet/etckeeper-commit-pre
+#postrun_command=/etc/puppet/etckeeper-commit-post
 
 <%- if @server -%>
 server = <%= @server %>
