@@ -19,7 +19,12 @@ define ceph::radosgw (
                 'radosgw',
               ]
 
-  ensure_packages($packages, { ensure => present, })
+  $default = {
+    ensure => present,
+    before => ::Ceph::Client["${cluster_name}.client.${::hostname}"],
+  }
+
+  ensure_packages($packages, $default)
 
   # In fact, a radosgw server is a ceph client.
   ::ceph::client { "${cluster_name}.client.${::hostname}":
@@ -27,6 +32,9 @@ define ceph::radosgw (
     cluster_name => $cluster_name,
     magic_tag    => $magic_tag,
   }
+
+  #file { "/etc/apache2/conf-available/ceph-cluster-.conf"
+  #}
 
 }
 
