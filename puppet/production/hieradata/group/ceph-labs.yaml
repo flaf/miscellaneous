@@ -28,5 +28,11 @@ ceph:
       properties:
         - 'caps mon = "allow r"'
         - 'caps osd = "allow class-read object_prefix rbd_children, allow rwx pool=volumes"'
+    radosgw1.gateway:
+      key: 'AQCGIrNUQAliExAAxDdVv+buXUxXdP0N1ctmrg=='
+      radosgw_host: 'ceph-radosgw1'
+      properties:
+        - 'caps mon = "allow rwx"'
+        - 'caps osd = "allow rwx'
 
 

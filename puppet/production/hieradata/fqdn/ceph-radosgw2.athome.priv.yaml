@@ -1,5 +1,5 @@
 ---
-classes: [ '::roles::generic' ]
+classes: [ '::roles::ceph::radosgw' ]
 enc_groups:
   - 'virtual-labs'
   - 'ceph-labs'

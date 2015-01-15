@@ -17,10 +17,20 @@
   cluster network           = <%= @cluster_network %>
 <%- end -%>
 
-<%- @monitors.each do |name, v| -%>
+<%- @monitors.sort.map.each do |name, v| -%>
 [mon.<%= v['id'] %>]
   host     = <%= name %>
   mon addr = <%= v['address'] %>
 
+<%- end -%>
+<%- @keyrings.sort.map.each do |id, hash| -%>
+  <%- if hash.has_key?('radosgw_host') -%>
+[client.<%= id %>]
+  host            = <%= hash['radosgw_host'] %>
+  rgw dns name    = <%= hash['radosgw_host'] %>
+  rgw socket path = /var/run/ceph/<%= @cluster_name %>.<%= id %>.fastcgi.sock
+  log file        = /var/log/radosgw/client.<%= id %>.log
+
+  <%- end -%>
 <%- end -%>
 

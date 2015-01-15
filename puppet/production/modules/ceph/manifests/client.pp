@@ -39,7 +39,10 @@
 # *account:*
 # The name of the ceph account whose the keyring file is
 # imported. This parameter is mandatory and has no default
-# value.
+# value. This is a implementation detail, but for a radosgw
+# (which is a particular ceph client), the value of this
+# parameter must not be the account name but the hostname
+# of the radosgw himself.
 #
 # == Sample Usages
 #
@@ -76,17 +79,25 @@ define ceph::client (
   $tag_expanded = inline_template(str2erb($magic_tag))
 
   # Retrieve the conf of the Ceph cluster.
-  File <<|     tag == 'ceph-conf'
-           and tag == $tag_expanded |>> {}
+  # If the host is server and client ceph, we want to retrieve
+  # the file just one time.
+  if !defined(File["ceph-conf-${cluster_name}-${tag_expanded}"]) {
+    File <<|     tag == 'ceph-conf'
+             and tag == $tag_expanded |>> {}
+  }
 
   # Retrieve the keyring of the Ceph account.
-  File <<|     tag == 'ceph-keyring'
-           and tag == 'ceph::cluster::keyring'
-           and tag == $tag_expanded
-           and tag == $account |>> {
-    owner => $owner,
-    group => $group,
-    mode  => $mode,
+  # If the host is server and client ceph, we want to retrieve
+  # the file just one time.
+  if !defined(File["ceph-keyring-${cluster_name}-${account}-${tag_expanded}"]) {
+    File <<|     tag == 'ceph-keyring'
+             and tag == 'ceph::cluster::keyring'
+             and tag == $tag_expanded
+             and tag == $account |>> {
+      owner => $owner,
+      group => $group,
+      mode  => $mode,
+    }
   }
 
 }

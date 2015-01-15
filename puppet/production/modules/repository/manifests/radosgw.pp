@@ -9,7 +9,7 @@
 #
 # No parameter.
 #
-# == Sample Usages
+# == Sample Usage
 #
 #  include '::repository::radosgw'
 #

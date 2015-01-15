@@ -20,10 +20,22 @@
 # parameter is '@datacenter-ceph' where @datacenter will be
 # expanded (if the variable is defined).
 #
+# Note: if the radosgw_host parameter is set (see below)
+#       this parameter is used in tags instead of 'account'.
+#
 # *exported:*
 # A boolean to tell if the keyring must be exported.
 # This parameter is optional and the default value is
-# false (not exported).
+# false (not exported). In fact, if "exported" ==  false,
+# the resource will never be created directly but from an
+# import of a exported resource.
+#
+# *radosgw_host:*
+# If the keyring is intended for a radosgw server, you must
+# set this parameter (a string) to the hostname of the
+# corresponding radosgw server. This parameter is optional
+# and the default value is undef (ie the keyring is not
+# intended for a radosgw).
 #
 # *account:*
 # String which gives the name of the ceph account.
@@ -62,6 +74,7 @@ define ceph::cluster::keyring (
   $cluster_name = 'ceph',
   $magic_tag    = $cluster_name,
   $exported     = false,
+  $radosgw_host = undef,
   $account,
   $key,
   $properties,
@@ -76,6 +89,10 @@ define ceph::cluster::keyring (
     $key,
   )
 
+  if $radosgw_host != undef {
+    validate_string($radosgw_host)
+  }
+
   validate_array($properties)
 
   if $exported {
@@ -85,31 +102,42 @@ define ceph::cluster::keyring (
 true but no magic_tag is defined for this resource.")
     }
 
-    # "@xxx" variables are allowed in $magic_tag string.
-    $tag_expanded = inline_template(str2erb($magic_tag))
+  }
 
+  # "@xxx" variables are allowed in $magic_tag string.
+  $tag_expanded = inline_template(str2erb($magic_tag))
+
+  if $radosgw_host == undef {
+    # This is a classic keyring, we use the account name for the tag
+    # of the exported file below.
+    $tag_keyring = $account
+  } else {
+    # This is a keyring for radosgw, we use the hostname of the
+    # radosgw for the tag.
+    $tag_keyring = $radosgw_host
   }
 
   if $exported {
 
-    @@file { "ceph-keyring-${cluster_name}-${account}-${::fqdn}":
+    @@file { "ceph-keyring-${cluster_name}-${account}-${tag_expanded}":
       path    => "/etc/ceph/${cluster_name}.client.${account}.keyring",
       ensure  => present,
       owner   => 'root',
       group   => 'root',
       mode    => '0600',
       content => template('ceph/ceph.client.keyring.erb'),
-      tag     => [ 'ceph-keyring', $tag_expanded, $account ],
+      tag     => [ 'ceph-keyring', $tag_expanded, $tag_keyring ],
     }
 
   } else {
 
-    file { "/etc/ceph/${cluster_name}.client.${account}.keyring":
-      ensure  => present,
-      owner   => 'root',
-      group   => 'root',
-      mode    => '0600',
-      content => template('ceph/ceph.client.keyring.erb'),
+    # If the host is server and client ceph, we want to retrieve
+    # the file just one time.
+    if !defined(File["ceph-keyring-${cluster_name}-${account}-${tag_expanded}"]) {
+      File <<|     tag == 'ceph-keyring'
+               and tag == 'ceph::cluster::keyring'
+               and tag == $tag_expanded
+               and tag == $tag_keyring |>> {}
     }
 
   }

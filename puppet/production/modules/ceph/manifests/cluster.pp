@@ -113,22 +113,27 @@
 #
 #  {
 #   'test1' => {
-#               'key'      => 'AQBWX65UeDO/NRAAXWTEWvlvq2alpD5EEmZ7DA=='
+#               'key'      => 'AQBWX65UeDO/NRAAXWTEWvlvq2alpD5EEmZ7DA==',
 #               properties => [
 #                               'caps mon = "allow r"',
-#                               'caps osd = " allow rwx pool=pool1"'
-#                             ]
-#              }
+#                               'caps osd = " allow rwx pool=pool1"',
+#                             ],
+#              },
 #   'test2' => {
-#               'key'      => 'AQBVX65UsGEMIxAA/F5t/wuDtKvFD/5ZYdS0DA=='
-#               properties => [
-#                               'caps mon = "allow r"',
-#                               'caps osd = " allow rwx pool=pool2"'
-#                             ]
-#              }
+#               'key'         => 'AQBVX65UsGEMIxAA/F5t/wuDtKvFD/5ZYdS0DA==',
+#               properties    => [
+#                                 'caps mon = "allow rwx"',
+#                                 'caps osd = " allow rwx"',
+#                                ],
+#               'radosgw_host => 'radosgw-1',
+#              },
 #  }
 #
 # The keys of this hash are the names of the accounts.
+# The 'radosgw_host' key means that the keyring is a specific
+# radosgw keyring and the value of this key must be the hostname
+# of the radosgw server.
+#
 # You can generate a key with this command:
 #
 #     ceph-authtool --gen-print-key
@@ -287,19 +292,6 @@ be defined together.")
   require '::ceph::cluster::scripts'
   require '::ceph::common::ceph_dir'
 
-  # Keyring for client.admin.
-  ::ceph::cluster::keyring { "${cluster_name}.client.admin":
-    cluster_name => $cluster_name,
-    account      => 'admin',
-    key          => $admin_key,
-    properties   => [
-                      'auid = 0',
-                      'caps mds = "allow"',
-                      'caps mon = "allow *"',
-                      'caps osd = "allow *"',
-                    ],
-  }
-
   ##################################
   ### Scripts to start monitors ####
   ##################################
@@ -322,8 +314,26 @@ be defined together.")
 
     if $is_monitor_init {
 
+      # Keyring for client.admin is exported.
+      ::ceph::cluster::keyring { "${cluster_name}.client.admin":
+        cluster_name => $cluster_name,
+        account      => 'admin',
+        key          => $admin_key,
+        exported     => true,
+        magic_tag    => $tag_expanded,
+        properties   => [
+                          'auid = 0',
+                          'caps mds = "allow"',
+                          'caps mon = "allow *"',
+                          'caps osd = "allow *"',
+                        ],
+      }
+
+      # And retrieve the specific admin keyring.
+      File <<| title == "ceph-keyring-${cluster_name}-admin-${tag_expanded}" |>> {}
+
       # The file must be exported.
-      @@file { "ceph-conf-${cluster_name}-${::fqdn}":
+      @@file { "ceph-conf-${cluster_name}-${tag_expanded}":
         path    => "/etc/ceph/${cluster_name}.conf",
         ensure  => present,
         owner   => 'root',
@@ -334,7 +344,7 @@ be defined together.")
       }
 
       # And the file must be put in the host.
-      File <<| title == "ceph-conf-${cluster_name}-${::fqdn}" |>> {}
+      File <<| title == "ceph-conf-${cluster_name}-${tag_expanded}" |>> {}
 
       file { '/root/monitor_init.sh':
         ensure  => present,
@@ -346,13 +356,17 @@ be defined together.")
 
     } else {
 
-      file { "ceph-conf-${cluster_name}-${::fqdn}":
-        path    => "/etc/ceph/${cluster_name}.conf",
-        ensure  => present,
-        owner   => 'root',
-        group   => 'root',
-        mode    => '0644',
-        content => template('ceph/ceph.conf.erb'),
+      # If the host is server and client ceph, we want to retrieve
+      # the file just one time.
+      if !defined(File["ceph-conf-${cluster_name}-${tag_expanded}"]) {
+        file { "ceph-conf-${cluster_name}-${tag_expanded}":
+          path    => "/etc/ceph/${cluster_name}.conf",
+          ensure  => present,
+          owner   => 'root',
+          group   => 'root',
+          mode    => '0644',
+          content => template('ceph/ceph.conf.erb'),
+        }
       }
 
       file { '/root/monitor_add.sh':
@@ -378,12 +392,16 @@ be defined together.")
         keyrings = @keyrings
         cluster_name = @cluster_name
         keyrings.each do |account,p|
-          hash[cluster_name + ".client." + account] = {
+          name = cluster_name + ".client." + account
+          hash[name] = {
             "cluster_name" => cluster_name,
             "account"      => account,
             "key"          => p["key"],
             "properties"   => p["properties"],
           }
+          if p.has_key?("radosgw_host")
+            hash[name]["radosgw_host"] = p["radosgw_host"]
+          end
         end
       -%>
       <%= hash.to_s %>'
@@ -406,7 +424,15 @@ be defined together.")
 
     } else {
 
-      create_resources('::ceph::cluster::keyring', $keyrings_hash)
+      $default = {
+        'magic_tag' => $tag_expanded,
+      }
+
+      create_resources('::ceph::cluster::keyring', $keyrings_hash, $default)
+
+      # And retrieve the specific admin keyring.
+      File <<| title == "ceph-keyring-${cluster_name}-admin-${tag_expanded}" |>> {}
+
 
     }
 
