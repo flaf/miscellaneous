@@ -66,19 +66,15 @@ shinken_misc:
         - '_HTTPS_WARN 5'
         - '_HTTPS_CRIT 8'
         - |
-           _http_pages http sdz1$(url->fr.openclassrooms.com:80/informatique/c/cours!1)$, \
-                           http sdz2$(url->fr.openclassrooms.com:80/informatique/c/cours!2)$,
-        - '_macro1 test1'
-        - '_macro2 test2'
+           _http_pages http basic$($HOSTADDRESS$)$, \
+                       http iregex$($HOSTADDRESS$)$ $(google)$ $(-i)$,
 
 shinken_node_templates:
   - 'http_tpl'
 shinken_node_properties:
   _http_pages: >
-                http1 $(url->fr.openclassrooms.com:80/informatique/c/cours!1)$,
-                http2 $(url->fr.openclassrooms.com:80/informatique/c/cours!2)$,
-  _macro1: 'test1'
-  _macro2: 'test2'
+                ping google$(url->www.google.fr)$,
+                ping duckduckgo$(url->duckduckgo.com)$,
 
 
 disable_ipmi_check: 'true'
