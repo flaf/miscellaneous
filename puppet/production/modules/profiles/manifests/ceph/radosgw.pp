@@ -32,6 +32,8 @@ class profiles::ceph::radosgw {
        'mode'       => $keyrings[$account]["mode"],
        'key'        => $keyrings[$account]["key"],
        'properties' => $keyrings[$account]["properties"],
+       'is_radosgw' => true,
+       'admin_mail' => $admin_mail,
     }
   }
 

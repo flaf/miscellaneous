@@ -18,12 +18,15 @@ define ceph::radosgw (
 
   require '::ceph::radosgw::packages'
 
+  $options  = "-c /etc/ceph/${cluster_name}.conf -n client.${account}"
+  $cmd_fcgi = "#!/bin/sh\nexec /usr/bin/radosgw ${options}\n"
+
   file { '/var/www/s3gw.fcgi':
     ensure  => present,
     owner   => 'www-data',
     group   => 'www-data',
     mode    => '0754',
-    content => "#!/bin/sh\nexec /usr/bin/radosgw -c /etc/ceph/${cluster_name}.conf -n",
+    content => $cmd_fcgi,
   }
 
   #file { "/etc/apache2/conf-available/ceph-cluster-.conf"
