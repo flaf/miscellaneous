@@ -56,12 +56,22 @@
 #
 #
 define ceph::client (
-  $cluster_name = 'ceph',
-  $magic_tag    = $cluster_name,
-  $owner        = 'root',
-  $group        = 'root',
-  $mode         = '0600',
+  $cluster_name            = 'ceph',
+  $osd_journal_size        = '5120',
+  $osd_pool_default_size   = '2',
+  $osd_pool_default_pg_num = '256',
+  $cluster_network         = undef,
+  $public_network          = undef,
+  $monitors,
+  $fsid,
+  $owner                   = 'root',
+  $group                   = 'root',
+  $mode                    = '0600',
   $account,
+  $key,
+  $properties,
+  $is_radosgw              = false,
+  $admin_mail              = "root@{$::fqdn}",
 ) {
 
   require '::ceph::client::packages'
@@ -69,35 +79,71 @@ define ceph::client (
 
   validate_string(
     $cluster_name,
-    $magic_tag,
+    $osd_journal_size,
+    $osd_pool_default_size,
+    $osd_pool_default_pg_num,
+    $fsid,
     $owner,
     $group,
     $mode,
     $account,
+    $key,
+    $mail_admin,
   )
 
-  $tag_expanded = inline_template(str2erb($magic_tag))
+  validate_hash($monitors)
+  validate_array($properties)
+  validate_bool($is_radosgw)
 
-  # Retrieve the conf of the Ceph cluster.
-  # If the host is server and client ceph, we want to retrieve
-  # the file just one time.
-  if !defined(File["ceph-conf-${cluster_name}-${tag_expanded}"]) {
-    File <<|     tag == 'ceph-conf'
-             and tag == $tag_expanded |>> {}
+  if $public_network and ! $cluster_network {
+    fail("Class ${title} problem, plubic_network and cluster_network must \
+be defined together.")
+  }
+  if ! $public_network and $cluster_network {
+    fail("Class ${title} problem, plubic_network and cluster_network must \
+be defined together.")
   }
 
-  # Retrieve the keyring of the Ceph account.
-  # If the host is server and client ceph, we want to retrieve
-  # the file just one time.
-  if !defined(File["ceph-keyring-${cluster_name}-${account}-${tag_expanded}"]) {
-    File <<|     tag == 'ceph-keyring'
-             and tag == 'ceph::cluster::keyring'
-             and tag == $tag_expanded
-             and tag == $account |>> {
-      owner => $owner,
-      group => $group,
-      mode  => $mode,
+  if $public_network and $cluster_network {
+    validate_string(
+      $public_network,
+      $cluster_network,
+    )
+  }
+
+  # Maybe the current node is server too. Or maybe
+  # the current node is client of this cluster with
+  # several ceph account. In these cases, the file
+  # is already defined.
+  if !defined(File["/etc/ceph/${cluster_name}.conf"]) {
+    # Configuration file of the cluster.
+    file { "/etc/ceph/${cluster_name}.conf":
+      ensure  => present,
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0644',
+      content => template('ceph/ceph.conf.erb'),
     }
+  }
+
+  ::ceph::common::keyring { "${cluster_name}.client.${account}.keyring":
+    cluster_name => $cluster_name,
+    account      => $account,
+    key          => $key,
+    properties   => $properties,
+    owner        => $owner,
+    group        => $group,
+    mode         => $mode,
+  }
+
+  if $is_radosgw {
+
+    ::ceph::radosgw { "${cluster_name}-${account}":
+      cluster_name => $cluster_name,
+      account      => $account,
+      admin_mail   => $admin_mail,
+    }
+
   }
 
 }

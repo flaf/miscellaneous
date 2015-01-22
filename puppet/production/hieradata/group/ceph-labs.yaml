@@ -1,7 +1,6 @@
 ---
 ceph:
   cluster_name: 'ceph'
-  cluster_tag: '@datacenter-ceph'
   fsid: 'e865b3d0-535a-4f18-9883-2793079d400b'
   osd_journal_size: '1024'
   osd_pool_default_size: '2'
@@ -13,7 +12,6 @@ ceph:
     ceph-node1:
       id: '1'
       address: '172.31.10.1'
-      initial: true
       #device: '/dev/sdb1'
       #mount_options: 'noatime,defaults'
     ceph-node2:
@@ -28,7 +26,7 @@ ceph:
       properties:
         - 'caps mon = "allow r"'
         - 'caps osd = "allow class-read object_prefix rbd_children, allow rwx pool=volumes"'
-    radosgw1.gateway:
+    radosgw.gw1:
       key: 'AQCGIrNUQAliExAAxDdVv+buXUxXdP0N1ctmrg=='
       radosgw_host: 'ceph-radosgw1'
       properties:

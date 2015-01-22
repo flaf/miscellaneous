@@ -1,9 +1,13 @@
-# TODO: write the doc header.
+#
+# Private class.
 #
 define ceph::radosgw (
   $cluster_name = 'ceph',
-  $magic_tag    = $cluster_name,
+  $account,
+  $admin_mail,
 ){
+
+  private("Sorry, ${title} is a private class.")
 
   case $::lsbdistcodename {
     trusty: {}
@@ -12,25 +16,14 @@ define ceph::radosgw (
     }
   }
 
-  $packages = [
-                'apache2',
-                'libapache2-mod-fastcgi',
-                'ceph',
-                'radosgw',
-              ]
+  require '::ceph::radosgw::packages'
 
-  $default = {
-    ensure => present,
-    before => ::Ceph::Client["${cluster_name}.client.${::hostname}"],
-  }
-
-  ensure_packages($packages, $default)
-
-  # In fact, a radosgw server is a ceph client.
-  ::ceph::client { "${cluster_name}.client.${::hostname}":
-    account      => $::hostname,
-    cluster_name => $cluster_name,
-    magic_tag    => $magic_tag,
+  file { '/var/www/s3gw.fcgi':
+    ensure  => present,
+    owner   => 'www-data',
+    group   => 'www-data',
+    mode    => '0754',
+    content => "#!/bin/sh\nexec /usr/bin/radosgw -c /etc/ceph/${cluster_name}.conf -n",
   }
 
   #file { "/etc/apache2/conf-available/ceph-cluster-.conf"

@@ -205,7 +205,6 @@ define ceph::cluster (
   $osd_journal_size        = '5120',
   $osd_pool_default_size   = '2',
   $osd_pool_default_pg_num = '256',
-  $magic_tag               = $cluster_name,
   $cluster_network         = undef,
   $public_network          = undef,
   $keyrings                = {},
@@ -226,12 +225,9 @@ define ceph::cluster (
     $osd_journal_size,
     $osd_pool_default_size,
     $osd_pool_default_pg_num,
-    $magic_tag,
     $admin_key,
     $fsid,
   )
-
-  $tag_expanded = inline_template(str2erb($magic_tag))
 
   validate_hash($keyrings)
   validate_hash($monitors)
@@ -252,39 +248,26 @@ be defined together.")
     )
   }
 
-  # Internal variables.
-  $mon_init = strip(inline_template('
-    <%-
-      c = 0
-      mons = @monitors
-      monitor = ""
-      mons.each do |mon, params|
-        if params.has_key?("initial") and params["initial"] == true
-          monitor = mon
-          c += 1
-        end
-      end
+  # Define initial monitor and its address.
+  # Make directly "sort(keys($h))[0]" raises a syntax error.
+  $array_tmp     = sort(keys($monitors))
+  $mon_init      = $array_tmp[0]
+  $mon_init_addr = $monitors[$mon_init]['address']
 
-      if c == 0
-        scope.function_fail([ "Initial monitor not found." ])
-      elsif c > 1
-        scope.function_fail([ "Several initial monitors found. " +
-                              "Initial monitor must be unique." ])
-      end
-    -%>
-    <%= monitor %>
-  '))
+  # id of the current host.
+  $id            = $monitors[$::hostname]['id']
 
-  # Define $is_monitor and $is_monitor_init.
+  # Define $is_monitor.
   if has_key($monitors, $::hostname) {
     $is_monitor = true
-    if has_key($monitors[$::hostname], 'initial') {
-      $is_monitor_init = true
-    } else {
-      $is_monitor_init = false
-    }
   } else {
-    $is_monitor      = false
+    $is_monitor = false
+  }
+
+  # Define $is_monitor_init.
+  if $mon_init == $::hostname {
+    $is_monitor_init = true
+  } else {
     $is_monitor_init = false
   }
 
@@ -292,14 +275,33 @@ be defined together.")
   require '::ceph::cluster::scripts'
   require '::ceph::common::ceph_dir'
 
+  # Keyring for client.admin.
+  ::ceph::common::keyring { "${cluster_name}.client.admin":
+    cluster_name => $cluster_name,
+    account      => 'admin',
+    key          => $admin_key,
+    properties   => [
+                      'auid = 0',
+                      'caps mds = "allow"',
+                      'caps mon = "allow *"',
+                      'caps osd = "allow *"',
+                    ],
+  }
+
+  # Configuration file of the cluster.
+  file { "/etc/ceph/${cluster_name}.conf":
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    content => template('ceph/ceph.conf.erb'),
+  }
+
   ##################################
   ### Scripts to start monitors ####
   ##################################
 
   if $is_monitor {
-
-    $mon_init_addr = $monitors[$mon_init]['address']
-    $id            = $monitors[$::hostname]['id']
 
     $opt_base = "--cluster '$cluster_name' --id '$id' -m '$mon_init_addr'"
 
@@ -314,38 +316,6 @@ be defined together.")
 
     if $is_monitor_init {
 
-      # Keyring for client.admin is exported.
-      ::ceph::cluster::keyring { "${cluster_name}.client.admin":
-        cluster_name => $cluster_name,
-        account      => 'admin',
-        key          => $admin_key,
-        exported     => true,
-        magic_tag    => $tag_expanded,
-        properties   => [
-                          'auid = 0',
-                          'caps mds = "allow"',
-                          'caps mon = "allow *"',
-                          'caps osd = "allow *"',
-                        ],
-      }
-
-      # And retrieve the specific admin keyring.
-      File <<| title == "ceph-keyring-${cluster_name}-admin-${tag_expanded}" |>> {}
-
-      # The file must be exported.
-      @@file { "ceph-conf-${cluster_name}-${tag_expanded}":
-        path    => "/etc/ceph/${cluster_name}.conf",
-        ensure  => present,
-        owner   => 'root',
-        group   => 'root',
-        mode    => '0644',
-        content => template('ceph/ceph.conf.erb'),
-        tag     => [ 'ceph-conf', $tag_expanded ], # tag for clients.
-      }
-
-      # And the file must be put in the host.
-      File <<| title == "ceph-conf-${cluster_name}-${tag_expanded}" |>> {}
-
       file { '/root/monitor_init.sh':
         ensure  => present,
         owner   => 'root',
@@ -356,19 +326,6 @@ be defined together.")
 
     } else {
 
-      # If the host is server and client ceph, we want to retrieve
-      # the file just one time.
-      if !defined(File["ceph-conf-${cluster_name}-${tag_expanded}"]) {
-        file { "ceph-conf-${cluster_name}-${tag_expanded}":
-          path    => "/etc/ceph/${cluster_name}.conf",
-          ensure  => present,
-          owner   => 'root',
-          group   => 'root',
-          mode    => '0644',
-          content => template('ceph/ceph.conf.erb'),
-        }
-      }
-
       file { '/root/monitor_add.sh':
         ensure  => present,
         owner   => 'root',
@@ -378,6 +335,7 @@ be defined together.")
       }
 
     }
+
   }
 
   ################
@@ -399,8 +357,11 @@ be defined together.")
             "key"          => p["key"],
             "properties"   => p["properties"],
           }
-          if p.has_key?("radosgw_host")
-            hash[name]["radosgw_host"] = p["radosgw_host"]
+          optional_keys = [ "owner", "group", "mode" ]
+          optional_keys.each do |k|
+            if p.has_key?(k)
+              hash[name][k] = p[k]
+            end
           end
         end
       -%>
@@ -410,31 +371,7 @@ be defined together.")
 
   if $keyrings_hash {
 
-    if $is_monitor_init {
-
-      $default = {
-        'exported'  => true,
-        'magic_tag' => $tag_expanded,
-      }
-
-      create_resources('::ceph::cluster::keyring', $keyrings_hash, $default)
-      File <<|     tag == 'ceph-keyring'
-               and tag == $tag_expanded
-               and tag == 'ceph::cluster::keyring' |>> {}
-
-    } else {
-
-      $default = {
-        'magic_tag' => $tag_expanded,
-      }
-
-      create_resources('::ceph::cluster::keyring', $keyrings_hash, $default)
-
-      # And retrieve the specific admin keyring.
-      File <<| title == "ceph-keyring-${cluster_name}-admin-${tag_expanded}" |>> {}
-
-
-    }
+    create_resources('::ceph::common::keyring', $keyrings_hash)
 
   }
 

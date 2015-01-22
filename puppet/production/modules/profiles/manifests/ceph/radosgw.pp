@@ -2,14 +2,40 @@ class profiles::ceph::radosgw {
 
   require '::profiles::ceph::params'
 
-  $ceph_conf    = $::profiles::ceph::params::ceph_conf
-  $cluster_name = $::profiles::ceph::params::cluster_name
-  $cluster_tag  = $::profiles::ceph::params::cluster_tag
+  $common       = $::profiles::ceph::params::common
+  $keyrings     = $::profiles::ceph::params::keyrings
+  $admin_mail   = hiera('admin_mail')
+  $cluster_name = $common['cluster_name']
 
-  ::ceph::radosgw { $cluster_name:
-    cluster_name => $cluster_name,
-    magic_tag    => $cluster_tag,
+  $account = strip(inline_template('
+    <%-
+      the_account = ""
+      keyrings = @keyrings
+      keyrings.each do |account,p|
+        if p.has_key?("radosgw_host") and p["radosgw_host"] == scope["::hostname"]
+          the_account = account
+        end
+      end
+    -%>
+    <%= the_account %>
+  '))
+
+  if $account == "" {
+    fail("Class ${title} problem, no keyring found for this radosgw host.")
   }
+
+  $client_resource = {
+    "$cluster_name-$account" => {
+       'account'    => $account,
+       'owner'      => $keyrings[$account]["owner"],
+       'group'      => $keyrings[$account]["group"],
+       'mode'       => $keyrings[$account]["mode"],
+       'key'        => $keyrings[$account]["key"],
+       'properties' => $keyrings[$account]["properties"],
+    }
+  }
+
+  create_resources('::ceph::client', $client_resource, $common)
 
 }
 
