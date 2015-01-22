@@ -11,9 +11,9 @@
 #
 # == Sample Usage
 #
-#  include '::repository::radosgw'
+#  include '::repositories::radosgw'
 #
-class repository::radosgw {
+class repositories::radosgw {
 
   case $::lsbdistcodename {
     trusty: {}

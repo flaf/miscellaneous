@@ -1,6 +1,6 @@
-class profiles::apt::ceph ($stage = 'repository', ) {
+class profiles::apt::ceph ($stage = 'repositories', ) {
 
-  class { '::repository::ceph':
+  class { '::repositories::ceph':
     version => 'firefly',
   }
 

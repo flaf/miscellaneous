@@ -13,15 +13,15 @@
 #
 # == Sample Usages
 #
-#  include '::repository::ceph'
+#  include '::repositories::ceph'
 #
 # or:
 #
-#  class { '::repository::ceph':
+#  class { '::repositories::ceph':
 #   version => 'firefly',
 #  }
 #
-class repository::ceph (
+class repositories::ceph (
   $version = 'firefly',
 ) {
 

@@ -1,6 +1,6 @@
-class profiles::apt::radosgw ($stage = 'repository', ) {
+class profiles::apt::radosgw ($stage = 'repositories', ) {
 
-  include '::repository::radosgw'
+  include '::repositories::radosgw'
 
 }
 
