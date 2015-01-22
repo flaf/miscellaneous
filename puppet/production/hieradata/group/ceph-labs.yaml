@@ -31,6 +31,6 @@ ceph:
       radosgw_host: 'ceph-radosgw1'
       properties:
         - 'caps mon = "allow rwx"'
-        - 'caps osd = "allow rwx'
+        - 'caps osd = "allow rwx"'
 
 

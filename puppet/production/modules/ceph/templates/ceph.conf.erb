@@ -29,6 +29,7 @@
   host            = <%= hash['radosgw_host'] %>
   rgw dns name    = <%= hash['radosgw_host'] %>
   rgw socket path = /var/run/ceph/<%= @cluster_name %>.<%= id %>.fastcgi.sock
+  keyring         = /etc/ceph/<%= @cluster_name %>.client.<%= id %>.keyring
   log file        = /var/log/radosgw/client.<%= id %>.log
 
   <%- end -%>
