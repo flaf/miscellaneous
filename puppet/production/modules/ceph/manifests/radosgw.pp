@@ -71,6 +71,7 @@ define ceph::radosgw (
     unless  => "test -L /etc/apache2/sites-enabled/${cluster_name}.conf",
     notify  => Service['apache2'],
     before  => Service['apache2'],
+    require => File["/etc/apache2/sites-available/${cluster_name}.conf"],
   }
 
   # Avoid duplicated exec resource.
