@@ -32,5 +32,11 @@ ceph:
       properties:
         - 'caps mon = "allow rwx"'
         - 'caps osd = "allow rwx"'
+    radosgw.gw2:
+      key: 'AQA+usVU8OowIRAAJxBt24kU4qFnHq2aCicsNQ=='
+      radosgw_host: 'ceph-radosgw2'
+      properties:
+        - 'caps mon = "allow rwx"'
+        - 'caps osd = "allow rwx"'
 
 
