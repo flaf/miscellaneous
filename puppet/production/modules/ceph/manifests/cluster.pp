@@ -207,6 +207,7 @@ define ceph::cluster (
   $osd_pool_default_pg_num = '256',
   $cluster_network         = undef,
   $public_network          = undef,
+  $rgw_dns_name            = undef,
   $keyrings                = {},
   $monitors,
   $admin_key,
@@ -246,6 +247,10 @@ be defined together.")
       $public_network,
       $cluster_network,
     )
+  }
+
+  if $rgw_dns_name != undef {
+    validate_string($rgw_dns_name)
   }
 
   # Define initial monitor and its address.
