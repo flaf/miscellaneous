@@ -4,7 +4,7 @@ class profiles::ceph::radosgw {
 
   $common       = $::profiles::ceph::params::common
   $keyrings     = $::profiles::ceph::params::keyrings
-  $admin_email  = hiera('admin_email')
+  $admin_email  = hiera('admin_email', $::admin_email)
   $cluster_name = $common['cluster_name']
 
   $account = strip(inline_template('
