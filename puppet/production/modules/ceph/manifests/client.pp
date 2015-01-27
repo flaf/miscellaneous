@@ -72,7 +72,7 @@ define ceph::client (
   $properties,
   $is_radosgw              = false,
   $common_rgw_dns_name     = undef,
-  $admin_mail              = "root@{$::fqdn}",
+  $admin_email             = "root@{$::fqdn}",
 ) {
 
   require '::ceph::client::packages'
@@ -142,7 +142,7 @@ be defined together.")
     ::ceph::radosgw { "${cluster_name}-${account}":
       cluster_name        => $cluster_name,
       account             => $account,
-      admin_mail          => $admin_mail,
+      admin_email         => $admin_email,
       common_rgw_dns_name => $common_rgw_dns_name,
     }
 

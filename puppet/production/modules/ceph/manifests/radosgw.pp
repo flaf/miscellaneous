@@ -4,7 +4,7 @@
 define ceph::radosgw (
   $cluster_name        = 'ceph',
   $account,
-  $admin_mail,
+  $admin_email,
   $common_rgw_dns_name = undef,
 ){
 
