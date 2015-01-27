@@ -8,6 +8,7 @@ ceph:
   admin_key: 'AQAi+ohUiIuQOBAAfhWdmSz8++KiFXESYEC7kg=='
   cluster_network: '10.0.0.0/24'
   public_network: '172.31.0.0/16'
+  common_rgw_dns_name: 'ostore'
   monitors:
     ceph-node1:
       id: '1'

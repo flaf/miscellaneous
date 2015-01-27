@@ -2,9 +2,10 @@
 # Private class.
 #
 define ceph::radosgw (
-  $cluster_name = 'ceph',
+  $cluster_name        = 'ceph',
   $account,
   $admin_mail,
+  $common_rgw_dns_name = undef,
 ){
 
   private("Sorry, ${title} is a private class.")

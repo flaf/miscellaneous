@@ -207,7 +207,7 @@ define ceph::cluster (
   $osd_pool_default_pg_num = '256',
   $cluster_network         = undef,
   $public_network          = undef,
-  $rgw_dns_name            = undef,
+  $common_rgw_dns_name     = undef,
   $keyrings                = {},
   $monitors,
   $admin_key,

@@ -11,6 +11,7 @@ class profiles::ceph::params {
   $monitors                = $ceph_conf['monitors']
   $keyrings                = $ceph_conf['keyrings']
   $admin_key               = $ceph_conf['admin_key']
+  $common_rgw_dns_name     = $ceph_conf['common_rgw_dns_name'] # can be undefined.
 
   # Test if the data has been well retrieved.
   validate_non_empty_data(
@@ -36,6 +37,7 @@ class profiles::ceph::params {
     'public_network'          => $public_network,
     'fsid'                    => $fsid,
     'monitors'                => $monitors,
+    'common_rgw_dns_name'     => $common_rgw_dns_name,
   }
 
   $cluster_specific = {

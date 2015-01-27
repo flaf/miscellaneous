@@ -71,6 +71,7 @@ define ceph::client (
   $key,
   $properties,
   $is_radosgw              = false,
+  $common_rgw_dns_name     = undef,
   $admin_mail              = "root@{$::fqdn}",
 ) {
 
@@ -139,9 +140,10 @@ be defined together.")
   if $is_radosgw {
 
     ::ceph::radosgw { "${cluster_name}-${account}":
-      cluster_name => $cluster_name,
-      account      => $account,
-      admin_mail   => $admin_mail,
+      cluster_name        => $cluster_name,
+      account             => $account,
+      admin_mail          => $admin_mail,
+      common_rgw_dns_name => $common_rgw_dns_name,
     }
 
   }
