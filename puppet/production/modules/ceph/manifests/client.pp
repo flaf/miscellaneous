@@ -56,23 +56,18 @@
 #
 #
 define ceph::client (
-  $cluster_name            = 'ceph',
-  $osd_journal_size        = '5120',
-  $osd_pool_default_size   = '2',
-  $osd_pool_default_pg_num = '256',
-  $cluster_network         = undef,
-  $public_network          = undef,
-  $monitors,
-  $fsid,
-  $owner                   = 'root',
-  $group                   = 'root',
-  $mode                    = '0600',
+  $cluster_name        = 'ceph',
+  $owner               = 'root',
+  $group               = 'root',
+  $mode                = '0600',
   $account,
   $key,
   $properties,
-  $is_radosgw              = false,
-  $common_rgw_dns_name     = undef,
-  $admin_email             = "root@{$::fqdn}",
+  $global_options,
+  $monitors,
+  $is_radosgw          = false,
+  $common_rgw_dns_name = undef,
+  $admin_email         = "root@{$::fqdn}",
 ) {
 
   require '::ceph::client::packages'
@@ -80,10 +75,6 @@ define ceph::client (
 
   validate_string(
     $cluster_name,
-    $osd_journal_size,
-    $osd_pool_default_size,
-    $osd_pool_default_pg_num,
-    $fsid,
     $owner,
     $group,
     $mode,
@@ -92,24 +83,25 @@ define ceph::client (
     $mail_admin,
   )
 
-  validate_hash($monitors)
   validate_array($properties)
+
+  validate_hash(
+    $global_options,
+    $monitors,
+  )
+
   validate_bool($is_radosgw)
 
-  if $public_network and ! $cluster_network {
-    fail("Class ${title} problem, plubic_network and cluster_network must \
-be defined together.")
-  }
-  if ! $public_network and $cluster_network {
-    fail("Class ${title} problem, plubic_network and cluster_network must \
-be defined together.")
+  if $is_radosgw {
+    if $common_rgw_dns_name != undef {
+      validate_string($common_rgw_dns_name)
+    }
+    validate_string($admin_email)
   }
 
-  if $public_network and $cluster_network {
-    validate_string(
-      $public_network,
-      $cluster_network,
-    )
+  unless has_key($global_options, 'fsid') {
+    fail("Class ${title} problem, the `global_options` hash must have \
+the 'fsid' key.")
   }
 
   # Maybe the current node is server too. Or maybe

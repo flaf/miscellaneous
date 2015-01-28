@@ -201,17 +201,12 @@
 # [4] http://ceph.com/docs/master/rados/operations/placement-groups/#set-the-number-of-placement-groups
 #
 define ceph::cluster (
-  $cluster_name            = 'ceph',
-  $osd_journal_size        = '5120',
-  $osd_pool_default_size   = '2',
-  $osd_pool_default_pg_num = '256',
-  $cluster_network         = undef,
-  $public_network          = undef,
-  $common_rgw_dns_name     = undef,
-  $keyrings                = {},
+  $cluster_name        = 'ceph',
+  $common_rgw_dns_name = undef,
+  $keyrings            = {},
   $monitors,
   $admin_key,
-  $fsid,
+  $global_options,
 ) {
 
   case $::lsbdistcodename {
@@ -223,34 +218,22 @@ define ceph::cluster (
 
   validate_string(
     $cluster_name,
-    $osd_journal_size,
-    $osd_pool_default_size,
-    $osd_pool_default_pg_num,
     $admin_key,
-    $fsid,
   )
 
-  validate_hash($keyrings)
-  validate_hash($monitors)
+  validate_hash(
+    $keyrings,
+    $monitors,
+    $global_options,
+  )
 
-  if $public_network and ! $cluster_network {
-    fail("Class ${title} problem, plubic_network and cluster_network must \
-be defined together.")
-  }
-  if ! $public_network and $cluster_network {
-    fail("Class ${title} problem, plubic_network and cluster_network must \
-be defined together.")
-  }
-
-  if $public_network and $cluster_network {
-    validate_string(
-      $public_network,
-      $cluster_network,
-    )
+  unless has_key($global_options, 'fsid') {
+    fail("Class ${title} problem, the `global_options` hash must have \
+the 'fsid' key.")
   }
 
-  if $rgw_dns_name != undef {
-    validate_string($rgw_dns_name)
+  if $common_rgw_dns_name != undef {
+    validate_string($common_rgw_dns_name)
   }
 
   # Define initial monitor and its address.

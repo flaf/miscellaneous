@@ -1,20 +1,12 @@
 ### This file is managed by Puppet, don't edit it. ###
+<%-
+  # Just cosmetic.
+  column_size = @global_options.keys.map(&:length).max
+-%>
 
 [global]
-  fsid                      = <%= @fsid %>
-  auth cluster required     = cephx
-  auth service required     = cephx
-  auth client required      = cephx
-  osd journal size          = <%= @osd_journal_size %>
-  filestore xattr use omap  = true
-  osd pool default size     = <%= @osd_pool_default_size %>
-  osd pool default min size = 1
-  osd pool default pg num   = <%= @osd_pool_default_pg_num %>
-  osd pool default pgp num  = <%= @osd_pool_default_pg_num %>
-  osd crush chooseleaf type = 1
-<%- if @public_network and @cluster_network -%>
-  public network            = <%= @public_network %>
-  cluster network           = <%= @cluster_network %>
+<%- @global_options.sort.map.each do |option, value| -%>
+  <%= option.gsub(' ', '').ljust(column_size) %> = <%= value %>
 <%- end -%>
 
 <%- @monitors.sort.map.each do |name, v| -%>
