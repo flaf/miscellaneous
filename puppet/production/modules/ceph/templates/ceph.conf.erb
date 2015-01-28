@@ -6,7 +6,7 @@
 
 [global]
 <%- @global_options.sort.map.each do |option, value| -%>
-  <%= option.gsub(' ', '').ljust(column_size) %> = <%= value %>
+  <%= option.gsub('_', ' ').ljust(column_size) %> = <%= value %>
 <%- end -%>
 
 <%- @monitors.sort.map.each do |name, v| -%>
