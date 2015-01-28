@@ -239,7 +239,7 @@ the 'fsid' key.")
   # Define initial monitor and its address.
   # Make directly "sort(keys($h))[0]" raises a syntax error.
   $array_tmp     = sort(keys($monitors))
-  $mon_init      = $array_tmp[0]
+  $mon_init      = $array_tmp[0] # the initial monitor is the first.
   $mon_init_addr = $monitors[$mon_init]['address']
 
   # id of the current host.
