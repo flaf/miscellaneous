@@ -16,7 +16,7 @@ GET_SPECIFIC_OPTIONS () {
             if [ -z "$monitor" ]
             then
                 printf "The --monitor option must be provided with a non empty value.\n"
-                printf "End of the script\n"
+                printf "End of the script.\n"
                 exit 1
             fi
             return 2
@@ -29,7 +29,7 @@ GET_SPECIFIC_OPTIONS () {
                 return 2
             else
                 printf "The --weight option must be provided with a float value.\n"
-                printf "End of the script\n"
+                printf "End of the script.\n"
                 exit 1
             fi
         ;;

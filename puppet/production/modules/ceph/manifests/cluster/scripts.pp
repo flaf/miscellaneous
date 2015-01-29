@@ -49,6 +49,14 @@ class ceph::cluster::scripts {
     content => template('ceph/ceph_osd_add.erb'),
   }
 
+  file { '/usr/local/sbin/ceph_mds_add':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0700',
+    content => template('ceph/ceph_mds_add.erb'),
+  }
+
 }
 
 

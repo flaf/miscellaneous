@@ -7,6 +7,7 @@ class ceph::cluster::packages {
 
   $packages = [
                 'ceph',
+                'ceph-mds',
                 'xfsprogs', # For xfs filesystem
                 'procps',   # Used in the ceph_* scripts
               ]

@@ -35,7 +35,7 @@ case "$SCRIPT_NAME" in
     *)
         printf "Script non authorized to source the "
         printf "<%= @ceph_script_common %> file.\n"
-        printf "End of the script\n"
+        printf "End of the script.\n"
         exit 1
     ;;
 
@@ -72,7 +72,7 @@ do
             if [ -z "$cluster" ]
             then
                 printf "The --cluster option must be provided with a non empty value.\n"
-                printf "End of the script\n"
+                printf "End of the script.\n"
                 exit 1
             fi
             shift 2
@@ -124,7 +124,7 @@ then
     then
         printf "The options --device and --mount-options must be provided "
         printf "together with a non empty value.\n"
-        printf "End of the script\n"
+        printf "End of the script.\n"
         exit 1
     fi
 fi
