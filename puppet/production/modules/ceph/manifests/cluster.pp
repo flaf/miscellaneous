@@ -1,3 +1,22 @@
+# TODO: rewrite all the doc header the module.
+#
+#  Typical commands to finish the ceph installation:
+#
+#    /root/monitor_init.sh
+#    # or /root/monitor_add.sh
+#
+#    mkfs.xfs -f /dev/sdb1
+#    mkfs.xfs -f /dev/sdc1
+#    ceph_osd_add --device /dev/sdb1 --mount-options noatime,defaults --yes
+#    ceph_osd_add --device /dev/sdc1 --mount-options noatime,defaults --yes
+#
+#    ceph auth add client.foo1 -i /etc/ceph/ceph.client.foo1.keyring
+#    ceph auth add client.foo2 -i /etc/ceph/ceph.client.foo2.keyring
+#
+#    ceph_mds_add --id 1
+#
+#
+#
 # User defined type to create ceph clusters. This module has
 # been tested with Ceph Firefly (0.8.7) on Ubuntu Trusty.
 #
