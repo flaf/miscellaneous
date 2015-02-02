@@ -12,18 +12,6 @@
 # The name of the cluster. This parameter is optional and
 # the default value is "ceph".
 #
-# *magic_tag:*
-# Keyrings and ceph configuration are exported by the server
-# in order to be imported by ceph clients. These files are
-# tagged by the server. One of these tags is the magic tag
-# (after expansion). This parameter allows you to specify
-# exactly which cluster that you wish to import the keyring
-# file (because you can have several clusters called "ceph"
-# in your datacenter etc). A possible value for this parameter
-# is (for instance) '@datacenter-ceph' where @datacenter will
-# be expanded (if the variable is defined). This parameter
-# is optional and the default value is $cluster_name.
-#
 # *owner:*
 # The owner of the keyring file which will be imported.
 # This parameter is optional and the default value is 'root'.
@@ -37,12 +25,68 @@
 # This parameter is optional and the default value is '0600'.
 #
 # *account:*
-# The name of the ceph account whose the keyring file is
-# imported. This parameter is mandatory and has no default
-# value. This is a implementation detail, but for a radosgw
-# (which is a particular ceph client), the value of this
-# parameter must not be the account name but the hostname
-# of the radosgw himself.
+# String which gives the name of the ceph account.
+# This parameter is mandatory.
+#
+# *key:*
+# The key of the account. This parameter is mandatory.
+# You can generate a key value with this command:
+#
+#     ceph-authtool --gen-print-key
+#
+# *properties:*
+# This parameter is an array of strings. Each string is
+# a line in the keyring file. This parameter is mandatory.
+#
+# *global_options:*
+# A hash of options in the global section in the $cluster.conf
+# file. For example:
+#
+#   $global_options = {
+#     'fsid'                      => 'e865b3d0-535a-4f18-9883-2793079d400b'
+#     'osd_pool_default_min_size' => '1',
+#     'osd_pool_default_pg_num'   => '256'
+#   }
+#
+# This parameter is mandatory and the key 'fsid' is mandatory.
+#
+# *monitors:*
+#
+# A hash with this form:
+#
+#    { 'ceph-node1' => { 'id'            => '1',
+#                        'address'       => '172.31.10.1',
+#                        'initial'       => true,
+#                      },
+#      'ceph-node2' => { 'id'            => '2',
+#                        'address'       => '172.31.10.2',
+#                      },
+#      'ceph-node3' => { 'id'            => '3',
+#                        'address'       => '172.31.10.3',
+#                      },
+#    }
+#
+# The keys are the hostnames of the monitors. This parameter
+# is mandatory and allows to create the ̀`[mon.<id>]` sections
+# in the $cluster.conf file.
+#
+# *is_radosgw:*
+# Boolean to tell if the client is a rados gateway.
+# This parameter is optional and the default value
+# is false.
+#
+# *common_rgw_dns_name:*
+# If the client is a rados gateway, this parameter
+# allows to define the entry "rgw dns name" in the
+# `[client.<radosgw-id>]` sections. This parameter
+# is optional and the default value is undef, and
+# in this case the parameter has the same value as
+# the `host` parameter.
+#
+# *admin_email:*
+# If the host is a rados gateway, this parameter
+# allows to define the email address in the vhost
+# of the apache server.
 #
 # == Sample Usages
 #
