@@ -26,7 +26,8 @@
 #
 # *account:*
 # String which gives the name of the ceph account.
-# This parameter is mandatory.
+# This parameter is optional and the default value
+# is the title of the current resource.
 #
 # *key:*
 # The key of the account. This parameter is mandatory.
@@ -86,25 +87,35 @@
 # *admin_email:*
 # If the host is a rados gateway, this parameter
 # allows to define the email address in the vhost
-# of the apache server.
+# of the apache server. This parameter is optional
+# and its default value is "root@{$::fqdn}".
 #
 # == Sample Usages
 #
-#  ::ceph::client { 'ceph-cinder':
-#    account      => 'cinder',
-#    cluster_name => 'ceph',
-#    magic_tag    => '@datacenter-ceph',
-#    owner        => 'cinder',
-#    mode         => '0640',
-#  }
+#  $monitors = ... # the same as above.
 #
+#  ::ceph::client { 'ceph-radosgw.gw1':
+#    cluster_name        => 'ceph',
+#    account             => 'radosgw.gw1',
+#    key                 => 'AQDN3ZJUUHKwGRAAgqki1QW271BYliGfmwzREA==',
+#    properties          => [
+#      'caps mon = "allow rwx"',
+#      'caps osd = "allow rwx"',
+#    ],
+#    global_options      => {
+#      'fsid' => 'e865b3d0-535a-4f18-9883-2793079d400b'
+#    },
+#    monitors            => $monitors,
+#    is_radosgw          => true,
+#    common_rgw_dns_name => 'radosgw',
+#  }
 #
 define ceph::client (
   $cluster_name        = 'ceph',
   $owner               = 'root',
   $group               = 'root',
   $mode                = '0600',
-  $account,
+  $account             = $title,
   $key,
   $properties,
   $global_options,
