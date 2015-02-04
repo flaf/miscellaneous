@@ -1,4 +1,4 @@
-# This class should be a private class but but when it's
+# This class should be a private class but when it's
 # encapsulated in a "profiles" class with a specific stage
 # metaparameter, you need to explicitly include this class
 # in the "profiles" class.
