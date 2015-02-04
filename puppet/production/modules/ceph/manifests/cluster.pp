@@ -1,68 +1,40 @@
-# TODO: rewrite all the doc header the module.
-#
-#  Typical commands to finish the ceph installation:
-#
-#    /root/monitor_init.sh
-#    # or /root/monitor_add.sh
-#
-#    mkfs.xfs -f /dev/sdb1
-#    mkfs.xfs -f /dev/sdc1
-#    ceph_osd_add --device /dev/sdb1 --mount-options noatime,defaults --yes
-#    ceph_osd_add --device /dev/sdc1 --mount-options noatime,defaults --yes
-#
-#    ceph auth add client.foo1 -i /etc/ceph/ceph.client.foo1.keyring
-#    ceph auth add client.foo2 -i /etc/ceph/ceph.client.foo2.keyring
-#
-#    ceph_mds_add --id 1
-#
-#
-#
-# User defined type to create ceph clusters. This module has
-# been tested with Ceph Firefly (0.8.7) on Ubuntu Trusty.
+# User defined type to create ceph clusters.
 #
 # Warning 1: this module manages the installation of ceph
 # but it doesn't manage the configuration of APT to be able
 # to install the right version of Ceph. It's up to you to
-# handle this part (with the ::apt Puppet module for
-# instance).
+# handle this part (with the ::apt Puppet module for instance).
 #
 # Warning 2: this module manages installation and configuration
 # of files but no cluster will be up after run puppet. After
-# puppet run on each node of the cluster, you should:
+# puppet run on each node of the cluster, you should typically
+# launch:
 #
-# 1. launch
+#    # 1. If you have dedicated disks for monitors or osds,
+#    #    you must format the partitions on each node.
+#    mkfs.xfs -f /dev/sdb1
+#    mkfs.xfs -f /dev/sdc1
+#    # Etc.
 #
-#     /root/monitor_init.sh
+#    # 2. Installation of the all monitors on each node.
+#    /root/monitor_init.sh  # In the first monitor node.
+#    /root/monitor_add.sh   # In the other monitor nodes.
+#    # Etc.
 #
-# on the initial monitor node.
+#    # 3. Installation of the ods on each node (help with ceph_osd_add --help).
+#    ceph_osd_add --device /dev/sdb1 --mount-options noatime,defaults --yes
+#    ceph_osd_add --device /dev/sdc1 --mount-options noatime,defaults --yes
+#    # Etc.
 #
-# 2. launch
+#    # 4. On a specific node, we create the ceph account.
+#    ceph auth add client.foo1 -i /etc/ceph/ceph.client.foo1.keyring
+#    ceph auth add client.foo2 -i /etc/ceph/ceph.client.foo2.keyring
+#    # Etc.
 #
-#     /root/monitor_add.sh
-#
-# on each monitor node except the initial monitor node.
-#
-# 3. create the ceph accounts except the "admin" account
-# which is already created (during the initialization
-# of the monitor). For instance, to create the account
-# "cinder" in the cluster "my_cluster", you can launch
-#
-#   ceph auth add client.cinder --cluster my_cluster \
-#       -i /etc/ceph/my_cluster.client.cinder.keyring
-#
-# Normally, the file "/etc/ceph/my_cluster.client.cinder.keyring"
-# already exists and contains the key and the capabilities
-# of the account.
-#
-# Then, your cluster is up but without any OSD. It's up
-# to you to manage OSD daemons (add or remove). You can
-# installed OSDs with the command ceph_osd_add. Run:
-#
-#   ceph_osd_add --help
-#
-# to see the options. It's possible to add monitors with
-# the command ceph_monitor_add (see the --help option too
-# for more information).
+#    # 5. On each node, we install the mds service.
+#    ceph_mds_add --id 1
+#    ceph_mds_add --id 2
+#    # Etc.
 #
 # == Requirement/Dependencies
 #
@@ -74,57 +46,16 @@
 # The name of the cluster. This parameter is optional and
 # the default value is "ceph".
 #
-# *osd_journal_size*:
-# The size of the osd journal in megabytes. Must be at least
-# 1024. This parameter is optional and the default value is 5120.
-# A formula is proposed here [1].
+# *common_rgw_dns_name*:
+# If the cluster has rados gateway clients in the keyrings
+# parameter, this parameter allows to define the entry
+# "rgw dns name" in the `[client.<radosgw-id>]` sections.
+# This parameter is optional and the default value is undef,
+# and in this case the parameter has the same value as
+# the `host` parameter. If the cluster has no rados gateway
+# client, this parameter is useless.
 #
-#   osd journal size =
-#       2 x ("expected throughput" x "filestore max sync interval")
-#
-# The default value of "filestore max sync interval" is 5 (see [2]).
-# The "expected throughput" is ~100 MB/s for 7200 RPM disk (for instance).
-# Take the minimum between the "expected throughput" of the disk and
-# the "expected throughput" of the network.
-#
-# *osd_pool_default_size*:
-# The default number of replicated objects when a pool is created.
-# This parameter is optional and the default value is 2.
-#
-# *osd_pool_default_pg_num*:
-# The default number of placement groups when a pool is
-# created. The default value of this parameter is 256.
-# How to choose this number? See [3].
-# About the pgp_num, see [4].
-#
-# *magic_tag:*
-# Keyrings and ceph configuration are exported in order to
-# be imported by ceph clients. Keyrings are tagged with
-# these strings: 'ceph-keyring', 'account' and the magic_tag
-# (after expansion). The ceph configuration is tagged with
-# 'ceph-conf' and the magic_tag (after expansion). This
-# parameter is optional and the default value is
-# "$cluster_name". A possible value for this parameter is
-# '@datacenter-ceph' where @datacenter will be expanded (if
-# the variable is defined).
-#
-# *cluster_network*:
-# The CIDR network address of the OSDs for replication of
-# data between OSDs, data balancing, data restoration etc.
-# If you define this parameter, you must define the
-# public_network parameter too. The default value of
-# cluster_network is undef (no cluster network, the same
-# network is used for the cluster and for the ceph clients.
-#
-# *public_network*:
-# The CIDR network address of the OSDs for the traffic with
-# ceph clients. The default value of this parameter is
-# undef. If you define this parameter, you must define the
-# cluster_network parameter too.
-# Note: the monitors should be in the public network because
-# ceph clients communicates with them.
-#
-# *keyrings:*
+# *keyrings*:
 # This parameter must be a hash which represents keyrings.
 # This parameter is optional and the default value is {},
 # ie no keyring file is created. This parameter must have
@@ -214,10 +145,13 @@
 #
 # == Links
 #
-# [1] http://ceph.com/docs/next/rados/configuration/osd-config-ref/#journal-settings:
-# [2] http://ceph.com/docs/master/rados/configuration/filestore-config-ref/#synchronization-intervals
-# [3] http://ceph.com/docs/master/rados/operations/placement-groups/#a-preselection-of-pg-num
-# [4] http://ceph.com/docs/master/rados/operations/placement-groups/#set-the-number-of-placement-groups
+# [1] OSD journal size:
+# http://ceph.com/docs/next/rados/configuration/osd-config-ref/#journal-settings:
+# http://ceph.com/docs/master/rados/configuration/filestore-config-ref/#synchronization-intervals
+#
+# [2] pg_num and pgp_num (important):
+# http://ceph.com/docs/master/rados/operations/placement-groups/#a-preselection-of-pg-num
+# http://ceph.com/docs/master/rados/operations/placement-groups/#set-the-number-of-placement-groups
 #
 define ceph::cluster (
   $cluster_name        = 'ceph',
