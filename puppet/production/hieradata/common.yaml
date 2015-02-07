@@ -1,4 +1,16 @@
 ---
+user:
+  root:
+    password: '$6$1bf13a11e0cc51c3$9Np709PTb37rGJTZ8J3Hnm22QfbFVWrLdsKq7TNnZDklPwaaHQ1hsKjUbpIlafhUgy5DWbGgpxEazIy6uPtlZ/'
+  flaf:
+    password: '$6$e79ff67156f57ff0$jV3LD6SnKItfmxFWhA4QiiHtI5gC175zE8.kA2NaBFdkKM2Yyr.Eff4S0UToCo0RmuxUX6n8NnIqH6DMxrMF/1'
+    comment: 'Francois Lafont'
+    sudo_access: true
+    ssh_authorized_keys:
+      root@router.athome.priv:
+        type: 'ssh-rsa'
+        key: 'AAAAB3NzaC1yc2EAAAADAQABAAABAQCwetNOQ3Iq25gIIg1ZL8unmdOCzLINnd5owsQ32vop+pVZzohmHNMzj0nVt1FkLnO/aW7+RMj1wbcfz3z1GMLN3XHcjF5bdV7qFjO7NThCfEcUbMKRy/ODMQpCHks+AuHRuqE/lcS9EMvGbix/RdSBhLvYQYYbS02R3Nik1md54Qhxv+JondHIM2QIEepJfdshEJ9yjofAsMQqQ6U4UW42G1LN1F7K7tFjo9A4LcuzT/KzTFR6SV1VE6C4UwJrmEgYKwy2cr0lJCG2psh5hguxcC+CzHBuq3mbnWzLnKUyWcXDf/GwgIUjgsu8T7vEP3YSNbxezytCpjTgf9hukaH/'
+
 timezone: 'Europe/Paris'
 default_locale: 'en_US.UTF-8'
 
