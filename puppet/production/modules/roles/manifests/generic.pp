@@ -10,7 +10,7 @@ class roles::generic {
   include '::profiles::grub::generic'
   include '::profiles::puppet::generic'
   include '::profiles::ssh::generic'
-  include '::profiles::misc::generic'
+  include '::profiles::users::generic'
 
 }
 

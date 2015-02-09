@@ -1,15 +1,60 @@
 ---
-user:
+users:
   root:
-    password: '$6$1bf13a11e0cc51c3$9Np709PTb37rGJTZ8J3Hnm22QfbFVWrLdsKq7TNnZDklPwaaHQ1hsKjUbpIlafhUgy5DWbGgpxEazIy6uPtlZ/'
+    password: >
+        ENC[PKCS7,MIIB2gYJKoZIhvcNAQcDoIIByzCCAccCAQAxggEhMIIBHQIBADAFMAACAQEw
+        DQYJKoZIhvcNAQEBBQAEggEAuu56r/i4ERWqn4+1BbAVmdA/dW7tUSTXapB8
+        +c8uxmDlSBBPTyht2AzcgLOMZxOG3s3z4Z5rcRuBUqH9IdyXmUhpd2k0Gr24
+        ZDGmIwkzBQjvfoOWUO44yGpnsvGGSB1+S2PeI7BoDuItvpTU1DLI+uGHvnXx
+        aZV31AC53/Ei9MJAEcSpuUQ8mqfut/ObfZ3d8DbnTiAbcuUyGHNH5Dn8ikZn
+        sK8gT83S4DLO44MY40p4YL8/l8ZUluvXYq+f41cKvpEi/q2xo3TBUN20zvfW
+        A1G5S6gSOlZIdkaD2kFOSU48SbU2Pu8+1Pl3JGzR9xXnjFby7fgZrp7Ng8l5
+        KWME6TCBnAYJKoZIhvcNAQcBMB0GCWCGSAFlAwQBKgQQFLbmaV/1GfA7uAZ8
+        W9Iu3IBwQFjFiAZWDMIWR4ZqAnV/k7gxPPgkxlAMjKr2ay/+teuXuDRXM2Or
+        Tvv/0EXVjdWHIM1BbVO6RZYk3TQvl2KcMq+q73CanmYzBfOlBTd4ibTPaeMp
+        lqse1l6UQ2l6+hHKfD8caHwtJHkCZaL/U/DZHA==]
+    bashrc:
+      prompt_color: 'green'
   flaf:
-    password: '$6$e79ff67156f57ff0$jV3LD6SnKItfmxFWhA4QiiHtI5gC175zE8.kA2NaBFdkKM2Yyr.Eff4S0UToCo0RmuxUX6n8NnIqH6DMxrMF/1'
+    password: >
+        ENC[PKCS7,MIIB2gYJKoZIhvcNAQcDoIIByzCCAccCAQAxggEhMIIBHQIBADAFMAACAQEw
+        DQYJKoZIhvcNAQEBBQAEggEAQJmF+uE4EsPOEq/LGCCBlUUH0x/d6FIjedvl
+        udRnmIEMhs6Erm/t9Z8w8HWeDWzQT/Er2if0cjlA1YjDPTmi2wlpWh55TnZ6
+        c/+iVk6ph9lKeCHD59h2jsfj7TOSwhx5ACytJr+gAvkZj7NmQQHXRSOQSdEB
+        ifN5hfKuBQRP7iEo8oPaWoempKQDNsjJtxiNrQyuqJuU4+EthvgrKpIZnmiz
+        YodJeUp0CXFE0ZtooQYuR0Yz46Bhn1fA+WHndzWFcd5wU0DB9I6XHMCNiRGh
+        HvTQgMoYy/EYqxJj8GvHPm9UM3+WCUq2l+xtE/Jp/yyepMehOgLd0nFqKiVk
+        bhKeajCBnAYJKoZIhvcNAQcBMB0GCWCGSAFlAwQBKgQQTloTKacuCQN+VGTi
+        ebhspIBwZqYB0+6kNr7AXpScIhAINTMKluUcEXpECXikooq8lT/RJHB0jTFq
+        1bYHaBvSZTaHA8PAn7woNW8lbIGvcKKKqApZ28CP2gvuPZ0yevXsTj4SBUFG
+        beGwKVcYy75Imjah1m1na/xBi44M5+JVgEDnvQ==]
     comment: 'Francois Lafont'
     sudo_access: true
+    bashrc:
+      prompt_color: 'yellow'
+      #content:
+    vimrc:
+      - 'syntax on'
+      - 'set tabstop=4'
+      - 'set shiftwidth=4'
+      - 'set expandtab'
+      - 'set laststatus=2'
+      - 'set listchars=nbsp:¤,tab:>-,trail:¤,trail:·'
+      - 'set list'
+      - 'set ignorecase'
+      - 'set smartcase'
+      - 'set showcmd'
     ssh_authorized_keys:
       root@router.athome.priv:
         type: 'ssh-rsa'
-        key: 'AAAAB3NzaC1yc2EAAAADAQABAAABAQCwetNOQ3Iq25gIIg1ZL8unmdOCzLINnd5owsQ32vop+pVZzohmHNMzj0nVt1FkLnO/aW7+RMj1wbcfz3z1GMLN3XHcjF5bdV7qFjO7NThCfEcUbMKRy/ODMQpCHks+AuHRuqE/lcS9EMvGbix/RdSBhLvYQYYbS02R3Nik1md54Qhxv+JondHIM2QIEepJfdshEJ9yjofAsMQqQ6U4UW42G1LN1F7K7tFjo9A4LcuzT/KzTFR6SV1VE6C4UwJrmEgYKwy2cr0lJCG2psh5hguxcC+CzHBuq3mbnWzLnKUyWcXDf/GwgIUjgsu8T7vEP3YSNbxezytCpjTgf9hukaH/'
+        key: >
+            AAAAB3NzaC1yc2EAAAADAQABAAABAQCwetNOQ3Iq25gIIg1ZL8unmdOCz
+            LINnd5owsQ32vop+pVZzohmHNMzj0nVt1FkLnO/aW7+RMj1wbcfz3z1GM
+            LN3XHcjF5bdV7qFjO7NThCfEcUbMKRy/ODMQpCHks+AuHRuqE/lcS9EMv
+            Gbix/RdSBhLvYQYYbS02R3Nik1md54Qhxv+JondHIM2QIEepJfdshEJ9y
+            jofAsMQqQ6U4UW42G1LN1F7K7tFjo9A4LcuzT/KzTFR6SV1VE6C4UwJrm
+            EgYKwy2cr0lJCG2psh5hguxcC+CzHBuq3mbnWzLnKUyWcXDf/GwgIUjgs
+            u8T7vEP3YSNbxezytCpjTgf9hukaH/
 
 timezone: 'Europe/Paris'
 default_locale: 'en_US.UTF-8'

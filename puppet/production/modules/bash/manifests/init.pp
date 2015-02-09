@@ -1,6 +1,6 @@
-# Very basic Puppet class to ensure the installation of
-# bash and bash-completion packages. This class manages
-# too a basic /root/.bashrc.puppet sourced by bash.
+# Puppet class to ensure the installation of bash and
+# bash-completion packages. This class manages the
+# ~/.bashrc.puppet file sourced by bash.
 #
 # == Requirement/Dependencies
 #
@@ -8,56 +8,86 @@
 #
 # == Parameters
 #
-# *root_prompt_color:*
-# A string to choose the main color of the root's prompt
+# *user*:
+# The user account whose file ~/.bashrc.puppet will be managed.
+# This parameter is optional and the default value is the title
+# of the current resource.
+#
+# *prompt_color*:
+# A string to choose the main color of the user's prompt
 # with bash. See the code to know the authorized colors.
 # The default value of this parameter is 'red'.
 #
+# *content*:
+# An array of lines in the ~/.bashrc.puppet file.
+# This parameter is optional. See the code below to
+# know the default value.
+#
 # == Sample Usages
 #
-#  include '::bash'
+#  ::bash::bashrc {'joe'
+#    prompt_color => 'purple',
+#    content      => [
+#                     "alias ll='\ls --color -lap'",
+#                    ],
+#  }
 #
-class bash (
-  $root_prompt_color = 'red',
+define bash::bashrc (
+  $user         = $title,
+  $prompt_color = 'red',
+  $content      = [
+                   "export EDITOR='vim'",
+                    "alias vim='vim -p'",
+                    "alias ll='\ls --color -lap'",
+                    "alias grep='grep --color'",
+                    "alias upgrade='apt-get update && apt-get upgrade'",
+                    "alias poweroff='poweroff && exit'",
+                    "alias reboot='reboot && exit'",
+                    "alias rp='puppet agent --test'",
+                    "alias crp='clear && puppet agent --test'",
+                    "HISTSIZE='1000'",
+                    "HISTFILESIZE='2000'",
+                    "HISTCONTROL='ignoredups:ignorespace'",
+                  ]
 ) {
 
-  case $::lsbdistcodename {
-    wheezy: {}
-    trusty: {}
-    default: {
-      fail("Class ${title} has never been tested on ${::lsbdistcodename}.")
-    }
+  $colors = {
+    # color  => number in bash (see the templates)
+    'red'    => '31',
+    'green'  => '32',
+    'yellow' => '33',
+    'blue'   => '34',
+    'purple' => '35',
+    'cyan'   => '36',
+    'white'  => '37',
   }
 
-  $colors = {
-           # color    => number in bash (see the templates)
-             'red'    => '31',
-             'green'  => '32',
-             'yellow' => '33',
-             'blue'   => '34',
-             'purple' => '35',
-             'cyan'   => '36',
-             'white'  => '37',
-            }
-
-  validate_string($root_prompt_color)
+  validate_string($prompt_color)
   $colors_array = keys($colors)
-  unless member($colors_array, $root_prompt_color) {
-    fail("Class ${title}, value of the `root_prompt_color` parameter \
-unsupported (value `${root_prompt_color}` unsupported).")
+  unless member($colors_array, $prompt_color) {
+    fail("Class ${title}, value of the `prompt_color` parameter \
+unsupported (value `${prompt_color}` unsupported).")
   }
 
   ensure_packages(['bash', 'bash-completion', ], { ensure => present, })
 
-  file_line { 'edit-bashrc-of-root':
-    path => '/root/.bashrc',
-    line => '. /root/.bashrc.puppet # Edited by Puppet.',
+  if $user == 'root' {
+    $home   = '/root'
+    $prompt = '#'
+  } else {
+    $home   = "/home/${user}"
+    $prompt = '$'
   }
 
-  file { '/root/.bashrc.puppet':
+  file_line { "edit-bashrc-of-${user}":
+    path => "${home}/.bashrc",
+    line => ". ${home}/.bashrc.puppet # Edited by Puppet.",
+  }
+
+  file { "${home}/.bashrc.puppet":
     ensure  => present,
-    owner   => 'root',
-    group   => 'root',
+    owner   => $user,
+    group   => $user,
     mode    => '0644',
     content => template('bash/bashrc.puppet.erb'),
   }

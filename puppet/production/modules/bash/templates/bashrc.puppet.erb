@@ -16,32 +16,8 @@ emphasis="$bold"
 reset="\e[00m"
 
 # The prompt.
-color="$<%= @root_prompt_color %>"
-PS1="${debian_chroot:+($debian_chroot)}$color\u@\h $blue\A $white\w$reset\n# "
-
-# Default editor.
-export EDITOR='vim'
-
-# Aliases.
-alias vim='vim -p'
-alias ll='\ls --color -lap'
-alias grep='grep --color'
-alias upgrade='apt-get update && apt-get upgrade'
-alias poweroff='poweroff && exit'
-alias reboot='reboot && exit'
-alias rp='puppet agent --test' # rp means "Run Puppet"
-alias crp='clear && puppet agent --test' # crp means "Clear and Run Puppet"
-
-# The number of commands to remember in the command history.
-HISTSIZE='1000'
-
-# The maximum number of lines contained in the history file
-# (ie ~/.bash_history).
-HISTFILESIZE='2000'
-
-# ignoredups  => line matching the previous history entry is not saved.
-# ignorespace => lines which begin with a space character are not saved.
-HISTCONTROL='ignoredups:ignorespace'
+color="$<%= @prompt_color %>"
+PS1="${debian_chroot:+($debian_chroot)}$color\u@\h $blue\A $white\w$reset\n<%= @prompt %> "
 
 # To avoid to pollute the shell with useless variables.
 unset regular
@@ -54,5 +30,9 @@ unset <%= name %>
 <%- end -%>
 unset reset
 unset color
+
+<%- @content.each do |line| -%>
+<%= line %>
+<%- end -%>
 
 
