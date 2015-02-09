@@ -32,7 +32,7 @@ users:
     sudo_access: true
     bashrc:
       prompt_color: 'yellow'
-      #content:
+      #content: # keep the default content.
     vimrc:
       - 'syntax on'
       - 'set tabstop=4'
