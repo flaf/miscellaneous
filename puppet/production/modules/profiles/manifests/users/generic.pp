@@ -53,7 +53,7 @@ class profiles::users::generic ( $stage = 'basis', ) {
              "owner"   => user,
              "group"   => user,
              "mode"    => "0644",
-             "content" => properties["vimrc"].join("\n"),
+             "content" => properties["vimrc"].join("\n") + "\n\n",
             }
           elsif property == "bashrc"
             bashrc_hash[user] = properties["bashrc"]
