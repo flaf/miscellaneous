@@ -3,7 +3,6 @@ class profiles::users::generic ( $stage = 'basis', ) {
   $users = hiera_hash('users')
   validate_non_empty_data($users)
 
-  # Installation of sudo if not yet done.
   ensure_packages(['sudo', 'vim'], { ensure => present, })
 
   # The handle of the root account is specific.
