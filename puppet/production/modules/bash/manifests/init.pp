@@ -13,6 +13,11 @@
 # This parameter is optional and the default value is the title
 # of the current resource.
 #
+# *home*:
+# The home directory of the user. This parameter is optional.
+# The default value will be /root if the user is root otherwise
+# it will be /home/${user}.
+#
 # *prompt_color*:
 # A string to choose the main color of the user's prompt
 # with bash. See the code to know the authorized colors.
@@ -34,6 +39,7 @@
 #
 define bash::bashrc (
   $user         = $title,
+  $home         = undef,
   $prompt_color = 'red',
   $content      = [
                    "export EDITOR='vim'",
@@ -71,20 +77,28 @@ unsupported (value `${prompt_color}` unsupported).")
 
   ensure_packages(['bash', 'bash-completion', ], { ensure => present, })
 
-  if $user == 'root' {
-    $home   = '/root'
+  if $home == undef {
+    if $user  == 'root' {
+      $home2  = '/root'
+    } else {
+      $home2  = "/home/${user}"
+    }
+  } else {
+    $home2 = $home
+  }
+
+  if $user  == 'root' {
     $prompt = '#'
   } else {
-    $home   = "/home/${user}"
     $prompt = '$'
   }
 
   file_line { "edit-bashrc-of-${user}":
-    path => "${home}/.bashrc",
-    line => ". ${home}/.bashrc.puppet # Edited by Puppet.",
+    path => "${home2}/.bashrc",
+    line => ". ${home2}/.bashrc.puppet # Edited by Puppet.",
   }
 
-  file { "${home}/.bashrc.puppet":
+  file { "${home2}/.bashrc.puppet":
     ensure  => present,
     owner   => $user,
     group   => $user,

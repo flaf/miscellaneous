@@ -26,6 +26,16 @@ class profiles::users::generic ( $stage = 'basis', ) {
 
       users.each do |user,properties|
         users_hash[user] = {}
+
+        if properties.has_key?("home")
+          home = properties["home"]
+        elsif user == "root"
+          home = "/root"
+        else
+          home = "/home/" + user
+        end
+        users_hash[user]["home"] = home
+
         properties.each do |property,value|
           if property == "ssh_authorized_keys"
             properties["ssh_authorized_keys"].each do |id,attrs|
@@ -37,11 +47,7 @@ class profiles::users::generic ( $stage = 'basis', ) {
               end
             end
           elsif property == "vimrc"
-            if user == "root"
-              file = "/root/.vimrc"
-            else
-              file = "/home/" + user + "/.vimrc"
-            end
+            file = home + "/" + ".vimrc"
             vimrc_hash[file] = {
              "ensure"  => "present",
              "owner"   => user,
@@ -51,6 +57,7 @@ class profiles::users::generic ( $stage = 'basis', ) {
             }
           elsif property == "bashrc"
             bashrc_hash[user] = properties["bashrc"]
+            bashrc_hash[user]["home"] = home
           elsif property == "sudo_access"
             if value == true
               users_hash[user]["groups"] = ["sudo"]
