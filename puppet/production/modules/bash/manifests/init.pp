@@ -42,18 +42,13 @@ define bash::bashrc (
   $home         = undef,
   $prompt_color = 'red',
   $content      = [
-                   "export EDITOR='vim'",
-                    "alias vim='vim -p'",
-                    "alias ll='\ls --color -lap'",
-                    "alias grep='grep --color'",
-                    "alias upgrade='apt-get update && apt-get upgrade'",
-                    "alias poweroff='poweroff && exit'",
-                    "alias reboot='reboot && exit'",
-                    "alias rp='puppet agent --test'",
-                    "alias crp='clear && puppet agent --test'",
-                    "HISTSIZE='1000'",
-                    "HISTFILESIZE='2000'",
-                    "HISTCONTROL='ignoredups:ignorespace'",
+                   'export EDITOR="vim"',
+                   'alias vim="vim -p"',
+                   'alias ll="\ls --color -lap"',
+                   'alias grep="grep --color"',
+                   'HISTSIZE="1000"',
+                   'HISTFILESIZE="2000"',
+                   'HISTCONTROL="ignoredups:ignorespace"',
                   ]
 ) {
 

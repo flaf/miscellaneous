@@ -15,7 +15,6 @@ users:
         lqse1l6UQ2l6+hHKfD8caHwtJHkCZaL/U/DZHA==]
     bashrc:
       prompt_color: 'green'
-      #content: # keep the default content.
     vimrc:
       - 'syntax on'
   flaf:
@@ -35,7 +34,19 @@ users:
     sudo_access: true
     bashrc:
       prompt_color: 'yellow'
-      #content: # keep the default content.
+      content:
+        - 'export EDITOR=vim'
+        - 'alias vim="vim -p"'
+        - 'alias ll="\ls --color -lap"'
+        - 'alias grep="grep --color"'
+        - 'alias upgrade="sudo apt-get update && sudo apt-get upgrade"'
+        - 'alias poweroff="sudo poweroff && exit"'
+        - 'alias reboot="sudo reboot && exit"'
+        - 'alias rp="sudo puppet agent --test"'
+        - 'alias crp="clear && sudo puppet agent --test"'
+        - 'HISTSIZE=1000'
+        - 'HISTFILESIZE=2000'
+        - 'HISTCONTROL="ignoredups:ignorespace"'
     vimrc:
       - 'syntax on'
       - 'set tabstop=4'
