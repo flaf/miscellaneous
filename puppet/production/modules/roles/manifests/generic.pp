@@ -11,6 +11,7 @@ class roles::generic {
   include '::profiles::puppet::generic'
   include '::profiles::ssh::generic'
   include '::profiles::users::generic'
+  include '::profiles::misc::generic'
 
 }
 

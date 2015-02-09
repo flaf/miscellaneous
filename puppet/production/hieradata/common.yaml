@@ -15,6 +15,9 @@ users:
         lqse1l6UQ2l6+hHKfD8caHwtJHkCZaL/U/DZHA==]
     bashrc:
       prompt_color: 'green'
+      #content: # keep the default content.
+    vimrc:
+      - 'syntax on'
   flaf:
     password: >
         ENC[PKCS7,MIIB2gYJKoZIhvcNAQcDoIIByzCCAccCAQAxggEhMIIBHQIBADAFMAACAQEw
@@ -63,9 +66,6 @@ keyboard:
   xkbmodel: 'pc105'
   xkblayout: 'fr'
   xkbvariant: 'latin9'
-
-bash:
-  root_prompt_color: 'purple'
 
 network:
   restart_network: true # It's a moot point.
