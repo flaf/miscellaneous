@@ -84,12 +84,17 @@ class profiles::users::generic ( $stage = 'basis', ) {
     purge_ssh_keys => $purge_ssh_keys,
     shell          => '/bin/bash',
     system         => false,
+    tag            => 'user_account',
   }
 
   create_resources('user', $hash['users'], $users_default)
-  create_resources('ssh_authorized_key', $hash['sshkeys'])
-  create_resources('file', $hash['vimrc'])
-  create_resources('::bash::bashrc', $hash['bashrc'])
+  create_resources('ssh_authorized_key', $hash['sshkeys'], { tag => 'sshkey', })
+  create_resources('file', $hash['vimrc'], { tag => 'vimrc',})
+  create_resources('::bash::bashrc', $hash['bashrc'], { tag => 'bashrc',})
+
+  User <| tag == 'user_account' |> -> Ssh_authorized_key <| tag == 'sshkey' |>
+                                   -> File <| tag == 'vimrc' |>
+                                   -> ::Bash::Bashrc <| tag == 'bashrc' |>
 
 }
 
