@@ -52,8 +52,9 @@
 # "rgw dns name" in the `[client.<radosgw-id>]` sections.
 # This parameter is optional and the default value is undef,
 # and in this case the parameter has the same value as
-# the `host` parameter. If the cluster has no rados gateway
-# client, this parameter is useless.
+# the `host` parameter in the `[client.<radosgw-id>]` section.
+# If the cluster has no rados gateway client, this parameter
+# is useless.
 #
 # *keyrings*:
 # This parameter must be a hash which represents keyrings.
@@ -61,26 +62,21 @@
 # ie no keyring file is created. This parameter must have
 # this structure:
 #
-#  {
-#   'test1' => {
-#               'key'      => 'AQBWX65UeDO/NRAAXWTEWvlvq2alpD5EEmZ7DA==',
-#               properties => [
-#                               'caps mon = "allow r"',
-#                               'caps osd = " allow rwx pool=pool1"',
-#                             ],
-#              },
-#   'test2' => {
-#               'key'         => 'AQBVX65UsGEMIxAA/F5t/wuDtKvFD/5ZYdS0DA==',
-#               properties    => [
-#                                 'caps mon = "allow rwx"',
-#                                 'caps osd = " allow rwx"',
-#                                ],
-#               'radosgw_host => 'radosgw-1',
-#              },
+#  { 'test1'       => { 'key'          => 'AQBWX65UeDO/NRAAXWTEWvlvq2alpD5EEmZ7DA==',
+#                       'properties'   => [ 'caps mon = "allow r"',
+#                                         'caps osd = " allow rwx pool=pool1"',
+#                                         ],
+#                     },
+#    'radosgw.gw1' => { 'key'          => 'AQBVX65UsGEMIxAA/F5t/wuDtKvFD/5ZYdS0DA==',
+#                       'properties'   => [ 'caps mon = "allow rwx"',
+#                                         'caps osd = " allow rwx"',
+#                                         ],
+#                       'radosgw_host' => 'radosgw-1',
+#                     },
 #  }
 #
 # The keys of this hash are the names of the accounts.
-# The 'radosgw_host' key means that the keyring is a specific
+# The `radosgw_host` key means that the keyring is a specific
 # radosgw keyring and the value of this key must be the hostname
 # of the radosgw server.
 #
@@ -89,11 +85,11 @@
 #     ceph-authtool --gen-print-key
 #
 # *monitors*:
-# A hash with this form:
+# This parameter is mandatory. This parameter must be
+# a hash with this form:
 #
 #    { 'ceph-node1' => { 'id'            => '1',
 #                        'address'       => '172.31.10.1',
-#                        'initial'       => true,
 #                      },
 #      'ceph-node2' => { 'id'            => '2',
 #                        'address'       => '172.31.10.2',
@@ -105,42 +101,56 @@
 #                      },
 #    }
 #
-# The keys are the hostnames of the monitors. The "initial"
-# property means that this monitor will be the ceph cluster
-# will initialized manually with the command /root/monitor_init.sh
-# (see above).
+# The keys are the hostnames of the monitors.
 # If the working directory of the monitor has a specific
 # device, it's possible to provided the device name and
 # the mount options.
 #
 # *admin_key*:
-# The key (for authentification) of the ceph account "admin".
-# This parameter has no default value. This parameter should not
+# The key (for authentication) of the ceph account "admin".
+# This parameter is mandatory. This parameter should not
 # be present in clear text in Puppet/hiera etc.
 # You can generate such key with this command:
 #
 #   ceph-authtool --gen-print-key
 #
-# *fsid*:
-# The fsid of the cluster. This parameter has no default value.
-# You can generate such fsid with this command:
+# *global_options*:
+# This parameter is mandatory. This parameter must be
+# a hash where keys/values will be the parameters in
+# the `[global]` section of the of the /etc/ceph/$cluster.conf
+# file. Here is an example:
+#
+#  { 'auth_client_required'      => 'cephx',
+#    'auth_cluster_required'     => 'cephx',
+#    'auth_service_required'     => 'cephx',
+#    'cluster network'           => '192.168.0.0/24',
+#    'public network'            => '10.0.2.0/24',
+#    'filestore_xattr_use_omap'  => 'true',
+#    'fsid'                      => '49276091-877c-464d-9e4d-23786db82fc8',
+#    'osd_crush_chooseleaf_type' => '1',
+#    'osd_journal_size'          => '2048',
+#    'osd_pool_default_min_size' => '1',
+#    'osd_pool_default_pg_num'   => '512',
+#    'osd_pool_default_pgp_num'  => '512',
+#    'osd_pool_default_size'     => '2',
+#  }
+#
+# The fsid can be generated with this command:
 #
 #   uuidgen
 #
 # == Sample Usages
 #
-#  $keyrings = # the same hash as above.
-#  $monitors = # the same hash as above.
+#  $keyrings       = # the same hash as above.
+#  $monitors       = # the same hash as above.
+#  $global_options = # the same hash as above.
 #
 #  ::ceph { 'my_cluster':
-#     cluster_name    => 'test',
-#     magic_tag       => '@datacenter-test',
-#     monitors        => $monitors,
-#     keyrings        => $keyrings,
-#     admin_key       => 'AQC4yY5UcP5RNRAAG8tsOZPjrMmmlAjZ2b+1Jg==',
-#     fsid            => '87dc2273-776f-4054-85dd-b746f0127433',
-#     cluster_network => '10.0.0.0/24',
-#     public_network  => '172.31.0.0/16',
+#     cluster_name        => 'ceph-test',
+#     common_rgw_dns_name => 's3store',
+#     keyrings            => $keyrings,
+#     monitors            => $monitors,
+#     global_options      => $global_options,
 #  }
 #
 # == Links
