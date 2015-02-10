@@ -68,7 +68,7 @@
 #    }
 #
 # The keys are the hostnames of the monitors. This parameter
-# is mandatory and allows to create the ̀`[mon.<id>]` sections
+# is mandatory and allows to create the `[mon.<id>]` sections
 # in the $cluster.conf file.
 #
 # *is_radosgw:*
