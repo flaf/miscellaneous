@@ -1,0 +1,13 @@
+---
+classes: [ '::roles::test' ]
+enc_groups:
+  - 'virtual-labs'
+enc_datacenter: 'vbox-home'
+
+network:
+  interfaces:
+    eth0:
+      macaddress: '08:00:27:bc:ce:f1'
+      method: 'dhcp'
+      network_name: 'private'
+
