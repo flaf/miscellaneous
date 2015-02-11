@@ -1,3 +1,25 @@
+# TODO:
+#   Create a specific hiera entry "ssh_keys" for
+#   the ssh keys (and put $ssh_keys = hiera_hash('ssh_keys')),
+#   and in the "users" hiera entry just put the a list of
+#   key names per user. For instance:
+#
+#   ssh_keys:
+#     root@router.athome.priv:
+#       type: 'ssh-rsa'
+#       key: '...'
+#     francois@flpc.athome.priv:
+#       type: 'ssh-rsa'
+#       key: '...'
+#
+#   users:
+#     flaf:
+#       password: '...'
+#       ssh_authorized_keys:
+#         - 'root@router.athome.priv'
+#         - 'francois@flpc.athome.priv'
+#
+#
 class profiles::users::generic ( $stage = 'basis', ) {
 
   $users = hiera_hash('users')
