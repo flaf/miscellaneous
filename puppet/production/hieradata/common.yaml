@@ -13,6 +13,17 @@ users:
         W9Iu3IBwQFjFiAZWDMIWR4ZqAnV/k7gxPPgkxlAMjKr2ay/+teuXuDRXM2Or
         Tvv/0EXVjdWHIM1BbVO6RZYk3TQvl2KcMq+q73CanmYzBfOlBTd4ibTPaeMp
         lqse1l6UQ2l6+hHKfD8caHwtJHkCZaL/U/DZHA==]
+    ssh_authorized_keys:
+      root@router.athome.priv:
+        type: 'ssh-rsa'
+        key: >
+            AAAAB3NzaC1yc2EAAAADAQABAAABAQCwetNOQ3Iq25gIIg1ZL8unmdOCz
+            LINnd5owsQ32vop+pVZzohmHNMzj0nVt1FkLnO/aW7+RMj1wbcfz3z1GM
+            LN3XHcjF5bdV7qFjO7NThCfEcUbMKRy/ODMQpCHks+AuHRuqE/lcS9EMv
+            Gbix/RdSBhLvYQYYbS02R3Nik1md54Qhxv+JondHIM2QIEepJfdshEJ9y
+            jofAsMQqQ6U4UW42G1LN1F7K7tFjo9A4LcuzT/KzTFR6SV1VE6C4UwJrm
+            EgYKwy2cr0lJCG2psh5hguxcC+CzHBuq3mbnWzLnKUyWcXDf/GwgIUjgs
+            u8T7vEP3YSNbxezytCpjTgf9hukaH/
     bashrc:
       prompt_color: 'green'
     vimrc:
