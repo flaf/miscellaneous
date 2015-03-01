@@ -16,7 +16,7 @@ ceph:
     osd_pool_default_pgp_num: '256'
     osd_crush_chooseleaf_type: '1'
     osd_max_backfills: '2'
-    osd_recovery_max_active: '2
+    osd_recovery_max_active: '2'
   admin_key: 'AQAi+ohUiIuQOBAAfhWdmSz8++KiFXESYEC7kg=='
   common_rgw_dns_name: 'ostore'
   monitors:
