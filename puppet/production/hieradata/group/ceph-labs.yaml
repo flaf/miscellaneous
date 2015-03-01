@@ -37,6 +37,11 @@ ceph:
       properties:
         - 'caps mon = "allow r"'
         - 'caps osd = "allow class-read object_prefix rbd_children, allow rwx pool=volumes"'
+    cephfsuser:
+      key: 'AQCwhvNUwN04ARAAcgwXQ1RYRkD0H/300NxOFw=='
+      properties:
+        - 'caps mon = "allow r"'
+        - 'caps osd = "allow class-read object_prefix rbd_childre, allow rwx pool=data, allow rwx pool=metadata"'
     radosgw.gw1:
       key: 'AQCGIrNUQAliExAAxDdVv+buXUxXdP0N1ctmrg=='
       radosgw_host: 'ceph-radosgw1'

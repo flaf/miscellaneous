@@ -15,7 +15,7 @@ network:
 ceph:
   client:
     keyrings:
-      cinder:
+      cephfsuser:
         owner: 'root'
         group: 'root'
         mode: '0640'
