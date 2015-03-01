@@ -52,7 +52,7 @@ class locales (
   # locale is set as we want.
   exec { 'update-default-locale':
     path        => '/usr/sbin:/usr/bin:/sbin:/bin',
-    command     => "update-locale LANG='${default_locale}'",
+    command     => "update-locale LANG='\"${default_locale}\"'",
     user        => 'root',
     group       => 'root',
     refreshonly => true,
