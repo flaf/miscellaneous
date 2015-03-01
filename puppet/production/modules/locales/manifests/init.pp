@@ -42,7 +42,7 @@ class locales (
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    content => "LANG=${default_locale}\n",
+    content => "LANG=\"${default_locale}\"\n",
   }
 
   # In fact, this is the opposite. The command below
