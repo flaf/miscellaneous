@@ -26,6 +26,20 @@ users:
             u8T7vEP3YSNbxezytCpjTgf9hukaH/
     bashrc:
       prompt_color: 'green'
+      content:
+        - 'export EDITOR=vim'
+        - 'alias vim="vim -p"'
+        - 'alias ll="\ls --color -lap"'
+        - 'alias grep="grep --color"'
+        - 'alias upgrade="apt-get update && apt-get upgrade"'
+        - 'alias dist-upgrade="apt-get update && apt-get dist-upgrade"'
+        - 'alias poweroff="poweroff && exit"'
+        - 'alias reboot="reboot && exit"'
+        - 'alias rp="puppet agent --test"'
+        - 'alias crp="clear && puppet agent --test"'
+        - 'HISTSIZE=1000'
+        - 'HISTFILESIZE=2000'
+        - 'HISTCONTROL="ignoredups:ignorespace"'
     vimrc:
       - 'syntax on'
   flaf:
@@ -51,6 +65,7 @@ users:
         - 'alias ll="\ls --color -lap"'
         - 'alias grep="grep --color"'
         - 'alias upgrade="sudo apt-get update && sudo apt-get upgrade"'
+        - 'alias dist-upgrade="sudo apt-get update && sudo apt-get dist-upgrade"'
         - 'alias poweroff="sudo poweroff && exit"'
         - 'alias reboot="sudo reboot && exit"'
         - 'alias rp="sudo puppet agent --test"'
