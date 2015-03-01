@@ -1,0 +1,53 @@
+#!/bin/sh
+
+export PATH='/usr/sbin:/usr/bin:/sbin:/bin'
+export LC_ALL='C'
+
+# About "/proc/sys/net/ipv4/conf/$IFACE/accept_redirects".
+# Extracted from https://www.kernel.org/doc/Documentation/networking/ip-sysctl.txt.
+#
+# accept_redirects - BOOLEAN
+#     Accept ICMP redirect messages.
+#     accept_redirects for the interface will be enabled if:
+#     - both conf/{all,interface}/accept_redirects are TRUE in the case
+#       forwarding for the interface is enabled
+#     or
+#     - at least one of conf/{all,interface}/accept_redirects is TRUE in the
+#       case forwarding for the interface is disabled
+#     accept_redirects for the interface will be disabled otherwise
+#     default TRUE (host)
+#             FALSE (router)
+
+
+# The script can be called in command line with "$1" == 'NOW'.
+# In this case, all the interfaces are set immediately.
+if [ "$1" = 'NOW' ]
+then
+    for f in /proc/sys/net/ipv4/conf/*/accept_redirects
+    do
+        [ "$f" = '/proc/sys/net/ipv4/conf/*/accept_redirects' ] && continue
+        echo 0 > "$f"
+    done
+
+    # Remove routes in the cache.
+    ip route flush cache
+
+    # End of the script in command line.
+    exit 0
+fi
+
+
+# Part executed when an interface is UP.
+for i in all default "$IFACE"
+do
+    file="/proc/sys/net/ipv4/conf/$i/accept_redirects"
+    if [ -e "$file" ] && [ $(cat "$file") != '0' ]
+    then
+        echo 0 > "$file"
+    fi
+done
+
+# Remove routes in the cache.
+ip route flush cache
+
+

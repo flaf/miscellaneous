@@ -31,6 +31,16 @@
 # BANG!!! The default value of this parameter is false (more
 # secure).
 #
+# *ignore_icmp_redirect*:
+# This parameter is a boolean and the default value is "true".
+# If set to "true", a script which disables "ICMP redirect"
+# will be put in /etc/network/if-up.d/. If set to "false",
+# the script will not be put. The first time that the script
+# is put, it is launched to disables "ICMP redirect" immediately
+# without restarting the network. Then, at each restart of the
+# network, the script is launched and "ICMP redirect" is disable
+# too.
+#
 # *interfaces*:
 # This parameter is mandatory and has no default value.
 # This parameter is a hash with this form:
@@ -134,8 +144,9 @@
 #
 #
 class network::interfaces (
-  $rename_interfaces = false,
-  $restart_network   = false,
+  $rename_interfaces    = false,
+  $restart_network      = false,
+  $ignore_icmp_redirect = true,
   $interfaces,
 ) {
 
@@ -158,6 +169,10 @@ class network::interfaces (
 
   unless is_bool($restart_network) {
     fail("In the ${title} class, `restart_network` parameter must be a boolean.")
+  }
+
+  unless is_bool($ignore_icmp_redirect) {
+    fail("In the ${title} class, `ignore_icmp_redirect` parameter must be a boolean.")
   }
 
   unless is_hash($interfaces) {
@@ -197,6 +212,26 @@ class network::interfaces (
     mode    => '0644',
     replace => $replace_rule,
     content => $content_rule,
+  }
+
+  if $ignore_icmp_redirect {
+    file { 'ignore_icmp_redirect':
+      path   => '/etc/network/if-up.d/ignore_icmp_redirect',
+      ensure => present,
+      owner  => 'root',
+      group  => 'root',
+      mode   => '0755',
+      source => 'puppet:///modules/network/ignore_icmp_redirect',
+      notify => Exec['ignore_icmp_redirect_now'],
+    }
+
+    exec { 'ignore_icmp_redirect_now':
+      user        => 'root',
+      command     => '/etc/network/if-up.d/ignore_icmp_redirect NOW',
+      require     => File['ignore_icmp_redirect'],
+      before      => File['/etc/network/interfaces.puppet'],
+      refreshonly => true,
+    }
   }
 
   file { '/etc/network/interfaces.puppet':
