@@ -15,6 +15,8 @@ ceph:
     osd_pool_default_pg_num: '256'
     osd_pool_default_pgp_num: '256'
     osd_crush_chooseleaf_type: '1'
+    osd_max_backfills: '2'
+    osd_recovery_max_active: '2
   admin_key: 'AQAi+ohUiIuQOBAAfhWdmSz8++KiFXESYEC7kg=='
   common_rgw_dns_name: 'ostore'
   monitors:
@@ -26,9 +28,9 @@ ceph:
     ceph-node2:
       id: '2'
       address: '172.31.10.2'
-    #ceph-node3:
-    #  id: '3'
-    #  address: '172.31.10.3'
+    ceph-node3:
+      id: '3'
+      address: '172.31.10.3'
   keyrings:
     cinder:
       key: 'AQDN3ZJUUHKwGRAAgqki1QW271BYlhGfnwzREA=='
