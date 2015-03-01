@@ -29,6 +29,19 @@
 # This parameter is optional and the default value
 # is the title of the current resource.
 #
+# *secret_file:*
+# This parameter is a boolean and its default value is false.
+# If set to true, in addition to create the keyring file
+# /etc/ceph/$cluster.client.$account.keyring, the file
+# /etc/ceph/$cluster.client.$account.secret will be created
+# with just the key of the account. It can be useful with
+# cephfs where the command:
+#
+#     mount -t mon1,mon2,mon3:6789:/ /mnt/ -o name=<account>,secretfile=<path>
+#
+# needs to the "secretfile" option and the secretfile must just
+# contain the key of the account (a keyring file will not work).
+#
 # *key:*
 # The key of the account. This parameter is mandatory.
 # You can generate a key value with this command:
@@ -116,6 +129,7 @@ define ceph::client (
   $group               = 'root',
   $mode                = '0600',
   $account             = $title,
+  $secret_file         = false,
   $key,
   $properties,
   $global_options,
@@ -145,7 +159,10 @@ define ceph::client (
     $monitors,
   )
 
-  validate_bool($is_radosgw)
+  validate_bool(
+    $is_radosgw,
+    $secret_file,
+  )
 
   if $is_radosgw {
     if $common_rgw_dns_name != undef {
@@ -182,6 +199,16 @@ the 'fsid' key.")
     owner        => $owner,
     group        => $group,
     mode         => $mode,
+  }
+
+  if $secret_file {
+    file { "/etc/ceph/${cluster_name}.client.${account}.secret":
+      owner   => $owner,
+      group   => $group,
+      mode    => $mode,
+      content => "${key}\n",
+      require => ::Ceph::Common::Keyring["${cluster_name}.client.${account}.keyring"],
+    }
   }
 
   if $is_radosgw {

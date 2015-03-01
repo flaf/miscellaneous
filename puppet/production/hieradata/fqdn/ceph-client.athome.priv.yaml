@@ -18,6 +18,7 @@ ceph:
       cephfsuser:
         owner: 'root'
         group: 'root'
-        mode: '0640'
+        mode: '0600'
+        secret_file: true
 
 

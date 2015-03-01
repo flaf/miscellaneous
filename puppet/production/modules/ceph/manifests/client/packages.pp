@@ -7,6 +7,7 @@ class ceph::client::packages {
 
   $packages = [
                 'ceph-common',
+                'ceph-fs-common',
               ]
 
   ensure_packages($packages, { ensure => present, })

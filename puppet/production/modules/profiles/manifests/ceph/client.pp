@@ -27,6 +27,9 @@ class profiles::ceph::client {
           "key"        => keyrings[account]["key"],
           "properties" => keyrings[account]["properties"],
         }
+        if p.has_key?("secret_file")
+          hash[cluster_name + "-" + account]["secret_file"] = p["secret_file"]
+        end
       end
     -%>
     <%= hash.to_s %>
