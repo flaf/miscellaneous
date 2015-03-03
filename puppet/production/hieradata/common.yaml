@@ -29,6 +29,7 @@ users:
       content:
         - 'export EDITOR=vim'
         - 'alias vim="vim -p"'
+        - 'alias vi="vim -p"'
         - 'alias ll="\ls --color -lap"'
         - 'alias grep="grep --color"'
         - 'alias upgrade="apt-get update && apt-get upgrade"'
@@ -62,6 +63,7 @@ users:
       content:
         - 'export EDITOR=vim'
         - 'alias vim="vim -p"'
+        - 'alias vi="vim -p"'
         - 'alias ll="\ls --color -lap"'
         - 'alias grep="grep --color"'
         - 'alias upgrade="sudo apt-get update && sudo apt-get upgrade"'
