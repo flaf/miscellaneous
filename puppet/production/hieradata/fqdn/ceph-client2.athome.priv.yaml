@@ -1,0 +1,24 @@
+---
+classes: [ '::roles::ceph::client' ]
+enc_groups:
+  - 'virtual-labs'
+  - 'ceph-labs'
+enc_datacenter: 'vbox-home'
+
+network:
+  interfaces:
+    eth0:
+      macaddress: '08:00:27:bc:cd:f1'
+      method: 'dhcp'
+      network_name: 'private'
+
+ceph:
+  client:
+    keyrings:
+      cephfsuser:
+        owner: 'root'
+        group: 'root'
+        mode: '0600'
+        secret_file: true
+
+
