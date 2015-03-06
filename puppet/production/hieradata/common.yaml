@@ -43,6 +43,7 @@ users:
         - 'HISTCONTROL="ignoredups:ignorespace"'
     vimrc:
       - 'syntax on'
+      - 'set nowrap'
   flaf:
     password: >
         ENC[PKCS7,MIIB2gYJKoZIhvcNAQcDoIIByzCCAccCAQAxggEhMIIBHQIBADAFMAACAQEw
@@ -79,6 +80,7 @@ users:
       - 'syntax on'
       - 'set tabstop=4'
       - 'set shiftwidth=4'
+      - 'set nowrap'
       - 'set expandtab'
       - 'set laststatus=2'
       - 'set listchars=nbsp:¤,tab:>-,trail:¤,trail:·'
