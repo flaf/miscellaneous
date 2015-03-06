@@ -38,7 +38,8 @@ class repositories::ceph (
   }
 
   apt::source { 'ceph':
-    location    => "http://ceph.com/debian-${version}/",
+    #location    => "http://ceph.com/debian-${version}/",
+    location    => "http://ceph.com/debian-testing/",
     release     => $::lsbdistcodename,
     repos       => 'main',
     key         => '17ED316D',
