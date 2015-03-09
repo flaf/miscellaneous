@@ -20,5 +20,9 @@ ceph:
         group: 'root'
         mode: '0600'
         secret_file: true
+      cinder:
+        owner: 'root'
+        group: 'root'
+        mode: '0600'
 
 
