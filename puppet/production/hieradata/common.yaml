@@ -24,6 +24,16 @@ users:
             jofAsMQqQ6U4UW42G1LN1F7K7tFjo9A4LcuzT/KzTFR6SV1VE6C4UwJrm
             EgYKwy2cr0lJCG2psh5hguxcC+CzHBuq3mbnWzLnKUyWcXDf/GwgIUjgs
             u8T7vEP3YSNbxezytCpjTgf9hukaH/
+      root@router.atwork.priv:
+        type: 'ssh-rsa'
+        key: >
+            AAAB3NzaC1yc2EAAAADAQABAAABAQDY/sV9eLAS/ScSZpEklV6xvSKSVk
+            ar6Aj22k9WhWz9fxq2c87prm+Mg++s6dj7J4Wo912GDUdqs+KDBGELE30
+            LaA4O6eJ5MrGcFcxmU/9jXRO9lf6Z6atJzq5LzYWviUyTSbNHcPGRQbg/
+            i6FukOsONnF0lvfdC+z0hwvEXvCcoD7CGAQ9Ge13ym9xEfzPtRgirUf0q
+            zfWxzhRRv7W4Hn+KDihy/Tdf5+tYmpq7asCjCg7lIdLxVVBdL4Ezwvuxnl
+            b0ub/K+I9UInwuImuX7bVwkUSXu/cDscdy52ys3teAQnxnB+2G+2TFv3MS
+            P6FbzY8KBZpz9MvZ+CkUc0QZkSX
     bashrc:
       prompt_color: 'green'
       content:
@@ -99,6 +109,16 @@ users:
             jofAsMQqQ6U4UW42G1LN1F7K7tFjo9A4LcuzT/KzTFR6SV1VE6C4UwJrm
             EgYKwy2cr0lJCG2psh5hguxcC+CzHBuq3mbnWzLnKUyWcXDf/GwgIUjgs
             u8T7vEP3YSNbxezytCpjTgf9hukaH/
+      root@router.atwork.priv:
+        type: 'ssh-rsa'
+        key: >
+            AAAB3NzaC1yc2EAAAADAQABAAABAQDY/sV9eLAS/ScSZpEklV6xvSKSVk
+            ar6Aj22k9WhWz9fxq2c87prm+Mg++s6dj7J4Wo912GDUdqs+KDBGELE30
+            LaA4O6eJ5MrGcFcxmU/9jXRO9lf6Z6atJzq5LzYWviUyTSbNHcPGRQbg/
+            i6FukOsONnF0lvfdC+z0hwvEXvCcoD7CGAQ9Ge13ym9xEfzPtRgirUf0q
+            zfWxzhRRv7W4Hn+KDihy/Tdf5+tYmpq7asCjCg7lIdLxVVBdL4Ezwvuxnl
+            b0ub/K+I9UInwuImuX7bVwkUSXu/cDscdy52ys3teAQnxnB+2G+2TFv3MS
+            P6FbzY8KBZpz9MvZ+CkUc0QZkSX
 
 timezone: 'Europe/Paris'
 default_locale: 'en_US.UTF-8'
