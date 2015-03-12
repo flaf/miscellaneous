@@ -27,13 +27,13 @@ users:
       root@router.atwork.priv:
         type: 'ssh-rsa'
         key: >
-            AAAB3NzaC1yc2EAAAADAQABAAABAQDY/sV9eLAS/ScSZpEklV6xvSKSVk
-            ar6Aj22k9WhWz9fxq2c87prm+Mg++s6dj7J4Wo912GDUdqs+KDBGELE30
-            LaA4O6eJ5MrGcFcxmU/9jXRO9lf6Z6atJzq5LzYWviUyTSbNHcPGRQbg/
-            i6FukOsONnF0lvfdC+z0hwvEXvCcoD7CGAQ9Ge13ym9xEfzPtRgirUf0q
-            zfWxzhRRv7W4Hn+KDihy/Tdf5+tYmpq7asCjCg7lIdLxVVBdL4Ezwvuxnl
-            b0ub/K+I9UInwuImuX7bVwkUSXu/cDscdy52ys3teAQnxnB+2G+2TFv3MS
-            P6FbzY8KBZpz9MvZ+CkUc0QZkSX
+            AAAAB3NzaC1yc2EAAAADAQABAAABAQDY/sV9eLAS/ScSZpEklV6xvSKSV
+            kar6Aj22k9WhWz9fxq2c87prm+Mg++s6dj7J4Wo912GDUdqs+KDBGELE3
+            0LaA4O6eJ5MrGcFcxmU/9jXRO9lf6Z6atJzq5LzYWviUyTSbNHcPGRQbg
+            /i6FukOsONnF0lvfdC+z0hwvEXvCcoD7CGAQ9Ge13ym9xEfzPtRgirUf0
+            qzfWxzhRRv7W4Hn+KDihy/Tdf5+tYmpq7asCjCg7lIdLxVVBdL4Ezwvux
+            nlb0ub/K+I9UInwuImuX7bVwkUSXu/cDscdy52ys3teAQnxnB+2G+2TFv
+            3MSP6FbzY8KBZpz9MvZ+CkUc0QZkSX
     bashrc:
       prompt_color: 'green'
       content:
@@ -112,13 +112,13 @@ users:
       root@router.atwork.priv:
         type: 'ssh-rsa'
         key: >
-            AAAB3NzaC1yc2EAAAADAQABAAABAQDY/sV9eLAS/ScSZpEklV6xvSKSVk
-            ar6Aj22k9WhWz9fxq2c87prm+Mg++s6dj7J4Wo912GDUdqs+KDBGELE30
-            LaA4O6eJ5MrGcFcxmU/9jXRO9lf6Z6atJzq5LzYWviUyTSbNHcPGRQbg/
-            i6FukOsONnF0lvfdC+z0hwvEXvCcoD7CGAQ9Ge13ym9xEfzPtRgirUf0q
-            zfWxzhRRv7W4Hn+KDihy/Tdf5+tYmpq7asCjCg7lIdLxVVBdL4Ezwvuxnl
-            b0ub/K+I9UInwuImuX7bVwkUSXu/cDscdy52ys3teAQnxnB+2G+2TFv3MS
-            P6FbzY8KBZpz9MvZ+CkUc0QZkSX
+            AAAAB3NzaC1yc2EAAAADAQABAAABAQDY/sV9eLAS/ScSZpEklV6xvSKSV
+            kar6Aj22k9WhWz9fxq2c87prm+Mg++s6dj7J4Wo912GDUdqs+KDBGELE3
+            0LaA4O6eJ5MrGcFcxmU/9jXRO9lf6Z6atJzq5LzYWviUyTSbNHcPGRQbg
+            /i6FukOsONnF0lvfdC+z0hwvEXvCcoD7CGAQ9Ge13ym9xEfzPtRgirUf0
+            qzfWxzhRRv7W4Hn+KDihy/Tdf5+tYmpq7asCjCg7lIdLxVVBdL4Ezwvux
+            nlb0ub/K+I9UInwuImuX7bVwkUSXu/cDscdy52ys3teAQnxnB+2G+2TFv
+            3MSP6FbzY8KBZpz9MvZ+CkUc0QZkSX
 
 timezone: 'Europe/Paris'
 default_locale: 'en_US.UTF-8'
