@@ -37,13 +37,24 @@ class repositories::ceph (
     fail("Class ${title}, version `#{$version}` are not supported.")
   }
 
+  # Fingerprint of the APT key:
+  #
+  #   Ceph Release Key <sage@newdream.net>.
+  #
+  # To install this APT key:
+  #
+  #   url='https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc'
+  #   wget -q -O- "$url" | apt-key add -
+  #
+  $key = '7F6C9F236D170493FCF404F27EBFDD5D17ED316D'
+
   apt::source { 'ceph':
     location    => "http://ceph.com/debian-${version}/",
     # For testing...
     #location    => "http://ceph.com/debian-testing/",
     release     => $::lsbdistcodename,
     repos       => 'main',
-    key         => '17ED316D',
+    key         => $key,
     include_src => false,
   }
 
