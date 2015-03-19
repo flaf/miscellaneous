@@ -35,6 +35,7 @@ class repositories::radosgw {
   $key = 'FCC5CB2ED8E6F6FB79D5B3316EAEAE2203C3951A'
 
   apt::source { 'ceph-apache2':
+    comment     => 'Apache2 with specific radosgw optimizations.',
     location    => "http://gitbuilder.ceph.com/apache2-deb-${::lsbdistcodename}-x86_64-basic/ref/master",
     release     => $::lsbdistcodename,
     repos       => 'main',
@@ -43,6 +44,7 @@ class repositories::radosgw {
   }
 
   apt::source { 'ceph-fastcgi':
+    comment     => 'libapache-mod-fastcgi with specific radosgw optimizations.',
     location    => "http://gitbuilder.ceph.com/libapache-mod-fastcgi-deb-${::lsbdistcodename}-x86_64-basic/ref/master",
     release     => $::lsbdistcodename,
     repos       => 'main',

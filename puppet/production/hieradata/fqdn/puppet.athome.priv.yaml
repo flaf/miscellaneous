@@ -1,5 +1,5 @@
 ---
-classes: [ '::roles::generic' ]
+classes: [ '::roles::puppetmaster' ]
 enc_groups:
   - 'virtual-labs'
 enc_datacenter: 'vbox-home'

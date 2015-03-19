@@ -49,6 +49,7 @@ class repositories::ceph (
   $key = '7F6C9F236D170493FCF404F27EBFDD5D17ED316D'
 
   apt::source { 'ceph':
+    comment     => 'The Ceph repository.',
     location    => "http://ceph.com/debian-${version}/",
     # For testing...
     #location    => "http://ceph.com/debian-testing/",

@@ -56,10 +56,10 @@ class profiles::apt::generic ($stage = 'repositories', ) {
     trusty: {
 
       apt::source { $::lsbdistcodename:
-        comment     => 'main and restricted are maintained by the Ubuntu developers.',
+        comment     => 'Only main and restricted are maintained by the Ubuntu developers.',
         location    => $sourceslist_url,
         release     => $::lsbdistcodename,
-        repos       => 'main restricted',
+        repos       => 'main restricted universe',
         include_deb => true,
         include_src => $add_src,
       }
@@ -68,7 +68,7 @@ class profiles::apt::generic ($stage = 'repositories', ) {
         comment     => 'Major bug fix updates produced after the final release of the distribution.',
         location    => $sourceslist_url,
         release     => "${::lsbdistcodename}-updates",
-        repos       => 'main restricted',
+        repos       => 'main restricted universe',
         include_deb => true,
         include_src => $add_src,
       }
@@ -77,7 +77,7 @@ class profiles::apt::generic ($stage = 'repositories', ) {
         comment     => 'Security updates.',
         location    => 'http://security.ubuntu.com/ubuntu',
         release     => "${::lsbdistcodename}-security",
-        repos       => 'main restricted',
+        repos       => 'main restricted universe',
         include_deb => true,
         include_src => $add_src,
       }
