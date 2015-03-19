@@ -9,6 +9,7 @@ class puppetmaster::postgresql {
 
   file { 'postgresdb-init-file':
     path   => '/usr/local/sbin/postgresdb_init',
+    ensure => present,
     owner  => 'root',
     group  => 'postgres',
     mode   => '0754',
@@ -23,6 +24,7 @@ class puppetmaster::postgresql {
   # This is this file that puppet will use to know, for
   # instance, if the password must be updated.
   file { '/root/.pgpass':
+    ensure  => present,
     owner   => 'root',
     group   => 'root',
     mode    => '0600',
