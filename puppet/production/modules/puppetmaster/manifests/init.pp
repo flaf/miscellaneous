@@ -35,9 +35,23 @@
 #
 # Copyright 2015 François Lafont
 #
-class puppetmaster {
+class puppetmaster (
+  $puppetdb      = 'puppetdb',
+  $puppetdb_user = 'puppetdb',
+  $puppetdb_pwd,
+) {
+
+  case $::lsbdistcodename {
+    trusty: {}
+    default: {
+      fail("Class ${title} has never been tested on ${::lsbdistcodename}.")
+    }
+  }
 
   require '::puppetmaster::packages'
+  require '::puppetmaster::postgresql'
+
+  Class['::puppetmaster::packages'] -> Class['::puppetmaster::postgresql']
 
 }
 
