@@ -82,7 +82,7 @@
 #
 # You can generate a key with this command:
 #
-#     ceph-authtool --gen-print-key
+#     apt-get install ceph-common && ceph-authtool --gen-print-key
 #
 # *monitors*:
 # This parameter is mandatory. This parameter must be

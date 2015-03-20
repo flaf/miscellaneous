@@ -19,7 +19,7 @@
 # The key of the account. This parameter is mandatory.
 # You can generate a key value with this command:
 #
-#     ceph-authtool --gen-print-key
+#     apt-get install ceph-common && ceph-authtool --gen-print-key
 #
 # *properties:*
 # This parameter is an array of strings. Each string is
