@@ -51,9 +51,11 @@ class puppetmaster (
   require '::puppetmaster::packages'
   require '::puppetmaster::postgresql'
   require '::puppetmaster::puppetdb'
+  require '::puppetmaster::puppet_config'
 
   Class['::puppetmaster::packages'] -> Class['::puppetmaster::postgresql']
                                     -> Class['::puppetmaster::puppetdb']
+                                    -> Class['::puppetmaster::puppet_config']
 
 }
 
