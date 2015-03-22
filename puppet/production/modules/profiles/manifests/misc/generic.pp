@@ -6,6 +6,7 @@ class profiles::misc::generic {
   }
 
   $packages = [
+                'vim',
                 'gawk',
                 'less',
                 'lsb-release',
