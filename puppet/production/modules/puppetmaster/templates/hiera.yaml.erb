@@ -1,0 +1,27 @@
+---
+
+# This file is managed by Puppet, don't edit it.
+
+:backends:
+  - 'eyaml'
+
+:hierarchy:
+  - '%{::environment}/hieradata/fqdn/%{::clientcert}'
+  - '%{::environment}/hieradata/group/%{::group}'
+  - '%{::environment}/hieradata/group/%{::group_0}'
+  - '%{::environment}/hieradata/group/%{::group_1}'
+  - '%{::environment}/hieradata/group/%{::group_2}'
+  - '%{::environment}/hieradata/group/%{::group_3}'
+  - '%{::environment}/hieradata/group/%{::group_4}'
+  - '%{::environment}/hieradata/datacenter/%{::datacenter}'
+  - '%{::environment}/hieradata/common'
+
+:merge_behavior: 'deeper'
+
+:eyaml:
+  :extension: 'yaml'
+  :datadir: '<%= @environment_path %>'
+  :pkcs7_private_key: '<%= @eyaml_private_key %>'
+  :pkcs7_public_key: '<%= @eyaml_public_key %>'
+
+

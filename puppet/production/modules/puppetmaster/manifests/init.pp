@@ -36,9 +36,13 @@
 # Copyright 2015 François Lafont
 #
 class puppetmaster (
-  $puppetdb      = 'puppetdb',
-  $puppetdb_user = 'puppetdb',
+  $server              = 'puppet',
+  $module_repository   = undef,
+  $environment_timeout = '10s',
+  $puppetdb            = 'puppetdb',
+  $puppetdb_user       = 'puppetdb',
   $puppetdb_pwd,
+  $admin_email,
 ) {
 
   case $::lsbdistcodename {
@@ -51,11 +55,14 @@ class puppetmaster (
   require '::puppetmaster::packages'
   require '::puppetmaster::postgresql'
   require '::puppetmaster::puppetdb'
+  require '::puppetmaster::git_ssh'
   require '::puppetmaster::puppet_config'
 
-  Class['::puppetmaster::packages'] -> Class['::puppetmaster::postgresql']
-                                    -> Class['::puppetmaster::puppetdb']
-                                    -> Class['::puppetmaster::puppet_config']
+  Class['::puppetmaster::packages']
+    -> Class['::puppetmaster::postgresql']
+    -> Class['::puppetmaster::git_ssh']
+    -> Class['::puppetmaster::puppetdb']
+    -> Class['::puppetmaster::puppet_config']
 
 }
 

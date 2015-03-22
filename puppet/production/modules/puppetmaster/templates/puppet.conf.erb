@@ -1,0 +1,49 @@
+# This file is managed by Puppet, don't edit it.
+
+[main]
+logdir              = /var/log/puppet
+vardir              = /var/lib/puppet
+ssldir              = /var/lib/puppet/ssl
+rundir              = /var/run/puppet
+factpath            = $vardir/lib/facter
+environmentpath     = <%= @environment_path %>
+hiera_config        = <%= @yaml_conf %>
+environment_timeout = <%= @environment_timeout %>
+<%- if @module_repository -%>
+module_repository   = <%= @module_repository %>
+<%- end -%>
+
+# TTL of the environment in the cache of puppetmaster.
+# Possible values are 5m, 6h, 2d (m=minute, h=hour and
+# d=day) or unlimited (TTL = +infinity but you must
+# restart puppetmaster after each change in the environmment).
+
+
+[master]
+# These are needed when the puppetmaster is run by passenger
+# and can safely be removed if webrick is used.
+ssl_client_header        = SSL_CLIENT_S_DN
+ssl_client_verify_header = SSL_CLIENT_VERIFY
+node_terminus            = exec
+external_nodes           = <%= @enc_path %>
+
+# Tell puppetmaster to use puppetdb.
+storeconfigs         = true
+storeconfigs_backend = puppetdb
+
+# We use puppetqd (puppet queue daemon), so set these
+# parameters to false.
+thin_storeconfigs  = false
+async_storeconfigs = false
+
+## TODO: it's possible to store reportings in
+## puppetdb but I have not found the parameter
+## to define how long reportings are stored
+## (but I know it's possible).
+#reports = store,puppetdb
+
+[agent]
+server = <%= scope['::puppetmaster::server'] %>
+ssldir = $vardir/sslclient
+
+

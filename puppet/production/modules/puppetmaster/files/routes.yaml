@@ -1,0 +1,9 @@
+---
+
+# This file is managed by Puppet, don't edit it.
+
+master:
+  facts:
+    terminus: puppetdb
+    cache: yaml
+
