@@ -9,6 +9,7 @@ class profiles::misc::generic {
                 'gawk',
                 'less',
                 'lsb-release',
+                'tree',
               ]
 
   ensure_packages($packages, { ensure => present, })
