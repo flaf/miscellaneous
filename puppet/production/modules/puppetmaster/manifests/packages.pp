@@ -3,6 +3,9 @@ class puppetmaster::packages {
   private("Sorry, ${title} is a private class.")
 
   $packages = [
+                'git',
+                'openssl',
+                'ca-certificates',
                 'puppetmaster-passenger',
                 'puppetdb',
                 'puppetdb-terminus',

@@ -36,14 +36,15 @@
 # Copyright 2015 François Lafont
 #
 class puppetmaster (
-  $server              = 'puppet',
-  $module_repository   = undef,
-  $environment_timeout = '10s',
-  $puppetdb            = 'puppetdb',
-  $puppetdb_user       = 'puppetdb',
-  $puppetdb_pwd,
-  $admin_email,
-) {
+  $server               = $::puppetmaster::params::server,
+  $module_repository    = $::puppetmaster::params::module_repository,
+  $environment_timeout  = $::puppetmaster::params::environment_timeout,
+  $puppetdb             = $::puppetmaster::params::puppetdb,
+  $puppetdb_user        = $::puppetmaster::params::puppetdb_user,
+  $puppetdb_pwd         = $::puppetmaster::params::puppetdb_pwd,
+  $admin_email          = $::puppetmaster::params::admin_email,
+  $hiera_git_repository = $::puppetmaster::params::hiera_git_repository,
+) inherits ::puppetmaster::params {
 
   case $::lsbdistcodename {
     trusty: {}
@@ -52,17 +53,19 @@ class puppetmaster (
     }
   }
 
+  $environment_path = '/puppet'
+
   require '::puppetmaster::packages'
   require '::puppetmaster::postgresql'
   require '::puppetmaster::puppetdb'
-  require '::puppetmaster::git_ssh'
   require '::puppetmaster::puppet_config'
+  require '::puppetmaster::git_ssh'
 
   Class['::puppetmaster::packages']
     -> Class['::puppetmaster::postgresql']
-    -> Class['::puppetmaster::git_ssh']
     -> Class['::puppetmaster::puppetdb']
     -> Class['::puppetmaster::puppet_config']
+    -> Class['::puppetmaster::git_ssh']
 
 }
 

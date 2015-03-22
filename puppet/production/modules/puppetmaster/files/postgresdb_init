@@ -35,7 +35,7 @@ fi
 
 # Test if the user exists.
 if ! psql --quiet --tuples-only --no-align -F';' -c '\du' \
-    | cut -d';' -f1 | grep -q "$user"
+    | cut -d';' -f1 | grep -q "^${user}$"
 then
     # The user doesn't exist. We create him.
     sql_code="CREATE ROLE $user WITH ENCRYPTED PASSWORD '$pwd'"
@@ -45,7 +45,7 @@ fi
 
 # Test if the base exists.
 if ! psql --quiet --tuples-only --no-align -F';' -c '\l' | cut -d';' -f1 \
-    | grep -q "$db"
+    | grep -q "^${db}$"
 then
     # The base doesn't exist. We create it.
     echo "CREATE DATABASE $db OWNER $user ENCODING 'UTF8';" | psql
