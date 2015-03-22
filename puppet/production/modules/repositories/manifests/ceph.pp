@@ -1,4 +1,4 @@
-# Puppet class to manage a ceph APT repository.
+# Puppet class to manage the "Ceph release" APT repository.
 #
 # == Requirement/Dependencies
 #

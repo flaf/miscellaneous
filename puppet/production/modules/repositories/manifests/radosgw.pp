@@ -1,5 +1,5 @@
-# Puppet class to manage a specific APT repositories
-# for radosgw.
+# Puppet class to manage the "Ceph automated package build"
+# APT repository, useful for radosgw.
 #
 # == Requirement/Dependencies
 #

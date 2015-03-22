@@ -1,5 +1,4 @@
-# Puppet class to manage a specific APT repositories
-# of Puppetlabs.
+# Puppet class to manage the Puppetlabs APT repository.
 #
 # == Requirement/Dependencies
 #
