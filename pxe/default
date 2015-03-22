@@ -53,8 +53,8 @@ LABEL jessie-amd64-preseed
     APPEND language=fr keymap=fr country=FR locale=fr_FR.UTF-8 interface=eth0 hostname=jessie-vm domain=domain.tld ipv6.disable=1 url=http://172.31.0.1/jessie-preseed-amd64.cfg initrd=jessie/debian-installer/amd64/initrd.gz --
     TEXT HELP
     Fully automatic installation of Debian Jessie.
-    hostname == DNS entry of the host IP, if exists.
-    hostname == "jessie-vm" if there is no DNS entry.
+    hostname == name sent by the DHCP server if defined.
+    hostname == "jessie-vm" if not.
     ENDTEXT
 
 LABEL wheezy-amd64-preseed
@@ -65,8 +65,8 @@ LABEL wheezy-amd64-preseed
     APPEND language=fr keymap=fr country=FR locale=fr_FR.UTF-8 interface=eth0 hostname=wheezy-vm domain=domain.tld ipv6.disable=1 url=http://172.31.0.1/wheezy-preseed-amd64.cfg initrd=wheezy/debian-installer/amd64/initrd.gz --
     TEXT HELP
     Fully automatic installation of Debian Wheezy.
-    hostname == DNS entry of the host IP, if exists.
-    hostname == "wheezy-vm" if there is no DNS entry.
+    hostname == name sent by the DHCP server if defined.
+    hostname == "wheezy-vm" if not.
     ENDTEXT
 
 LABEL trusty-amd64-preseed
@@ -77,8 +77,8 @@ LABEL trusty-amd64-preseed
     APPEND language=fr keymap=fr country=FR locale=fr_FR.UTF-8 interface=eth0 hostname=trusty-vm domain=domain.tld ipv6.disable=1 url=http://172.31.0.1/trusty-preseed-amd64.cfg initrd=trusty/ubuntu-installer/amd64/initrd.gz --
     TEXT HELP
     Fully automatic installation of Ubuntu Trusty.
-    hostname == DNS entry of the host IP, if exists.
-    hostname == "trusty-vm" if there is no DNS entry.
+    hostname == name sent by the DHCP server if defined.
+    hostname == "trusty-vm" if not.
     ENDTEXT
 
 LABEL trusty-amd64-preseed-HP-ProLiant-DL180G5-for-ceph
