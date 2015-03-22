@@ -28,7 +28,7 @@ class puppetmaster::git_ssh {
     }
 
     exec { 'add-repo-host-to-known-hosts':
-      command => "ssh-keyscan -t rsa ${git_host} >> /root/.ssh/known_hosts",
+      command => "ssh-keyscan -T 20 -t rsa ${git_host} >>/root/.ssh/known_hosts",
       path    => '/usr/sbin:/usr/bin:/sbin:/bin',
       user    => 'root',
       group   => 'root',
