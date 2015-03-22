@@ -9,7 +9,7 @@ class profiles::misc::generic {
                 'gawk',
                 'less',
                 'lsb-release',
-                'tree',
+                'tree',        # /!\ For Ubuntu, tree is in "universe".
               ]
 
   ensure_packages($packages, { ensure => present, })
