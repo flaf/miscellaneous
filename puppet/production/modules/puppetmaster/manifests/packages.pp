@@ -15,6 +15,12 @@ class puppetmaster::packages {
 
   ensure_packages($packages, { ensure => present, })
 
+  # puppetdb and puppetdb-terminus must be installed after
+  # puppetmaster-passenger, because in this case the postinst
+  # of puppetdb configure Jetty to use the puppetmaster's certificates.
+  Package['puppetmaster-passenger'] -> Package['puppetdb']
+                                    -> Package['puppetdb-terminus']
+
   # With Trusty, the init symlinks of puppetdb are not created
   # after the package installation.
   if $::lsbdistcodename == 'trusty' {
