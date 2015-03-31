@@ -24,6 +24,10 @@ module_repository   = <%= @module_repository %>
 # and can safely be removed if webrick is used.
 ssl_client_header        = SSL_CLIENT_S_DN
 ssl_client_verify_header = SSL_CLIENT_VERIFY
+<%- if @ca_server -%>
+ca                       = false
+ca_server                = <%= @ca_server %>
+<%- end -%>
 node_terminus            = exec
 external_nodes           = <%= @enc_path %>
 

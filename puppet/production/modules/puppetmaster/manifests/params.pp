@@ -2,6 +2,7 @@ class puppetmaster::params {
 
   # The default values of some parameters.
   $server               = 'puppet'
+  $ca_server            = undef
   $module_repository    = undef
   $environment_timeout  = '10s'
   $puppetdb             = 'puppetdb'

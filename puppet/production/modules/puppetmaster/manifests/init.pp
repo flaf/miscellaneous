@@ -37,6 +37,7 @@
 #
 class puppetmaster (
   $server               = $::puppetmaster::params::server,
+  $ca_server            = $::puppetmaster::params::ca_server,
   $module_repository    = $::puppetmaster::params::module_repository,
   $environment_timeout  = $::puppetmaster::params::environment_timeout,
   $puppetdb             = $::puppetmaster::params::puppetdb,

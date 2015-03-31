@@ -5,6 +5,7 @@ class puppetmaster::puppet_config {
   # Some common variables of this class.
   $module_repository     = $::puppetmaster::module_repository
   $environment_path      = $::puppetmaster::environment_path
+  $ca_server             = $::puppetmaster::ca_server
   $enc_path              = '/usr/local/bin/enc'
   $yaml_conf             = '/etc/hiera.yaml'
   $eyaml_public_key      = '/etc/puppet/keys/public_key.pkcs7.pem'
