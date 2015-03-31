@@ -1,7 +1,7 @@
 class profiles::puppet::puppetmaster {
 
-  if $::fqdn ~= 'subpuppet' {
-    $ca_server = 'puppet.athome.priv'
+  if $::fqdn =~ /subpuppet/ {
+    $ca_server = "puppet.${domain}"
   } else {
     $ca_server = undef
   }
