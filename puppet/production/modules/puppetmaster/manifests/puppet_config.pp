@@ -175,6 +175,27 @@ ${eyaml_private_key} --pkcs7-public-key ${eyaml_public_key}"
     notify  => Service['apache2'],
   }
 
+  exec { "disable-site-default":
+    path    => '/usr/sbin:/usr/bin:/sbin:/bin',
+    user    => 'root',
+    group   => 'root',
+    command => "a2dissite 000-default.conf",
+    onlyif  => "test -L /etc/apache2/sites-enabled/000-default.conf",
+    notify  => Service['apache2'],
+    before  => Service['apache2'],
+  }
+
+  file { '/etc/apache2/ports.conf':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    content => "# This file is managed by Puppet, don't edit it.\n\
+# Ports defined in vhosts.\n",
+    before  => Service['apache2'],
+    notify  => Service['apache2'],
+  }
+
   service { 'apache2':
     ensure     => running,
     hasstatus  => true,

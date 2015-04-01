@@ -14,7 +14,7 @@ class puppetmaster::git_ssh {
     exec { 'create-key-ssh':
       user    => 'root',
       path    => '/usr/sbin:/usr/bin:/sbin:/bin',
-      command => 'ssh-keygen -t rsa -N "" -f /root/.ssh/id_rsa',
+      command => 'ssh-keygen -t rsa -b 4096 -N "" -f /root/.ssh/id_rsa',
       unless  => '[ -e /root/.ssh/id_rsa ]',
       before  => File['/root/.ssh/known_hosts'],
     }
@@ -36,8 +36,15 @@ class puppetmaster::git_ssh {
       before  => Exec['git-clone'],
     }
 
+    # I don't know why but, if the "git clone" fails, the target
+    # directory is removed. So the command below recreate the
+    # directory if it has been removed.
+    $cmd_git_clone = "git clone '${git_repo}' '${hieradata_dir}'; rt=\$?\n\
+[ ! -d '${hieradata_dir}' ] && mkdir '${hieradata_dir}'\n\
+exit \$rt"
+
     exec { 'git-clone':
-      command => "git clone '${git_repo}' '${hieradata_dir}'",
+      command => $cmd_git_clone,
       path    => '/usr/sbin:/usr/bin:/sbin:/bin',
       user    => 'root',
       group   => 'root',
