@@ -167,6 +167,14 @@ ${eyaml_private_key} --pkcs7-public-key ${eyaml_public_key}"
     notify  => Service['apache2'],
   }
 
+  file_line { 'set-locale-apache':
+    path    => '/etc/apache2/envvars',
+    line    => ". /etc/default/locale # Edited by Puppet.",
+    match   => '^[[:space:]]*#?[[:space:]]*\.[[:space:]]*/etc/default/locale.*$',
+    before  => Service['apache2'],
+    notify  => Service['apache2'],
+  }
+
   service { 'apache2':
     ensure     => running,
     hasstatus  => true,
