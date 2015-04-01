@@ -2,12 +2,14 @@ class profiles::puppet::puppetmaster {
 
   if $::fqdn =~ /subpuppet/ {
     $ca_server = "puppet.${domain}"
+    $server    = "puppet.${domain}"
   } else {
     $ca_server = undef
+    $server    = 'sumsum.flaf.fr'
   }
 
   class { '::puppetmaster':
-    server               => 'sumsum.flaf.fr',
+    server               => $server,
     ca_server            => $ca_server,
     #puppetdb_user => 'joe',
     #admin_email   => 'sysadmin@domain.tld',
