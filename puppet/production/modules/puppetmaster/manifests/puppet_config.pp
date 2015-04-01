@@ -69,18 +69,32 @@ ${eyaml_private_key} --pkcs7-public-key ${eyaml_public_key}"
     group  => 'puppet',
     mode   => '0755',
     before => [
-               Exec['install-hiera-eyaml'],
+               Exec['install-gem-hiera-eyaml'],
+               Exec['install-gem-deep-merge'],
                Service['apache2'],
               ],
     notify => Service['apache2'],
   }
 
-  exec { 'install-hiera-eyaml':
+  exec { 'install-gem-hiera-eyaml':
     command => 'gem install hiera-eyaml',
     path    => '/usr/sbin:/usr/bin:/sbin:/bin',
     user    => 'root',
     group   => 'root',
     unless  => 'gem list | grep -q "^hiera-eyaml "',
+    before  => [
+                Exec['generate-eyaml-keys'],
+                Service['apache2'],
+               ],
+    notify  => Service['apache2'],
+  }
+
+  exec { 'install-gem-deep-merge':
+    command => 'gem install deep_merge',
+    path    => '/usr/sbin:/usr/bin:/sbin:/bin',
+    user    => 'root',
+    group   => 'root',
+    unless  => 'gem list | grep -q "^deep_merge "',
     before  => [
                 Exec['generate-eyaml-keys'],
                 Service['apache2'],
