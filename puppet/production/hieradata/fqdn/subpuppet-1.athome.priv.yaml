@@ -1,0 +1,15 @@
+---
+#classes: [ '::roles::puppetmaster' ]
+enc_class: [ '::roles::puppetmaster' ]
+enc_group:
+  - 'virtual-labs'
+enc_datacenter: 'vbox-home'
+
+network:
+  interfaces:
+    eth0:
+      macaddress: '08:00:27:bc:ce:e6'
+      method: 'dhcp'
+      network_name: 'private'
+
+

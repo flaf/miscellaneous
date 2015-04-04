@@ -1,6 +1,8 @@
-class puppetmaster::packages {
+class puppetmaster::packages::puppetmaster {
 
   private("Sorry, ${title} is a private class.")
+
+  $puppetdb_server = $::puppetmaster::puppetdb_server
 
   $packages = [
                 'git',
