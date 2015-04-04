@@ -5,7 +5,7 @@ class puppetmaster::git_ssh {
   $environment_path = $::puppetmaster::environment_path
   $hieradata_dir    = "${environment_path}/production/hieradata"
 
-  if $::puppetmaster::hiera_git_repository {
+  if $::puppetmaster::hiera_git_repository != '<none>' {
 
     $git_repo = $::puppetmaster::hiera_git_repository
     $git_host = inline_template('<%= @git_repo.gsub(/(^.*?@|:.*$)/, "") %>')

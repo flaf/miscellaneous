@@ -9,7 +9,7 @@ factpath            = $vardir/lib/facter
 environmentpath     = <%= @environment_path %>
 hiera_config        = <%= @yaml_conf %>
 environment_timeout = <%= @environment_timeout %>
-<%- if @module_repository -%>
+<%- if @module_repository != '<puppet-forge>' -%>
 module_repository   = <%= @module_repository %>
 <%- end -%>
 
@@ -24,7 +24,7 @@ module_repository   = <%= @module_repository %>
 # and can safely be removed if webrick is used.
 ssl_client_header        = SSL_CLIENT_S_DN
 ssl_client_verify_header = SSL_CLIENT_VERIFY
-<%- if @ca_server -%>
+<%- if @ca_server != '<my-self>' -%>
 ca                       = false
 ca_server                = <%= @ca_server %>
 <%- end -%>
