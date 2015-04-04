@@ -250,7 +250,7 @@ ${eyaml_private_key} --pkcs7-public-key ${eyaml_public_key}"
       notify  => Service['apache2'],
     }
 
-    exec {
+    exec { 'remove-useless-ssldir':
       command => 'rm -rf /var/lib/puppet/ssl',
       path    => '/usr/sbin:/usr/bin:/sbin:/bin',
       user    => 'root',
