@@ -2,7 +2,7 @@ class puppetmaster::puppetdb {
 
   private("Sorry, ${title} is a private class.")
 
-  $db   = $::puppetmaster::puppetdb
+  $db   = $::puppetmaster::puppetdb_dbname
   $user = $::puppetmaster::puppetdb_user
   $pwd  = $::puppetmaster::puppetdb_pwd
   $file = '/etc/puppetdb/conf.d/database.ini'

@@ -36,11 +36,12 @@
 # Copyright 2015 François Lafont
 #
 class puppetmaster (
-  $server               = $::puppetmaster::params::server,
+  $puppet_server        = $::puppetmaster::params::puppet_server,
   $ca_server            = $::puppetmaster::params::ca_server,
   $module_repository    = $::puppetmaster::params::module_repository,
   $environment_timeout  = $::puppetmaster::params::environment_timeout,
-  $puppetdb             = $::puppetmaster::params::puppetdb,
+  $puppetdb_server      = $::puppetmaster::params::puppetdb_server,
+  $puppetdb_dbname      = $::puppetmaster::params::puppetdb_dbname,
   $puppetdb_user        = $::puppetmaster::params::puppetdb_user,
   $puppetdb_pwd         = $::puppetmaster::params::puppetdb_pwd,
   $admin_email          = $::puppetmaster::params::admin_email,
@@ -56,17 +57,28 @@ class puppetmaster (
 
   $environment_path = '/puppet'
 
-  require '::puppetmaster::packages'
-  require '::puppetmaster::postgresql'
-  require '::puppetmaster::puppetdb'
-  require '::puppetmaster::puppet_config'
-  require '::puppetmaster::git_ssh'
+  class { '::puppetmaster::packages':
+    before => Class['::puppetmaster::puppet_config'],
+  }
 
-  Class['::puppetmaster::packages']
-    -> Class['::puppetmaster::postgresql']
-    -> Class['::puppetmaster::puppetdb']
-    -> Class['::puppetmaster::puppet_config']
-    -> Class['::puppetmaster::git_ssh']
+  if $puppetdb_server == '<my-self>' {
+
+    class { '::puppetmaster::postgresql':
+      require => Class['::puppetmaster::packages'],
+    }
+
+    class { '::puppetmaster::puppetdb':
+      require => Class['::puppetmaster::postgresql'],
+      before  => Class['::puppetmaster::puppet_config'],
+    }
+
+  }
+
+  class { '::puppetmaster::puppet_config':
+    before => Class['::puppetmaster::git_ssh'],
+  }
+
+  class { '::puppetmaster::git_ssh': }
 
 }
 

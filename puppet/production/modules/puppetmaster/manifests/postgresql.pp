@@ -2,7 +2,7 @@ class puppetmaster::postgresql {
 
   private("Sorry, ${title} is a private class.")
 
-  $db   = $::puppetmaster::puppetdb
+  $db   = $::puppetmaster::puppetdb_dbname
   $user = $::puppetmaster::puppetdb_user
   $pwd  = $::puppetmaster::puppetdb_pwd
   $warn = "# This file is managed by Puppet, don't edit it."

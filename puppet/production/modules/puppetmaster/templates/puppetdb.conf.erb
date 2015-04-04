@@ -1,7 +1,13 @@
 # This file is managed by Puppet, don't edit it.
 
 [main]
-server = <%= @fqdn %>
+<%-
+  puppetdb_server = scope['::puppetmaster::puppetdb_server']
+  if puppetdb_server == '<my-self>'
+    puppetdb_server = scope['::fqdn']
+  end
+-%>
+server = <%= puppetdb_server %>
 port   = 8081
 
 

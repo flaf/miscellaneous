@@ -47,7 +47,23 @@ async_storeconfigs = false
 #reports = store,puppetdb
 
 [agent]
-server = <%= scope['::puppetmaster::server'] %>
-ssldir = $vardir/sslclient
+<%-
+  puppet_server = scope['::puppetmaster::puppet_server']
+  if puppet_server == '<my-self>'
+    puppet_server_agent = scope['::fqdn']
+  else
+    puppet_server_agent = scope['::puppetmaster::puppet_server']
+  end
+
+  if @ca_server == '<my-self>' and puppet_server == '<my-self>'
+    # This is the only case where the ssldir of the agent
+    # is "$vardir/ssl".
+    ssldir_agent = '$vardir/ssl'
+  else
+    ssldir_agent = '$vardir/sslclient'
+  end
+-%>
+server = <%= puppet_server_agent %>
+ssldir = <%= ssldir_agent %>
 
 
