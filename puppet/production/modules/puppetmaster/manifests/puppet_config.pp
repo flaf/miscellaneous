@@ -193,7 +193,8 @@ ${eyaml_private_key} --pkcs7-public-key ${eyaml_public_key}"
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    content => "# This file is managed by Puppet, don't edit it.\n\nListen 8140\n\n",
+    content => "# This file is managed by Puppet, don't edit it.\n\n\
+Listen 0.0.0.0:8140\n\n",
     before  => Service['apache2'],
     notify  => Service['apache2'],
   }
