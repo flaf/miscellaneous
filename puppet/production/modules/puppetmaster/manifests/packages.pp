@@ -1,4 +1,4 @@
-class puppetmaster::packages::puppetmaster {
+class puppetmaster::packages {
 
   private("Sorry, ${title} is a private class.")
 
