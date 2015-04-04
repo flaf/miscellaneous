@@ -22,9 +22,13 @@ output = '{
 
 # Search for the yaml file in hieradata.
 files_array = Dir.glob("#{ENV_DIR}/*/hieradata/fqdn/#{fqdn}.yaml")
-if files_array.length != 1
-  puts "Sorry, in hieradata, the file `#{fqdn}.yaml' " \
-       "is not present or is duplicated."
+if files_array.length > 1
+  puts "Sorry, in hieradata, the file `#{fqdn}.yaml' is duplicated."
+  puts "#{files_array}"
+  exit(1)
+end
+if files_array.length < 1
+  puts "Sorry, in hieradata, the file `#{fqdn}.yaml' is not present."
   exit(1)
 end
 
