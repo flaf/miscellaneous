@@ -16,7 +16,7 @@ $classes = hiera_hash('enc_class', '<empty>')
 if $classes == '<empty>' {
 
   notify {'no-class-found':
-    message => 'Sorry, no class found.',
+    message => 'Sorry, no class found for this node.',
   }
 
 } else {
