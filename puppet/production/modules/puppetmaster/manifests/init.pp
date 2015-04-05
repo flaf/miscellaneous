@@ -57,10 +57,12 @@ class puppetmaster (
 
   $environment_path = '/puppet'
 
+  # 1. Installation of packages.
   class { '::puppetmaster::packages':
     before => Class['::puppetmaster::puppet_config'],
   }
 
+  # 2. If the server provide the puppetdb service...
   if $puppetdb_server == '<my-self>' {
 
     class { '::puppetmaster::postgresql':
@@ -74,11 +76,32 @@ class puppetmaster (
 
   }
 
-  class { '::puppetmaster::puppet_config':
-    before => Class['::puppetmaster::git_ssh'],
+  # 3. Of course, the configuration of puppet is mandatory.
+  class { '::puppetmaster::puppet_config': }
+
+  # 4. If there is a git reporitory dedicated to the server.
+  if $hiera_git_repository != '<none>' {
+
+    class { '::puppetmaster::git_ssh':
+      require => Class['::puppetmaster::puppet_config'],
+    }
+
   }
 
-  class { '::puppetmaster::git_ssh': }
+  # 5. Alert for cleaning if the server is CA and is the puppet
+  # client of it-self.
+  if $ca_server == '<my-self>' and $puppet_server == '<my-self>' {
+
+    $msg_ssl = "\n\nThe directory /var/lib/puppet/sslclient is useless now.\n\
+Henceforth, the current host is Puppet CA and is the puppet client of it-self.\n\
+You should remove this directory and revoke the certificate used for this\n\
+puppet run (normally the CA of this certificate is ${::servername}).\n\n"
+
+    notify { 'alert-remove-sslclient':
+      message => $msg_ssl,
+    }
+
+  }
 
 }
 

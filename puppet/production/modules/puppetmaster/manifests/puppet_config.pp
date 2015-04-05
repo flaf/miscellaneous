@@ -272,6 +272,7 @@ Listen 0.0.0.0:8140\n\n",
     #
     # A "stop" and a "start" seem to be more safer.
     hasrestart => false,
+    restart    => 'service apache2 stop; sleep 5; service apache2 start',
   }
 
 }

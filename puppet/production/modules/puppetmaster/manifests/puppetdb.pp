@@ -90,6 +90,40 @@ class puppetmaster::puppetdb {
     # The server isn't the CA, so we must use the certificate etc.
     # in /var/lib/puppet/sslclient/.
 
+    # Note
+    #
+    # It was possible to do something like that:
+    #
+    #    file { "${puppetdb_ssl}/private.pem" :
+    #
+    #      ensure => present,
+    #      owner  => 'puppetdb',
+    #      group  => 'puppetdb',
+    #      mode   => '0640',
+    #      before => Service['puppetdb'],
+    #      notify => Service['puppetdb'],
+    #
+    #      # Yes, with the attribute "source", we can put
+    #      # a path of a local file (the syntax "puppet:///<module>/xxx"
+    #      # is not the only allowed syntax).
+    #      source => "${puppet_ssl}/private_keys/${::fqdn}.pem",
+    #
+    #    }
+    #
+    # But in this case, the content of the file appears in the
+    # working directory of puppet (in /var/lib/puppet/) which it
+    # bothers me a little. So I prefer some "exec" resources.
+
+    exec { 'puppetdb-update-private.pem':
+      command => "cat '${puppet_ssl}/private_keys/${::fqdn}.pem' >'${puppetdb_ssl}/private.pem'",
+      path    => '/usr/sbin:/usr/bin:/sbin:/bin',
+      user    => 'root',
+      group   => 'root',
+      unless  => "diff -q '${puppet_ssl}/private_keys/${::fqdn}.pem' '${puppetdb_ssl}/private.pem'",
+      before  => Service['puppetdb'],
+      notify  => Service['puppetdb'],
+    }
+
     exec { 'puppetdb-update-ca.pem':
       command => "cat '${puppet_ssl}/certs/ca.pem' >'${puppetdb_ssl}/ca.pem'",
       path    => '/usr/sbin:/usr/bin:/sbin:/bin',
@@ -106,16 +140,6 @@ class puppetmaster::puppetdb {
       user    => 'root',
       group   => 'root',
       unless  => "diff -q '${puppet_ssl}/certs/${::fqdn}.pem' '${puppetdb_ssl}/public.pem'",
-      before  => Service['puppetdb'],
-      notify  => Service['puppetdb'],
-    }
-
-    exec { 'puppetdb-update-private.pem':
-      command => "cat '${puppet_ssl}/private_keys/${::fqdn}.pem' >'${puppetdb_ssl}/private.pem'",
-      path    => '/usr/sbin:/usr/bin:/sbin:/bin',
-      user    => 'root',
-      group   => 'root',
-      unless  => "diff -q '${puppet_ssl}/private_keys/${::fqdn}.pem' '${puppetdb_ssl}/private.pem'",
       before  => Service['puppetdb'],
       notify  => Service['puppetdb'],
     }

@@ -29,7 +29,7 @@ class profiles::puppet::puppetmaster {
       puppetdb_user        => 'puppetdb',
       puppetdb_pwd         => md5($::fqdn),
       admin_email          => undef,
-      hiera_git_repository => 'git@github.com:flaf/test-hiera.git',
+      hiera_git_repository => '<none>',
     }
 
   }
