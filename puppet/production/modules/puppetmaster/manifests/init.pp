@@ -44,6 +44,7 @@ class puppetmaster (
   $puppetdb_dbname      = $::puppetmaster::params::puppetdb_dbname,
   $puppetdb_user        = $::puppetmaster::params::puppetdb_user,
   $puppetdb_pwd         = $::puppetmaster::params::puppetdb_pwd,
+  $generate_eyaml_keys  = $::puppetmaster::params::generate_eyaml_keys
   $admin_email          = $::puppetmaster::params::admin_email,
   $hiera_git_repository = $::puppetmaster::params::hiera_git_repository,
 ) inherits ::puppetmaster::params {

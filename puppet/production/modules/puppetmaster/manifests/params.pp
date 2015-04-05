@@ -15,6 +15,7 @@ class puppetmaster::params {
     $puppetdb_pwd       = md5($::servername)
   }
 
+  $generate_eyaml_keys  = true
   $admin_email          = "sysadmin@${::domain}"
   $hiera_git_repository = '<none>'
 

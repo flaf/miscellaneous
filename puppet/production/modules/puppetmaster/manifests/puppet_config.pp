@@ -6,6 +6,7 @@ class puppetmaster::puppet_config {
   $module_repository     = $::puppetmaster::module_repository
   $environment_path      = $::puppetmaster::environment_path
   $ca_server             = $::puppetmaster::ca_server
+  $generate_eyaml_keys   = $::puppetmaster::generate_eyaml_keys
   $enc_path              = '/usr/local/bin/enc'
   $yaml_conf             = '/etc/hiera.yaml'
   $eyaml_public_key      = '/etc/puppet/keys/public_key.pkcs7.pem'
@@ -95,43 +96,72 @@ ${eyaml_private_key} --pkcs7-public-key ${eyaml_public_key}"
     user    => 'root',
     group   => 'root',
     unless  => 'gem list | grep -q "^deep_merge "',
-    before  => [
-                Exec['generate-eyaml-keys'],
-                Service['apache2'],
-               ],
+    before  => Service['apache2'],
     notify  => Service['apache2'],
   }
 
-  exec { 'generate-eyaml-keys':
-    command => $eyaml_create_keys_cmd,
-    path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
-    user    => 'root',
-    group   => 'root',
-    unless  => 'test -e /etc/puppet/keys/private_key.pkcs7.pem',
-    before  => [
-                File[$eyaml_public_key],
-                File[$eyaml_private_key],
-                Service['apache2'],
-               ],
-    notify  => Service['apache2'],
-  }
+  if $generate_eyaml_keys {
 
-  file { $eyaml_public_key:
-    ensure => present,
-    owner  => 'puppet',
-    group  => 'puppet',
-    mode   => '0400',
-    before => Service['apache2'],
-    notify => Service['apache2'],
-  }
+    # Automatic generation of the eyaml keys.
 
-  file { $eyaml_private_key:
-    ensure => present,
-    owner  => 'puppet',
-    group  => 'puppet',
-    mode   => '0400',
-    before => Service['apache2'],
-    notify => Service['apache2'],
+    exec { 'generate-eyaml-keys':
+      command => $eyaml_create_keys_cmd,
+      path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+      user    => 'root',
+      group   => 'root',
+      unless  => 'test -e /etc/puppet/keys/private_key.pkcs7.pem',
+      require => Exec['install-gem-deep-merge'],
+      before  => [
+                  File[$eyaml_public_key],
+                  File[$eyaml_private_key],
+                  Service['apache2'],
+                 ],
+      notify  => Service['apache2'],
+    }
+
+    file { $eyaml_public_key:
+      ensure => present,
+      owner  => 'puppet',
+      group  => 'puppet',
+      mode   => '0400',
+      before => Service['apache2'],
+      notify => Service['apache2'],
+    }
+
+    file { $eyaml_private_key:
+      ensure => present,
+      owner  => 'puppet',
+      group  => 'puppet',
+      mode   => '0400',
+      before => Service['apache2'],
+      notify => Service['apache2'],
+    }
+
+  } else {
+
+    # We use the same eyaml keys of the puppetmaster
+    # which manages the current new puppetmaster.
+
+    file { $eyaml_public_key:
+      ensure  => present,
+      owner   => 'puppet',
+      group   => 'puppet',
+      mode    => '0400',
+      before  => Service['apache2'],
+      notify  => Service['apache2'],
+      content => file($eyaml_public_key),
+    }
+
+    file { $eyaml_private_key:
+      ensure  => present,
+      owner   => 'puppet',
+      group   => 'puppet',
+      mode    => '0400',
+      before  => Service['apache2'],
+      notify  => Service['apache2'],
+      content => file($eyaml_private_key:),
+    }
+
   }
 
   # The puppetdb.conf. Explain to Puppet how to contact

@@ -11,6 +11,7 @@ class profiles::puppet::puppetmaster {
       puppetdb_dbname      => 'puppetdb',
       puppetdb_user        => 'puppetdb',
       puppetdb_pwd         => md5($::fqdn),
+      generate_eyaml_keys  => true,
       admin_email          => undef,
       hiera_git_repository => 'git@github.com:flaf/test-hiera.git',
     }
@@ -28,6 +29,7 @@ class profiles::puppet::puppetmaster {
       puppetdb_dbname      => 'puppetdb',
       puppetdb_user        => 'puppetdb',
       puppetdb_pwd         => md5($::fqdn),
+      generate_eyaml_keys  => true,
       admin_email          => undef,
       hiera_git_repository => '<none>',
     }
