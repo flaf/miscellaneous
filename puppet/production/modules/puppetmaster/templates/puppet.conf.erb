@@ -3,7 +3,11 @@
 [main]
 logdir              = /var/log/puppet
 vardir              = /var/lib/puppet
+<%- if @ca_server != '<myself>' -%>
+ssldir              = /var/lib/puppet/sslclient
+<%- else -%>
 ssldir              = /var/lib/puppet/ssl
+<%- end -%>
 rundir              = /var/run/puppet
 factpath            = $vardir/lib/facter
 environmentpath     = <%= @environment_path %>

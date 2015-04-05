@@ -21,11 +21,11 @@ class profiles::puppet::puppetmaster {
   if $::fqdn == 'subpuppet-1.athome.priv'  {
 
     class { '::puppetmaster':
-      puppet_server        => '<myself>',
-      ca_server            => '<myself>',
+      puppet_server        => 'puppet.athome.priv',
+      ca_server            => 'puppet.athome.priv',
       module_repository    => '<puppetforge>',
       environment_timeout  => '0s',
-      puppetdb_server      => '<myself>',
+      puppetdb_server      => 'puppet.athome.priv',
       puppetdb_dbname      => 'puppetdb',
       puppetdb_user        => 'puppetdb',
       puppetdb_pwd         => md5($::fqdn),

@@ -302,7 +302,6 @@ Listen 0.0.0.0:8140\n\n",
       group   => 'root',
       onlyif  => 'test -d /var/lib/puppet/ssl',
       before  => Service['apache2'],
-      notify  => Service['apache2'],
     }
 
   }
