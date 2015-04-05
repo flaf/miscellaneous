@@ -159,7 +159,7 @@ ${eyaml_private_key} --pkcs7-public-key ${eyaml_public_key}"
       mode    => '0400',
       before  => Service['apache2'],
       notify  => Service['apache2'],
-      content => file($eyaml_private_key:),
+      content => file($eyaml_private_key),
     }
 
   }
