@@ -83,10 +83,7 @@ ${eyaml_private_key} --pkcs7-public-key ${eyaml_public_key}"
     user    => 'root',
     group   => 'root',
     unless  => 'gem list | grep -q "^hiera-eyaml "',
-    before  => [
-                Exec['generate-eyaml-keys'],
-                Service['apache2'],
-               ],
+    before  => Service['apache2'],
     notify  => Service['apache2'],
   }
 
@@ -110,7 +107,10 @@ ${eyaml_private_key} --pkcs7-public-key ${eyaml_public_key}"
       user    => 'root',
       group   => 'root',
       unless  => 'test -e /etc/puppet/keys/private_key.pkcs7.pem',
-      require => Exec['install-gem-deep-merge'],
+      require => [
+                   Exec['install-gem-hiera-eyaml'],
+                   Exec['install-gem-deep-merge'],
+                 ],
       before  => [
                   File[$eyaml_public_key],
                   File[$eyaml_private_key],

@@ -29,7 +29,7 @@ class profiles::puppet::puppetmaster {
       puppetdb_dbname      => 'puppetdb',
       puppetdb_user        => 'puppetdb',
       puppetdb_pwd         => md5($::fqdn),
-      generate_eyaml_keys  => true,
+      generate_eyaml_keys  => false,
       admin_email          => undef,
       hiera_git_repository => '<none>',
     }

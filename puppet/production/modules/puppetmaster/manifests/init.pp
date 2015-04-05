@@ -90,11 +90,11 @@ class puppetmaster (
   }
 
   # 5. Alert for cleaning if the server is CA and is the puppet
-  # client of it-self.
+  # client of itself.
   if $ca_server == '<my-self>' and $puppet_server == '<my-self>' {
 
     $msg_ssl = "\n\nThe directory /var/lib/puppet/sslclient is useless now.\n\
-Henceforth, the current host is Puppet CA and is the puppet client of it-self.\n\
+Henceforth, the current host is Puppet CA and is the puppet client of itself.\n\
 You should remove this directory and revoke the certificate used for this\n\
 puppet run (normally the CA of this certificate is ${::servername}).\n\n"
 
