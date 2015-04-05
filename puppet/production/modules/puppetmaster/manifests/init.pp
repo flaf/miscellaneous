@@ -64,7 +64,7 @@ class puppetmaster (
   }
 
   # 2. If the server provide the puppetdb service...
-  if $puppetdb_server == '<my-self>' {
+  if $puppetdb_server == '<myself>' {
 
     class { '::puppetmaster::postgresql':
       require => Class['::puppetmaster::packages'],
@@ -91,7 +91,7 @@ class puppetmaster (
 
   # 5. Alert for cleaning if the server is CA and is the puppet
   # client of itself.
-  if $ca_server == '<my-self>' and $puppet_server == '<my-self>' {
+  if $ca_server == '<myself>' and $puppet_server == '<myself>' {
 
     $msg_ssl = "\n\nThe directory /var/lib/puppet/sslclient is useless now.\n\
 Henceforth, the current host is Puppet CA and is the puppet client of itself.\n\

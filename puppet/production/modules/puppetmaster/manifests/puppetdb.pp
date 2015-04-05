@@ -85,7 +85,7 @@ class puppetmaster::puppetdb {
     notify => Service['puppetdb'],
   }
 
-  if $ca_server != '<my-self>' {
+  if $ca_server != '<myself>' {
 
     # The server isn't the CA, so we must use the certificate etc.
     # in /var/lib/puppet/sslclient/.

@@ -3,7 +3,7 @@
 [main]
 <%-
   puppetdb_server = scope['::puppetmaster::puppetdb_server']
-  if puppetdb_server == '<my-self>'
+  if puppetdb_server == '<myself>'
     puppetdb_server = scope['::fqdn']
   end
 -%>

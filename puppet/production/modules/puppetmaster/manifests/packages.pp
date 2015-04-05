@@ -14,7 +14,7 @@ class puppetmaster::packages {
 
   ensure_packages($packages, { ensure => present, })
 
-  if $puppetdb_server == '<my-self>' {
+  if $puppetdb_server == '<myself>' {
 
     # Supplementary package is the host provides a puppetdb service.
     ensure_packages( [ 'postgresql',

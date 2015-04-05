@@ -237,7 +237,7 @@ Listen 0.0.0.0:8140\n\n",
     notify  => Service['apache2'],
   }
 
-  if $ca_server != '<my-self>' {
+  if $ca_server != '<myself>' {
 
     # The puppetmaster isn't the CA.
 
