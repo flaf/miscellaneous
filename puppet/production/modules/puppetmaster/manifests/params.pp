@@ -16,6 +16,7 @@ class puppetmaster::params {
   }
 
   $generate_eyaml_keys  = true
+  $extdata              = { 'master_password' => sha1($::fqdn), }
   $admin_email          = "sysadmin@${::domain}"
   $hiera_git_repository = '<none>'
 

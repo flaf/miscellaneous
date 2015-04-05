@@ -1,5 +1,8 @@
 # This file is managed by Puppet, don't edit it.
 
+$extlookup_datadir    = "/etc/puppet/extdata"
+$extlookup_precedence = [ 'common', ]
+
 stage { 'basis': }
 stage { 'network': }
 stage { 'repositories': }

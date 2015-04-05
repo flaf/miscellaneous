@@ -7,6 +7,7 @@ class puppetmaster::puppet_config {
   $environment_path      = $::puppetmaster::environment_path
   $ca_server             = $::puppetmaster::ca_server
   $generate_eyaml_keys   = $::puppetmaster::generate_eyaml_keys
+  $extdata               = $::puppetmaster::extdata
   $enc_path              = '/usr/local/bin/enc'
   $yaml_conf             = '/etc/hiera.yaml'
   $eyaml_public_key      = '/etc/puppet/keys/public_key.pkcs7.pem'
@@ -21,6 +22,7 @@ ${eyaml_private_key} --pkcs7-public-key ${eyaml_public_key}"
           "${environment_path}/production/hieradata",
           "${environment_path}/production/modules",
           "${environment_path}/production/manifests",
+          "/etc/puppet/extdata",
          ]:
     ensure => directory,
     owner  => 'root',
@@ -28,6 +30,18 @@ ${eyaml_private_key} --pkcs7-public-key ${eyaml_public_key}"
     mode   => '0755',
     before => Service['apache2'],
     notify => Service['apache2'],
+  }
+
+  file { '/etc/puppet/extdata/common.csv':
+    ensure  => present,
+    owner   => 'puppet',
+    group   => 'puppet',
+    mode    => '0400',
+    content => inline_template("<%- @extdata.each do |key,value| -%>\n\
+<%= key %>,<%= value %>\n\
+<%- end -%>\n\n"),
+    before  => Service['apache2'],
+    notify  => Service['apache2'],
   }
 
   # The site.pp file.
@@ -302,7 +316,7 @@ Listen 0.0.0.0:8140\n\n",
     #
     # A "stop" and a "start" seem to be more safer.
     hasrestart => false,
-    restart    => 'service apache2 stop; sleep 5; service apache2 start',
+    restart    => 'service apache2 stop; sleep 3; service apache2 start',
   }
 
 }
