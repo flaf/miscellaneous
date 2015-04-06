@@ -160,7 +160,7 @@ class puppetmaster::puppetdb {
     path    => '/usr/sbin:/usr/bin:/sbin:/bin',
     user    => 'root',
     group   => 'root',
-    unless  => "diff -q '${crl_file}' >'${puppetdb_ssl}/crl.pem'",
+    unless  => "diff -q '${crl_file}' '${puppetdb_ssl}/crl.pem'",
     before  => Service['puppetdb'],
     notify  => Service['puppetdb'],
   }
