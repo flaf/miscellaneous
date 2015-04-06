@@ -8,12 +8,12 @@ class puppetmaster::postgresql {
   $warn = "# This file is managed by Puppet, don't edit it."
 
   file { 'postgresdb-init-file':
-    path   => '/usr/local/sbin/postgresdb_init',
+    path   => '/usr/local/sbin/postgresdb_init.puppet',
     ensure => present,
     owner  => 'root',
     group  => 'postgres',
     mode   => '0754',
-    source => 'puppet:///modules/puppetmaster/postgresdb_init',
+    source => 'puppet:///modules/puppetmaster/postgresdb_init.puppet',
   }
 
   # With this file, root can connect to the puppetdb with the
@@ -33,8 +33,8 @@ class puppetmaster::postgresql {
   }
 
   exec { 'postgresdb-init':
-    command     => "/usr/local/sbin/postgresdb_init '${user}' '${db}' '${pwd}'",
-    path        => '/usr/local/bin:/usr/bin:/bin',
+    command     => "postgresdb_init.puppet '${user}' '${db}' '${pwd}'",
+    path        => '/usr/local/sbin',
     user        => 'postgres',
     group       => 'postgres',
     refreshonly => true,

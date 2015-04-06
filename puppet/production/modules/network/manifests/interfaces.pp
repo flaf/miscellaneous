@@ -242,22 +242,22 @@ class network::interfaces (
     content => template('network/interfaces.puppet.erb'),
   }
 
-  file { '/usr/local/sbin/network-restart':
+  file { '/usr/local/sbin/network-restart.puppet':
     ensure => present,
     owner  => 'root',
     group  => 'root',
     mode   => '0754',
-    source => "puppet:///modules/network/network-restart",
+    source => "puppet:///modules/network/network-restart.puppet",
   }
 
   if $restart_network {
-    exec { 'network-restart':
-      command     => '/usr/local/sbin/network-restart',
+    exec { 'network-restart.puppet':
+      command     => '/usr/local/sbin/network-restart.puppet',
       user        => 'root',
       group       => 'root',
       refreshonly => true,
       require     => [
-                       File['/usr/local/sbin/network-restart'],
+                       File['/usr/local/sbin/network-restart.puppet'],
                        Package['resolvconf'],
                      ],
       subscribe   => [

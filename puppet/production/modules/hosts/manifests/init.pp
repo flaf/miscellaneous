@@ -45,12 +45,12 @@ class hosts {
     # Content will be set by an exec resource.
   }
 
-  file { '/usr/local/sbin/refresh-hosts':
+  file { '/usr/local/sbin/refresh-hosts.puppet':
     ensure => present,
     owner  => 'root',
     group  => 'root',
     mode   => '0754',
-    source => 'puppet:///modules/hosts/refresh-hosts',
+    source => 'puppet:///modules/hosts/refresh-hosts.puppet',
   }
 
 }
