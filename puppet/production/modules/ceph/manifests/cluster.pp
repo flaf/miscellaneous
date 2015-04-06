@@ -21,9 +21,9 @@
 #    /root/monitor_add.sh   # In the other monitor nodes.
 #    # Etc.
 #
-#    # 3. Installation of the ods on each node (help with ceph_osd_add --help).
-#    ceph_osd_add --device /dev/sdb1 --mount-options noatime,defaults --yes
-#    ceph_osd_add --device /dev/sdc1 --mount-options noatime,defaults --yes
+#    # 3. Installation of the ods on each node (help with ceph-osd-add --help).
+#    ceph-osd-add --device /dev/sdb1 --mount-options noatime,defaults --yes
+#    ceph-osd-add --device /dev/sdc1 --mount-options noatime,defaults --yes
 #    # Etc.
 #
 #    # 4. On a specific node, we create the ceph account.
@@ -32,8 +32,8 @@
 #    # Etc.
 #
 #    # 5. On each node, we install the mds service.
-#    ceph_mds_add --id 1
-#    ceph_mds_add --id 2
+#    ceph-mds-add --id 1
+#    ceph-mds-add --id 2
 #    # Etc.
 #
 # == Requirement/Dependencies
@@ -267,22 +267,22 @@ the 'fsid' key.")
 
     if $is_monitor_init {
 
-      file { '/root/monitor_init.sh':
+      file { '/root/monitor-init.sh':
         ensure  => present,
         owner   => 'root',
         group   => 'root',
         mode    => '0750',
-        content => "#!/bin/sh\nceph_monitor_init $opt_base $opt_device\n",
+        content => "#!/bin/sh\nceph-monitor-init $opt_base $opt_device\n",
       }
 
     } else {
 
-      file { '/root/monitor_add.sh':
+      file { '/root/monitor-add.sh':
         ensure  => present,
         owner   => 'root',
         group   => 'root',
         mode    => '0750',
-        content => "#!/bin/sh\nceph_monitor_add $opt_base $opt_device\n",
+        content => "#!/bin/sh\nceph-monitor-add $opt_base $opt_device\n",
       }
 
     }

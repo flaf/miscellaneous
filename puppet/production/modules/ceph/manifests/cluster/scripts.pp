@@ -15,46 +15,46 @@ class ceph::cluster::scripts {
     force   => true,
   }
 
-  $ceph_script_common = '/usr/local/share/ceph/ceph_common.sh'
+  $ceph_script_common = '/usr/local/share/ceph/ceph-common.sh'
 
   file { $ceph_script_common:
     ensure  => present,
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    content => template('ceph/ceph_common.sh.erb'),
+    content => template('ceph/ceph-common.sh.erb'),
   }
 
-  file { '/usr/local/sbin/ceph_monitor_init':
+  file { '/usr/local/sbin/ceph-monitor-init':
     ensure  => present,
     owner   => 'root',
     group   => 'root',
     mode    => '0700',
-    content => template('ceph/ceph_monitor_init.erb'),
+    content => template('ceph/ceph-monitor-init.erb'),
   }
 
-  file { '/usr/local/sbin/ceph_monitor_add':
+  file { '/usr/local/sbin/ceph-monitor-add':
     ensure  => present,
     owner   => 'root',
     group   => 'root',
     mode    => '0700',
-    content => template('ceph/ceph_monitor_add.erb'),
+    content => template('ceph/ceph-monitor-add.erb'),
   }
 
-  file { '/usr/local/sbin/ceph_osd_add':
+  file { '/usr/local/sbin/ceph-osd-add':
     ensure  => present,
     owner   => 'root',
     group   => 'root',
     mode    => '0700',
-    content => template('ceph/ceph_osd_add.erb'),
+    content => template('ceph/ceph-osd-add.erb'),
   }
 
-  file { '/usr/local/sbin/ceph_mds_add':
+  file { '/usr/local/sbin/ceph-mds-add':
     ensure  => present,
     owner   => 'root',
     group   => 'root',
     mode    => '0700',
-    content => template('ceph/ceph_mds_add.erb'),
+    content => template('ceph/ceph-mds-add.erb'),
   }
 
 }
