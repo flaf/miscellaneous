@@ -7,6 +7,24 @@ class puppetmaster::puppetdb {
   $user         = $::puppetmaster::puppetdb_user
   $pwd          = $::puppetmaster::puppetdb_pwd
   $database_ini = '/etc/puppetdb/conf.d/database.ini'
+  $jetty_ini    = '/etc/puppetdb/conf.d/jetty.ini'
+  $puppetdb_ssl = '/etc/puppetdb/ssl'
+
+  # If the puppetmaster is CA, puppetdb will use certificates
+  # in /var/lib/puppet/ssl, else in /var/lib/puppet/sslclient.
+  if $ca_server != '<myself>' {
+
+    # The puppetmaster is not CA.
+    $puppet_ssl = '/var/lib/puppet/sslclient'
+    $crl_file   = "${puppet_ssl}/crl.pem"
+
+   } else {
+
+    # The puppetmaster is CA.
+    $puppet_ssl = '/var/lib/puppet/ssl'
+    $crl_file   = "${puppet_ssl}/ca/ca_crl.pem"
+
+   }
 
   # The file will be modified via ini_setting resources.
   # Here, we just ensure the unix rights.
@@ -69,23 +87,26 @@ class puppetmaster::puppetdb {
     notify  => Service['puppetdb'],
   }
 
-  $puppetdb_ssl = '/etc/puppetdb/ssl'
+  # The file will be modified via ini_setting resources.
+  # Here, we just ensure the unix rights.
+  file { $jetty_ini:
+    ensure => present,
+    owner  => 'puppetdb',
+    group  => 'puppetdb',
+    mode   => '0640',
+    before => Service['puppetdb'],
+    notify => Service['puppetdb'],
+  }
 
-  # If the puppetmaster is CA, puppetdb will use certificates
-  # in /var/lib/puppet/ssl, else in /var/lib/puppet/sslclient.
-  if $ca_server != '<myself>' {
-
-    # The puppetmaster is not CA.
-    $puppet_ssl = '/var/lib/puppet/sslclient'
-    $crl_file   = "${puppet_ssl}/crl.pem"
-
-   } else {
-
-    # The puppetmaster is CA.
-    $puppet_ssl = '/var/lib/puppet/ssl'
-    $crl_file   = "${puppet_ssl}/ca/ca_crl.pem"
-
-   }
+  ini_setting { 'set-ssl-crl-path':
+    path    => $jetty_ini,
+    ensure  => present,
+    section => 'jetty',
+    setting => 'ssl-crl-path',
+    value   => "${puppetdb_ssl}/crl.pem",
+    before  => Service['puppetdb'],
+    notify  => Service['puppetdb'],
+  }
 
   file { [
            "${puppetdb_ssl}/ca.pem",
