@@ -5,6 +5,17 @@ class puppetmaster::packages {
   $puppetdb_server = $::puppetmaster::puppetdb_server
 
   $packages = [
+                # Sometimes, in /var/log/apache2/error.log, I can see message
+                # like:
+                #
+                #     stderr: /usr/bin/env:
+                #     stderr: python
+                #     stderr: No such file or directory
+                #
+                # So python seems to be needed sometimes but without python
+                # puppetmaster seems to work well. However, It doesn't cost
+                # much to install python.
+                'python',
                 'git',
                 'openssl',
                 'ca-certificates',
