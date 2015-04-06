@@ -20,6 +20,9 @@ class profiles::puppet::puppetmaster {
 
   if $::fqdn == 'subpuppet-1.athome.priv'  {
 
+    class { '::mcollective::middleware':
+    }
+
     class { '::puppetmaster':
       puppet_server        => 'puppet.athome.priv',
       ca_server            => 'puppet.athome.priv',
