@@ -254,6 +254,7 @@ Listen 0.0.0.0:8140\n\n",
   if $ca_server != '<myself>' {
 
     # The puppetmaster isn't the CA.
+
     # In this case, apache2 must use the certificates in the
     # /var/lib/puppet/sslclient directory.
 
@@ -320,6 +321,35 @@ Listen 0.0.0.0:8140\n\n",
       # is not restarted, it uses the old version of this file
       # (ie a old version of the CRL). In fact, a simple "reload"
       # just works.
+      notify  => Service['apache2'],
+    }
+
+  } else {
+
+    # The puppetmaster is the CA.
+
+    # In this case, when the CRL is udpated, apache2 must be
+    # restarted (or just reloaded). How to check if the CRL
+    # has been changed? Very simple:
+    #
+    #   - /var/lib/puppet/ssl/ca/ca_crl.pem is the updated CRL of the CA
+    #   - /var/lib/puppet/ssl/crl.pem is the not necessary updated CRL
+    #     of the puppet agent of the puppetmaster
+    #
+    # These 2 files should be equal. If not, the ca_crl.pem file
+    # has been change. In this case, we will update the
+    # /var/lib/puppet/ssl/crl.pem file and trigger a restart
+    # of apache2.
+
+    # We don't care about this file. It's just a way to restart
+    # apache2 if the CRL of the CA has been updated.
+    file { '/var/lib/puppet/ssl/crl.pem':
+      ensure  => present,
+      owner   => 'puppet',
+      group   => 'puppet',
+      mode    => '0644',
+      content => file('/var/lib/puppet/ssl/ca/ca_crl.pem'),
+      before  => Service['apache2'],
       notify  => Service['apache2'],
     }
 
