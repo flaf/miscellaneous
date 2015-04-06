@@ -315,6 +315,10 @@ Listen 0.0.0.0:8140\n\n",
       mode    => '0644',
       content => file('/var/lib/puppet/ssl/ca/ca_crl.pem'),
       before  => Service['apache2'],
+      # I thought that restart apache2 was useless, but according
+      # to my tests, in fact it's completely necessary. If apache2
+      # is not restarted, it uses the old version of this file
+      # (ie a old version of the CRL).
       notify  => Service['apache2'],
     }
 
