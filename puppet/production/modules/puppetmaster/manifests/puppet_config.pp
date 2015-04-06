@@ -355,6 +355,25 @@ Listen 0.0.0.0:8140\n\n",
 
   }
 
+  # TODO: this resource will be useful for a resfresh
+  # of apache2 when CRL is updated (which can happen
+  # often). But unfortunately, in some cases there will
+  # a consecutive reload and a restart of apache2. This is
+  # not very nice. I don't know (it seems impossible) how to
+  # cancel the reload of apache2 ("exec" resource) if the
+  # restart ("service" resource) is scheduled by Puppet.
+  #
+  # There will be a reload of apache only when CRL will
+  # updated because this event can happen often.
+  #exec { "reload-apache2":
+  #  path        => '/usr/sbin:/usr/bin:/sbin:/bin',
+  #  user        => 'root',
+  #  group       => 'root',
+  #  command     => "service apache2 reload",
+  #  refreshonly => true,
+  #  before      => Service['apache2'],
+  #}
+
   service { 'apache2':
     ensure     => running,
     hasstatus  => true,
@@ -364,7 +383,7 @@ Listen 0.0.0.0:8140\n\n",
     #
     # A "stop", a "sleep" and a "start" seem to be more safer.
     hasrestart => false,
-    restart    => 'service apache2 stop; sleep 3; service apache2 start',
+    restart    => 'service apache2 stop; sleep 2; service apache2 start',
   }
 
 }

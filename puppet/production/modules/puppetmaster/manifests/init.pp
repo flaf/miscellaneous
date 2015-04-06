@@ -64,22 +64,26 @@ class puppetmaster (
     before => Class['::puppetmaster::puppet_config'],
   }
 
-  # 2. If the server provides the puppetdb service...
+  # 2. Of course, the configuration of puppet is mandatory.
+  # The configuration of puppet comes before the
+  # configuration of puppetdb because puppetdb uses
+  # certificates, CRL etc. of puppet. So it's better to have
+  # puppet configured before puppetdb.
+  class { '::puppetmaster::puppet_config': }
+
+  # 3. If the server provides the puppetdb service...
   if $puppetdb_server == '<myself>' {
 
     class { '::puppetmaster::postgresql':
-      require => Class['::puppetmaster::packages'],
+      require => Class['::puppetmaster::puppet_config'],
     }
 
     class { '::puppetmaster::puppetdb':
       require => Class['::puppetmaster::postgresql'],
-      before  => Class['::puppetmaster::puppet_config'],
+      before  => Class['::puppetmaster::git_ssh'],
     }
 
   }
-
-  # 3. Of course, the configuration of puppet is mandatory.
-  class { '::puppetmaster::puppet_config': }
 
   # 4. If there is a git reporitory dedicated to the server...
   if $hiera_git_repository != '<none>' {

@@ -75,13 +75,15 @@ class puppetmaster::puppetdb {
   # in /var/lib/puppet/ssl, else in /var/lib/puppet/sslclient.
   if $ca_server != '<myself>' {
 
-    # The puppetmaster is CA.
+    # The puppetmaster is not CA.
     $puppet_ssl = '/var/lib/puppet/sslclient'
+    $crl_file   = "${puppet_ssl}/crl.pem"
 
    } else {
 
-    # The puppetmaster is not CA.
+    # The puppetmaster is CA.
     $puppet_ssl = '/var/lib/puppet/ssl'
+    $crl_file   = "${puppet_ssl}/ca/ca_crl.pem"
 
    }
 
@@ -89,6 +91,7 @@ class puppetmaster::puppetdb {
            "${puppetdb_ssl}/ca.pem",
            "${puppetdb_ssl}/public.pem",
            "${puppetdb_ssl}/private.pem",
+           "${puppetdb_ssl}/crl.pem",
          ]:
     ensure => present,
     owner  => 'puppetdb',
@@ -148,6 +151,16 @@ class puppetmaster::puppetdb {
     user    => 'root',
     group   => 'root',
     unless  => "diff -q '${puppet_ssl}/certs/${::fqdn}.pem' '${puppetdb_ssl}/public.pem'",
+    before  => Service['puppetdb'],
+    notify  => Service['puppetdb'],
+  }
+
+  exec { 'puppetdb-update-crl.pem':
+    command => "cat '${crl_file}' >'${puppetdb_ssl}/crl.pem'",
+    path    => '/usr/sbin:/usr/bin:/sbin:/bin',
+    user    => 'root',
+    group   => 'root',
+    unless  => "diff -q '${crl_file}' >'${puppetdb_ssl}/crl.pem'",
     before  => Service['puppetdb'],
     notify  => Service['puppetdb'],
   }
