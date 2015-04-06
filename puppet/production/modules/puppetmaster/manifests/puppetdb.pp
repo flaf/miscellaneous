@@ -70,7 +70,20 @@ class puppetmaster::puppetdb {
   }
 
   $puppetdb_ssl = '/etc/puppetdb/ssl'
-  $puppet_ssl   = '/var/lib/puppet/sslclient'
+
+  # If the puppetmaster is CA, puppetdb will use certificates
+  # in /var/lib/puppet/ssl, else in /var/lib/puppet/sslclient.
+  if $ca_server != '<myself>' {
+
+    # The puppetmaster is CA.
+    $puppet_ssl = '/var/lib/puppet/sslclient'
+
+   } else {
+
+    # The puppetmaster is not CA.
+    $puppet_ssl = '/var/lib/puppet/ssl'
+
+   }
 
   file { [
            "${puppetdb_ssl}/ca.pem",
@@ -85,66 +98,64 @@ class puppetmaster::puppetdb {
     notify => Service['puppetdb'],
   }
 
-  if $ca_server != '<myself>' {
+  # Note
+  #
+  # It was possible to do something like that:
+  #
+  #    file { "${puppetdb_ssl}/private.pem" :
+  #
+  #      ensure => present,
+  #      owner  => 'puppetdb',
+  #      group  => 'puppetdb',
+  #      mode   => '0640',
+  #      before => Service['puppetdb'],
+  #      notify => Service['puppetdb'],
+  #
+  #      # Yes, with the attribute "source", we can put
+  #      # a path of a local file (the syntax "puppet:///<module>/xxx"
+  #      # is not the only allowed syntax).
+  #      source => "${puppet_ssl}/private_keys/${::fqdn}.pem",
+  #
+  #    }
+  #
+  # But in this case, the content of the file appears in the
+  # working directory of puppet (in /var/lib/puppet/) which it
+  # bothers me a little. So I prefer some "exec" resources.
 
-    # The server isn't the CA, so we must use the certificate, the keys
-    # etc. in /var/lib/puppet/sslclient/.
-
-    # Note
-    #
-    # It was possible to do something like that:
-    #
-    #    file { "${puppetdb_ssl}/private.pem" :
-    #
-    #      ensure => present,
-    #      owner  => 'puppetdb',
-    #      group  => 'puppetdb',
-    #      mode   => '0640',
-    #      before => Service['puppetdb'],
-    #      notify => Service['puppetdb'],
-    #
-    #      # Yes, with the attribute "source", we can put
-    #      # a path of a local file (the syntax "puppet:///<module>/xxx"
-    #      # is not the only allowed syntax).
-    #      source => "${puppet_ssl}/private_keys/${::fqdn}.pem",
-    #
-    #    }
-    #
-    # But in this case, the content of the file appears in the
-    # working directory of puppet (in /var/lib/puppet/) which it
-    # bothers me a little. So I prefer some "exec" resources.
-
-    exec { 'puppetdb-update-private.pem':
-      command => "cat '${puppet_ssl}/private_keys/${::fqdn}.pem' >'${puppetdb_ssl}/private.pem'",
-      path    => '/usr/sbin:/usr/bin:/sbin:/bin',
-      user    => 'root',
-      group   => 'root',
-      unless  => "diff -q '${puppet_ssl}/private_keys/${::fqdn}.pem' '${puppetdb_ssl}/private.pem'",
-      before  => Service['puppetdb'],
-      notify  => Service['puppetdb'],
-    }
-
-    exec { 'puppetdb-update-ca.pem':
-      command => "cat '${puppet_ssl}/certs/ca.pem' >'${puppetdb_ssl}/ca.pem'",
-      path    => '/usr/sbin:/usr/bin:/sbin:/bin',
-      user    => 'root',
-      group   => 'root',
-      unless  => "diff -q '${puppet_ssl}/certs/ca.pem' '${puppetdb_ssl}/ca.pem'",
-      before  => Service['puppetdb'],
-      notify  => Service['puppetdb'],
-    }
-
-    exec { 'puppetdb-update-public.pem':
-      command => "cat '${puppet_ssl}/certs/${::fqdn}.pem' >'${puppetdb_ssl}/public.pem'",
-      path    => '/usr/sbin:/usr/bin:/sbin:/bin',
-      user    => 'root',
-      group   => 'root',
-      unless  => "diff -q '${puppet_ssl}/certs/${::fqdn}.pem' '${puppetdb_ssl}/public.pem'",
-      before  => Service['puppetdb'],
-      notify  => Service['puppetdb'],
-    }
-
+  exec { 'puppetdb-update-private.pem':
+    command => "cat '${puppet_ssl}/private_keys/${::fqdn}.pem' >'${puppetdb_ssl}/private.pem'",
+    path    => '/usr/sbin:/usr/bin:/sbin:/bin',
+    user    => 'root',
+    group   => 'root',
+    unless  => "diff -q '${puppet_ssl}/private_keys/${::fqdn}.pem' '${puppetdb_ssl}/private.pem'",
+    before  => Service['puppetdb'],
+    notify  => Service['puppetdb'],
   }
+
+  exec { 'puppetdb-update-ca.pem':
+    command => "cat '${puppet_ssl}/certs/ca.pem' >'${puppetdb_ssl}/ca.pem'",
+    path    => '/usr/sbin:/usr/bin:/sbin:/bin',
+    user    => 'root',
+    group   => 'root',
+    unless  => "diff -q '${puppet_ssl}/certs/ca.pem' '${puppetdb_ssl}/ca.pem'",
+    before  => Service['puppetdb'],
+    notify  => Service['puppetdb'],
+  }
+
+  exec { 'puppetdb-update-public.pem':
+    command => "cat '${puppet_ssl}/certs/${::fqdn}.pem' >'${puppetdb_ssl}/public.pem'",
+    path    => '/usr/sbin:/usr/bin:/sbin:/bin',
+    user    => 'root',
+    group   => 'root',
+    unless  => "diff -q '${puppet_ssl}/certs/${::fqdn}.pem' '${puppetdb_ssl}/public.pem'",
+    before  => Service['puppetdb'],
+    notify  => Service['puppetdb'],
+  }
+
+  # TODO: there is a problem! It seems that puppetdb (jetty in fact)
+  # can't use the CRL of the CA (like apache). Normally, puppetdb
+  # should have an updated CRL and should restart if the CRL has
+  # changed.
 
   service { 'puppetdb':
     ensure     => running,

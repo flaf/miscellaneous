@@ -92,18 +92,36 @@ class puppetmaster (
 
   # 5. Alert for cleaning if the server is CA and is the puppet
   # client of itself.
-  if $ca_server == '<myself>' and $puppet_server == '<myself>' {
 
-    $msg_ssl = "\n\nThe directory /var/lib/puppet/sslclient is useless now.\n\
-Henceforth, the current host is Puppet CA and is the puppet\n\
-client of itself. You should remove this directory and revoke\n\
-the certificate used in this directory.\n\n"
+  # TODO: only when the "refreshonly" attribute will be
+  # accepted in a "notify" resource:
+  #
+  #   https://tickets.puppetlabs.com/browse/PUP-4213
+  #
 
-    notify { 'alert-remove-sslclient':
-      message => $msg_ssl,
-    }
-
-  }
+#  if $ca_server == '<myself>' and $puppet_server == '<myself>' {
+#
+#    exec { 'puppetdb-update-private.pem':
+#      command => 'true',
+#      path    => '/usr/sbin:/usr/bin:/sbin:/bin',
+#      user    => 'root',
+#      group   => 'root',
+#      onlyif  => 'test -d /var/lib/puppet/sslclient',
+#      before  => Notify['alert-remove-sslclient'],
+#      notify  => Notify['alert-remove-sslclient'],
+#    }
+#
+#    $msg_ssl = "\n\nThe directory /var/lib/puppet/sslclient is useless now.\n\
+#Henceforth, the current host is Puppet CA and is the puppet\n\
+#client of itself. You should remove this directory and revoke\n\
+#the certificate used in this directory.\n\n"
+#
+#    notify { 'alert-remove-sslclient':
+#      message     => $msg_ssl,
+#      refreshonly => true,
+#    }
+#
+#  }
 
 }
 
