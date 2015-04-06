@@ -254,6 +254,8 @@ Listen 0.0.0.0:8140\n\n",
   if $ca_server != '<myself>' {
 
     # The puppetmaster isn't the CA.
+    # In this case, apache2 must use the certificates in the
+    # /var/lib/puppet/sslclient directory.
 
     file_line { 'vhost-SSLCertificateFile':
       path    => '/etc/apache2/sites-available/puppetmaster.conf',
@@ -302,6 +304,18 @@ Listen 0.0.0.0:8140\n\n",
       group   => 'root',
       onlyif  => 'test -d /var/lib/puppet/ssl',
       before  => Service['apache2'],
+    }
+
+    # Very important ! If the puppetmaster isn't the CA, it must
+    # update its local copy of the CRL of the CA puppetmaster.
+    file { '/var/lib/puppet/sslclient/crl.pem':
+      ensure  => present,
+      owner   => 'puppet',
+      group   => 'puppet',
+      mode    => '0644',
+      content => file('/var/lib/puppet/ssl/ca/ca_crl.pem'),
+      before  => Service['apache2'],
+      notify  => Service['apache2'],
     }
 
   }
