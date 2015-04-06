@@ -318,7 +318,8 @@ Listen 0.0.0.0:8140\n\n",
       # I thought that restart apache2 was useless, but according
       # to my tests, in fact it's completely necessary. If apache2
       # is not restarted, it uses the old version of this file
-      # (ie a old version of the CRL).
+      # (ie a old version of the CRL). In fact, a simple "reload"
+      # just works.
       notify  => Service['apache2'],
     }
 
