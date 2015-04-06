@@ -14,7 +14,7 @@ Stage['basis']
   -> Stage['kernel']
   -> Stage['main']
 
-$classes = hiera_hash('enc_class', '<empty>')
+$classes = hiera_array('enc_class', '<empty>')
 
 if $classes == '<empty>' {
 
