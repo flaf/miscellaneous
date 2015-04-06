@@ -36,7 +36,8 @@ class puppetmaster::git_ssh {
 
   # I don't know why but, if the "git clone" fails, the target
   # directory is removed. So the command below recreate the
-  # directory if it has been removed.
+  # directory if it has been removed. But the return value of
+  # these command is the return value of the `git clone` command.
   $cmd_git_clone = "git clone '${git_repo}' '${hieradata_dir}'; rt=\$?\n\
 [ ! -d '${hieradata_dir}' ] && mkdir '${hieradata_dir}'\n\
 exit \$rt"

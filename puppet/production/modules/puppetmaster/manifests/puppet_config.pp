@@ -15,7 +15,7 @@ class puppetmaster::puppet_config {
   $eyaml_create_keys_cmd = "eyaml createkeys --pkcs7-private-key \
 ${eyaml_private_key} --pkcs7-public-key ${eyaml_public_key}"
 
-  # The environment director and its sub-directories.
+  # The environment directories and its sub-directories etc.
   file { [
           $environment_path,
           "${environment_path}/production",
@@ -178,9 +178,9 @@ ${eyaml_private_key} --pkcs7-public-key ${eyaml_public_key}"
 
   }
 
-  # The puppetdb.conf. Explain to Puppet how to contact
-  # the puppetdb. You must use a https connection, so
-  # the localhost address is impossible.
+  # The puppetdb.conf. This file explain to Puppet how to
+  # contact the puppetdb. You must use a https connection,
+  # so the localhost address is impossible.
   file { '/etc/puppet/puppetdb.conf':
     ensure  => present,
     owner   => 'root',
@@ -313,7 +313,7 @@ Listen 0.0.0.0:8140\n\n",
     #
     #   make_sock: could not bind to address...
     #
-    # A "stop" and a "start" seem to be more safer.
+    # A "stop", a "sleep" and a "start" seem to be more safer.
     hasrestart => false,
     restart    => 'service apache2 stop; sleep 3; service apache2 start',
   }

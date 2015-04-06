@@ -64,7 +64,7 @@ class puppetmaster (
     before => Class['::puppetmaster::puppet_config'],
   }
 
-  # 2. If the server provide the puppetdb service...
+  # 2. If the server provides the puppetdb service...
   if $puppetdb_server == '<myself>' {
 
     class { '::puppetmaster::postgresql':
@@ -81,7 +81,7 @@ class puppetmaster (
   # 3. Of course, the configuration of puppet is mandatory.
   class { '::puppetmaster::puppet_config': }
 
-  # 4. If there is a git reporitory dedicated to the server.
+  # 4. If there is a git reporitory dedicated to the server...
   if $hiera_git_repository != '<none>' {
 
     class { '::puppetmaster::git_ssh':
