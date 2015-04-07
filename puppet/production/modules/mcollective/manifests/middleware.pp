@@ -13,6 +13,17 @@ class mcollective::middleware {
     notify  => Service['rabbitmq'],
   }
 
+  file { '/etc/rabbitmq/enabled_plugins':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    content => template('mcollective/enabled_plugins.erb'),
+    require => Package['rabbitmq-server'],
+    before  => Service['rabbitmq'],
+    notify  => Service['rabbitmq'],
+  }
+
   service { 'rabbitmq':
     name       => 'rabbitmq-server',
     ensure     => running,
