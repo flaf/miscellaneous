@@ -1,9 +1,16 @@
-class mcollective::middleware {
+class mcollective::middleware (
+  $mgt_ip         = '127.0.0.1',
+  $mgt_port       = 15672,
+  $stomp_ssl_ip   = '0.0.0.0',
+  $stomp_ssl_port = 61613,
+  $puppet_ssl_dir = '/var/lib/puppet/ssl',
+) {
 
   $packages = [
                 'rabbitmq-server',
                 'python',          # Needed for the cli rabbitmqadmin.
               ]
+  $ssl_dir  = '/etc/rabbitmq/ssl'
   $cmd_cli  = "/var/lib/rabbitmq/mnesia/rabbit@*-plugins-expand/\
 rabbitmq_management-*/priv/www/cli/rabbitmqadmin"
 
@@ -29,6 +36,58 @@ rabbitmq_management-*/priv/www/cli/rabbitmqadmin"
     require => Package['rabbitmq-server'],
     before  => Service['rabbitmq'],
     notify  => Service['rabbitmq'],
+  }
+
+  file { $ssl_dir:
+    ensure => directory,
+    owner  => 'rabbitmq',
+    group  => 'rabbitmq',
+    mode   => '0500',
+    before => Service['rabbitmq'],
+    notify => Service['rabbitmq'],
+  }
+
+  file { [
+           "${ssl_dir}/cacert.pem",
+           "${ssl_dir}/cert.pem",
+           "${ssl_dir}/key.pem",
+         ]:
+    ensure => present,
+    owner  => 'rabbitmq',
+    group  => 'rabbitmq',
+    mode   => '0400',
+    before => Service['rabbitmq'],
+    notify => Service['rabbitmq'],
+  }
+
+  exec { 'rabbitmq-update-private.pem':
+    command => "cat '${puppet_ssl_dir}/private_keys/${::fqdn}.pem' >'${ssl_dir}/key.pem'",
+    path    => '/usr/sbin:/usr/bin:/sbin:/bin',
+    user    => 'root',
+    group   => 'root',
+    unless  => "diff -q '${puppet_ssl_dir}/private_keys/${::fqdn}.pem' '${ssl_dir}/key.pem'",
+    before => Service['rabbitmq'],
+    notify => Service['rabbitmq'],
+  }
+
+  exec { 'rabbitmq-update-cert.pem':
+    command => "cat '${puppet_ssl_dir}/certs/${::fqdn}.pem' >'${ssl_dir}/cert.pem'",
+    path    => '/usr/sbin:/usr/bin:/sbin:/bin',
+    user    => 'root',
+    group   => 'root',
+    unless  => "diff -q '${puppet_ssl_dir}/certs/${::fqdn}.pem' '${ssl_dir}/cert.pem'",
+    before => Service['rabbitmq'],
+    notify => Service['rabbitmq'],
+  }
+
+  exec { 'rabbitmq-update-cacert.pem':
+    command => "cat '${puppet_ssl_dir}/certs/ca.pem' >'${ssl_dir}/cacert.pem'",
+    path    => '/usr/sbin:/usr/bin:/sbin:/bin',
+    user    => 'root',
+    group   => 'root',
+    unless  => "diff -q '${puppet_ssl_dir}/certs/ca.pem' '${ssl_dir}/cacert.pem'",
+    before => Service['rabbitmq'],
+    notify => Service['rabbitmq'],
   }
 
   service { 'rabbitmq':

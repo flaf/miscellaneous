@@ -8,8 +8,8 @@
         {
           listener,
             [
-              { port, 15672},
-              {   ip, "127.0.0.1"}
+              { ip, <%= @mgt_ip %>},
+              { port, <%= @mgt_port %>}
             ]
         }
       ]
@@ -21,8 +21,7 @@
         {
           tcp_listeners,
             [
-              {"0.0.0.0", 61613},
-              {    "::1", 61613}
+              {"<%= @stomp_ssl_ip %>", <%= @stomp_ssl_port %>}
             ]
         }
       ]

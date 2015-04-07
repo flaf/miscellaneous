@@ -21,6 +21,7 @@ class profiles::puppet::puppetmaster {
   if $::fqdn == 'subpuppet-1.athome.priv'  {
 
     class { '::mcollective::middleware':
+      puppet_ssl_dir => '/var/lib/puppet/sslclient',
     }
 
     class { '::puppetmaster':
