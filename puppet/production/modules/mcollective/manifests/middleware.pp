@@ -36,7 +36,7 @@ rabbitmq_management-*/priv/www/cli/rabbitmqadmin"
   }
 
   exec { 'install-cli-mgt':
-    command => "cp \"${cmd_cli}\" /usr/local/sbin/",
+    command => "cp ${cmd_cli} /usr/local/sbin/",
     path    => '/usr/sbin:/usr/bin:/sbin:/bin',
     user    => 'root',
     group   => 'root',
