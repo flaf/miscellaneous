@@ -66,8 +66,9 @@ rabbitmq_management-*/priv/www/cli/rabbitmqadmin"
     user    => 'root',
     group   => 'root',
     unless  => "diff -q '${puppet_ssl_dir}/private_keys/${::fqdn}.pem' '${ssl_dir}/key.pem'",
-    before => Service['rabbitmq'],
-    notify => Service['rabbitmq'],
+    require => File[$ssl_dir],
+    before  => Service['rabbitmq'],
+    notify  => Service['rabbitmq'],
   }
 
   exec { 'rabbitmq-update-cert.pem':
@@ -76,8 +77,9 @@ rabbitmq_management-*/priv/www/cli/rabbitmqadmin"
     user    => 'root',
     group   => 'root',
     unless  => "diff -q '${puppet_ssl_dir}/certs/${::fqdn}.pem' '${ssl_dir}/cert.pem'",
-    before => Service['rabbitmq'],
-    notify => Service['rabbitmq'],
+    require => File[$ssl_dir],
+    before  => Service['rabbitmq'],
+    notify  => Service['rabbitmq'],
   }
 
   exec { 'rabbitmq-update-cacert.pem':
@@ -86,8 +88,9 @@ rabbitmq_management-*/priv/www/cli/rabbitmqadmin"
     user    => 'root',
     group   => 'root',
     unless  => "diff -q '${puppet_ssl_dir}/certs/ca.pem' '${ssl_dir}/cacert.pem'",
-    before => Service['rabbitmq'],
-    notify => Service['rabbitmq'],
+    require => File[$ssl_dir],
+    before  => Service['rabbitmq'],
+    notify  => Service['rabbitmq'],
   }
 
   service { 'rabbitmq':
