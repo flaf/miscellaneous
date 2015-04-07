@@ -1,6 +1,9 @@
 class mcollective::middleware {
 
-  $packages = [ 'rabbitmq-server', 'python', ]
+  $packages = [
+                'rabbitmq-server',
+                'python',          # Needed for the cli rabbitmqadmin.
+              ]
   $cmd_cli  = "/var/lib/rabbitmq/mnesia/rabbit@*-plugins-expand/\
 rabbitmq_management-*/priv/www/cli/rabbitmqadmin"
 

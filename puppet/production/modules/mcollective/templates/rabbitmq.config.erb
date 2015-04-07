@@ -1,16 +1,32 @@
 %%% This file is managed by Puppet, don't edit it. %%%
 
 [
- {
-  rabbitmq_stomp, [
-                   {
-                    tcp_listeners, [
-                                    {"0.0.0.0", 61613},
-                                    {"::1",       61613}
-                                   ]
-                   }
-                  ]
- }
+
+  {
+    rabbitmq_management,
+      [
+        {
+          listener,
+            [
+              { port, 15672},
+              {   ip, "127.0.0.1"}
+            ]
+        }
+      ]
+  },
+
+  {
+    rabbitmq_stomp,
+      [
+        {
+          tcp_listeners,
+            [
+              {"0.0.0.0", 61613},
+              {    "::1", 61613}
+            ]
+        }
+      ]
+  }
 ].
 
 
