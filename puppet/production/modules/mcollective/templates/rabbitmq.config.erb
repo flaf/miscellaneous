@@ -6,6 +6,10 @@
     rabbit,
       [
         {
+          % - fail_if_no_peer_cert == true means "don't accept connection of
+          %   client which has not a certificate".
+          % - verify == verify_peer means "don't accept connection of client
+          %   if its certificate doesn't valid the chain of trust with the CA".
           ssl_options,
             [
               {          cacertfile,  "/etc/rabbitmq/ssl/cacert.pem"},
