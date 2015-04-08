@@ -3,8 +3,33 @@
 [
 
   {
+    rabbitmq_stomp,
+      [
+        {
+          % No STOMP tcp connection allowed.
+          tcp_listeners, [] % No STOMP tcp connection.
+        },
+        {
+          % STOMP ssl connections allowed.
+          ssl_listeners,
+            [
+              {"<%= @stomp_ssl_ip %>", <%= @stomp_ssl_port %>}
+            ]
+        }
+      ]
+  },
+
+  {
     rabbit,
       [
+        {
+          % No AMQP tcp connection allowed.
+          tcp_listeners, []
+        },
+        {
+          % No AMQP ssl connection allowed.
+          ssl_listeners, []
+        },
         {
           % - fail_if_no_peer_cert == true means "don't accept connection of
           %   client which has not a certificate".
@@ -22,11 +47,11 @@
       ]
   },
 
-
   {
     rabbitmq_management,
       [
         {
+          % The WebUI for management.
           listener,
             [
               {   ip, "<%= @mgt_ip %>"},
@@ -34,19 +59,8 @@
             ]
         }
       ]
-  },
-
-  {
-    rabbitmq_stomp,
-      [
-        {
-          tcp_listeners,
-            [
-              {"<%= @stomp_ssl_ip %>", <%= @stomp_ssl_port %>}
-            ]
-        }
-      ]
   }
+
 ].
 
 
