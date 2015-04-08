@@ -117,6 +117,15 @@ rabbitmq_management-*/priv/www/cli/rabbitmqadmin"
     require => Exec['install-cli-mgt'],
   }
 
+  exec { 'declare-vhost-mcollective':
+    command => "rabbitmqadmin declare vhost name=/mcollective",
+    path    => '/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin',
+    user    => 'root',
+    group   => 'root',
+    unless  => "rabbitmqadmin | grep -q '^/mcollective$'",
+    require  => File['/usr/local/sbin/rabbitmqadmin'],
+  }
+
 }
 
 
