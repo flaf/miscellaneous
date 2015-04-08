@@ -122,7 +122,7 @@ rabbitmq_management-*/priv/www/cli/rabbitmqadmin"
     path    => '/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin',
     user    => 'root',
     group   => 'root',
-    unless  => "rabbitmqadmin | grep -q '^/mcollective$'",
+    unless  => "rabbitmqadmin list vhosts | grep -q ' /mcollective '",
     require  => File['/usr/local/sbin/rabbitmqadmin'],
   }
 
