@@ -57,6 +57,11 @@
               {   ip, "<%= @mgt_ip %>"},
               { port, <%= @mgt_port %>}
             ]
+        },
+        {
+          % Without this parameter, the RabbitMQ WebUI contnue
+          % to listen on 55672 (old port for RabbitMQ < 3.0).
+          redirect_old_port, false
         }
       ]
   }
