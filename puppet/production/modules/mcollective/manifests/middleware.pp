@@ -123,7 +123,16 @@ rabbitmq_management-*/priv/www/cli/rabbitmqadmin"
     user    => 'root',
     group   => 'root',
     unless  => "rabbitmqadmin list vhosts | grep -q ' /mcollective '",
-    require  => File['/usr/local/sbin/rabbitmqadmin'],
+    require => File['/usr/local/sbin/rabbitmqadmin'],
+  }
+
+  exec { 'remove-vhost-root':
+    command => "rabbitmqadmin delete vhost name=/",
+    path    => '/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin',
+    user    => 'root',
+    group   => 'root',
+    onlyif  => "rabbitmqadmin list vhosts | grep -q ' / '",
+    require => Exec['declare-vhost-mcollective'],
   }
 
 }
