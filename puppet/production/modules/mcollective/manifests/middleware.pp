@@ -2,7 +2,7 @@ class mcollective::middleware (
   $mgt_ip         = '127.0.0.1',
   $mgt_port       = 15672,
   $stomp_ssl_ip   = '0.0.0.0',
-  $stomp_ssl_port = 61613,
+  $stomp_ssl_port = 61614,
   $puppet_ssl_dir = '/var/lib/puppet/ssl',
 ) {
 
