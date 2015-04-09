@@ -159,7 +159,7 @@ rabbitmq_management-*/priv/www/cli/rabbitmqadmin"
   # /root/.rabbitmqadmin.conf file. Indeed, the 2 actions
   # must be atomic because the rabbitmqadmin command uses
   # this file for the connection.
-  $cmd_set_admin = "HOME=/root rabbitmqadmin declare user name=admin \
+  $cmd_set_admin = "export HOME=/root; rabbitmqadmin declare user name=admin \
 password='${admin_pwd}' tags=administrator && \
 cat /root/.rabbitmqadmin.conf.puppet > /root/.rabbitmqadmin.conf"
 
@@ -174,7 +174,7 @@ cat /root/.rabbitmqadmin.conf.puppet > /root/.rabbitmqadmin.conf"
   # installation), the rabbitmqadmin command will use the
   # default account "guest" with the default password
   # "guest".
-  $cmd_set_mcollective = "HOME=/root rabbitmqadmin declare user \
+  $cmd_set_mcollective = "export HOME=/root; rabbitmqadmin declare user \
 name=mcollective password='${mcollective_pwd}' tags="
 
   exec { 'create-update-admin-account-and-push-new-conf':
@@ -209,20 +209,20 @@ name=mcollective password='${mcollective_pwd}' tags="
   }
 
   exec { 'remove-guest-account':
-    command => "HOME=/root rabbitmqadmin delete user name=guest",
+    command => "export HOME=/root; rabbitmqadmin delete user name=guest",
     path    => '/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin',
     user    => 'root',
     group   => 'root',
-    onlyif  => "HOME=/root rabbitmqadmin list users | grep -q ' guest '",
+    onlyif  => "export HOME=/root; rabbitmqadmin list users | grep -q ' guest '",
     require => Exec['conf-admin-ok'],
   }
 
   exec { 'declare-vhost-mcollective':
-    command => "HOME=/root rabbitmqadmin declare vhost name=/mcollective",
+    command => "export HOME=/root; rabbitmqadmin declare vhost name=/mcollective",
     path    => '/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin',
     user    => 'root',
     group   => 'root',
-    unless  => "HOME=/root rabbitmqadmin list vhosts | grep -q ' /mcollective '",
+    unless  => "export HOME=/root; rabbitmqadmin list vhosts | grep -q ' /mcollective '",
     require => Exec['conf-admin-ok'],
   }
 
