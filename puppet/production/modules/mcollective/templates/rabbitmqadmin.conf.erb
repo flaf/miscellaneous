@@ -3,8 +3,7 @@
 # Warning: you can't indent the lines, else the rabbitmqadmin
 #          raises an exception.
 
-[host_normal]
-
+[default]
 hostname = 127.0.0.1
 port     = 15672
 username = admin
@@ -13,7 +12,6 @@ password = <%= @admin_pwd %>
 # This section is completely useless for the rabbitmqadmin
 # command but don't touch it. This section is used by Puppet.
 [mcollective_user]
-
 username = mcollective
 password = <%= @mcollective_pwd %>
 
