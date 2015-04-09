@@ -160,6 +160,8 @@ rabbitmq_management-*/priv/www/cli/rabbitmqadmin"
     require => File['/root/.rabbitmq.cnf'],
   }
 
+  # This commands are idempotent. No error if the user
+  # already exists.
   $cmd_set_admin       = "rabbitmqadmin declare user name=admin \
 password='${admin_pwd}' tags=administrator"
   $cmd_set_mcollective = "rabbitmqadmin declare user name=mcollective \
@@ -201,6 +203,15 @@ password='${mcollective_pwd}' tags="
     group       => 'root',
     require     => Ini_setting['put-pwd-mcollective'],
     refreshonly => true,
+  }
+
+  exec { 'remove-guest-account':
+    command => "rabbitmqadmin delete user name=guest",
+    path    => '/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin',
+    user    => 'root',
+    group   => 'root',
+    onlyif  => "rabbitmqadmin list users | grep -q ' guest '",
+    require => Ini_setting['put-pwd-mcollective'],
   }
 
 #rabbitmqadmin declare permission vhost=/mcollective user=mcollective configure='.*' write='.*
