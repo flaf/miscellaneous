@@ -1,0 +1,27 @@
+# This file is managed by Puppet, don't edit it.
+
+[host_normal]
+
+  hostname = 127.0.0.1
+  port     = 15672
+  username = admin
+  password = <%= @admin_pwd %>
+
+# This section is completely useless for the rabbitmqadmin
+# command but don't touch it. This section is used by Puppet.
+[mcollective_user]
+
+  username = mcollective
+  password = <%= @mcollective_pwd %>
+
+#[host_ssl]
+#
+#  hostname      = 127.0.0.1
+#  port          = 15672
+#  username      = admin
+#  password      = <%= @admin_pwd %>
+#  ssl           = True
+#  ssl_key_file  = <%= @ssl_dir %>/key.pem
+#  ssl_cert_file = <%= @ssl_dir %>/cert.pem
+
+

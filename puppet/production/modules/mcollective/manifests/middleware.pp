@@ -1,6 +1,4 @@
 class mcollective::middleware (
-  $mgt_ip          = '127.0.0.1',
-  $mgt_port        = 15672,
   $stomp_ssl_ip    = '0.0.0.0',
   $stomp_ssl_port  = 61614,
   $puppet_ssl_dir  = '/var/lib/puppet/ssl',
@@ -8,12 +6,12 @@ class mcollective::middleware (
   $mcollective_pwd = md5("${::fqdn}-mcollective"),
 ) {
 
-  $packages = [
-                'rabbitmq-server',
-                'python',          # Needed for the cli rabbitmqadmin.
-              ]
-  $ssl_dir  = '/etc/rabbitmq/ssl'
-  $cmd_cli  = "/var/lib/rabbitmq/mnesia/rabbit@*-plugins-expand/\
+  $packages      = [
+                     'rabbitmq-server',
+                     'python',          # Needed for the cli rabbitmqadmin.
+                   ]
+  $ssl_dir       = '/etc/rabbitmq/ssl'
+  $cmd_cli       = "/var/lib/rabbitmq/mnesia/rabbit@*-plugins-expand/\
 rabbitmq_management-*/priv/www/cli/rabbitmqadmin"
 
   ensure_packages($packages, { ensure => present, })
@@ -121,18 +119,115 @@ rabbitmq_management-*/priv/www/cli/rabbitmqadmin"
     require => Exec['install-cli-mgt'],
   }
 
-  exec { 'declare-vhost-mcollective':
-    command => "rabbitmqadmin declare vhost name=/mcollective",
+  # Now, the daemon is UP and the rabbitmqadmin command
+  # is available. Just after the first installation, the
+  # admin account is "guest" with the password "guest".
+  # This is the default account used by the rabbitmqadmin
+  # command if there is no ~/.rabbitmqadmin.conf file.
+
+  # We can't manage this file directly because this file must
+  # have the good admin password at every instant. Thus, the
+  # update of the admin password in RabbitMQ and the update
+  # of this conf file must be atomic (in just one exec).
+  file { '/root/.rabbitmqadmin.conf':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0600',
+    require => File['/usr/local/sbin/rabbitmqadmin'],
+  }
+
+  # But we will manage the .puppet version of the file above.
+  # If this file changes, it is necessarily the admin password
+  # or the mcollective password. In this case, an update is
+  # necessary. But the admin account is special because, this
+  # account will be used by the rabbitmqadmin command.
+  file { '/root/.rabbitmqadmin.conf.puppet':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0600',
+    content => template('mcollective/rabbitmqadmin.conf.erb'),
+    require => File['/root/.rabbitmqadmin.conf'],
+    notify  => [
+                 Exec['create-update-admin-account-and-push-new-conf'],
+                 Exec['update-mcollective-account'],
+               ],
+  }
+
+  # Creation/update of the admin account and update of the
+  # /root/.rabbitmqadmin.conf file. Indeed, the 2 actions
+  # must be atomic because the rabbitmqadmin command uses
+  # this file for the connection.
+  $cmd_set_admin = "HOME=/root rabbitmqadmin declare user name=admin \
+password='${admin_pwd}' tags=administrator && \
+cat /root/.rabbitmqadmin.conf.puppet > /root/.rabbitmqadmin.conf"
+
+  # This command is idempotent. No error if the user
+  # already exists. We ensure that the HOME environment
+  # variable is set to use the default and implicit option
+  # --config=~/.rabbitmqadmin.conf. Thus, if the file exists
+  # and it is well provisioned (it contains the right
+  # password of the admin account), the rabbitmqadmin
+  # command will use the admin account with its password. If
+  # the file doesn't exist (for instance during the first
+  # installation), the rabbitmqadmin command will use the
+  # default account "guest" with the default password
+  # "guest".
+  $cmd_set_mcollective = "HOME=/root rabbitmqadmin declare user \
+name=mcollective password='${mcollective_pwd}' tags="
+
+  exec { 'create-update-admin-account-and-push-new-conf':
+    command     => $cmd_set_admin,
+    path        => '/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin',
+    user        => 'root',
+    group       => 'root',
+    require     => File['/root/.rabbitmqadmin.conf.puppet'],
+    refreshonly => true,
+    alias       => 'conf-admin-ok',
+  }
+
+  # After this exec we are sure that the conf file is OK
+  # relative to the admin password.
+
+  exec { 'create-mcollective-account':
+    command => $cmd_set_mcollective,
     path    => '/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin',
     user    => 'root',
     group   => 'root',
-    unless  => "rabbitmqadmin list vhosts | grep -q ' /mcollective '",
-    require => File['/usr/local/sbin/rabbitmqadmin'],
+    require => Exec['conf-admin-ok'],
+    onlyif  => "rabbitmqadmin list users | grep -q ' mcollective '",
+  }
+
+  exec { 'update-mcollective-account':
+    command     => $cmd_set_mcollective,
+    path        => '/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin',
+    user        => 'root',
+    group       => 'root',
+    require     => Exec['conf-admin-ok'],
+    refreshonly => true,
+  }
+
+  exec { 'remove-guest-account':
+    command => "HOME=/root rabbitmqadmin delete user name=guest",
+    path    => '/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin',
+    user    => 'root',
+    group   => 'root',
+    onlyif  => "HOME=/root rabbitmqadmin list users | grep -q ' guest '",
+    require => Exec['conf-admin-ok'],
+  }
+
+  exec { 'declare-vhost-mcollective':
+    command => "HOME=/root rabbitmqadmin declare vhost name=/mcollective",
+    path    => '/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin',
+    user    => 'root',
+    group   => 'root',
+    unless  => "HOME=/root rabbitmqadmin list vhosts | grep -q ' /mcollective '",
+    require => Exec['conf-admin-ok'],
   }
 
   # No, it seems that RabbitMQ needs to the "/" vhost to
   # work correctly.
-  #
   #exec { 'remove-vhost-root':
   #  command => "rabbitmqadmin delete vhost name=/",
   #  path    => '/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin',
@@ -141,78 +236,6 @@ rabbitmq_management-*/priv/www/cli/rabbitmqadmin"
   #  onlyif  => "rabbitmqadmin list vhosts | grep -q ' / '",
   #  require => Exec['declare-vhost-mcollective'],
   #}
-
-  # This file will be managed via file_line and
-  # ini_setting resources. This file is a way to
-  # manage and update passwords of the RabbitMQ accounts
-  # (admin and mcollective).
-  file { '/root/.rabbitmq.cnf':
-    ensure  => present,
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0600',
-    require => Exec['declare-vhost-mcollective'],
-  }
-
-  file_line { 'add-comment':
-    path    => '/root/.rabbitmq.cnf',
-    line    => "# This file is edited by Puppet, don't edit it.",
-    require => File['/root/.rabbitmq.cnf'],
-  }
-
-  # This commands are idempotent. No error if the user
-  # already exists.
-  $cmd_set_admin       = "rabbitmqadmin declare user name=admin \
-password='${admin_pwd}' tags=administrator"
-  $cmd_set_mcollective = "rabbitmqadmin declare user name=mcollective \
-password='${mcollective_pwd}' tags="
-
-  ini_setting { 'put-pwd-admin':
-    path    => '/root/.rabbitmq.cnf',
-    ensure  => present,
-    section => 'admin',
-    setting => 'password',
-    value   => $admin_pwd,
-    require => File_line['add-comment'],
-    notify  => Exec['set-admin-account'],
-  }
-
-  exec { 'set-admin-account':
-    command     => $cmd_set_admin,
-    path        => '/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin',
-    user        => 'root',
-    group       => 'root',
-    require     => Ini_setting['put-pwd-admin'],
-    refreshonly => true,
-  }
-
-  ini_setting { 'put-pwd-mcollective':
-    path    => '/root/.rabbitmq.cnf',
-    ensure  => present,
-    section => 'mcollective',
-    setting => 'password',
-    value   => $mcollective_pwd,
-    require => File_line['add-comment'],
-    notify  => Exec['set-mcollective-account'],
-  }
-
-  exec { 'set-mcollective-account':
-    command     => $cmd_set_mcollective,
-    path        => '/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin',
-    user        => 'root',
-    group       => 'root',
-    require     => Ini_setting['put-pwd-mcollective'],
-    refreshonly => true,
-  }
-
-  exec { 'remove-guest-account':
-    command => "rabbitmqadmin delete user name=guest",
-    path    => '/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin',
-    user    => 'root',
-    group   => 'root',
-    onlyif  => "rabbitmqadmin list users | grep -q ' guest '",
-    require => Ini_setting['put-pwd-mcollective'],
-  }
 
 #rabbitmqadmin declare permission vhost=/mcollective user=mcollective configure='.*' write='.*
 #rabbitmqadmin declare permission vhost=/mcollective user=admin configure='.*' write='.*' read
