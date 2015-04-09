@@ -1,9 +1,11 @@
 class mcollective::middleware (
-  $mgt_ip         = '127.0.0.1',
-  $mgt_port       = 15672,
-  $stomp_ssl_ip   = '0.0.0.0',
-  $stomp_ssl_port = 61614,
-  $puppet_ssl_dir = '/var/lib/puppet/ssl',
+  $mgt_ip          = '127.0.0.1',
+  $mgt_port        = 15672,
+  $stomp_ssl_ip    = '0.0.0.0',
+  $stomp_ssl_port  = 61614,
+  $puppet_ssl_dir  = '/var/lib/puppet/ssl',
+  $admin_pwd       = md5("${::fqdn}-admin"),
+  $mcollective_pwd = md5("${::fqdn}-mcollective"),
 ) {
 
   $packages = [
@@ -100,12 +102,14 @@ rabbitmq_management-*/priv/www/cli/rabbitmqadmin"
     hasrestart => true,
   }
 
+  $cmd_in_path = '/usr/local/sbin/rabbitmqadmin'
+
   exec { 'install-cli-mgt':
     command => "cp ${cmd_cli} /usr/local/sbin/",
     path    => '/usr/sbin:/usr/bin:/sbin:/bin',
     user    => 'root',
     group   => 'root',
-    unless  => 'test -f /usr/local/sbin/rabbitmqadmin',
+    unless  => "test -f ${cmd_in_path} && diff -q  ${cmd_cli} ${cmd_in_path}",
     require  => Service['rabbitmq'],
   }
 
@@ -126,14 +130,30 @@ rabbitmq_management-*/priv/www/cli/rabbitmqadmin"
     require => File['/usr/local/sbin/rabbitmqadmin'],
   }
 
-  exec { 'remove-vhost-root':
-    command => "rabbitmqadmin delete vhost name=/",
-    path    => '/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin',
-    user    => 'root',
-    group   => 'root',
-    onlyif  => "rabbitmqadmin list vhosts | grep -q ' / '",
-    require => Exec['declare-vhost-mcollective'],
-  }
+  # No, it seems that RabbitMQ needs to the "/" vhost.
+  #
+  #exec { 'remove-vhost-root':
+  #  command => "rabbitmqadmin delete vhost name=/",
+  #  path    => '/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin',
+  #  user    => 'root',
+  #  group   => 'root',
+  #  onlyif  => "rabbitmqadmin list vhosts | grep -q ' / '",
+  #  require => Exec['declare-vhost-mcollective'],
+  #}
+
+  
+
+#rabbitmqadmin declare user name=mcollective password=$pwd tags=
+#rabbitmqadmin declare user name=admin password=$pwd tags=administrator
+#rabbitmqadmin declare permission vhost=/mcollective user=mcollective configure='.*' write='.*
+#rabbitmqadmin declare permission vhost=/mcollective user=admin configure='.*' write='.*' read
+#
+## Bizarre de faire une boucle for pour ça...
+#for collective in mcollective
+#do
+#    rabbitmqadmin declare exchange --user=admin --password=$pwd --vhost=/mcollective name=${c
+#done
+
 
 }
 
