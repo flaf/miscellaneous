@@ -130,7 +130,8 @@ rabbitmq_management-*/priv/www/cli/rabbitmqadmin"
     require => File['/usr/local/sbin/rabbitmqadmin'],
   }
 
-  # No, it seems that RabbitMQ needs to the "/" vhost.
+  # No, it seems that RabbitMQ needs to the "/" vhost to
+  # work correctly.
   #
   #exec { 'remove-vhost-root':
   #  command => "rabbitmqadmin delete vhost name=/",
@@ -141,10 +142,57 @@ rabbitmq_management-*/priv/www/cli/rabbitmqadmin"
   #  require => Exec['declare-vhost-mcollective'],
   #}
 
-  
+  file { '/root/.rabbitmq.cnf':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0600',
+    require => Exec['declare-vhost-mcollective'],
+  }
 
-#rabbitmqadmin declare user name=mcollective password=$pwd tags=
-#rabbitmqadmin declare user name=admin password=$pwd tags=administrator
+  $cmd_set_admin       = "rabbitmqadmin declare user name=admin \
+password='${admin_pwd}' tags=administrator"
+  $cmd_set_mcollective = "rabbitmqadmin declare user name=mcollective \
+password='${mcollective_pwd}' tags="
+
+  ini_setting { 'put-pwd-admin':
+    path    => '/root/.rabbitmq.cnf',
+    ensure  => present,
+    section => 'admin',
+    setting => 'password',
+    value   => $admin_pwd,
+    require => File['/root/.rabbitmq.cnf'],
+    notify  => Exec['set-admin-account'],
+  }
+
+  exec { 'set-admin-account':
+    command     => $cmd_set_admin,
+    path        => '/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin',
+    user        => 'root',
+    group       => 'root',
+    require     => Init_setting['put-pwd-admin'],
+    refreshonly => true,
+  }
+
+  ini_setting { 'put-pwd-mcollective':
+    path    => '/root/.rabbitmq.cnf',
+    ensure  => present,
+    section => 'mcollective',
+    setting => 'password',
+    value   => $mcollective_pwd,
+    require => File['/root/.rabbitmq.cnf'],
+    notify  => Exec['set-mcollective-account'],
+  }
+
+  exec { 'set-mcollective-account':
+    command     => $cmd_set_mcollective,
+    path        => '/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin',
+    user        => 'root',
+    group       => 'root',
+    require     => Init_setting['put-pwd-mcollective'],
+    refreshonly => true,
+  }
+
 #rabbitmqadmin declare permission vhost=/mcollective user=mcollective configure='.*' write='.*
 #rabbitmqadmin declare permission vhost=/mcollective user=admin configure='.*' write='.*' read
 #
@@ -153,7 +201,6 @@ rabbitmq_management-*/priv/www/cli/rabbitmqadmin"
 #do
 #    rabbitmqadmin declare exchange --user=admin --password=$pwd --vhost=/mcollective name=${c
 #done
-
 
 }
 

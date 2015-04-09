@@ -1,7 +1,7 @@
 {
   "name": "flaf-puppetmaster",
   "version": "0.1.0",
-  "author": "flaf",
+  "author": "Francois Lafont",
   "summary": "Module to deploy a puppetmaster",
   "license": "Apache 2.0",
   "source": "",
