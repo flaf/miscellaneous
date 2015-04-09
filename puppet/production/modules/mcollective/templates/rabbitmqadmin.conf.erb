@@ -9,13 +9,14 @@ port     = 15672
 username = admin
 password = <%= @admin_pwd %>
 
-# This section is completely useless for the rabbitmqadmin
-# command but don't touch it. This section is used by Puppet.
-[mcollective_user]
-username = mcollective
-password = <%= @mcollective_pwd %>
+# These comments are just useful for Puppet, don't touch it.
+# Mcollective account for ssl STOMP connections:
+#
+#       username = mcollective
+#       password = <%= @mcollective_pwd %>
+#
 
-#[host_ssl]
+#[default_ssl]
 #
 #hostname      = 127.0.0.1
 #port          = 15672

@@ -198,7 +198,7 @@ name=mcollective password='${mcollective_pwd}' tags="
     user    => 'root',
     group   => 'root',
     require => Exec['conf-admin-ok'],
-    onlyif  => "${rbmqadm} list users | grep -q ' mcollective '",
+    unless  => "${rbmqadm} list users | grep -q ' mcollective '",
   }
 
   exec { 'update-mcollective-account':
