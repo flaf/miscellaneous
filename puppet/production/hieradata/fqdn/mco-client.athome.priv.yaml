@@ -1,5 +1,5 @@
 ---
-classes: [ '::roles::mcollective::client' ]
+enc_class: [ '::roles::mcollective::client' ]
 enc_groups:
   - 'virtual-labs'
 enc_datacenter: 'vbox-home'

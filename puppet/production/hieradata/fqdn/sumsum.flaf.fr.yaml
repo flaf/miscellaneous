@@ -1,5 +1,5 @@
 ---
-classes: [ '::roles::puppetmaster' ]
+enc_class: [ '::roles::puppetmaster' ]
 enc_groups:
   - 'puppetmaster'
 enc_datacenter: 'ovh'

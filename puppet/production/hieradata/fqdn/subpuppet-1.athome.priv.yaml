@@ -1,5 +1,5 @@
 ---
-#classes: [ '::roles::puppetmaster' ]
+#enc_class: [ '::roles::puppetmaster' ]
 enc_class: [ '::roles::puppetmaster' ]
 enc_group:
   - 'virtual-labs'

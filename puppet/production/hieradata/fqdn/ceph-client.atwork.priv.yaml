@@ -1,5 +1,5 @@
 ---
-classes: [ '::roles::ceph::client' ]
+enc_class: [ '::roles::ceph::client' ]
 enc_groups:
   - 'virtual-labs'
   - 'ceph-labs'
