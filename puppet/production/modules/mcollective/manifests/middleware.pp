@@ -255,8 +255,7 @@ user=admin configure='.*' write='.*' read='.*'"
     require => Exec['declare-vhost-mcollective'],
   }
 
-  $cmd_exchange = "
-${rbmqadm} declare exchange --vhost=/mcollective \
+  $cmd_exchange = "${rbmqadm} declare exchange --vhost=/mcollective \
     name=collective_broadcast type=topic
 ${rbmqadm} declare exchange --vhost=/mcollective \
     name=collective_directed type=direct"
