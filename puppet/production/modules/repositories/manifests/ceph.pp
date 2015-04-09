@@ -8,7 +8,7 @@
 #
 # *version:*
 # The version of Ceph to use.
-# Currently, it can be only set to 'firefly' which is
+# Currently, it can be only set to 'hammer' which is
 # the default value.
 #
 # == Sample Usages
@@ -18,11 +18,11 @@
 # or:
 #
 #  class { '::repositories::ceph':
-#   version => 'firefly',
+#   version => 'hammer',
 #  }
 #
 class repositories::ceph (
-  $version = 'firefly',
+  $version = 'hammer',
 ) {
 
   case $::lsbdistcodename {
@@ -33,7 +33,7 @@ class repositories::ceph (
   }
 
   validate_string($version)
-  unless member(['firefly'], $version) {
+  unless member(['hammer'], $version) {
     fail("Class ${title}, version `#{$version}` are not supported.")
   }
 
