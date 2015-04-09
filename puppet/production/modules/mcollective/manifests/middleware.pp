@@ -142,12 +142,22 @@ rabbitmq_management-*/priv/www/cli/rabbitmqadmin"
   #  require => Exec['declare-vhost-mcollective'],
   #}
 
+  # This file will be managed via file_line and
+  # ini_setting resources. This file is a way to
+  # manage and update passwords of the RabbitMQ accounts
+  # (admin and mcollective).
   file { '/root/.rabbitmq.cnf':
     ensure  => present,
     owner   => 'root',
     group   => 'root',
     mode    => '0600',
     require => Exec['declare-vhost-mcollective'],
+  }
+
+  file_line { 'add-comment':
+    path    => '/root/.rabbitmq.cnf',
+    line    => "# This file is edited by Puppet, don't edit it.",
+    require => File['/root/.rabbitmq.cnf'],
   }
 
   $cmd_set_admin       = "rabbitmqadmin declare user name=admin \
@@ -161,7 +171,7 @@ password='${mcollective_pwd}' tags="
     section => 'admin',
     setting => 'password',
     value   => $admin_pwd,
-    require => File['/root/.rabbitmq.cnf'],
+    require => File_line['add-comment'],
     notify  => Exec['set-admin-account'],
   }
 
@@ -180,7 +190,7 @@ password='${mcollective_pwd}' tags="
     section => 'mcollective',
     setting => 'password',
     value   => $mcollective_pwd,
-    require => File['/root/.rabbitmq.cnf'],
+    require => File_line['add-comment'],
     notify  => Exec['set-mcollective-account'],
   }
 
