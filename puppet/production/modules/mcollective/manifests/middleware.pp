@@ -191,6 +191,8 @@ name=mcollective password='${mcollective_pwd}' tags="
 
   # After this exec we are sure that the conf file is OK
   # relative to the admin password.
+  # For the rest, I have followed this page:
+  # https://docs.puppetlabs.com/mcollective/reference/plugins/connector_rabbitmq.html
 
   exec { 'create-mcollective-account':
     command => $cmd_set_mcollective,
@@ -253,15 +255,20 @@ user=admin configure='.*' write='.*' read='.*'"
     require => Exec['declare-vhost-mcollective'],
   }
 
-#rabbitmqadmin declare permission vhost=/mcollective user=mcollective configure='.*' write='.*' read='.*'
-#rabbitmqadmin declare permission vhost=/mcollective user=mcollective configure='.*' write='.*
-#rabbitmqadmin declare permission vhost=/mcollective user=admin configure='.*' write='.*' read
-#
-## Bizarre de faire une boucle for pour ça...
-#for collective in mcollective
-#do
-#    rabbitmqadmin declare exchange --user=admin --password=$pwd --vhost=/mcollective name=${c
-#done
+  $cmd_exchange = "
+${rbmqadm} declare exchange --vhost=/mcollective \
+    name=collective_broadcast type=topic
+${rbmqadm} declare exchange --vhost=/mcollective \
+    name=collective_directed type=direct"
+
+  exec { 'declare-exchanges':
+    command => $cmd_exchange,
+    path    => '/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin',
+    user    => 'root',
+    group   => 'root',
+    unless  => "${rbmqadm} list exchanges | grep -q ' collective_'",
+    require => Exec['declare-permissions'],
+  }
 
 }
 
