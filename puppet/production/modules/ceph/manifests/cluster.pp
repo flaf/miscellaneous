@@ -265,27 +265,29 @@ the 'fsid' key.")
       $device_options = ''
     }
 
-    if $is_monitor_init {
+    # In fact, this part is useless.
+    #
+    #if $is_monitor_init {
 
-      file { '/root/monitor-init.sh':
-        ensure  => present,
-        owner   => 'root',
-        group   => 'root',
-        mode    => '0750',
-        content => "#!/bin/sh\nceph-monitor-init $opt_base $opt_device\n",
-      }
+    #  file { '/root/monitor-init.sh':
+    #    ensure  => present,
+    #    owner   => 'root',
+    #    group   => 'root',
+    #    mode    => '0750',
+    #    content => "#!/bin/sh\nceph-monitor-init $opt_base $opt_device\n",
+    #  }
 
-    } else {
+    #} else {
 
-      file { '/root/monitor-add.sh':
-        ensure  => present,
-        owner   => 'root',
-        group   => 'root',
-        mode    => '0750',
-        content => "#!/bin/sh\nceph-monitor-add $opt_base $opt_device\n",
-      }
+    #  file { '/root/monitor-add.sh':
+    #    ensure  => present,
+    #    owner   => 'root',
+    #    group   => 'root',
+    #    mode    => '0750',
+    #    content => "#!/bin/sh\nceph-monitor-add $opt_base $opt_device\n",
+    #  }
 
-    }
+    #}
 
   }
 
