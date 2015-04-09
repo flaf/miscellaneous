@@ -37,9 +37,11 @@ ${eyaml_private_key} --pkcs7-public-key ${eyaml_public_key}"
     owner   => 'puppet',
     group   => 'puppet',
     mode    => '0400',
-    content => inline_template("<%- @extdata.each do |key,value| -%>\n\
-<%= key %>,<%= value %>\n\
-<%- end -%>\n\n"),
+    content => inline_template("<%- @extdata.each do |key,value| -%>
+<%= key %>,<%= value %>
+<%- end -%>
+
+"),
     before  => Service['apache2'],
     notify  => Service['apache2'],
   }
@@ -237,8 +239,11 @@ ${eyaml_private_key} --pkcs7-public-key ${eyaml_public_key}"
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    content => "# This file is managed by Puppet, don't edit it.\n\n\
-Listen 0.0.0.0:8140\n\n",
+    content => "# This file is managed by Puppet, don't edit it.
+
+Listen 0.0.0.0:8140
+
+",
     before  => Service['apache2'],
     notify  => Service['apache2'],
   }

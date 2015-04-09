@@ -236,7 +236,7 @@ name=mcollective password='${mcollective_pwd}' tags="
   #  user    => 'root',
   #  group   => 'root',
   #  onlyif  => "rabbitmqadmin list vhosts | grep -q ' / '",
-  #  require => Exec['declare-vhost-mcollective'],
+  #  require => Exec['conf-admin-ok'],
   #}
 
 #rabbitmqadmin declare permission vhost=/mcollective user=mcollective configure='.*' write='.*

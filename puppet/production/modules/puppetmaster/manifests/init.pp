@@ -115,10 +115,14 @@ class puppetmaster (
 #      notify  => Notify['alert-remove-sslclient'],
 #    }
 #
-#    $msg_ssl = "\n\nThe directory /var/lib/puppet/sslclient is useless now.\n\
-#Henceforth, the current host is Puppet CA and is the puppet\n\
-#client of itself. You should remove this directory and revoke\n\
-#the certificate used in this directory.\n\n"
+#    $msg_ssl = "
+#
+#The directory /var/lib/puppet/sslclient is useless now.
+#Henceforth, the current host is Puppet CA and is the puppet
+#client of itself. You should remove this directory and revoke
+#the certificate used in this directory.
+#
+#"
 #
 #    notify { 'alert-remove-sslclient':
 #      message     => $msg_ssl,

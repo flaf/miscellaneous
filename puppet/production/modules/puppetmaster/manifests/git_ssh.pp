@@ -38,8 +38,8 @@ class puppetmaster::git_ssh {
   # directory is removed. So the command below recreate the
   # directory if it has been removed. But the return value of
   # these command is the return value of the `git clone` command.
-  $cmd_git_clone = "git clone '${git_repo}' '${hieradata_dir}'; rt=\$?\n\
-[ ! -d '${hieradata_dir}' ] && mkdir '${hieradata_dir}'\n\
+  $cmd_git_clone = "git clone '${git_repo}' '${hieradata_dir}'; rt=\$?
+[ ! -d '${hieradata_dir}' ] && mkdir '${hieradata_dir}'
 exit \$rt"
 
   exec { 'git-clone':
