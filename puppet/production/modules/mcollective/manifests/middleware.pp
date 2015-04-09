@@ -155,11 +155,13 @@ rabbitmq_management-*/priv/www/cli/rabbitmqadmin"
                ],
   }
 
+  $rbmqadm = 'rabbitmqadmin --config="/root/.rabbitmqadmin.conf"'
+
   # Creation/update of the admin account and update of the
   # /root/.rabbitmqadmin.conf file. Indeed, the 2 actions
   # must be atomic because the rabbitmqadmin command uses
   # this file for the connection.
-  $cmd_set_admin = "rabbitmqadmin declare user name=admin \
+  $cmd_set_admin = "${rbmqadm} declare user name=admin \
 password='${admin_pwd}' tags=administrator && \
 cat /root/.rabbitmqadmin.conf.puppet > /root/.rabbitmqadmin.conf"
 
@@ -174,7 +176,7 @@ cat /root/.rabbitmqadmin.conf.puppet > /root/.rabbitmqadmin.conf"
   # installation), the rabbitmqadmin command will use the
   # default account "guest" with the default password
   # "guest".
-  $cmd_set_mcollective = "rabbitmqadmin declare user \
+  $cmd_set_mcollective = "${rbmqadm} declare user \
 name=mcollective password='${mcollective_pwd}' tags="
 
   exec { 'create-update-admin-account-and-push-new-conf':
@@ -196,7 +198,7 @@ name=mcollective password='${mcollective_pwd}' tags="
     user    => 'root',
     group   => 'root',
     require => Exec['conf-admin-ok'],
-    onlyif  => "rabbitmqadmin list users | grep -q ' mcollective '",
+    onlyif  => "${rbmqadm} list users | grep -q ' mcollective '",
   }
 
   exec { 'update-mcollective-account':
@@ -209,20 +211,20 @@ name=mcollective password='${mcollective_pwd}' tags="
   }
 
   exec { 'remove-guest-account':
-    command => "rabbitmqadmin delete user name=guest",
+    command => "${rbmqadm} delete user name=guest",
     path    => '/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin',
     user    => 'root',
     group   => 'root',
-    onlyif  => "rabbitmqadmin list users | grep -q ' guest '",
+    onlyif  => "${rbmqadm} list users | grep -q ' guest '",
     require => Exec['conf-admin-ok'],
   }
 
   exec { 'declare-vhost-mcollective':
-    command => "rabbitmqadmin declare vhost name=/mcollective",
+    command => "${rbmqadm} declare vhost name=/mcollective",
     path    => '/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin',
     user    => 'root',
     group   => 'root',
-    unless  => "rabbitmqadmin list vhosts | grep -q ' /mcollective '",
+    unless  => "${rbmqadm} list vhosts | grep -q ' /mcollective '",
     require => Exec['conf-admin-ok'],
   }
 
