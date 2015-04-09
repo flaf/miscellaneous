@@ -239,6 +239,21 @@ name=mcollective password='${mcollective_pwd}' tags="
   #  require => Exec['conf-admin-ok'],
   #}
 
+  $cmd_perm = "${rbmqadm} declare permission vhost=/mcollective \
+user=mcollective configure='.*' write='.*' read='.*'
+${rbmqadm} declare permission vhost=/mcollective \
+user=admin configure='.*' write='.*' read='.*'"
+
+  exec { 'declare-permissions':
+    command => $cmd_perm,
+    path    => '/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin',
+    user    => 'root',
+    group   => 'root',
+    unless  => "${rbmqadm} list permissions | grep -q ' /mcollective '",
+    require => Exec['declare-vhost-mcollective'],
+  }
+
+#rabbitmqadmin declare permission vhost=/mcollective user=mcollective configure='.*' write='.*' read='.*'
 #rabbitmqadmin declare permission vhost=/mcollective user=mcollective configure='.*' write='.*
 #rabbitmqadmin declare permission vhost=/mcollective user=admin configure='.*' write='.*' read
 #
