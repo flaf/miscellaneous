@@ -170,7 +170,7 @@ password='${mcollective_pwd}' tags="
     path        => '/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin',
     user        => 'root',
     group       => 'root',
-    require     => Init_setting['put-pwd-admin'],
+    require     => Ini_setting['put-pwd-admin'],
     refreshonly => true,
   }
 
@@ -189,7 +189,7 @@ password='${mcollective_pwd}' tags="
     path        => '/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin',
     user        => 'root',
     group       => 'root',
-    require     => Init_setting['put-pwd-mcollective'],
+    require     => Ini_setting['put-pwd-mcollective'],
     refreshonly => true,
   }
 
