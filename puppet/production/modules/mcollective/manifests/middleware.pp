@@ -186,7 +186,7 @@ name=mcollective password='${mcollective_pwd}' tags="
     group       => 'root',
     require     => File['/root/.rabbitmqadmin.conf.puppet'],
     refreshonly => true,
-    alias       => 'conf-admin-ok',
+    #alias       => 'conf-admin-ok',
   }
 
   # After this exec we are sure that the conf file is OK
@@ -197,7 +197,8 @@ name=mcollective password='${mcollective_pwd}' tags="
     path    => '/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin',
     user    => 'root',
     group   => 'root',
-    require => Exec['conf-admin-ok'],
+    #require => Exec['conf-admin-ok'],
+    require => Exec['create-update-admin-account-and-push-new-conf'],
     onlyif  => "${rbmqadm} list users | grep -q ' mcollective '",
   }
 
@@ -206,7 +207,8 @@ name=mcollective password='${mcollective_pwd}' tags="
     path        => '/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin',
     user        => 'root',
     group       => 'root',
-    require     => Exec['conf-admin-ok'],
+    #require     => Exec['conf-admin-ok'],
+    require => Exec['create-update-admin-account-and-push-new-conf'],
     refreshonly => true,
   }
 
@@ -216,7 +218,8 @@ name=mcollective password='${mcollective_pwd}' tags="
     user    => 'root',
     group   => 'root',
     onlyif  => "${rbmqadm} list users | grep -q ' guest '",
-    require => Exec['conf-admin-ok'],
+    #require => Exec['conf-admin-ok'],
+    require => Exec['create-update-admin-account-and-push-new-conf'],
   }
 
   exec { 'declare-vhost-mcollective':
@@ -225,7 +228,8 @@ name=mcollective password='${mcollective_pwd}' tags="
     user    => 'root',
     group   => 'root',
     unless  => "${rbmqadm} list vhosts | grep -q ' /mcollective '",
-    require => Exec['conf-admin-ok'],
+    #require => Exec['conf-admin-ok'],
+    require => Exec['create-update-admin-account-and-push-new-conf'],
   }
 
   # No, it seems that RabbitMQ needs to the "/" vhost to
