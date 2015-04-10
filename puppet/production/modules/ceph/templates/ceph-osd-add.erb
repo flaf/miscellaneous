@@ -37,6 +37,7 @@ GET_SPECIFIC_OPTIONS () {
         --journal|-j)
             journal="$2"
             if [ ! -b "$journal" ]
+            then
                 printf "With --journal option, the argument must be a block device.\n"
                 printf "End of the script.\n"
                 exit 1
