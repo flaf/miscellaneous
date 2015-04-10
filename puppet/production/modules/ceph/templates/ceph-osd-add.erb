@@ -51,6 +51,7 @@ GET_SPECIFIC_OPTIONS () {
 . <%= @ceph_script_common %>
 
 if [ -z "$journal" ]
+then
     printf "Sorry, the --journal option is mandatory."
     printf "End of the script.\n"
     exit 1
