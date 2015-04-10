@@ -1,9 +1,9 @@
 #!/bin/sh
 ### This is a file managed by Puppet, don't edit it. ###
 
-SPECIFIC_SHORT_OPTIONS='m:,w:'
-SPECIFIC_LONG_OPTIONS='monitor:,weight:'
-SPECIFIC_SYNOPSIS='[--monitor <address>] [--weight <float>]'
+SPECIFIC_SHORT_OPTIONS='m:,w:,j:'
+SPECIFIC_LONG_OPTIONS='monitor:,weight:,journal:'
+SPECIFIC_SYNOPSIS='--journal <device> [--monitor <address>] [--weight <float>]'
 
 # Default value of weight.
 weight='1.0'
@@ -34,11 +34,26 @@ GET_SPECIFIC_OPTIONS () {
             fi
         ;;
 
+        --journal|-j)
+            journal="$2"
+            if [ ! -b "$journal" ]
+                printf "With --journal option, the argument must be a block device.\n"
+                printf "End of the script.\n"
+                exit 1
+            fi
+        ;;
+
     esac
     return 0
 }
 
 . <%= @ceph_script_common %>
+
+if [ -z "$journal" ]
+    printf "Sorry, the --journal option is mandatory."
+    printf "End of the script.\n"
+    exit 1
+fi
 
 if [ -z "$monitor" ]
 then
@@ -93,14 +108,21 @@ then
     exit 1
 fi
 
-# Initialization of the osd working directory. The --mkkey
-# generates automatically the keyring of this osd. The fsid
-# and the monitors list are provided in the /etc/ceph/$cluster.conf
-# file.
+# Initialization of the osd working directory and its
+# journal. The --mkkey generates automatically the keyring
+# of this osd. The fsid and the monitors list are provided
+# in the /etc/ceph/$cluster.conf file.
 # Normally, this command displays curious messages which
 # looks like error message but this is not the case.
 ceph-osd -i "$id" --mkfs --mkkey --cluster "$cluster"   \
-    --conf "/etc/ceph/$cluster.conf" --osd-uuid "$uuid"
+    --conf "/etc/ceph/$cluster.conf" --osd-uuid "$uuid" \
+    --osd-journal "$journal" || {
+
+    printf "Sorry, there was a problem during the initialization "
+    printf "of the working directory of the osd $1.\n"
+    printf "End of the script.\n"
+    exit 1
+}
 
 # Recording in the cluster of the osd keyring.
 ceph auth add "osd.$id" osd 'allow *' mon 'allow profile osd' \
@@ -124,6 +146,9 @@ ceph osd crush add "osd.$id" "$weight" host=$(hostname) \
 # Without these files, the osd daemon doesn't start.
 touch "/var/lib/ceph/osd/$cluster-$id/ready"
 touch "/var/lib/ceph/osd/$cluster-$id/upstart"
+
+# Very important, creation of the symlink for the journal.
+ln -s "$journal" "/var/lib/ceph/osd/$cluster-$id/journal"
 
 # Start the osd daemon.
 stop ceph-osd cluster="$cluster" id="$id"

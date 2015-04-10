@@ -86,6 +86,12 @@ do
         --device|-d)
             use_device='true'
             device="$2"
+            if [ ! -L "$device" ]
+            then
+                printf "Sorry, you must provide a symlink for the device.\n"
+                printf "End of the script.\n"
+                exit 1
+            fi
             shift 2
         ;;
 
@@ -149,19 +155,40 @@ check_id () {
 # if available and check the device if provided.
 check_working_dir () {
 
+    #### Begin of TODO
+    #
+    # This check is run 2 times, so the question is asked to times.
+    # The admin must be careful, I forget this check.
+    #
     # Specific case for the monitor service. One monitor per
     # host is enough. So if "ceph-mon" is already running in
     # the host, we should not run another ceph-mon and the
     # current check will return 1.
-    if [ "$service" = "mon" ]
-    then
-        # The package procps must be installed.
-        if pgrep 'ceph-mon' >/dev/null
-        then
-            printf "There is already a running monitor in this host.\n"
-            return 1
-        fi
-    fi
+    #if [ "$service" = "mon" ]
+    #then
+    #    ps ax -o "pid,state,etime,user,command" | sed -n '1p;/ceph-mon/p'
+    #    echo
+    #    printf "Above the processes which match \"ceph-mon\".\n"
+    #    printf "Be careful, for a given cluster, just one monitor "
+    #    printf "per node must be started.\n"
+    #    printf "Continue? (yes or anything else) "
+
+    #    local answer
+    #    read answer
+
+    #    if [ "$answer" != 'yes' ]
+    #    then
+    #        return 1
+    #    fi
+
+    #    # The package procps must be installed.
+    #    #if pgrep 'ceph-mon' >/dev/null
+    #    #then
+    #    #    printf "There is already a running monitor in this host.\n"
+    #    #    return 1
+    #    #fi
+    #fi
+    #### End of TODO
 
     # This function takes one argument which is the ID
     # of the monitor or osd service.
@@ -216,14 +243,16 @@ check_working_dir () {
             return 1
         fi
 
-        if grep -Eq "$UUID" '/etc/fstab'
+        if grep -Eq "$device" '/etc/fstab'
         then
-            printf "A partition with the UUID $UUID "
+            printf "A partition $device "
             printf "already exists in /etc/fstab.\n"
             return 1
         fi
 
-        if mount | grep -Eq "^$device[[:space:]]+"
+        local canonical_dev
+        canonical_dev=$(readlink -f $device)
+        if mount | grep -Eq "^$canonical_dev[[:space:]]+"
         then
             printf "Sorry, the partition $device seems to be "
             printf "already mounted.\n"
@@ -270,7 +299,7 @@ create_new_working_dir () {
     if "$use_device"
     then
 
-        printf "Be careful, updating of /etc/fstab...\n"
+        printf "\n\nBe careful, updating of /etc/fstab...\n\n"
 
         # Get the UUID and the filesystem type of the partition.
         # Checking has already been launched.
@@ -278,9 +307,8 @@ create_new_working_dir () {
         TYPE=''
         eval $(blkid -o export "$device")
 
-        printf "\n# $service working directory in $device\n" >> '/etc/fstab'
-        printf "UUID=$UUID /var/lib/ceph/$service/$cluster-$id/ " >> '/etc/fstab'
-        printf "$TYPE $mount_options 0 2\n\n"  >> '/etc/fstab'
+        printf "\n$device /var/lib/ceph/$service/$cluster-$id/ " >> '/etc/fstab'
+        printf "$TYPE $mount_options 0 2\n"  >> '/etc/fstab'
 
         if ! mount "/var/lib/ceph/$service/$cluster-$id/"
         then
