@@ -12,18 +12,27 @@
 #
 #    # 1. If you have dedicated disks for monitors or osds,
 #    #    you must format the partitions on each node.
-#    mkfs.xfs -f /dev/sdb1
-#    mkfs.xfs -f /dev/sdc1
+#    #    Use gdisk and use /dev/disk/by-partlabel/ symlinks.
+#    mkfs.xfs -L OSD0 -f /dev/sdd2 # typically, /dev/sdd1 is used for the journal.
+#    mkfs.xfs -L OSD1 -f /dev/sde2 # typically, /dev/sde1 is used for the journal.
 #    # Etc.
 #
 #    # 2. Installation of the all monitors on each node.
-#    /root/monitor_init.sh  # In the first monitor node.
-#    /root/monitor_add.sh   # In the other monitor nodes.
+#    ceph-monitor-init --device /dev/disk-by-partlabel/mon-1   \
+#                      --mount-options noatime,defaults --id 1 \
+#                      --monitor-addr <address-mon-1>
+#    ceph-monitor-add --device /dev/disk-by-partlabel/mon-2   \
+#                     --mount-options noatime,defaults --id 1 \
+#                     --monitor-addr <address-mon-1>
 #    # Etc.
 #
 #    # 3. Installation of the ods on each node (help with ceph-osd-add --help).
-#    ceph-osd-add --device /dev/sdb1 --mount-options noatime,defaults --yes
-#    ceph-osd-add --device /dev/sdc1 --mount-options noatime,defaults --yes
+#    ceph-osd-add --device /dev/disk-by-partlabel/osd-0  \
+#                 --mount-options noatime,defaults --yes \
+#                 --journal /dev/disk/by-partlabel/osd-0-journal
+#    ceph-osd-add --device /dev/disk-by-partlabel/osd-1  \
+#                 --mount-options noatime,defaults --yes \
+#                 --journal /dev/disk/by-partlabel/osd-1-journal
 #    # Etc.
 #
 #    # 4. On a specific node, we create the ceph account.

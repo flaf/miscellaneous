@@ -39,7 +39,7 @@ GET_SPECIFIC_OPTIONS () {
             if [ -b "$journal" ] && [ -L "$journal" ]
             then
                 # It's fine.
-                true
+                return 2
             else
                 printf "For --journal option, the argument must be a symlink "
                 printf "and the target must be a block device.\n"
