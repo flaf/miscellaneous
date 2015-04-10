@@ -36,9 +36,13 @@ GET_SPECIFIC_OPTIONS () {
 
         --journal|-j)
             journal="$2"
-            if [ ! -b "$journal" ]
+            if [ -b "$journal" ] && [ -L "$journal" ]
             then
-                printf "With --journal option, the argument must be a block device.\n"
+                # It's fine.
+                true
+            else
+                printf "For --journal option, the argument must be a symlink "
+                printf "and the target must be a block device.\n"
                 printf "End of the script.\n"
                 exit 1
             fi
@@ -52,7 +56,7 @@ GET_SPECIFIC_OPTIONS () {
 
 if [ -z "$journal" ]
 then
-    printf "Sorry, the --journal option is mandatory."
+    printf "Sorry, the --journal option is mandatory.\n"
     printf "End of the script.\n"
     exit 1
 fi

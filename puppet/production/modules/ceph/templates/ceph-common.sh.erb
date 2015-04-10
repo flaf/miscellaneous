@@ -86,9 +86,13 @@ do
         --device|-d)
             use_device='true'
             device="$2"
-            if [ ! -L "$device" ]
+            if [ -b "$device" ] && [ -L "$device" ]
             then
-                printf "Sorry, you must provide a symlink for the device.\n"
+                # It's fine.
+                true
+            else
+                printf "Sorry, you must provide a symlink for the device "
+                printf "and the target must be a block device.\n"
                 printf "End of the script.\n"
                 exit 1
             fi
