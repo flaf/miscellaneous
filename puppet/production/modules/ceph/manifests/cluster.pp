@@ -101,8 +101,6 @@
 #                      },
 #      'ceph-node2' => { 'id'            => '2',
 #                        'address'       => '172.31.10.2',
-#                        'device'        => '/dev/sdb1',
-#                        'mount_options' => 'noatime,defaults',
 #                      },
 #      'ceph-node3' => { 'id'            => '3',
 #                        'address'       => '172.31.10.3',
@@ -110,9 +108,6 @@
 #    }
 #
 # The keys are the hostnames of the monitors.
-# If the working directory of the monitor has a specific
-# device, it's possible to provided the device name and
-# the mount options.
 #
 # *admin_key*:
 # The key (for authentication) of the ceph account "admin".
@@ -256,48 +251,49 @@ the 'fsid' key.")
     content => template('ceph/ceph.conf.erb'),
   }
 
+  #
+  # In fact, this part is completely useless (bad idea).
+  #
   ##################################
   ### Scripts to start monitors ####
   ##################################
 
-  if $is_monitor {
+  #if $is_monitor {
 
-    $opt_base = "--cluster '$cluster_name' --id '$id' -m '$mon_init_addr'"
+  #  $opt_base = "--cluster '$cluster_name' --id '$id' -m '$mon_init_addr'"
 
-    if has_key($monitors[$::hostname], 'device') and
-    has_key($monitors[$::hostname], 'mount_options') {
-      $device         = $monitors[$::hostname]['device']
-      $mount_options  = $monitors[$::hostname]['mount_options']
-      $opt_device     = "--device '$device' --mount-options '$mount_options' --yes"
-    } else {
-      $device_options = ''
-    }
+  #  if has_key($monitors[$::hostname], 'device') and
+  #  has_key($monitors[$::hostname], 'mount_options') {
+  #    $device         = $monitors[$::hostname]['device']
+  #    $mount_options  = $monitors[$::hostname]['mount_options']
+  #    $opt_device     = "--device '$device' --mount-options '$mount_options' --yes"
+  #  } else {
+  #    $device_options = ''
+  #  }
 
-    # In fact, this part is useless.
-    #
-    #if $is_monitor_init {
+  #  if $is_monitor_init {
 
-    #  file { '/root/monitor-init.sh':
-    #    ensure  => present,
-    #    owner   => 'root',
-    #    group   => 'root',
-    #    mode    => '0750',
-    #    content => "#!/bin/sh\nceph-monitor-init $opt_base $opt_device\n",
-    #  }
+  #    file { '/root/monitor-init.sh':
+  #      ensure  => present,
+  #      owner   => 'root',
+  #      group   => 'root',
+  #      mode    => '0750',
+  #      content => "#!/bin/sh\nceph-monitor-init $opt_base $opt_device\n",
+  #    }
 
-    #} else {
+  #  } else {
 
-    #  file { '/root/monitor-add.sh':
-    #    ensure  => present,
-    #    owner   => 'root',
-    #    group   => 'root',
-    #    mode    => '0750',
-    #    content => "#!/bin/sh\nceph-monitor-add $opt_base $opt_device\n",
-    #  }
+  #    file { '/root/monitor-add.sh':
+  #      ensure  => present,
+  #      owner   => 'root',
+  #      group   => 'root',
+  #      mode    => '0750',
+  #      content => "#!/bin/sh\nceph-monitor-add $opt_base $opt_device\n",
+  #    }
 
-    #}
+  #  }
 
-  }
+  #}
 
   ################
   ### Keyrings ###
