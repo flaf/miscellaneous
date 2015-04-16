@@ -89,19 +89,12 @@
 # This parameter is optional and the default value
 # is false.
 #
-# *common_rgw_dns_name:*
+# *rgw_dns_name:*
 # If the client is a rados gateway, this parameter
 # allows to define the entry "rgw dns name" in the
 # `[client.<radosgw-id>]` sections. This parameter
 # is optional and the default value is undef, and
-# in this case the parameter has the same value as
-# the `host` parameter.
-#
-# *admin_email:*
-# If the host is a rados gateway, this parameter
-# allows to define the email address in the vhost
-# of the apache server. This parameter is optional
-# and its default value is "root@{$::fqdn}".
+# in this case the parameter is not defined.
 #
 # == Sample Usages
 #
@@ -120,23 +113,22 @@
 #    },
 #    monitors            => $monitors,
 #    is_radosgw          => true,
-#    common_rgw_dns_name => 'radosgw',
+#    rgw_dns_name        => 'radosgw',
 #  }
 #
 define ceph::client (
-  $cluster_name        = 'ceph',
-  $owner               = 'root',
-  $group               = 'root',
-  $mode                = '0600',
-  $account             = $title,
-  $secret_file         = false,
+  $cluster_name    = 'ceph',
+  $owner           = 'root',
+  $group           = 'root',
+  $mode            = '0600',
+  $account         = $title,
+  $secret_file     = false,
   $key,
   $properties,
   $global_options,
   $monitors,
-  $is_radosgw          = false,
-  $common_rgw_dns_name = undef,
-  $admin_email         = "root@{$::fqdn}",
+  $is_radosgw      = false,
+  $rgw_dns_name    = undef,
 ) {
 
   require '::ceph::client::packages'
@@ -149,7 +141,6 @@ define ceph::client (
     $mode,
     $account,
     $key,
-    $mail_admin,
   )
 
   validate_array($properties)
@@ -165,10 +156,9 @@ define ceph::client (
   )
 
   if $is_radosgw {
-    if $common_rgw_dns_name != undef {
-      validate_string($common_rgw_dns_name)
+    if $rgw_dns_name != undef {
+      validate_string($rgw_dns_name)
     }
-    validate_string($admin_email)
   }
 
   unless has_key($global_options, 'fsid') {
@@ -214,10 +204,9 @@ the 'fsid' key.")
   if $is_radosgw {
 
     ::ceph::radosgw { "${cluster_name}-${account}":
-      cluster_name        => $cluster_name,
-      account             => $account,
-      admin_email         => $admin_email,
-      common_rgw_dns_name => $common_rgw_dns_name,
+      cluster_name => $cluster_name,
+      account      => $account,
+      rgw_dns_name => $rgw_dns_name,
     }
 
   }

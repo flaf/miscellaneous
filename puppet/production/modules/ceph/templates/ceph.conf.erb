@@ -18,18 +18,24 @@
 <%- @keyrings.sort.map.each do |id, hash| -%>
   <%- if hash.has_key?('radosgw_host') -%>
     <%-
-      if @common_rgw_dns_name
-        rgw_dns_name = @common_rgw_dns_name
+      if @rgw_dns_name
+        rgw_dns_name = @rgw_dns_name
       else
         rgw_dns_name = hash['radosgw_host']
       end
     -%>
 [client.<%= id %>]
-  host            = <%= hash['radosgw_host'] %>
-  rgw dns name    = <%= rgw_dns_name %>
-  rgw socket path = /var/run/ceph/<%= @cluster_name %>.<%= id %>.fastcgi.sock
-  keyring         = /etc/ceph/<%= @cluster_name %>.client.<%= id %>.keyring
-  log file        = /var/log/radosgw/client.<%= id %>.log
+  host               = <%= hash['radosgw_host'] %>
+  keyring            = /etc/ceph/<%= @cluster_name %>.client.<%= id %>.keyring
+  rgw socket path    = ""
+  log file           = /var/log/radosgw/<%= @cluster_name %>.client.<%= id %>.log
+  rgw frontends      = civetweb port=80
+  rgw print continue = false
+  <%- if @rgw_dns_name -%>
+  rgw dns name       = <%= rgw_dns_name %>
+  <%- else -%>
+  #rgw dns name       = <%= rgw_dns_name %>
+  <%- end -%>
 
   <%- end -%>
 <%- end -%>

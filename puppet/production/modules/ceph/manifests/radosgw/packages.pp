@@ -6,8 +6,9 @@ class ceph::radosgw::packages {
   private("Sorry, ${title} is a private class.")
 
   $packages = [
-                'apache2',
-                'libapache2-mod-fastcgi',
+                # We use civetweb.
+                #'apache2',
+                #'libapache2-mod-fastcgi',
                 'ceph',
                 'radosgw',
               ]
