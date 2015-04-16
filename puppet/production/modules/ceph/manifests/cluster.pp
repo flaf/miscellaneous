@@ -55,13 +55,12 @@
 # The name of the cluster. This parameter is optional and
 # the default value is "ceph".
 #
-# *common_rgw_dns_name*:
+# *rgw_dns_name*:
 # If the cluster has rados gateway clients in the keyrings
 # parameter, this parameter allows to define the entry
 # "rgw dns name" in the `[client.<radosgw-id>]` sections.
 # This parameter is optional and the default value is undef,
-# and in this case the parameter has the same value as
-# the `host` parameter in the `[client.<radosgw-id>]` section.
+# and in this case the parameter is not defined.
 # If the cluster has no rados gateway client, this parameter
 # is useless.
 #
@@ -155,11 +154,11 @@
 #  $global_options = # the same hash as above.
 #
 #  ::ceph { 'my_cluster':
-#     cluster_name        => 'ceph-test',
-#     common_rgw_dns_name => 's3store',
-#     keyrings            => $keyrings,
-#     monitors            => $monitors,
-#     global_options      => $global_options,
+#     cluster_name   => 'ceph-test',
+#     rgw_dns_name   => 's3store',
+#     keyrings       => $keyrings,
+#     monitors       => $monitors,
+#     global_options => $global_options,
 #  }
 #
 # == Links
@@ -173,9 +172,9 @@
 # http://ceph.com/docs/master/rados/operations/placement-groups/#set-the-number-of-placement-groups
 #
 define ceph::cluster (
-  $cluster_name        = 'ceph',
-  $common_rgw_dns_name = undef,
-  $keyrings            = {},
+  $cluster_name = 'ceph',
+  $rgw_dns_name = undef,
+  $keyrings     = {},
   $monitors,
   $admin_key,
   $global_options,
@@ -204,8 +203,8 @@ define ceph::cluster (
 the 'fsid' key.")
   }
 
-  if $common_rgw_dns_name != undef {
-    validate_string($common_rgw_dns_name)
+  if $rgw_dns_name != undef {
+    validate_string($rgw_dns_name)
   }
 
   # Define initial monitor and its address.
