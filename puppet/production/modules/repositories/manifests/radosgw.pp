@@ -1,3 +1,5 @@
+# DEPRECATED
+#
 # Puppet class to manage the "Ceph automated package build"
 # APT repository, useful for radosgw.
 #
