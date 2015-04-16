@@ -50,7 +50,7 @@ class repositories::ceph (
 
   apt::source { 'ceph':
     comment     => 'The Ceph repository.',
-    location    => "http://ceph.com/debian-${version}/",
+    location    => "http://eu.ceph.com/debian-${version}/",
     # For testing...
     #location    => "http://ceph.com/debian-testing/",
     release     => $::lsbdistcodename,
