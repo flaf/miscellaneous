@@ -5,9 +5,9 @@ SCRIPT_NAME="${0##*/}"
 export LC_ALL='C'
 export PATH='/usr/sbin:/usr/bin:/sbin:/bin'
 
-SYNOPSIS="[--cluster <cluster>] [--monitor <address>] --id <id>"
-SHORT_OPTIONS='h,c:,m:,i:'
-LONG_OPTIONS='help,cluster:,monitor:,id:'
+SYNOPSIS="[--cluster <cluster>] [--monitor <address>] --id <id> [--no-start]"
+SHORT_OPTIONS='h,c:,m:,i:,n'
+LONG_OPTIONS='help,cluster:,monitor:,id:,no-start'
 
 print_help () {
     cat <<EOF
@@ -31,6 +31,7 @@ unset TEMP
 # Default values of options.
 cluster='ceph'
 mds_id='bad-value' # The user must provide and change this option.
+no_start='false'
 
 while true
 do
@@ -66,6 +67,11 @@ do
         --id|-i)
             mds_id="$2"
             shift 2
+        ;;
+
+        --no-start|-n)
+            no_start='true'
+            shift 1
         ;;
 
         --)
@@ -111,9 +117,14 @@ ceph auth get-or-create "mds.$mds_id"                   \
 touch "/var/lib/ceph/mds/$cluster-$mds_id/done"
 touch "/var/lib/ceph/mds/$cluster-$mds_id/upstart"
 
-# Start the mds daemon.
-stop ceph-mds cluster="$cluster" id="$mds_id"
-sleep 0.5
-start ceph-mds cluster="$cluster" id="$mds_id"
+if "$no_start"
+then
+    echo "Daemon mds not started."
+else
+    # Start the mds daemon.
+    stop ceph-mds cluster="$cluster" id="$mds_id"
+    sleep 0.5
+    start ceph-mds cluster="$cluster" id="$mds_id"
+fi
 
 

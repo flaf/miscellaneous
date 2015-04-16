@@ -5,9 +5,9 @@ SCRIPT_NAME="${0##*/}"
 export LC_ALL='C'
 export PATH='/usr/sbin:/usr/bin:/sbin:/bin'
 
-COMMON_SYNOPSIS="[--cluster <cluster>] [--test] [--device <device> --mount-options <options> [--yes]]"
-COMMON_SHORT_OPTIONS='h,c:,t,d:,o:,y'
-COMMON_LONG_OPTIONS='help,cluster:,test,device:,mount-options:,yes'
+COMMON_SYNOPSIS="[--cluster <cluster>] [--test] [--device <device> --mount-options <options> [--yes]] [--no-start]"
+COMMON_SHORT_OPTIONS='h,c:,t,d:,o:,y,n'
+COMMON_LONG_OPTIONS='help,cluster:,test,device:,mount-options:,yes,no-start'
 
 print_help () {
     cat <<EOF
@@ -59,6 +59,7 @@ test='false'
 device='' # means no device.
 mount_options=''
 yes='false'
+no_start='false'
 
 # internal variable.
 use_device='false'
@@ -107,6 +108,11 @@ do
 
         --yes|-y)
             yes='true'
+            shift 1
+        ;;
+
+        --no-start|-n)
+            no_start='true'
             shift 1
         ;;
 

@@ -109,9 +109,14 @@ rm "/tmp/monmap"
 touch "/var/lib/ceph/mon/$cluster-$id/done"
 touch "/var/lib/ceph/mon/$cluster-$id/upstart"
 
-# Start the monitor daemon.
-stop ceph-mon cluster="$cluster" id="$id"
-sleep 0.5
-start ceph-mon cluster="$cluster" id="$id"
+if "$no_start"
+then
+    echo "Daemon monitor not started."
+else
+    # Start the monitor daemon.
+    stop ceph-mon cluster="$cluster" id="$id"
+    sleep 0.5
+    start ceph-mon cluster="$cluster" id="$id"
+fi
 
 

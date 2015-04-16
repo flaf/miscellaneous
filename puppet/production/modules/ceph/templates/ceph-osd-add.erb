@@ -156,9 +156,14 @@ touch "/var/lib/ceph/osd/$cluster-$id/upstart"
 # Very important, creation of the symlink for the journal.
 ln -s "$journal" "/var/lib/ceph/osd/$cluster-$id/journal"
 
-# Start the osd daemon.
-stop ceph-osd cluster="$cluster" id="$id"
-sleep 0.5
-start ceph-osd cluster="$cluster" id="$id"
+if "$no_start"
+then
+    echo "Daemon osd not started."
+else
+    # Start the osd daemon.
+    stop ceph-osd cluster="$cluster" id="$id"
+    sleep 0.5
+    start ceph-osd cluster="$cluster" id="$id"
+fi
 
 
