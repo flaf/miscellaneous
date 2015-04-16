@@ -27,8 +27,6 @@ ceph:
     ceph-node1:
       id: '1'
       address: '172.31.10.1'
-      #device: '/dev/sdb1'
-      #mount_options: 'noatime,defaults'
     ceph-node2:
       id: '2'
       address: '172.31.10.2'
