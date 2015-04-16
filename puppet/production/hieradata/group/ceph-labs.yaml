@@ -22,7 +22,7 @@ ceph:
     osd_op_threads: '4'           # default 2
 
   admin_key: 'AQAi+ohUiIuQOBAAfhWdmSz8++KiFXESYEC7kg=='
-  common_rgw_dns_name: 'ostore'
+  rgw_dns_name: 'ostore.athome.priv'
   monitors:
     ceph-node1:
       id: '1'
