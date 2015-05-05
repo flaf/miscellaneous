@@ -1,0 +1,37 @@
+### This file is managed by Puppet, don't edit it. ###
+
+main_collective   = mcollective
+collectives       = mcollective
+libdir            = /usr/share/mcollective/plugins
+logfile           = /var/log/mcollective.log
+loglevel          = info
+daemonize         = 1
+securityprovider  = ssl
+connector         = rabbitmq
+direct_addressing = 1
+
+plugin.ssl_client_cert_dir  = /etc/mcollective/ssl/clients/
+plugin.ssl_server_private   = /etc/mcollective/ssl/server-private.pem
+plugin.ssl_server_public    = /etc/mcollective/ssl/server-public.pem
+plugin.rabbitmq.vhost       = /mcollective
+plugin.rabbitmq.pool.size   = 1
+
+plugin.rabbitmq.pool.1.host         = mco-broker.athome.priv
+plugin.rabbitmq.pool.1.port         = 6163
+plugin.rabbitmq.pool.1.user         = mcollective
+plugin.rabbitmq.pool.1.password     = changeme
+plugin.rabbitmq.pool.1.ssl          = true
+plugin.rabbitmq.pool.1.ssl.ca       = /var/lib/puppet/ssl/certs/ca.pem
+plugin.rabbitmq.pool.1.ssl.cert     = /var/lib/puppet/ssl/certs/mco-srv-1.athome.priv.pem
+plugin.rabbitmq.pool.1.ssl.key      = /var/lib/puppet/ssl/private_keys/mco-srv-1.athome.priv.pem
+plugin.rabbitmq.pool.1.ssl.fallback = 0
+plugin.rabbitmq.stomp_1_0_fallback  = 0
+plugin.rabbitmq.heartbeat_interval  = 30
+plugin.rabbitmq.max_hbread_fails    = 2
+plugin.rabbitmq.max_hbrlck_fails    = 0
+
+# Facts
+factsource = yaml
+plugin.yaml = /etc/mcollective/facts.yaml
+
+
