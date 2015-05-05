@@ -24,6 +24,9 @@ class profiles::puppet::puppetmaster {
       puppet_ssl_dir => '/var/lib/puppet/sslclient',
     }
 
+    class { '::mcollective::server':
+    }
+
     class { '::puppetmaster':
       puppet_server        => 'puppet.athome.priv',
       ca_server            => 'puppet.athome.priv',
