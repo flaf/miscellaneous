@@ -95,6 +95,10 @@ DIFLpt+crz4FqPlxzgr+KPECAwEAAQ==
     class { '::mcollective::server':
       server_private_key => $server_private_key,
       server_public_key  => $server_public_key,
+      middleware_server  => 'subpuppet-1.athome.priv',
+      middleware_port    => '61614',
+      mcollective_pwd    => '6fc8f528c63b71d8421c53f2f13c311f',
+      ssl_dir            => '/var/lib/puppet/sslclient',
     }
 
     class { '::puppetmaster':

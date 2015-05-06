@@ -16,14 +16,14 @@ plugin.ssl_server_public    = <%= @server_public_key_file %>
 plugin.rabbitmq.vhost       = /mcollective
 plugin.rabbitmq.pool.size   = 1
 
-plugin.rabbitmq.pool.1.host         = mco-broker.athome.priv
-plugin.rabbitmq.pool.1.port         = 6163
+plugin.rabbitmq.pool.1.host         = <%= @middleware_server %>
+plugin.rabbitmq.pool.1.port         = <%= @middleware_port %>
 plugin.rabbitmq.pool.1.user         = mcollective
-plugin.rabbitmq.pool.1.password     = changeme
+plugin.rabbitmq.pool.1.password     = <%= @mcollective_pwd %>
 plugin.rabbitmq.pool.1.ssl          = true
-plugin.rabbitmq.pool.1.ssl.ca       = /var/lib/puppet/ssl/certs/ca.pem
-plugin.rabbitmq.pool.1.ssl.cert     = /var/lib/puppet/ssl/certs/mco-srv-1.athome.priv.pem
-plugin.rabbitmq.pool.1.ssl.key      = /var/lib/puppet/ssl/private_keys/mco-srv-1.athome.priv.pem
+plugin.rabbitmq.pool.1.ssl.ca       = <%= @ssl_dir %>/certs/ca.pem
+plugin.rabbitmq.pool.1.ssl.cert     = <%= @ssl_dir %>/certs/<%= @fqdn %>.pem
+plugin.rabbitmq.pool.1.ssl.key      = <%= @ssl_dir %>/private_keys/<%= @fqdn %>.pem
 plugin.rabbitmq.pool.1.ssl.fallback = 0
 plugin.rabbitmq.stomp_1_0_fallback  = 0
 plugin.rabbitmq.heartbeat_interval  = 30

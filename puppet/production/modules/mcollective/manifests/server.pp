@@ -1,6 +1,10 @@
 class mcollective::server (
   $server_private_key,
   $server_public_key,
+  $middleware_server,
+  $middleware_port,
+  $mcollective_pwd,
+  $ssl_dir = '/var/lib/puppet/ssl',
 ) {
 
   $packages = [
@@ -37,16 +41,19 @@ class mcollective::server (
     group   => 'root',
     mode    => '0640',
     content => template('mcollective/server.cfg.erb'),
-  #  require => Package['mcollective'],
-  #  before  => Service['mcollective'],
-  #  notify  => Service['mcollective'],
+    require => [
+                 File[$server_private_key_file],
+                 File[$server_public_key_file],
+               ],
+    before  => Service['mcollective'],
+    notify  => Service['mcollective'],
   }
 
-  #service { 'mcollective':
-  #  ensure     => running,
-  #  hasstatus  => true,
-  #  hasrestart => true,
-  #}
+  service { 'mcollective':
+    ensure     => running,
+    hasstatus  => true,
+    hasrestart => true,
+  }
 
 }
 
