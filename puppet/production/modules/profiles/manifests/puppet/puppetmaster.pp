@@ -126,7 +126,7 @@ S5tnhz0W2fa/okSzsJ2hqZN0VpfwQh4QStKex5DYRXx0
       mcollective_pwd    => '6fc8f528c63b71d8421c53f2f13c311f',
       ssl_dir            => '/var/lib/puppet/sslclient',
       client_public_keys => {
-                               'client-a' => { 'content' => $client_public_key, },
+                               'subpuppet-1.athome.priv' => { 'content' => $client_public_key, },
                              },
     }
 
