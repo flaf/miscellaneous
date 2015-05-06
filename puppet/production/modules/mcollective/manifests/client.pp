@@ -20,7 +20,7 @@ class mcollective::client (
   # If the host is server and client mcollective, we must manage
   # this resource just once. The server public key is needed for
   # the client in order to crypt message.
-  if ! defined(File[$server_public_key_file) {
+  if ! defined(File[$server_public_key_file]) {
     file { $server_public_key_file:
       ensure  => present,
       owner   => 'root',
