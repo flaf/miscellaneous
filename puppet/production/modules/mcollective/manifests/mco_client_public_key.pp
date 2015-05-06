@@ -3,7 +3,7 @@ define mcollective::mco_client_public_key (
   $content,
 ) {
 
-  file { "/etc/mcollective/ssl/clients/${name}":
+  file { "/etc/mcollective/ssl/clients/${name}.pem":
     ensure  => present,
     owner   => 'root',
     group   => 'root',
