@@ -130,6 +130,7 @@ S5tnhz0W2fa/okSzsJ2hqZN0VpfwQh4QStKex5DYRXx0
     }
 
     class { '::mcollective::client':
+      server_public_key  => $server_public_key,
       client_private_key => $client_private_key,
       client_public_key  => $client_public_key,
       middleware_server  => 'subpuppet-1.athome.priv',
