@@ -103,13 +103,13 @@ BIlO6GbUhyA4PbPDS6KROZD/ZfjzCdwiq8AQNCnCdCFiwOTTCNigmQGiJvOg7k/M
     }
 
     class { '::mcollective::server':
-      server_private_key  => $server_private_key,
-      server_public_key   => $server_public_key,
-      middleware_server   => 'subpuppet-1.athome.priv',
-      middleware_port     => '61614',
-      mcollective_pwd     => '6fc8f528c63b71d8421c53f2f13c311f',
-      ssl_dir             => '/var/lib/puppet/sslclient',
-      $client_public_keys => {
+      server_private_key => $server_private_key,
+      server_public_key  => $server_public_key,
+      middleware_server  => 'subpuppet-1.athome.priv',
+      middleware_port    => '61614',
+      mcollective_pwd    => '6fc8f528c63b71d8421c53f2f13c311f',
+      ssl_dir            => '/var/lib/puppet/sslclient',
+      client_public_keys => {
                                'client-a' => { 'content' => $client_public_key, },
                              },
     }
