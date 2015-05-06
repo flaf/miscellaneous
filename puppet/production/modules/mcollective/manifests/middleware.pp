@@ -265,7 +265,7 @@ ${rbmqadm} declare exchange --vhost=/mcollective \
     path    => '/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin',
     user    => 'root',
     group   => 'root',
-    unless  => "${rbmqadm} list exchanges | grep -q ' collective_'",
+    unless  => "${rbmqadm} list exchanges | grep -q ' mcollective_'",
     require => Exec['declare-permissions'],
   }
 
