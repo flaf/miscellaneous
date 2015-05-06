@@ -2,6 +2,7 @@ class mcollective::client (
   $server_public_key,
   $client_private_key,
   $client_public_key,
+  $client_key_id = $::fqdn
   $middleware_server,
   $middleware_port,
   $mcollective_pwd,
@@ -16,8 +17,8 @@ class mcollective::client (
   ensure_packages($packages, { ensure => present, })
 
   $server_public_key_file  = '/etc/mcollective/ssl/server-public.pem'
-  $client_private_key_file = "/etc/mcollective/ssl/${::fqdn}.private.pem"
-  $client_public_key_file  = "/etc/mcollective/ssl/${::fqdn}.pem"
+  $client_private_key_file = "/etc/mcollective/ssl/${client_key_id}.private.pem"
+  $client_public_key_file  = "/etc/mcollective/ssl/${client_key_id}.public.pem"
 
   # If the host is server and client mcollective, we must manage
   # this resource just once. The server public key is needed for
