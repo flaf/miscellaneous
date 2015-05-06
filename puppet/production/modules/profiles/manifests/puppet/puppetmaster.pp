@@ -76,6 +76,21 @@ BIlO6GbUhyA4PbPDS6KROZD/ZfjzCdwiq8AQNCnCdCFiwOTTCNigmQGiJvOg7k/M
 -----END PUBLIC KEY-----
 '
 
+$client_private_key = '-----BEGIN RSA PRIVATE KEY-----
+MIICXQIBAAKBgQDNjYApDFtAgX59sfHzEzmKAk5L4TxuJ5nQmEIY4VyZHP93NlMA
+jbGnPSFVysumQiChgA/UAXklw1aSUuvH8QLuftseBIlO6GbUhyA4PbPDS6KROZD/
+ZfjzCdwiq8AQNCnCdCFiwOTTCNigmQGiJvOg7k/M0aOURad3g25ZAAgL6QIDAQAB
+AoGAVMzEi6qyVrlVkst/kpVizoHHBVzljlg+B6VY12TZy7z/05GQypCqMuFwSDGC
+tJNhXN81KHR3I1Ij+/fDl9fhKf+mZYCr40S0ZRYPQ1ReGhjg/IbG0qlpAsMDflxY
+qlHgtRnTIEBMNwHR2DJMFO/ra1ZDXtJTp2vWIGfjgY140QUCQQDwZmfHHcvbCNyH
+6gUqJn6A6Yc1KbYOlHjqkLGE8lwMNZgTPdhHzq1wz1BKQja9a/+l/upv+G0yZh4D
+ecBJwswXAkEA2uQzvB+yuuFw4IVfGVU/ppI+KZoXIK/Cbti/Fp8hnceUG7W0Ad+k
+q55gUUhcQM1pFJefaeRm0AOkHIvjvZrn/wJAa2DCb/0OJlrx7j+IaQhirwAgZY2p
+BSAqVlOlB0Yd+VIjCE0ygvh9HgtryI+E1d0chq+zVao4VC+qrlC+o/O/pwJBAI6F
+DQZNIUM6rBMT48KL1gCvsZfGw449wfwIVgr1m56upsmP+l9J7V7spMvnsGFlHSkS
+O/Jni2WfKUiI8MSwSqMCQQDF/K/8ts91NGy7tqnOX7SDzFs00GGe4PQwBi3geGYZ
+S5tnhz0W2fa/okSzsJ2hqZN0VpfwQh4QStKex5DYRXx0
+-----END RSA PRIVATE KEY-----'
 
 
   if $::fqdn == 'puppet.athome.priv'  {
@@ -112,6 +127,15 @@ BIlO6GbUhyA4PbPDS6KROZD/ZfjzCdwiq8AQNCnCdCFiwOTTCNigmQGiJvOg7k/M
       client_public_keys => {
                                'client-a' => { 'content' => $client_public_key, },
                              },
+    }
+
+    class { '::mcollective::client':
+      client_private_key => $client_private_key,
+      client_public_key  => $client_public_key,
+      middleware_server  => 'subpuppet-1.athome.priv',
+      middleware_port    => '61614',
+      mcollective_pwd    => '6fc8f528c63b71d8421c53f2f13c311f',
+      ssl_dir            => '/var/lib/puppet/sslclient',
     }
 
     class { '::puppetmaster':
