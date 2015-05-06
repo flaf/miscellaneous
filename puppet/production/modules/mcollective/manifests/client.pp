@@ -50,13 +50,13 @@ class mcollective::client (
     require => Package['mcollective-client'],
   }
 
-  #file { '/etc/mcollective/client.cfg':
-  #  ensure  => present,
-  #  owner   => 'root',
-  #  group   => 'root',
-  #  mode    => '0640',
-  #  content => template('mcollective/client.cfg.erb'),
-  #}
+  file { '/etc/mcollective/client.cfg':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0640',
+    content => template('mcollective/client.cfg.erb'),
+  }
 
 }
 

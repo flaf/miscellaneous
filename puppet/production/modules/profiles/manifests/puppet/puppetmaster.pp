@@ -90,7 +90,8 @@ BSAqVlOlB0Yd+VIjCE0ygvh9HgtryI+E1d0chq+zVao4VC+qrlC+o/O/pwJBAI6F
 DQZNIUM6rBMT48KL1gCvsZfGw449wfwIVgr1m56upsmP+l9J7V7spMvnsGFlHSkS
 O/Jni2WfKUiI8MSwSqMCQQDF/K/8ts91NGy7tqnOX7SDzFs00GGe4PQwBi3geGYZ
 S5tnhz0W2fa/okSzsJ2hqZN0VpfwQh4QStKex5DYRXx0
------END RSA PRIVATE KEY-----'
+-----END RSA PRIVATE KEY-----
+'
 
 
   if $::fqdn == 'puppet.athome.priv'  {
