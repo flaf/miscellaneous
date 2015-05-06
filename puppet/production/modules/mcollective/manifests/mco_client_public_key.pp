@@ -1,5 +1,5 @@
 define mcollective::mco_client_public_key (
-  $name => $title,
+  $name = $title,
   $content,
 ) {
 
