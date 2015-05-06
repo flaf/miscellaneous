@@ -1,0 +1,44 @@
+### This file is managed by Puppet, don't edit it. ###
+
+main_collective  = mcollective
+collectives      = mcollective
+libdir           = /etc/mcollective/plugin.d
+logger_type      = console
+loglevel         = warn
+securityprovider = ssl
+
+
+
+plugin.ssl_server_public    = <%= @server_public_key_file %>
+
+
+logfile           = /var/log/mcollective.log
+loglevel          = info
+daemonize         = 1
+direct_addressing = 1
+connector         = rabbitmq
+
+plugin.ssl_client_cert_dir  = /etc/mcollective/ssl/clients
+plugin.ssl_server_private   = <%= @server_private_key_file %>
+plugin.rabbitmq.vhost       = /mcollective
+plugin.rabbitmq.pool.size   = 1
+
+plugin.rabbitmq.pool.1.host         = <%= @middleware_server %>
+plugin.rabbitmq.pool.1.port         = <%= @middleware_port %>
+plugin.rabbitmq.pool.1.user         = mcollective
+plugin.rabbitmq.pool.1.password     = <%= @mcollective_pwd %>
+plugin.rabbitmq.pool.1.ssl          = true
+plugin.rabbitmq.pool.1.ssl.ca       = <%= @ssl_dir %>/certs/ca.pem
+plugin.rabbitmq.pool.1.ssl.cert     = <%= @ssl_dir %>/certs/<%= @fqdn %>.pem
+plugin.rabbitmq.pool.1.ssl.key      = <%= @ssl_dir %>/private_keys/<%= @fqdn %>.pem
+plugin.rabbitmq.pool.1.ssl.fallback = 0
+plugin.rabbitmq.stomp_1_0_fallback  = 0
+plugin.rabbitmq.heartbeat_interval  = 30
+plugin.rabbitmq.max_hbread_fails    = 2
+plugin.rabbitmq.max_hbrlck_fails    = 0
+
+# Facts
+factsource = yaml
+plugin.yaml = /etc/mcollective/facts.yaml
+
+
