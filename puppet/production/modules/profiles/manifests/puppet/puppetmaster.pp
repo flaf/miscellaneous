@@ -68,6 +68,16 @@ DIFLpt+crz4FqPlxzgr+KPECAwEAAQ==
 -----END PUBLIC KEY-----
 '
 
+$client_public_key = '-----BEGIN PUBLIC KEY-----
+MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDNjYApDFtAgX59sfHzEzmKAk5L
+4TxuJ5nQmEIY4VyZHP93NlMAjbGnPSFVysumQiChgA/UAXklw1aSUuvH8QLuftse
+BIlO6GbUhyA4PbPDS6KROZD/ZfjzCdwiq8AQNCnCdCFiwOTTCNigmQGiJvOg7k/M
+0aOURad3g25ZAAgL6QIDAQAB
+-----END PUBLIC KEY-----
+'
+
+
+
   if $::fqdn == 'puppet.athome.priv'  {
 
     class { '::puppetmaster':
@@ -93,12 +103,15 @@ DIFLpt+crz4FqPlxzgr+KPECAwEAAQ==
     }
 
     class { '::mcollective::server':
-      server_private_key => $server_private_key,
-      server_public_key  => $server_public_key,
-      middleware_server  => 'subpuppet-1.athome.priv',
-      middleware_port    => '61614',
-      mcollective_pwd    => '6fc8f528c63b71d8421c53f2f13c311f',
-      ssl_dir            => '/var/lib/puppet/sslclient',
+      server_private_key  => $server_private_key,
+      server_public_key   => $server_public_key,
+      middleware_server   => 'subpuppet-1.athome.priv',
+      middleware_port     => '61614',
+      mcollective_pwd     => '6fc8f528c63b71d8421c53f2f13c311f',
+      ssl_dir             => '/var/lib/puppet/sslclient',
+      $client_public_keys => {
+                               'client-a' => { 'content' => $client_public_key, },
+                             },
     }
 
     class { '::puppetmaster':

@@ -1,6 +1,7 @@
 class mcollective::server (
   $server_private_key,
   $server_public_key,
+  $client_public_keys,
   $middleware_server,
   $middleware_port,
   $mcollective_pwd,
@@ -10,6 +11,7 @@ class mcollective::server (
   $packages = [
                'ruby-stomp',
                'mcollective',
+               'mcollective-shell-agent',
               ]
 
   ensure_packages($packages, { ensure => present, })
@@ -24,6 +26,7 @@ class mcollective::server (
     mode    => '0600',
     content => $server_private_key,
     require => Package['mcollective'],
+    notify  => Service['mcollective'],
   }
 
   file { $server_public_key_file:
@@ -33,6 +36,7 @@ class mcollective::server (
     mode    => '0600',
     content => $server_public_key,
     require => Package['mcollective'],
+    notify  => Service['mcollective'],
   }
 
   file { '/etc/mcollective/server.cfg':
@@ -48,6 +52,14 @@ class mcollective::server (
     before  => Service['mcollective'],
     notify  => Service['mcollective'],
   }
+
+  # Public keys of the mcollective clients.
+  $defaults = {
+    require => Package['mcollective'],
+    before  => Service['mcollective'],
+    notify  => Service['mcollective'],
+  }
+  create_resources('::mcollective::mco_client_public_key', $client_public_keys, $defaults)
 
   service { 'mcollective':
     ensure     => running,
