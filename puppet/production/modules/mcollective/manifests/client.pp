@@ -2,7 +2,7 @@ class mcollective::client (
   $server_public_key,
   $client_private_key,
   $client_public_key,
-  $client_key_id = $::fqdn
+  $client_key_id = $::fqdn,
   $middleware_server,
   $middleware_port,
   $mcollective_pwd,
