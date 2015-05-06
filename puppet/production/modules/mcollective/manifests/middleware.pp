@@ -256,9 +256,9 @@ user=admin configure='.*' write='.*' read='.*'"
   }
 
   $cmd_exchange = "${rbmqadm} declare exchange --vhost=/mcollective \
-    name=collective_broadcast type=topic
+    name=mcollective_broadcast type=topic
 ${rbmqadm} declare exchange --vhost=/mcollective \
-    name=collective_directed type=direct"
+    name=mcollective_directed type=direct"
 
   exec { 'declare-exchanges':
     command => $cmd_exchange,
