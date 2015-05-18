@@ -15,13 +15,18 @@ ceph:
     osd_pool_default_pgp_num: '64'
     osd_crush_chooseleaf_type: '1'
     osd_journal_size: '0'         # all the dedicated block is used
-    osd_max_backfills: '1'        # default 10
-    osd_recovery_max_active: '1'  # default 15
+    osd_max_backfills: '1'        # default is 10
+    osd_recovery_max_active: '1'  # default is 15
     osd_client_op_priority: '63'  # default 63 too
     osd_recovery_op_priority: '1' # default 10
     osd_op_threads: '4'           # default 2
+    mds_cache_size: '1000000'
+    osd_scrub_begin_hour: '3'
+    osd_scrub_end_hour: '5'
     mon_allow_pool_delete: 'false'
 
+
+  # Launch "ceph-authtool --gen-print-key" to generate a key.
   admin_key: 'AQAi+ohUiIuQOBAAfhWdmSz8++KiFXESYEC7kg=='
   rgw_dns_name: 'ostore.athome.priv'
   monitors:
