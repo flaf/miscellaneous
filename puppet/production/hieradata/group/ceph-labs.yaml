@@ -20,6 +20,7 @@ ceph:
     osd_client_op_priority: '63'  # default 63 too
     osd_recovery_op_priority: '1' # default 10
     osd_op_threads: '4'           # default 2
+    mon_allow_pool_delete: 'false'
 
   admin_key: 'AQAi+ohUiIuQOBAAfhWdmSz8++KiFXESYEC7kg=='
   rgw_dns_name: 'ostore.athome.priv'
