@@ -1,0 +1,91 @@
+#!/usr/bin/ruby
+# Copyright: 2014 Francois Lafont <francois.lafont@ac-versailles.fr>
+
+require 'yaml'
+
+# The absolute path of the directory which contains the ENC script.
+ENV_DIR = File.expand_path(File.dirname(__FILE__))
+
+fqdn = ARGV[0]
+
+# Ouput of the ENC which must be completed.
+output = '{
+  "parameters":
+  {
+    "environment": "###environment###",
+    "admin_email": "francois.lafont@ac-versailles.fr",
+    ###parameters###
+  }
+}
+'
+
+# Search for the yaml file in hieradata.
+files_array = Dir.glob("#{ENV_DIR}/*/hieradata/fqdn/#{fqdn}.yaml")
+if files_array.length != 1
+  puts "Sorry, in hieradata, the file `#{fqdn}.yaml' " \
+       "is not present or is duplicated."
+  exit(1)
+end
+
+# There is just one fqdn.yaml file in hieradata.
+yaml_file = files_array[0]
+
+# Get the environment variable.
+regex_end = "/hieradata/fqdn/#{fqdn}.yaml"
+environment = yaml_file.sub(/^#{ENV_DIR}\//, '').sub(/#{regex_end}$/, '')
+
+# Search for keys which match /^enc_/ in the yaml file to
+# define the global paramters.
+hash = YAML.load_file(yaml_file)
+parameters = ''
+
+# If the yaml file is empty, hash is nil.
+# Then, we convert nil to an empty hash.
+if hash.is_a?(NilClass)
+  hash = {}
+end
+
+if not hash.is_a?(Hash)
+  puts "Sorry, in hieradata, the file `#{fqdn}.yaml' " \
+       "exists but has a bad yaml syntax."
+  exit(1)
+end
+
+hash.each do |key, value|
+
+  if key =~ /^enc_/
+
+    key = key.sub(/^enc_/, '')
+
+    # Handle when the value is a string.
+    if value.is_a?(String) or value.is_a?(Numeric)
+      if value.is_a?(Numeric) then value = value.to_s() end
+      value = value.gsub('"', '\\"') # Escape " in value.
+      parameters += "\"#{key}\": \"#{value}\",\n    "
+    end
+
+    # Handle when the value is a array.
+    if value.is_a?(Array)
+      parameters += "\"#{key}\": #{value.to_s()},\n    "
+      c = 0
+      for e in value
+        if e.is_a?(String) or e.is_a?(Numeric)
+          if e.is_a?(Numeric) then e = e.to_s() end
+          e = e.gsub('"', '\\"') # Escape " in e.
+          parameters += "\"#{key}_#{c}\": \"#{e}\",\n    "
+          c += 1
+        end
+      end
+    end
+
+  end
+
+end
+parameters = parameters.strip()
+
+output = output.sub('###environment###', environment)
+output = output.sub('###parameters###', parameters)
+puts output
+exit(0)
+
+
