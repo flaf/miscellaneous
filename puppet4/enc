@@ -3,7 +3,7 @@
 
 require 'yaml'
 
-# The absolute path of the directory which contains the ENC script.
+# The absolute path of the directory which contains the ENC script.
 ENV_DIR = File.expand_path(File.dirname(__FILE__))
 
 fqdn = ARGV[0]
