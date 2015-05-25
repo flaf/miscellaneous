@@ -49,8 +49,8 @@ argument.
     supp_distribs.each do |distrib|
       unless(distrib.is_a?(String) and not distrib.empty?)
         msg = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
-            |#{function_name}(): the argument must be a non empty array
-            |of non empty strings.
+            |#{function_name}(): the first argument must be a non empty
+            |array of non empty strings.
             EOS
         raise(Puppet::ParseError, msg)
       end
@@ -62,6 +62,7 @@ argument.
           |Sorry, the class #{class_name} has never been tested on
           |#{current_distrib}. Supported distribution(s): #{supp_distribs_str}.
           EOS
+      raise(Puppet::ParseError, msg)
     end
 
   end
