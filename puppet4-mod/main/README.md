@@ -12,11 +12,4 @@ class { '::main':
 }
 ```
 
-The module defines too the following stages:
-
-* `basis` stage handled before the `network` stage;
-* `network` stage handled before the `repository` stage;
-* `repository` handled before the `main` stage (ie the default stage).
-
-
 
