@@ -15,8 +15,7 @@ stage { 'repositories':
   before => Stage['main'],
 }
 
-# Include the role of the node.
-$role = hiera('enc_role')
+# Normally, the $role variable must be already defined by the ENC.
 validate_string($role)
 
 if empty($role) {
