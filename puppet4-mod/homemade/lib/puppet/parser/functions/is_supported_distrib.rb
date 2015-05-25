@@ -20,7 +20,7 @@ argument.
     unless(args.size == num_args)
       msg = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
           |#{function_name}(): wrong number of arguments,
-          |#{args.size} arguments given instead of #{num_args}.
+          |#{args.size} argument(s) given instead of #{num_args}.
           EOS
       raise(Puppet::ParseError, msg)
     end
