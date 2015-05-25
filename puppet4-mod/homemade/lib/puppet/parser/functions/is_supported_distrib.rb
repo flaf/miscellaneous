@@ -30,7 +30,7 @@ argument.
     class_name      = args[1]
     current_distrib = lookupvar('lsbdistcodename')
 
-    unless(supp_distribs.is_a?(Array) and supp_distribs.not_empty?)
+    unless(supp_distribs.is_a?(Array) and not supp_distribs.empty?)
       msg = <<-"EOS".gsub(/^\s*\|/, '')
           |#{function_name}(): the first argument must be a non empty
           |array of non empty strings.
@@ -38,7 +38,7 @@ argument.
       raise(Puppet::ParseError, msg)
     end
 
-    unless(class_name.is_a?(String) and class_name.not_empty?)
+    unless(class_name.is_a?(String) and not class_name.empty?)
       msg = <<-"EOS".gsub(/^\s*\|/, '')
           |#{function_name}(): the second argument must be a non empty
           |string.
@@ -47,7 +47,7 @@ argument.
     end
 
     supp_distribs.each do |distrib|
-      unless(distrib.is_a?(String) and distrib.not_empty?)
+      unless(distrib.is_a?(String) and not distrib.empty?)
         msg = <<-"EOS".gsub(/^\s*\|/, '')
             |#{function_name}(): the argument must be a non empty array
             |of non empty strings.
