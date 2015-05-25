@@ -11,7 +11,7 @@ stage { 'repository':
 }
 
 # We assume that the $role variable is already defined by the ENC.
-class { '::main':
+class { '::include_role':
   role => $role,
 }
 
