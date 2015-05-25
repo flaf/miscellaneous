@@ -8,9 +8,9 @@ Example of usage:
     ...
   }
 
-The function will raise an errror if the distribution of
-the current node is not present in the array of the first
-argument.
+The function raises an error if the distribution of the
+current node is not present in the array of the first
+argument, else the function does nothing.
     EOS
   ) do |args|
 
