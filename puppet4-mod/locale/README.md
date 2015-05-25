@@ -7,7 +7,7 @@ This module just sets the default locale of the system.
 The `locale` class has only one parameter:
 
 ```puppet
-class { 'locale':
+class { '::locale':
   default_locale => 'fr_FR.utf8',
 }
 ```
