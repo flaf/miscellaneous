@@ -1,26 +1,31 @@
+# Lookup of CSV data.
 $extlookup_datadir    = "/etc/puppet/extdata"
 $extlookup_precedence = ['common']
 
-stage { 'basis': }
-stage { 'network': }
-stage { 'repositories': }
+# Some stages.
+stage { 'basis':
+  before => Stage['network'],
+}
 
-Stage['basis']
-  -> Stage['network']
-  -> Stage['repositories']
-  -> Stage['main']
+stage { 'network':
+  before => Stage['repositories'],
+}
 
-$classes = hiera_array('enc_class', '<empty>')
+stage { 'repositories':
+  before => Stage['main'],
+}
 
-if $classes == '<empty>' {
+# Include the role of the node.
+$role = hiera('enc_role')
+validate_string($role)
 
-  notify {'no-class-found':
-    message => 'Sorry, no class found for this node.',
-  }
+if empty($role) {
+
+  fail("The value in hiera of enc_role for ${::fqdn} is an empty string.")
 
 } else {
 
-  hiera_include('enc_class')
+  include($role)
 
 }
 
