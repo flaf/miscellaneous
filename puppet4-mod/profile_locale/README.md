@@ -12,6 +12,7 @@ In hiera, the module needs only one entry whose value must a string:
 default_locale: 'en_US.UTF-8'
 ```
 
-That's all.
+Be careful, the module is set by default with the `basis` stage
+parameter which must be defined before.
 
 
