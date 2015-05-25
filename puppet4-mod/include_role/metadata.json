@@ -1,5 +1,5 @@
 {
-  "name": "flaf-main",
+  "name": "flaf-include_role",
   "version": "0.1.0",
   "author": "flaf",
   "summary": "Module to just include the \"role\" class of the current node",

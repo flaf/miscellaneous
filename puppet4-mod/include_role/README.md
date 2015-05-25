@@ -7,7 +7,7 @@ Module to just include the "role" class of the current node.
 Example:
 
 ```puppet
-class { '::main':
+class { '::include_role':
   role => '::role_foo',
 }
 ```
