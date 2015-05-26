@@ -13,4 +13,7 @@ keyboard:
   xkbvariant: 'latin9'
 ```
 
+Be careful, the module is set by default with the `basis` stage
+parameter which must be defined before.
+
 

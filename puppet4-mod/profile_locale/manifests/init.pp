@@ -1,4 +1,6 @@
-class profile_locale ($stage = 'basis', ) {
+class profile_locale (
+  $stage = 'basis',
+) {
 
   $default_locale = hiera('default_locale')
 

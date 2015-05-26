@@ -1,4 +1,6 @@
-class profile_timezone ($stage = 'basis', ) {
+class profile_timezone (
+  $stage = 'basis',
+) {
 
   $timezone = hiera('timezone')
 
