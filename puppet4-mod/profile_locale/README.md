@@ -8,7 +8,6 @@ hiera data.
 In hiera, the module needs only one entry whose value must a string:
 
 ```yaml
----
 default_locale: 'en_US.UTF-8'
 ```
 

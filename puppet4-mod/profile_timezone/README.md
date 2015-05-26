@@ -7,7 +7,6 @@ This module sets the timezone of the system via hiera data.
 In hiera, the module needs only one entry whose value must a string:
 
 ```yaml
----
 timezone: 'Europe/Paris'
 ```
 
