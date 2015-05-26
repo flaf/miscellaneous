@@ -2,7 +2,7 @@
 
 This module just sets the default locale of the system.
 
-# Typical usage
+# Usage
 
 The `locale` class has only one parameter:
 
