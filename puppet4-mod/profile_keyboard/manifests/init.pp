@@ -7,7 +7,7 @@ class profile_keyboard (
   class { '::keyboard':
     xkbmodel   => $keyboard_conf['xkbmodel'],
     xkblayout  => $keyboard_conf['xkblayout'],
-    xkbvariant => $xkblayout['xkbvariant'],
+    xkbvariant => $keyboard_conf['xkbvariant'],
   }
 
 }
