@@ -24,6 +24,7 @@ class locale (
     group       => 'root',
     refreshonly => true,
     require     => File['/etc/default/locale'],
+    subscribe   => File['/etc/default/locale'],
   }
 
 }
