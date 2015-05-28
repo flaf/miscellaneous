@@ -8,9 +8,9 @@ fqdn = ARGV[0]
 
 # Ouput of the ENC which must be completed.
 output = '{
+  "environment": "###environment###",
   "parameters":
   {
-    "environment": "###environment###",
     "admin_email": "francois.lafont@ac-versailles.fr",
     ###parameters###
   }
