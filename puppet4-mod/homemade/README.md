@@ -24,6 +24,9 @@ argument, else the function does nothing. The function
 uses the `lsbdistcodename` facter to know the distribution
 of the node and the comparisons are case sensitive.
 
+The second argument is just to give to the function the
+name of the class that invokes the function to provide
+an explicit error message if the function fails.
 
 
 
