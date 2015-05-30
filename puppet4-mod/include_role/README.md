@@ -12,14 +12,14 @@ class { '::include_role':
 }
 ```
 
-This example is equivalent to:
+This example is finally equivalent to:
 
 ```puppet
 include '::role_foo'
 ```
 
-The only interest of the `include_role` is that the value of
-the `role` parameter (which will generally be a data in hiera)
+But the interest of the `include_role` class is that the
+value of its `role` parameter (generally a data from hiera)
 is checked and must be non empty string.
 
 
