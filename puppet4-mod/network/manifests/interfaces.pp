@@ -16,6 +16,13 @@ class network::interfaces (
 
   is_supported_distrib(['trusty'], $title)
 
+  # Check the $interfaces variables.
+  $interfaces.each |$interface, $settings| {
+    unless has_key($interface, 'method') {
+        fail("Sorry each interface must have a 'method' key.")
+    }
+  }
+
 }
 
 
