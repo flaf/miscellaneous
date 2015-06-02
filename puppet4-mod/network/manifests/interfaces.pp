@@ -21,6 +21,7 @@ class network::interfaces (
     unless has_key($settings, 'method') {
         fail("The interface ${interface} must have a 'method' key.")
     }
+    validate_string($settings['method']
   }
 
 }
