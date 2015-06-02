@@ -18,8 +18,8 @@ class network::interfaces (
 
   # Check the $interfaces variables.
   $interfaces.each |$interface, $settings| {
-    unless has_key($interface, 'method') {
-        fail("Sorry each interface must have a 'method' key.")
+    unless has_key($settings, 'method') {
+        fail("The interface ${interface} must have a 'method' key.")
     }
   }
 
