@@ -28,9 +28,18 @@ class network::interfaces (
 
     unless is_string($settings['method']) {
       fail(regsubst(@("END"), '\n', ' ', 'G'))
-      The 'method' key of interface ${interface} must be a non
-      empty string, this is not the case currently.
+      The value of the 'method' key of interface ${interface}
+      must be a non empty string, this is not the case currently.
       |- END
+    }
+
+    if has_key($settings, 'options') {
+      unless is_hash($settings['options']) {
+        fail(regsubst(@("END"), '\n', ' ', 'G'))
+        The value of the 'options' key of interface ${interface}
+        must be a non empty hash, this is not the case currently.
+        |- END
+      }
     }
 
   }
