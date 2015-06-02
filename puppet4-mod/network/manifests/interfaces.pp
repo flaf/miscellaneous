@@ -6,7 +6,7 @@ class network::interfaces (
               Variant[
                       String[1],
                       Array[String[1], 1],
-                      Hash[String[1], String[1]]
+                      Hash[String[1], String[1], 1],
                      ],
               2
             ],
@@ -19,9 +19,11 @@ class network::interfaces (
   # Check the $interfaces variables.
   $interfaces.each |$interface, $settings| {
     unless has_key($settings, 'method') {
-        fail("The interface ${interface} must have a 'method' key.")
+      fail("The interface ${interface} must have a 'method' key.")
     }
-    validate_string($settings['method'])
+    unless is_string($settings['method']) {
+      fail("The 'method' key of ${interface} must be a non empty string.")
+    }
   }
 
 }
