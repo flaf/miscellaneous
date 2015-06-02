@@ -5,7 +5,6 @@ class network::interfaces (
               String[1],
               Variant[
                       String[1],
-                      Array[String[1], 1],
                       Hash[String[1], String[1], 1]
                      ],
               2
@@ -16,32 +15,72 @@ class network::interfaces (
 
   is_supported_distrib(['trusty'], $title)
 
-  # Check the $interfaces variables.
+  # Allowed keys in an interface hash.
+  $allowed_keys = [
+                   'method',
+                   'options',
+                   'network-name',
+                   'comment',
+                   'macaddress',
+                  ]
+
+  # Check the $interfaces variable.
   $interfaces.each |$interface, $settings| {
 
+    # The 'method' key is mandatory.
     unless has_key($settings, 'method') {
       fail(regsubst(@("END"), '\n', ' ', 'G'))
-      The interface ${interface} must have a 'method' key,
+      The interface '${interface}' must have a 'method' key,
       this is not the case currently.
       |- END
     }
 
-    unless is_string($settings['method']) {
-      fail(regsubst(@("END"), '\n', ' ', 'G'))
-      The value of the 'method' key of interface ${interface}
-      must be a non empty string, this is not the case currently.
-      |- END
-    }
+    $settings.each |$param, $value| {
 
-    if has_key($settings, 'options') {
-      unless is_hash($settings['options']) {
+      # Check if the keys of the interface are allowed.
+      unless member($allowed_keys, $param) {
         fail(regsubst(@("END"), '\n', ' ', 'G'))
-        The value of the 'options' key of interface ${interface}
-        must be a non empty hash, this is not the case currently.
+        The interface '${interface}' has a '${param}' key
+        which is not allowed.
         |- END
       }
-    }
 
+      # Check the type of each value.
+      case $param {
+
+        'options': {
+          # The value of 'options' key must be a hash.
+          unless is_hash($value) {
+            fail(regsubst(@("END"), '\n', ' ', 'G'))
+            The value of the '${param}' key of interface '${interface}'
+            must be a non empty hash, this is not the case currently.
+            |- END
+          }
+        }
+
+        default: {
+          # The value of the other keys must be a string.
+          unless is_string($value) {
+            fail(regsubst(@("END"), '\n', ' ', 'G'))
+            The value of the '${param}' key of interface '${interface}'
+            must be a non empty string, this is not the case currently.
+            |- END
+          }
+        }
+
+      }
+    }
+  }
+
+  file { '/etc/network/interfaces.puppet':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0600',
+    content => epp(
+                   'network/interfaces.puppet.epp',
+                   { 'interfaces' => $interfaces }
+                  ),
   }
 
 }

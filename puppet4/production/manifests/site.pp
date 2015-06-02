@@ -16,3 +16,12 @@ class { '::include_role':
 }
 
 
+class {'network::interfaces':
+  interfaces => {
+                  'eth0' => {
+                              'macaddress' => 'aaa',
+                              'method'     => 'static',
+                            },
+                }
+}
+
