@@ -6,7 +6,7 @@ class network::interfaces (
               Variant[
                       String[1],
                       Array[String[1], 1],
-                      Hash[String[1], String[1], 1],
+                      Hash[String[1], String[1], 1]
                      ],
               2
             ],
