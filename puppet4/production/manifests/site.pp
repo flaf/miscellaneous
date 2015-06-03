@@ -21,6 +21,8 @@ class {'network::interfaces':
                   'eth0' => {
                               'macaddress' => 'aaa',
                               'method'     => 'static',
+                              'comment'    => 'blabla',
+                              'options' => { 'key1' => 'val1', 'key2' => 'val2' },
                             },
                 }
 }

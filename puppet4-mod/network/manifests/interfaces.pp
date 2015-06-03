@@ -24,6 +24,26 @@ class network::interfaces (
                    'macaddress',
                   ]
 
+  $restart_network_cmd = @(END)
+    ifdown --all
+    sleep 0.5
+
+    if [ -f '/etc/network/interfaces.puppet' ]
+    then
+      cat '/etc/network/interfaces.puppet' > '/etc/network/interfaces'
+    fi
+
+    # Refresh the names of interfaces.
+    udevadm control --reload-rules
+    sleep 0.5
+    udevadm trigger --subsystem-match='net' --action='add'
+    sleep 0.5
+
+    # Configure all interfaces marked 'auto'.
+    ifup --all
+    sleep 0.5
+    | END
+
   # Check the $interfaces variable.
   $interfaces.each |$interface, $settings| {
 
