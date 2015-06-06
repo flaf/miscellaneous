@@ -18,11 +18,17 @@ class { '::include_role':
 
 class {'network::interfaces':
   interfaces => {
+                  'eth1' => {
+                              'macaddress' => 'ccc',
+                              'method'     => 'static',
+                              'comment'    => 'blabla',
+                              'options' => { 'zbkey1' => 'val1', 'aaakey2' => 'val2' },
+                            },
                   'eth0' => {
                               'macaddress' => 'aaa',
                               'method'     => 'static',
                               'comment'    => 'blabla',
-                              'options' => { 'key1' => 'val1', 'key2' => 'val2' },
+                              'options' => { 'bkey1' => 'val1', 'aaakey2' => 'val2' },
                             },
                 }
 }

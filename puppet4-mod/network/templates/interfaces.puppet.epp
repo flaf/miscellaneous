@@ -4,19 +4,42 @@
 # The loopback network interface.
 auto lo
 iface lo inet loopback
+<%- keys($interfaces).each |$interface| { -%>
 
-
-<%- $interfaces.each |$interface, $settings| { -%>
-  <%- $settings.each |$param, $value| { -%>
+  <%- $settings = $interfaces[$interface] -%>
+  <%-
+    # Aesthetic: $max is the size of the biggest string among the
+    # parameters of the interface, except 'method' and 'options'.
+    $max = keys($settings).filter |$param| {
+        $param !~ /^(method|options)$/
+    }.map |$param| {
+        size($param)
+    }.reduce |$memo, $entry| {
+      max($memo, $entry)
+    }
+  -%>
+  <%- keys($settings).each |$param| { -%>
+    <%- $value = $settings[$param] -%>
     <%- if ($param != 'method') and ($param != 'options') { -%>
-# <%= $param %>: <%= $value %>
+# <%= ljust($param, $max, ' ') %> => <%= $value %>
     <%- } -%>
   <%- } -%>
 auto <%= $interface %>
 iface <%= $interface %> inet <%= $settings['method'] %>
   <%- if has_key($settings, 'options') { -%>
-    <%- $settings['options'].each |$opt_name, $opt_value| { -%>
-  <%= $opt_name %> <%= $opt_value %>
+    <%-
+      $options = keys($settings['options'])
+
+      # Aesthetic: $max_opt is the size of the biggest string among the
+      # options of the interface.
+      $max_opt = $options.map |$opt_name| {
+          size($opt_name)
+      }.reduce |$memo, $entry| {
+        max($memo, $entry)
+      }
+    -%>
+    <%- $options.each |$opt_name| { -%>
+  <%= ljust($opt_name, $max_opt, ' ') %> <%= $settings['options'][$opt_name] %>
     <%- } -%>
   <%- } -%>
 <%- } -%>

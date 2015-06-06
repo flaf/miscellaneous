@@ -92,6 +92,18 @@ class network::interfaces (
     }
   }
 
+  # (*)
+  # Trusty uses "resolvconf" by default and it's not
+  # recommended to remove "resolvconf" in Trusty (if you do
+  # that, you will remove the "ubuntu-minimal" package that
+  # is not recommended).
+  $packages = [
+               'resolvconf', # (*)
+               'vlan',       # To have vlan features.
+               'ifenslave',  # To have bonding features.
+              ]
+  ensure_packages($packages, { ensure => present, })
+
   file { '/etc/network/interfaces.puppet':
     ensure  => present,
     owner   => 'root',

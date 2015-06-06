@@ -29,4 +29,17 @@ name of the class that invokes the function to provide
 an explicit error message if the function fails.
 
 
+# `ljust()` and `rjust()` functions
+
+Examples of usage:
+
+```puppet
+$v = rjust('hello', 10, ' ') # will return '     hello'
+$v = ljust('hello', 10, ' ') # will return 'hello     '
+```
+
+These functions are just wrappers of the `ljust()` and
+`rjust()` ruby methods.
+
+
 
