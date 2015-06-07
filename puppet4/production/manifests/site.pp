@@ -33,3 +33,12 @@ class {'network::interfaces':
                 }
 }
 
+
+$v = homemade::myfunction('a')
+
+notify { 'Test':
+  message => "[${v}]",
+}
+
+
+
