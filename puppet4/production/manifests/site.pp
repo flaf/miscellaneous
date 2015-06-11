@@ -34,11 +34,19 @@ class {'network::interfaces':
 }
 
 
-$v = homemade::myfunction('a')
-
-notify { 'Test':
-  message => "[${v}]",
+class { '::test':
+  param1 => 'titi1',
 }
 
+#include '::test'
+
+
+
+$iface = 'eth0'
+notify { 'heu':
+
+  message => getvar("::ipaddress_${iface}"),
+
+}
 
 
