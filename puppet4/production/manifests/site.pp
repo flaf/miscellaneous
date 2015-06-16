@@ -49,6 +49,7 @@ notify { 'heu':
 
 }
 
-::homemade::is_supported_distrib([ 'trusty', 'jessie' ], 'trusty', 'site.pp')
+#::homemade::is_supported_distrib([ 'trusty', 'jessie' ], 'trusty', 'site.pp')
+
 
 
