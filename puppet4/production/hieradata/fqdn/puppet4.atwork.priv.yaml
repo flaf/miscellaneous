@@ -1,4 +1,6 @@
 ---
 enc_role: '::role_generic'
 
+hash-foo:
+  key1: 'specific-key1'
 

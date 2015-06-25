@@ -11,11 +11,15 @@ class test (
     param2 => ${param2}
     | END
 
-  $v = lookup('test::azerty')
+  #$v = lookup('fred', hash, unique, 'eeee') #|$name| { $name = '456'  }
+  #$h = hiera_hash('hash-foo')
+  $h = lookup('hash-foo', Hash, hash)
 
   notify { 'test':
-    message => $v,
+    message => $h,
   }
+
+  ::homemade::is_supp_distrib([ 'trusTy', 'jessie' ], $title )
 
 }
 

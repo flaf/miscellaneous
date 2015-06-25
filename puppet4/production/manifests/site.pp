@@ -52,4 +52,6 @@ notify { 'heu':
 #::homemade::is_supported_distrib([ 'trusty', 'jessie' ], 'trusty', 'site.pp')
 
 
+#::homemade::is_supp_distrib([ 'trusTy', 'jessie' ], ${title})
+
 
