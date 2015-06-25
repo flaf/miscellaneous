@@ -11,8 +11,10 @@ class test (
     param2 => ${param2}
     | END
 
+  $v = lookup('test::azerty')
+
   notify { 'test':
-    message => $msg,
+    message => $v,
   }
 
 }

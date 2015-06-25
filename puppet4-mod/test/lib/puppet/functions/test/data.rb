@@ -7,6 +7,8 @@ Puppet::Functions.create_function(:'test::data') do
       'test::param2' => call_function( 'getvar', '::test::t1' ),
       #'test::param2' => call_function( 'homemade::myfunction', 'param2', 'aa' ),
       #'test::param2' => 123456,
+      'test::azerty' => '1234',
+      #'azerty' => '12345',
     }
   end
 
