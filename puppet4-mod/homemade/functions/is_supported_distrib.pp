@@ -1,4 +1,4 @@
-function homemade::is_supp_distrib (
+function homemade::is_supported_distrib (
   Array[String[1], 1] $supp_distribs,
   String[1]           $class_name,
 ) {
