@@ -10,7 +10,7 @@ Typical example of usage:
 ```puppet
 class foo {
 
-  is_supported_distrib(['truty', 'jessie'], $title)
+  ::homemade::is_supported_distrib(['truty', 'jessie'], $title)
 
   # The rest of the class.
   ...
@@ -34,12 +34,15 @@ an explicit error message if the function fails.
 Examples of usage:
 
 ```puppet
-$v = rjust('hello', 10, ' ') # will return '     hello'
-$v = ljust('hello', 10, ' ') # will return 'hello     '
+$v = ::homemade::rjust('hello', 10, ' ') # will return '     hello'
+$v = ::homemade::ljust('hello', 10, ' ') # will return 'hello     '
 ```
 
 These functions are just wrappers of the `ljust()` and
-`rjust()` ruby methods.
+`rjust()` ruby methods, except that:
+* the first argument must be a non empty string,
+* the second argument must be an integer `> 0`,
+* the third argument must be a non empty string.
 
 
 

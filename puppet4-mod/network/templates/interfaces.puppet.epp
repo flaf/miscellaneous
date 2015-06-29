@@ -21,7 +21,7 @@ iface lo inet loopback
   <%- keys($settings).each |$param| { -%>
     <%- $value = $settings[$param] -%>
     <%- if ($param != 'method') and ($param != 'options') { -%>
-# <%= ljust($param, $max, ' ') %> => <%= $value %>
+# <%= ::homemade::ljust($param, $max, ' ') %> => <%= $value %>
     <%- } -%>
   <%- } -%>
 auto <%= $interface %>
@@ -39,7 +39,7 @@ iface <%= $interface %> inet <%= $settings['method'] %>
       }
     -%>
     <%- $options.each |$opt_name| { -%>
-  <%= ljust($opt_name, $max_opt, ' ') %> <%= $settings['options'][$opt_name] %>
+  <%= ::homemade::ljust($opt_name, $max_opt, ' ') %> <%= $settings['options'][$opt_name] %>
     <%- } -%>
   <%- } -%>
 <%- } -%>

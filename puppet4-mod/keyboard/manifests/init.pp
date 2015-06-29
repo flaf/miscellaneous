@@ -6,7 +6,7 @@ class keyboard (
   String[1] $backspace  = 'guess',
 ) {
 
-  is_supported_distrib(['trusty'], $title)
+  ::homemade::is_supported_distrib(['trusty'], $title)
 
   $conf_hash = {
     'xkbmodel'   => $xkbmodel,

@@ -2,7 +2,7 @@ Puppet::Functions.create_function(:'homemade::ljust') do
 
   dispatch :ljust do
     required_param 'String[1]', :str
-    required_param 'Integer[1]', :column
+    required_param 'Integer[1, default]', :column
     required_param 'String[1]', :padstr
   end
 

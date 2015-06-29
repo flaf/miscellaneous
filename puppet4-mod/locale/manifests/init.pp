@@ -2,7 +2,7 @@ class locale (
   Enum['en_US.UTF-8', 'fr_FR.utf8'] $default_locale = 'en_US.UTF-8',
 ) {
 
-  is_supported_distrib(['trusty'], $title)
+  ::homemade::is_supported_distrib(['trusty'], $title)
 
   file { '/etc/default/locale':
     ensure  => present,

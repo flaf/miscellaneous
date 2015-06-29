@@ -13,7 +13,7 @@ class network::interfaces (
       ] $interfaces,
 ) {
 
-  is_supported_distrib(['trusty'], $title)
+  ::homemade::is_supported_distrib(['trusty'], $title)
 
   # Allowed keys in an interface hash.
   $allowed_keys = [
