@@ -1,14 +1,5 @@
 timezone: 'Europe/Paris'
 default_locale: 'en_US.UTF-8'
-keyboard:
-  xkbmodel: 'pc105'
-  xkblayout: 'frrrrr'
-  xkbvariant: 'latin9'
-  xkboptions: ''
-  #backspace: 'guess'
-
-keyboard::xkbmodel: 'pc107'
-keyboard::backspace: 'guesssss'
 
 #param2: 'titi'
 azerty: 'coucou'
