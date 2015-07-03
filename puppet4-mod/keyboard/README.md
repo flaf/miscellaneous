@@ -16,7 +16,8 @@ class { '::keyboard':
 }
 ```
 
-See the code of the module to know the default values
-of these parameters.
+The default values of these parameters are exactly the
+same as above so that this code is equivalent to a simple
+`include`.
 
 

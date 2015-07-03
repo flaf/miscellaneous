@@ -6,7 +6,7 @@ class keyboard (
   String[1] $backspace,
 ) {
 
-  ::homemade::is_supported_distrib(['trusty'], $title)
+  ::homemade::is_supported_distrib(['trusty', 'jessie'], $title)
 
   $conf_hash = {
     'xkbmodel'   => $xkbmodel,
@@ -24,8 +24,15 @@ class keyboard (
     content => epp('keyboard/default.keyboard.epp', $conf_hash),
   }
 
-  # With Wheezy, it's was => service keyboard-setup restart
-  $command = 'dpkg-reconfigure --frontend=noninteractive keyboard-configuration'
+  case $::lsbdistcodename {
+    'trusty': {
+      $command = 'dpkg-reconfigure --frontend=noninteractive keyboard-configuration'
+    }
+    default: {
+      # With Wheezy, it's was the same too.
+      $command = 'service keyboard-setup restart'
+    }
+  }
 
   exec { 'update-keyboard-conf':
     path        => '/usr/sbin:/usr/bin:/sbin:/bin',
