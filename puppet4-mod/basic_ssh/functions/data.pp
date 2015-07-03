@@ -1,7 +1,7 @@
 function basic_ssh::data {
 
   {
-    basic_ssh::server::permitrootloginl => 'without-password',
+    basic_ssh::server::permitrootlogin => 'without-password',
   }
 
 }

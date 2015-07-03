@@ -1,9 +1,11 @@
 class role_generic {
 
-  include '::profile_locale'
-  include '::profile_timezone'
-  include '::keyboard'
-  include '::keyboard'
+  include '::basic_ssh::server'
+  include '::basic_ssh::client'
+  #include '::profile_locale'
+  #include '::profile_timezone'
+  #include '::keyboard'
+  #include '::keyboard'
 
 }
 
