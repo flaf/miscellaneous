@@ -1,20 +1,18 @@
-stage { 'basis':
-  before => Stage['network'],
-}
+stage { 'basis': }
+stage { 'network': }
+stage { 'repository': }
 
-stage { 'network':
-  before => Stage['repository'],
-}
+Stage['basis'] -> Stage['network']
+               -> Stage['repository']
+               -> Stage['main']
 
-stage { 'repository':
-  before => Stage['main'],
+# We assume that the $::role variable is already defined
+# by the ENC and must be a non empty string.
+if $::role =~ String[1] {
+  include $::role
+} else {
+  fail('Sorry, no `$role` global variable is not defined for this node.')
 }
-
-# We assume that the $role variable is already defined by the ENC.
-class { '::include_role':
-  role => $role,
-}
-
 
 #class {'network::interfaces':
 #  interfaces => {
