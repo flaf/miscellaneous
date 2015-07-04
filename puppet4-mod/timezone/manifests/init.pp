@@ -1,8 +1,9 @@
 class timezone (
-  Enum['Etc/UTC', 'Europe/Paris'] $timezone = 'Etc/UTC',
+  Enum['Etc/UTC', 'Europe/Paris'] $timezone,
+  Array[String[1], 1] $supported_distributions,
 ) {
 
-  ::homemade::is_supported_distrib(['trusty'], $title)
+  ::homemade::is_supported_distrib($supported_distributions, $title)
 
   file { '/etc/timezone':
     ensure  => present,

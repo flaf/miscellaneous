@@ -14,6 +14,6 @@ class { '::timezone':
 
 The `timezone` parameter accepts only two values (two
 strings): `Europe/Paris` or `Etc/UTC`. The default value
-of this parameter is `Etc/UTC`.
+of this parameter is `Europe/Paris`.
 
 

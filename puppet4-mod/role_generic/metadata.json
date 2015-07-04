@@ -10,7 +10,8 @@
   "dependencies": [
     {"name":"flaf-basic_ssh","version_requirement":">= 0.1.0"},
     {"name":"flaf-keyboard","version_requirement":">= 0.1.0"},
-    {"name":"flaf-locale","version_requirement":">= 0.1.0"}
+    {"name":"flaf-locale","version_requirement":">= 0.1.0"},
+    {"name":"flaf-timezone","version_requirement":">= 0.1.0"}
   ]
 }
 
