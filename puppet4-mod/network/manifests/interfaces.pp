@@ -11,9 +11,10 @@ class network::interfaces (
             ],
         1
       ] $interfaces,
+  Array[String[1], 1] $supported_distributions,
 ) {
 
-  ::homemade::is_supported_distrib(['trusty'], $title)
+  ::homemade::is_supported_distrib($supported_distributions, $title)
 
   # Allowed keys in an interface hash.
   $allowed_keys = [
@@ -35,13 +36,13 @@ class network::interfaces (
 
     # Refresh the names of interfaces.
     udevadm control --reload-rules
-    sleep 0.5
+    sleep 0.25
     udevadm trigger --subsystem-match='net' --action='add'
-    sleep 0.5
+    sleep 0.25
 
     # Configure all interfaces marked 'auto'.
     ifup --all
-    sleep 0.5
+    sleep 0.25
     | END
 
   # Check the $interfaces variable.
