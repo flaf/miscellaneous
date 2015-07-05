@@ -3,7 +3,9 @@ function homemade::is_supported_distrib (
   String[1]           $class_name,
 ) {
 
-  if !member($supp_distribs, $::lsbdistcodename) {
+  $lsbdistcodename = $facts['lsbdistcodename']
+
+  if !member($supp_distribs, $lsbdistcodename) {
 
     $supp_distribs_str = join($supp_distribs, ', ')
 

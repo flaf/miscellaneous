@@ -7,7 +7,7 @@ class network::interfaces (
                       String[1],
                       Hash[String[1], String[1], 1]
                      ],
-              2
+              1
             ],
         1
       ] $interfaces,
