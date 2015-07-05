@@ -18,3 +18,7 @@ if $::role =~ String[1] {
 }
 
 
+$a = ::network::get_matching_network('10.0.2.5/8')
+notify { 'Test': message => "[${a}]" }
+
+
