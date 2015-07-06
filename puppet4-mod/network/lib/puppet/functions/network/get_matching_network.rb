@@ -8,7 +8,7 @@ Puppet::Functions.create_function(:'network::get_matching_network') do
   def get_matching_network(cidr_address)
   #def get_matching_network(cidr_address, networks)
 
-    call_function('::network::_dump_cidr_address', cidr_address).to_s
+    call_function('::network::dump_cidr_address', cidr_address).to_s
 
   end
 
