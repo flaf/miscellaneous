@@ -14,6 +14,7 @@ Puppet::Functions.create_function(:'network::dump_cidr_address') do
     ip_address_str  = cidr_address_str.split('/')[0]
     mask_num        = cidr_address_str.split('/')[1]
     ip_address      = IPAddr.new(ip_address_str)
+
     # With the CIDR string, the address is automatically masked.
     network_address = IPAddr.new(cidr_address_str)
 

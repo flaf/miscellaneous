@@ -19,6 +19,8 @@ Puppet::Functions.create_function(:'network::check_cidr_address') do
       raise(Puppet::ParseError, msg_cidr_not_valid)
     end
 
+    ip_address_str = cidr_address_str.split('/')[0]
+
     begin
       ip_address      = IPAddr.new(ip_address_str)
       # With the CIDR string, the address is automatically masked.

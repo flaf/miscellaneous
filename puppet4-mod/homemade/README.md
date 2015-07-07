@@ -10,7 +10,14 @@ Typical example of usage:
 ```puppet
 class foo {
 
+  # The classic "prefix call".
   ::homemade::is_supported_distrib(['truty', 'jessie'], $title)
+
+  # You can use the "chained call" if you prefer.
+  # It's completely equivalent :
+  #
+  #     ['truty', 'jessie'].::homemade::is_supported_distrib($title)
+  #
 
   # The rest of the class.
   ...
@@ -34,8 +41,13 @@ an explicit error message if the function fails.
 Examples of usage:
 
 ```puppet
-$v = ::homemade::rjust('hello', 10, ' ') # will return '     hello'
-$v = ::homemade::ljust('hello', 10, ' ') # will return 'hello     '
+# Will return => '     hello'.
+$v = ::homemade::rjust('hello', 10, ' ')
+$v = 'hello'.::homemade::rjust(10, ' ')
+
+# Will return 'hello     '.
+$v = ::homemade::ljust('hello', 10, ' ')
+$v = 'hello'::homemade::ljust(10, ' ')
 ```
 
 These functions are just wrappers of the `ljust()` and
