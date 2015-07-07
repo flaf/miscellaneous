@@ -27,6 +27,13 @@ if $::role =~ String[1] {
 #notify { 'Test2': message => "[${c}]" }
 #notify { 'Test3': message => "[${d}]" }
 
-['trusty', 'jessie'].::homemade::is_supported_distrib($title)
+#['trusty', 'jessie'].::homemade::is_supported_distrib($title)
+
+
+#$vv = { 1 => 'a', 2 => 'b' }
+#$v =  {3 => 'c', 1 => 'ZZZZZZZZ'} +$vv
+##$v = $vv
+#notify { 'Test': message => "[${v}]" }
+
 
 
