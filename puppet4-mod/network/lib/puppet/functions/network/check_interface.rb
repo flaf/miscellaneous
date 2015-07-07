@@ -1,10 +1,10 @@
 Puppet::Functions.create_function(:'network::check_interface') do
 
   dispatch :check_interface do
-    required_param 'Hash[String[1], Hash[String[1], Data, 1], 1]', :interfaces
+    required_param 'Hash[String[1], Data, 1]', :an_interface
   end
 
-  def check_interface(a_interface)
+  def check_interface(an_interface)
 
     require 'ipaddr'
 
@@ -21,21 +21,21 @@ Puppet::Functions.create_function(:'network::check_interface') do
 
     # Check if the mandatory keys are presents.
     mandatory_keys.each do |key|
-      unless a_interface.has_key?(key)
+      unless an_interface.has_key?(key)
         msg_no_key = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
-          |#{function_name}(): the interface `#{a_interface.to_s}` is not
+          |#{function_name}(): the interface `#{an_interface.to_s}` is not
           |valid because it has no `#{key}` key.
           EOS
         raise(Puppet::ParseError, msg_no_key)
       end
     end
 
-    a_interface.each do |key_name, key_value|
+    an_interface.each do |key_name, key_value|
 
-      # Check if each key of a_interface is an allowed key.
+      # Check if each key of an_interface is an allowed key.
       unless allowed_keys.include?(key_name)
         msg_key_not_allowed = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
-          |#{function_name}(): the interface `#{a_interface.to_s}` is
+          |#{function_name}(): the interface `#{an_interface.to_s}` is
           |not valid because the key `#{key_name}` is not an allowed key.
           |Allowed keys are: #{allowed_keys.keys.join(', ')}.
           EOS
@@ -43,9 +43,9 @@ Puppet::Functions.create_function(:'network::check_interface') do
       end
 
       # Now, we are sure that the interface has a name.
-      ifname = a_interface['name']
+      ifname = an_interface['name']
 
-      # Check if each key of a_interface has the correct type.
+      # Check if each key of an_interface has the correct type.
       unless key_value.is_a?(allowed_keys[key_name])
         msg_wrong_type = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
           |#{function_name}(): the interface `#{ifname}` is not valid
@@ -67,11 +67,11 @@ Puppet::Functions.create_function(:'network::check_interface') do
         end
       end
 
-      # Check if a_interface['options'] is a hash of strings/strings
+      # Check if an_interface['options'] is a hash of strings/strings
       # for the keys/values.
       if key_name == 'options'
 
-        options = a_interface['options']
+        options = an_interface['options']
 
         options.each do |k, v|
           unless k.is_a?(String) and v.is_a?(String) and \
@@ -109,10 +109,11 @@ Puppet::Functions.create_function(:'network::check_interface') do
 
       end # End of the handle of the specific "options" key.
 
-    end # End of the loop on the keys of a_interface.
-
+    end # End of the loop on the keys of an_interface.
 
     true
+
+  end
 
 end
 

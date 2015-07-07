@@ -17,4 +17,6 @@ if $::role =~ String[1] {
     |- END
 }
 
+include '::network::interfaces'
+
 
