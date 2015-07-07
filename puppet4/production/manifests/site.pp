@@ -35,5 +35,12 @@ if $::role =~ String[1] {
 ##$v = $vv
 #notify { 'Test': message => "[${v}]" }
 
+$i = {
+  'eth0' => { 'method'     => 'dhcp',
+              'macaddress' => 'rrr',
+              'options'    => { "1" => '2', 'address' => '34' },
+   }
+}
 
+::network::check_interfaces($i)
 

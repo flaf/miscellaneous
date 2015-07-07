@@ -38,6 +38,7 @@ Puppet::Functions.create_function(:'network::check_interfaces') do
           msg_key_not_allowed = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
             |#{function_name}(): the interface `#{ifname}` is not
             |valid because the key `#{key_name}` is not an allowed key.
+            | Allowed keys are: #{allowed_keys.keys.join(', ')}.
             EOS
           raise(Puppet::ParseError, msg_key_not_allowed)
         end
@@ -46,8 +47,9 @@ Puppet::Functions.create_function(:'network::check_interfaces') do
         unless key_value.is_a?(allowed_keys[key_name])
           msg_wrong_type = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
             |#{function_name}(): the interface `#{ifname}` is not valid
-            |because the type of the key `#{key_name}` is wrong. It's
-            |#{key_value.class.to_s} but must be #{allowed_keys[key_name].to_s}.
+            |because the type of the key `#{key_name}` is wrong. The
+            |type is `#{key_value.class.to_s}` but must be
+            |`#{allowed_keys[key_name].to_s}`.
             EOS
           raise(Puppet::ParseError, msg_wrong_type)
         end
@@ -74,7 +76,7 @@ Puppet::Functions.create_function(:'network::check_interfaces') do
                    (not k.empty?) and (not v.empty?)
               msg_options_error = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
                 |#{function_name}(): the `#{ifname}` interface is not valid
-                |because the `options` hash must be a hash of non empty strings
+                |because the hash `options` must be a hash of non empty strings
                 |for the keys and the values.
                 EOS
               raise(Puppet::ParseError, msg_options_error)
@@ -84,8 +86,8 @@ Puppet::Functions.create_function(:'network::check_interfaces') do
               if v =~ Regexp.new('/')
                 msg_bad_address = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
                   |#{function_name}(): the `#{ifname}` interface is not valid
-                  |the `address` option contains "/". The option must be a real
-                  |IP address, not a CIDR address.
+                  |because the `address` option contains "/". The option must
+                  |be a real IP address, not a CIDR address.
                   EOS
                 raise(Puppet::ParseError, msg_bad_address)
               else
@@ -95,7 +97,7 @@ Puppet::Functions.create_function(:'network::check_interfaces') do
                   msg_bad_address2 = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
                     |#{function_name}(): the `#{ifname}` interface is not valid
                     |because the `address` option doesn't contain a valid
-                    |address.
+                    |IP address.
                     EOS
                   raise(Puppet::ParseError, msg_bad_address2)
                 end
@@ -116,4 +118,3 @@ Puppet::Functions.create_function(:'network::check_interfaces') do
 end
 
 
-:
