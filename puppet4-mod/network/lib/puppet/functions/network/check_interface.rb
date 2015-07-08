@@ -32,10 +32,10 @@ Puppet::Functions.create_function(:'network::check_interface') do
   def check_interface_name_as_key(an_interface)
 
     ifname = an_interface.keys[0]
-    interface = an_interface[ifname]
-    # If interface has already the key 'name', you can enter
+
+    # If an_interface[ifname] has already the key 'name', we can enter
     # in a infinite recursion. We have to check it.
-    if interface.has_key?('name')
+    if an_interface[ifname].has_key?('name')
       msg_key_name = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
         |#{function_name}(): the interface `#{an_interface.to_s}` has
         |already a key `name` which is forbidden with this form of
@@ -43,21 +43,25 @@ Puppet::Functions.create_function(:'network::check_interface') do
         EOS
       raise(Puppet::ParseError, msg_key_name)
     end
-    interface['name'] = ifname
-    call_function('::network::check_interface', interface)
 
-    # Workaround related to a bug:
-    #
-    #   https://tickets.puppetlabs.com/browse/PUP-4825.
-    #
-    # We avoid to modify the arguments of the function.
-    interface.delete('name')
+    an_interface[ifname]['name'] = ifname
+    call_function('::network::check_interface', an_interface[ifname])
+
+    # Be careful: ruby is strictly pass-by-value for the arguments
+    # of a function, but the value of hash variable is a reference
+    # so that the value of the hash has changed. To avoid this,
+    # we delete the 'name' key added previously.
+    an_interface[ifname].delete('name')
 
   end
+
 
   def check_interface(an_interface)
 
     require 'ipaddr'
+
+    # Don't change the value of the argument.
+    an_interface.freeze
 
     function_name  = 'check_interface'
     mandatory_keys = [ 'name', 'method' ]

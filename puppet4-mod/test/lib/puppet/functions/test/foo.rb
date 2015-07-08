@@ -8,13 +8,16 @@ Puppet::Functions.create_function(:'test::foo') do
 
   def foo(a_hash, an_array, a_string)
 
-    a_hash['new'] = 'NEW'
-    a_hash['a'] = 'BOUM!!!'
+    a_hash_cloned = a_hash.clone
+    a_hash.freeze
 
-    an_array[0] = 'BOUM!!!'
-    an_array[3] = 'NEW'
+    a_hash_cloned['new'] = 'NEW'
+    #a_hash['a'] = 'BOUM!!!'
 
-    a_string = 'NEW'
+    #an_array[0] = 'BOUM!!!'
+    #an_array[3] = 'NEW'
+
+    #a_string << 'NEW'
 
     true
   end

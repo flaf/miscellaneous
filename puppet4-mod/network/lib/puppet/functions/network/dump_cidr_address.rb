@@ -7,6 +7,10 @@ Puppet::Functions.create_function(:'network::dump_cidr_address') do
   def dump_cidr_address(cidr_address_str)
 
     require 'ipaddr'
+
+    # Don't change the value of the argument.
+    cidr_address_str.freeze
+
     function_name = 'dump_cidr_address'
 
     call_function('::network::check_cidr_address', cidr_address_str)
