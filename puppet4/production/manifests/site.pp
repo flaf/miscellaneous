@@ -19,4 +19,10 @@ if $::role =~ String[1] {
 
 include '::network::interfaces'
 
+class { 'test':
+  a_hash   => { 'a' => 'A', 'b' => 'B', },
+  an_array => [ 'a', 'b', 'c' ],
+  a_string => 'old',
+}
+
 

@@ -1,7 +1,58 @@
 Puppet::Functions.create_function(:'network::check_interface') do
 
+  # The interface is a hash with this form:
+  #
+  #    {
+  #     'eth0' => {
+  #                'method' => 'xxx',
+  #                'key1'   => 'val1',
+  #                'key2'   => 'val2',
+  #                ...
+  #               }
+  #    }
+  #
+  dispatch :check_interface_name_as_key do
+    required_param 'Hash[String[1], Hash[String[1], Data, 1], 1, 1]', :an_interface
+  end
+
+  # The interface is a hash with this (more simple) form:
+  #
+  #    {
+  #     'name'   => 'eth0',
+  #     'method' => 'xxx',
+  #     'key1'   => 'val1',
+  #     'key2'   => 'val2',
+  #     ...
+  #    }
+  #
   dispatch :check_interface do
-    required_param 'Hash[String[1], Data, 1]', :an_interface
+    required_param 'Hash[String[1], Data, 2]', :an_interface
+  end
+
+  def check_interface_name_as_key(an_interface)
+
+    ifname = an_interface.keys[0]
+    interface = an_interface[ifname]
+    # If interface has already the key 'name', you can enter
+    # in a infinite recursion. We have to check it.
+    if interface.has_key?('name')
+      msg_key_name = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
+        |#{function_name}(): the interface `#{an_interface.to_s}` has
+        |already a key `name` which is forbidden with this form of
+        |hash interface.
+        EOS
+      raise(Puppet::ParseError, msg_key_name)
+    end
+    interface['name'] = ifname
+    call_function('::network::check_interface', interface)
+
+    # Workaround related to a bug:
+    #
+    #   https://tickets.puppetlabs.com/browse/PUP-4825.
+    #
+    # We avoid to modify the arguments of the function.
+    interface.delete('name')
+
   end
 
   def check_interface(an_interface)
