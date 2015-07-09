@@ -33,8 +33,7 @@ Puppet::Functions.create_function(:'network::check_interface') do
 
     ifname = an_interface.keys[0]
 
-    # If an_interface[ifname] has already the key 'name', we can enter
-    # in a infinite recursion. We have to check it.
+    # an_interface[ifname] must not have already the key 'name'.
     if an_interface[ifname].has_key?('name')
       msg_key_name = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
         |#{function_name}(): the interface `#{an_interface.to_s}` has

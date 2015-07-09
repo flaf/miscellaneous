@@ -1,8 +1,57 @@
 Puppet::Functions.create_function(:'network::check_network') do
 
-  dispatch :check_network do
-    required_param 'Hash[String[1], Data, 1]', :a_network
+  # The network is a hash with this form:
+  #
+  #    {
+  #     'network-mgt' => {
+  #                       'cidr-address' => '172.31.0.0/16',
+  #                       'vlan-id'      => 1000,
+  #                       ...
+  #                      }
+  #    }
+  #
+  dispatch :check_network_name_as_key do
+    required_param 'Hash[String[1], Hash[String[1], Data, 2], 1, 1]', :a_network
   end
+
+  # The network is a hash with this (more simple) form:
+  #
+  #    {
+  #     'name'         => 'network-mgt',
+  #     'cidr-address' => '172.31.0.0/16',
+  #     'vlan-id'      => 1000,
+  #     ...
+  #    }
+  #
+  dispatch :check_network do
+    required_param 'Hash[String[1], Data, 3]', :a_network
+  end
+
+  def check_network_name_as_key(a_network)
+
+    netname = a_network.keys[0]
+
+    # a_network[netname] must not have already the key 'name'.
+    if a_network[netname].has_key?('name')
+      msg_key_name = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
+        |#{function_name}(): the network `#{a_network.to_s}` has
+        |already a key `name` which is forbidden with this form of
+        |hash network.
+        EOS
+      raise(Puppet::ParseError, msg_key_name)
+    end
+
+    a_network[netname]['name'] = netname
+    call_function('::network::check_network', a_network[netname])
+
+    # Be careful: ruby is strictly pass-by-value for the arguments
+    # of a function, but the value of a hash variable is a reference
+    # so that the value of the hash can be changed. To avoid this,
+    # we delete the 'name' key added previously.
+    a_network[netname].delete('name')
+
+  end
+
 
   def check_network(a_network)
 
