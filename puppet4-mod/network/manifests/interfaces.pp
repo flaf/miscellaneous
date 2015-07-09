@@ -6,14 +6,9 @@ class network::interfaces (
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
-  notify { 'Test1': message => $interfaces }
-
   $interfaces.each |$ifname, $interface| {
-    #::network::check_interface($interface.merge({ 'name' => $ifname }))
-    ::network::check_interface( { $ifname => $interface } )
+    ::network::check_interface({ $ifname => $interface })
   }
-
-  notify { 'Test2': message => $interfaces }
 
   # (*)
   # Trusty uses "resolvconf" by default and it's not

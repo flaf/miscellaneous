@@ -48,8 +48,8 @@ Puppet::Functions.create_function(:'network::check_interface') do
     call_function('::network::check_interface', an_interface[ifname])
 
     # Be careful: ruby is strictly pass-by-value for the arguments
-    # of a function, but the value of hash variable is a reference
-    # so that the value of the hash has changed. To avoid this,
+    # of a function, but the value of a hash variable is a reference
+    # so that the value of the hash can be changed. To avoid this,
     # we delete the 'name' key added previously.
     an_interface[ifname].delete('name')
 
@@ -59,9 +59,6 @@ Puppet::Functions.create_function(:'network::check_interface') do
   def check_interface(an_interface)
 
     require 'ipaddr'
-
-    # Don't change the value of the argument.
-    an_interface.freeze
 
     function_name  = 'check_interface'
     mandatory_keys = [ 'name', 'method' ]

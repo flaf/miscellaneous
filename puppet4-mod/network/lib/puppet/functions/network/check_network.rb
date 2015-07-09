@@ -6,9 +6,6 @@ Puppet::Functions.create_function(:'network::check_network') do
 
   def check_network(a_network)
 
-    # Don't change the value of the argument.
-    a_network.freeze
-
     function_name  = 'check_network'
     mandatory_keys = {
                        'name'         => String,
