@@ -1,4 +1,4 @@
-#!/usr/bin/ruby
+#!/opt/puppetlabs/puppet/bin/ruby
 # Copyright: 2014 Francois Lafont <francois.lafont@ac-versailles.fr>
 
 require 'yaml'
