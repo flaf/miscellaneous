@@ -9,6 +9,10 @@ Puppet::Functions.create_function(:'network::get_matching_network') do
 
     call_function('::network::check_interface', an_interface)
 
+    networks.each do |a_network|
+      call_function('::network::check_network', a_network)
+    end
+
   end
 
 end
