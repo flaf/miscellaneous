@@ -19,4 +19,17 @@ if $::role =~ String[1] {
 
 include '::network::interfaces'
 
+$i = { 'name'   => 'eth0',
+       'method' => 'dhcp',
+     }
+
+$n = [ { 'name'         => 'network-mgt',
+         'cidr-address' => '172.31.0.0/16',
+         'vlan-id'      => 1000,
+       }
+     ]
+
+$s = ::network::get_matching_network($i, $n)
+
+notify { 'Test': message => $s, }
 
