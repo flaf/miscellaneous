@@ -4,7 +4,6 @@ class Interface
 
   def initialize(conf)
 
-    @conf           = conf
     @mandatory_keys = [
                        'name',
                        'method',
@@ -17,6 +16,7 @@ class Interface
                        'comment'      => String,
                        'macaddress'   => String,
                       }
+    @conf           = conf
 
     # Check if the mandatory keys are presents.
     @mandatory_keys.each do |key|
@@ -84,13 +84,14 @@ class Interface
           # Check the address.
           if k == 'address'
             begin
-              ip_address = IPAddr.new(v)
+              @ip_address = IPAddr.new(v)
             rescue ArgumentError
               msg_bad_address = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
                 |The `#{@conf.to_s}` interface is not valid because
-                |the `address` option doesn't contain a valid IP address.
+                |the `address` option doesn't contain a valid IP
+                |address or a CIDR address.
                 EOS
-              raise(Puppet::ParseError, msg_bad_address)
+              raise(Exception, msg_bad_address)
             end
           end
 
