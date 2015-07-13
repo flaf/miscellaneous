@@ -10,6 +10,6 @@ conf = {
 
 iface = Interface.new(conf)
 
-puts iface.instance_variable_get(@name)
+puts iface.instance_variable_get(:@name)
 
 
