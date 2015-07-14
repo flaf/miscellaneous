@@ -54,7 +54,7 @@ class Interface
       end
 
       # Check if each key has no empty value.
-      if key_value.methods.include?(:empty?)
+      if key_value.respond_to?(:empty?)
         if key_value.empty?
           msg_empty_key = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
             |The interface `#{@conf.to_s}` not valid because
@@ -83,6 +83,13 @@ class Interface
 
           # Check the address.
           if k == 'address'
+
+            if v =~ Regexp.new('/[0-9]+$')
+              # This is a CIDR address.
+            else
+              # This is an IP address but not a CIDR address.
+            end
+
             begin
               @ip_address = IPAddr.new(v)
             rescue ArgumentError
@@ -93,6 +100,10 @@ class Interface
                 EOS
               raise(Exception, msg_bad_address)
             end
+          else
+            # The instance variable will always exist
+            # but will be equal to nil if not defined.
+            @ip_address = nil
           end
 
         end # End of the loop on the keys of @conf['options'].
@@ -110,6 +121,17 @@ class Interface
   def is_matching_network(network)
 
     if @conf.has_key?('network-name')
+
+      if @conf['network-name'] == network.instance_variable_get(:@name)
+        if @ip_address.nil?
+          return true
+        else
+          
+        end
+      else
+        return false
+      end
+
     end
 
   end
@@ -142,7 +164,7 @@ class Network
 
     # Check if each value is not empty.
     @conf.each do |k, v|
-      if @conf[k].methods.include?(:empty?)
+      if @conf[k].respond_to?(:empty?)
         if @conf[k].empty?
           msg_empty_key = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
           |The network `#{@conf.to_s}` is not valid

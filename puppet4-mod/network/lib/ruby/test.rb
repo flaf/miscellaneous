@@ -24,11 +24,11 @@ conf2 = {
          'name'         => 'network-mgt',
          'cidr-address' => '172.31.0.0/20',
          'vlan-id'      => 1001,
-         'dns-servers'  => [ 'a' ],
+         'dns-servers'  => [ 'a', 'b' ],
 }
 
 network = Network.new(conf2)
 
 puts JSON.pretty_generate(network.instance_variable_get(:@conf))
-
+puts network.instance_variable_defined?(:@ip_address).to_s
 
