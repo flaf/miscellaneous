@@ -106,6 +106,15 @@ class Interface
 
   end
 
+
+  def is_matching_network(network)
+
+    if @conf.has_key?('network-name')
+    end
+
+  end
+
+
 end
 
 class Network
