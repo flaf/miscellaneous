@@ -57,8 +57,8 @@ class Interface
       if key_value.methods.include?(:empty?)
         if key_value.empty?
           msg_empty_key = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
-            |The `#{@conf.to_s}` interface is not valid
-            |because the value of the key `#{key_name}` is empty.
+            |The interface `#{@conf.to_s}` not valid because
+            |the value of the key `#{key_name}` is empty.
             EOS
           raise(Exception, msg_empty_key)
         end
@@ -74,7 +74,7 @@ class Interface
           unless k.is_a?(String) and v.is_a?(String) and \
                  (not k.empty?) and (not v.empty?)
             msg_options_error = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
-              |The `#{@conf.to_s}` interface is not valid because
+              |The interface `#{@conf.to_s}` is not valid because
               |the hash `options` must be a hash of non empty strings
               |for the keys and the values.
               EOS
@@ -87,7 +87,7 @@ class Interface
               @ip_address = IPAddr.new(v)
             rescue ArgumentError
               msg_bad_address = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
-                |The `#{@conf.to_s}` interface is not valid because
+                |The interface `#{@conf.to_s}` is not valid because
                 |the `address` option doesn't contain a valid IP
                 |address or a CIDR address.
                 EOS
@@ -111,10 +111,59 @@ end
 class Network
 
   def initialize(conf)
-    @conf         = conf
-    @name         = conf['name']
-    @cidr_address = conf['cidr-address']
-    @vlan_id      = conf['vlan-id']
+
+    @mandatory_keys = {
+                       'name'         => String,
+                       'cidr-address' => String,
+                       'vlan-id'      => Integer,
+                      }
+    @conf           = conf
+
+    # Check if each mandatory key is present with the correct type.
+    @mandatory_keys.each do |key_name, key_type|
+      unless @conf.has_key?(key_name) and @conf[key_name].is_a?(key_type)
+        msg_mandatory_keys = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
+        |The network `#{@conf.to_s}` is not valid. The key
+        |`#{key_name}` must exist and its value must have the
+        |`#{key_type.to_s}` type.
+        EOS
+        raise(Exception, msg_mandatory_keys)
+      end
+    end
+
+    # Check if each value is not empty.
+    @conf.each do |k, v|
+      if @conf[k].methods.include?(:empty?)
+        if @conf[k].empty?
+          msg_empty_key = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
+          |The network `#{@conf.to_s}` is not valid
+          |because the value of the key `#{k}` is empty.
+          EOS
+          raise(Exception, msg_empty_key)
+        end
+      end
+    end
+
+    @name         = @conf['name']
+    @cidr_address = @conf['cidr-address']
+    @vlan_id      = @conf['vlan-id']
+
+    msg_bad_address = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
+      |The network `#{@conf.to_s}` is not valid because
+      |the `cidr-address` key doesn't contain a valid CIDR
+      |address.
+      EOS
+
+    unless @cidr_address =~ Regexp.new('/[0-9]+$')
+      raise(Exception, msg_bad_address)
+    end
+
+    begin
+      @ip_address = IPAddr.new(@cidr_address)
+    rescue ArgumentError
+      raise(Exception, msg_bad_address)
+    end
+
   end
 
 end
