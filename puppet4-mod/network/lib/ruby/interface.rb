@@ -84,6 +84,7 @@ class Interface
           # Check the address.
           if k == 'address'
 
+            # TODO: il faut définir @ip_address et @ip_network_address
             if v =~ Regexp.new('/[0-9]+$')
               # This is a CIDR address.
             else
@@ -120,6 +121,7 @@ class Interface
 
   def is_matching_network(network)
 
+    # TODO: tout reste à faire...
     if @conf.has_key?('network-name')
 
       if @conf['network-name'] == network.instance_variable_get(:@name)
