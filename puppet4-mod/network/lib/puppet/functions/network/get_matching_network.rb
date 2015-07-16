@@ -7,7 +7,8 @@ Puppet::Functions.create_function(:'network::get_matching_network') do
 
   def get_matching_network(an_interface, networks)
 
-    require File.expand_path('../../../ruby/interface', __FILE__)
+    script_dir = File.expand_path(File.dirname(__FILE__))
+    require File.expand_path('../../../ruby/interface', script_dir)
 
     call_function('::network::check_interface', an_interface)
 
