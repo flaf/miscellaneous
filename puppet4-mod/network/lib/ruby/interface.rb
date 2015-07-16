@@ -18,6 +18,7 @@ class Interface
                         }
     @conf               = conf
     @has_address_option = false # will be updated (or not) below.
+    @has_cidr_address   = false # will be updated (or not) below.
 
     # Instance variables defined below:
     #
@@ -110,6 +111,7 @@ class Interface
       if address_str =~ Regexp.new('/[0-9]+$')
 
         # This is a CIDR address.
+        @has_cidr_address     = true
         ip_address_str        = address_str.split('/')[0]
         begin
           @ip_address         = IPAddr.new(ip_address_str)
@@ -153,7 +155,7 @@ class Interface
 
     else
 
-      # The instance variables will always exist  but will be equal
+      # The instance variables will always exist but will be equal
       # to nil if not defined.
       @ip_address         = nil
       @ip_network_address = nil
@@ -254,7 +256,13 @@ class Interface
 
 
   # TODO
-  def complete_conf(networks)
+  def fill_conf(networks)
+
+    specific_options = [
+                        'address',
+                        'netmask',
+                        'broadcast',
+                       ]
 
     network = self.get_matching_network(networks)
     new_conf = {}
@@ -263,7 +271,7 @@ class Interface
       if value == '<default>'
         unless network.get_conf.has_key?(key)
           msg_no_key = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
-            |In the interface `#{@conf.to_s}`, impossible to complete
+            |In the interface `#{@conf.to_s}`, impossible to fill
             |the key `#{key}` because it doesn't exist in the matching
             |network `#{network.get_name}`.
             EOS
@@ -300,6 +308,10 @@ class Interface
 
   def has_address_option
     @has_address_option
+  end
+
+  def has_cidr_address
+    @has_cidr_address
   end
 
   def get_ip_address
