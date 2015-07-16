@@ -247,8 +247,41 @@ class Interface
       raise(Exception, msg_no_net)
     else
       # There is only one matching network.
-      return matching_networks[0].get_name
+      return matching_networks[0]
     end
+
+  end
+
+
+  # TODO
+  def complete_conf(networks)
+
+    network = self.get_matching_network(networks)
+    new_conf = {}
+
+    @conf.each do |key, value|
+      if value == '<default>'
+        unless network.get_conf.has_key?(key)
+          msg_no_key = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
+            |In the interface `#{@conf.to_s}`, impossible to complete
+            |the key `#{key}` because it doesn't exist in the matching
+            |network `#{network.get_name}`.
+            EOS
+          raise(Exception, msg_no_key)
+        end
+        new_conf[key] = network.get_conf[key]
+      elsif value.is_a?(String)
+        new_conf[key] = value
+      elsif value.is_?(Hash)
+        # Normally, it's the key `options` and the keys and values are strings.
+        new_conf[key] = {}
+        
+      else
+
+      end
+    end
+
+    return new_conf
 
   end
 
