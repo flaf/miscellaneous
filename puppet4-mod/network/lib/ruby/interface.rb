@@ -2,20 +2,33 @@ require 'ipaddr'
 
 class Interface
 
+  # Warning, after creation, the state of an Interface object shouldn't
+  # be modified. The implementation of this class doesn't support the
+  # change of the state of an object.
+  attr_reader :conf
+  attr_reader :name
+  attr_reader :method
+  attr_reader :has_address_option
+  attr_reader :has_cidr_address
+  attr_reader :ip_address
+  attr_reader :ip_netmask
+  attr_reader :ip_network
+  attr_reader :ip_broadcast
+
   def initialize(conf)
 
-    @mandatory_keys   = [
-                         'name',
-                         'method',
-                        ]
-    @allowed_keys     = {
-                         'name'         => String,
-                         'method'       => String,
-                         'options'      => Hash,
-                         'network-name' => String,
-                         'comment'      => String,
-                         'macaddress'   => String,
-                        }
+    @mandatory_keys     = [ 'name',
+                            'method',
+                            'family',
+                          ]
+    @allowed_keys       = { @mandatory_keys[0] => String,
+                            @mandatory_keys[1] => String,
+                            @mandatory_keys[2] => String,
+                            'options'          => Hash,
+                            'network-name'     => String,
+                            'comment'          => String,
+                            'macaddress'       => String,
+                          }
     @conf               = conf
     @has_address_option = false # will be updated (or not) below.
     @has_cidr_address   = false # will be updated (or not) below.
@@ -293,34 +306,6 @@ class Interface
 
   end
 
-
-  def get_conf
-    @conf
-  end
-
-  def get_name
-    @name
-  end
-
-  def get_method
-    @method
-  end
-
-  def has_address_option
-    @has_address_option
-  end
-
-  def has_cidr_address
-    @has_cidr_address
-  end
-
-  def get_ip_address
-    @ip_address
-  end
-
-  def get_ip_network_address
-   @ip_network_address
-  end
 
 end
 
