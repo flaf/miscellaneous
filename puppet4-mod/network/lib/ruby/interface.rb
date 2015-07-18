@@ -311,6 +311,18 @@ end
 
 
 
+class Address_family
+
+  attr_reader :type
+  attr_reader :method
+  attr_reader :options
+
+  def initialize(type, method, options)
+  end
+
+end
+
+
 
 class Network
 
