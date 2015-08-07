@@ -17,7 +17,7 @@ if $::role =~ String[1] {
     |- END
 }
 
-include '::network::interfaces'
+#include '::network::interfaces'
 
 $i = { 'name'   => 'eth0',
        'method' => 'dhcp',
@@ -29,7 +29,7 @@ $n = [ { 'name'         => 'network-mgt',
        }
      ]
 
-$s = ::network::get_matching_network($i, $n)
+#$s = ::network::get_matching_network($i, $n)
 
 notify { 'Test': message => $s, }
 
