@@ -31,5 +31,25 @@ $n = [ { 'name'         => 'network-mgt',
 
 #$s = ::network::get_matching_network($i, $n)
 
-notify { 'Test': message => $s, }
+
+$dtc                = 'vty'
+$inventory_networks = hiera('inventory_networks')
+$ipv4_networks      = $::inventory_networks['ipv4']
+$ipv6_networks      = $::inventory_networks['ipv6']
+$network_conf       = hiera('network')
+$interfaces_conf    = $::network_conf
+
+notify { 'Test': message => "---${::interfaces_conf}---", }
+
+
+#$a = $inventory_networks['ipv6']
+#
+#if is_hash($a) {
+#  notify { 'Test_hash': message => "Is it a hash? Yes!", }
+#} else {
+#  notify { 'Test_hash': message => "Is it a hash? No!", }
+#}
+
+
+
 
