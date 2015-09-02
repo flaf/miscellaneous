@@ -51,5 +51,7 @@ notify { 'Test': message => "---${::interfaces_conf}---", }
 #}
 
 
+$v = lookup('titi')
 
+notify { 'Test-lookup': message => "---${v}---", }
 

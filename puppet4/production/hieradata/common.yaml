@@ -29,5 +29,10 @@ network:
           truc: '__default__'
 
 
+#network::interfaces::interfaces:
+#  ethHIERA:
+#    method: 'dhcp'
 
+
+#azerty: 'azerty'
 

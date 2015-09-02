@@ -5,6 +5,7 @@ class role_generic {
   include '::keyboard'
   include '::locale'
   include '::timezone'
+  include '::network::interfaces'
 
 }
 
