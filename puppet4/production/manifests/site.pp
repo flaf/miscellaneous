@@ -39,7 +39,7 @@ $ipv6_networks      = $::inventory_networks['ipv6']
 $network_conf       = hiera('network')
 $interfaces_conf    = $::network_conf
 
-notify { 'Test': message => "---${::interfaces_conf}---", }
+#notify { 'Test': message => "---${::interfaces_conf}---", }
 
 
 #$a = $inventory_networks['ipv6']
@@ -51,7 +51,18 @@ notify { 'Test': message => "---${::interfaces_conf}---", }
 #}
 
 
-$v = lookup('titi')
+#$v = lookup('titi')
 
-notify { 'Test-lookup': message => "---${v}---", }
+#notify { 'Test-lookup': message => "---${v}---", }
+
+$a = { 'a' => 1, 'b' => 2, 'd' => 'zut' }
+$b = { 'a' => 777, 'b' => 888 }
+$c = { 'a' => 'hihi', 'c' => 'pouet', }
+
+$r = reduce([$a, $b, $c]) |$m, $e| { $m + $e }
+notify { 'hash-sum': message => "---${r}---", }
+
+
+#$f = ::network::test('zzzzzzzzzz')
+#notify { 'function': message => "---${f}---", }
 

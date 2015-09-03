@@ -1,6 +1,6 @@
 function network::data {
 
-  $v = lookup('azertyhfdhfjkdh');
+  #$v = lookup('azertyhfdhfjkdh');
   #$v = lookup('network::interfaces::restart_network');
 
   {
