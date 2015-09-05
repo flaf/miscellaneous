@@ -36,3 +36,7 @@ network:
 
 #azerty: 'azerty'
 
+key1: [ 'aa%{::datacenter}a',
+        'bbb',
+      ]
+

@@ -60,9 +60,18 @@ $b = { 'a' => 777, 'b' => 888 }
 $c = { 'a' => 'hihi', 'c' => 'pouet', }
 
 $r = reduce([$a, $b, $c]) |$m, $e| { $m + $e }
-notify { 'hash-sum': message => "---${r}---", }
+#notify { 'hash-sum': message => "---${r}---", }
 
 
 #$f = ::network::test('zzzzzzzzzz')
 #notify { 'function': message => "---${f}---", }
+
+
+#notify { 'function': message => "---${::datacenter}---", }
+
+
+$v = hiera('key1')
+$e = $v[0]
+
+notify { 'function': message => "---${e}---", }
 
