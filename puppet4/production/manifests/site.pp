@@ -18,6 +18,7 @@ if $::role =~ String[1] {
 }
 
 
+
 #include '::network::interfaces'
 
 #$i = { 'name'   => 'eth0',

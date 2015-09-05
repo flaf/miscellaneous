@@ -15,7 +15,9 @@ Here is some examples:
 class { '::network':
   interfaces => {
     eth0 => {
-      method => 'dhcp',
+      inet => {
+        method => 'dhcp',
+      },
     },
   },
 }
