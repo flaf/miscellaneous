@@ -15,10 +15,10 @@ class network::interfaces (
   # recommended to remove "resolvconf" in Trusty (if you do
   # that, you will remove the "ubuntu-minimal" package that
   # is not recommended).
-  $packages = [
-               'resolvconf', # (*)
-               'vlan',       # To have vlan features.
-               'ifenslave',  # To have bonding features.
+  $packages = [ 'resolvconf',   # (*)
+                'vlan',         # To have the vlan feature.
+                'ifenslave',    # To have the bonding feature.
+                'bridge-utils', # To have the bridge feature.
               ]
   ensure_packages($packages, { ensure => present, })
 
@@ -28,7 +28,7 @@ class network::interfaces (
 
     if [ -f '/etc/network/interfaces.puppet' ]
     then
-      cat '/etc/network/interfaces.puppet' > '/etc/network/interfaces'
+      cat '/etc/network/interfaces.puppet' >'/etc/network/interfaces'
     fi
 
     # Refresh the names of interfaces.
@@ -47,9 +47,8 @@ class network::interfaces (
     owner   => 'root',
     group   => 'root',
     mode    => '0600',
-    content => epp(
-                   'network/interfaces.puppet.epp',
-                   { 'interfaces' => $interfaces }
+    content => epp( 'network/interfaces.puppet.epp',
+                    { 'interfaces' => $interfaces }
                   ),
   }
 

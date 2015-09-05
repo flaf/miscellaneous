@@ -57,16 +57,21 @@ The `restart` parameter is a boolean. If the value
 is `true`, then the network will be restarted after
 an update of the network configuration.
 
-In the `interfaces` parameter, you can put a `inet`
-and/or a `inet6` configuration (`inet` for IPv4 and
-`inet6` for IPv6). For each interface, the keys:
+In the `interfaces` parameter, for each interface,
+you can put:
 
-* `macaddress`,
-* `comment`
+* a `inet` configuration (for IPv4)
+* and/or a `inet6` configuration (for IPv6),
+* a `macaddress` key (optional),
+* a `comment` key (optional),
 
-are optional. The `options` key can be optional
-in some cases (for instance when the interface
-is configured with the `dhcp` method).
+At least a `inet` or a `inet6` hash must exist
+in each interface. In each `inet` or `inet6` hash:
+
+* the `method` key is mandatory
+* and the `options` key can be optional in some cases
+(for instance when the interface is configured with
+the `dhcp` method).
 
 If the `macaddress` key is provided, then the value
 of this key will be put as comment in the file

@@ -17,27 +17,28 @@ if $::role =~ String[1] {
     |- END
 }
 
+
 #include '::network::interfaces'
 
-$i = { 'name'   => 'eth0',
-       'method' => 'dhcp',
-     }
-
-$n = [ { 'name'         => 'network-mgt',
-         'cidr-address' => '172.31.0.0/16',
-         'vlan-id'      => 1000,
-       }
-     ]
+#$i = { 'name'   => 'eth0',
+#       'method' => 'dhcp',
+#     }
+#
+#$n = [ { 'name'         => 'network-mgt',
+#         'cidr-address' => '172.31.0.0/16',
+#         'vlan-id'      => 1000,
+#       }
+#     ]
 
 #$s = ::network::get_matching_network($i, $n)
 
 
-$dtc                = 'vty'
-$inventory_networks = hiera('inventory_networks')
-$ipv4_networks      = $::inventory_networks['ipv4']
-$ipv6_networks      = $::inventory_networks['ipv6']
-$network_conf       = hiera('network')
-$interfaces_conf    = $::network_conf
+#$dtc                = 'vty'
+#$inventory_networks = hiera('inventory_networks')
+#$ipv4_networks      = $::inventory_networks['ipv4']
+#$ipv6_networks      = $::inventory_networks['ipv6']
+#$network_conf       = hiera('network')
+#$interfaces_conf    = $::network_conf
 
 #notify { 'Test': message => "---${::interfaces_conf}---", }
 
@@ -55,11 +56,11 @@ $interfaces_conf    = $::network_conf
 
 #notify { 'Test-lookup': message => "---${v}---", }
 
-$a = { 'a' => 1, 'b' => 2, 'd' => 'zut' }
-$b = { 'a' => 777, 'b' => 888 }
-$c = { 'a' => 'hihi', 'c' => 'pouet', }
+#$a = { 'a' => 1, 'b' => 2, 'd' => 'zut' }
+#$b = { 'a' => 777, 'b' => 888 }
+#$c = { 'a' => 'hihi', 'c' => 'pouet', }
 
-$r = reduce([$a, $b, $c]) |$m, $e| { $m + $e }
+#$r = reduce([$a, $b, $c]) |$m, $e| { $m + $e }
 #notify { 'hash-sum': message => "---${r}---", }
 
 
@@ -70,8 +71,8 @@ $r = reduce([$a, $b, $c]) |$m, $e| { $m + $e }
 #notify { 'function': message => "---${::datacenter}---", }
 
 
-$v = hiera('key1')
-$e = $v[0]
+#$v = hiera('key1')
+#$e = $v[0]
 
-notify { 'function': message => "---${e}---", }
+#notify { 'function': message => "---${e}---", }
 
