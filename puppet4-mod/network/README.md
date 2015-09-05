@@ -64,16 +64,23 @@ you can put:
 
 * a `inet` configuration (for IPv4)
 * and/or a `inet6` configuration (for IPv6),
-* a `macaddress` key (optional),
-* a `comment` key (optional),
+* a `macaddress` key mapped to a non-empty string (optional),
+* a `comment` key mapped to a non-empty array of
+non-empty strings (optional),
 
-At least a `inet` or a `inet6` hash must exist
-in each interface. In each `inet` or `inet6` hash:
+In each interface, at least a `inet` key or a `inet6`
+key must exist and the mapped value must be a hash.
+In each `inet` and `inet6` hash, you can put:
 
-* the `method` key is mandatory
-* and the `options` key can be optional in some cases
+* a `method` key which is mandatory,
+* and a `options` key which is syntactically optional
+but, in some cases, if you want to have a functional
+network configuration this key will be required
 (for instance when the interface is configured with
-the `dhcp` method).
+the `static` method like above, you must provide the
+`options` key). If present, the `options` key must
+be a hash of non-empty strings for the keys and the
+values.
 
 If the `macaddress` key is provided, then the value
 of this key will be put as comment in the file
@@ -106,8 +113,9 @@ found in hiera or in the environment (via the
 values are provided. For these keys, the lookup
 uses a hash-merging.
 
-In yaml format, the `inventory_networks` has this
-form:
+In yaml format (but the format could be a puppet code too
+for instance in the `environment::data()` function), the
+`inventory_networks` has this form:
 
 ```yaml
 inventory_networks:
@@ -141,10 +149,10 @@ represents the name of the IP network (ie `admin_mgt` and
 as the `vlan_name` value but not always (for instance in the
 same VLAN you can have a IPv4 and IPv6 networks).
 
-The value of this `interfaces` key must be a hash with
+The value of the `interfaces` key must be a hash with
 the same form as the `interfaces` parameter of the `::network`
-class but you can add the optional `in_networks` key and put
-`__default__` values like this:
+class described above exceptt you can add the optional
+`in_networks` key and put `__default__` values like this:
 
 ```yaml
 interfaces:
@@ -174,22 +182,24 @@ interfaces:
 ```
 
 The `in_networks` key is optional for a given interface
-but must be present if you use at least one `__default__`
+which must be a non-empty array of non-empty strings. This
+key must be present if you use at least one `__default__`
 value for this interface. In this case, the `__default__`
-will replaced by the relevant value in the
-`inventory_networks` hash (the first network provided in
-the array `in_networks` will be used). To be more precise,
-with `xxx: '__default__'`, the value will be replaced by
-the value of `xxx` in the `inventory_networks` hash,
-except if `xxx` is `network`, `netmask` or `broadcast`
-where the `cidr_address` of the `inventory_networks` hash
-will be used to deduce the right value.
+value will replaced by the relevant value in the
+`inventory_networks` hash. The **first** network provided in
+the array `in_networks` will be used. To be more precise,
+with `xxx: '__default__'`, the value will be replaced by the
+value of `xxx` in the `inventory_networks` hash, except if
+`xxx` is `network`, `netmask` or `broadcast` where the
+`cidr_address` of the `inventory_networks` hash will be used
+to deduce the right value.
 
 The `comment` key is a little special. The final value will
 not be the value in the `interfaces` key. The `comment`
-values will be concatenate between the `inventory_networks`
-key and the `interfaces` key (if no comment are give in
-the `interfaces` key just the comment in the
+values will be the result of the lines concatenation between
+the `comment` value in the `inventory_networks` and the
+`comment` value in the `interfaces` (if no comment are given
+in the `interfaces` just the comment in the
 `inventory_networks` key will be used).
 
 In addition of the 2 yaml examples above, if you add too
@@ -202,7 +212,7 @@ network::restart: true
 
 then you will have a call completely equivalent to the
 call of the class given in the "complex" example in the
-"usage" part with just this:
+"usage" part above with just this line:
 
 ```puppet
 include '::network'

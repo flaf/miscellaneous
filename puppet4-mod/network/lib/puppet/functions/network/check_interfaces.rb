@@ -1,18 +1,17 @@
 Puppet::Functions.create_function(:'network::check_interfaces') do
 
-  # Check the form of the interfaces parameter as described
-  # in the documentation of this module.
+  # Check the structure of the interfaces parameter
+  # as described in the documentation of this module.
   dispatch :check_interfaces do
     required_param 'Hash[String[1], Hash[String[1], Data, 1], 1]', :interfaces
   end
 
   def check_interfaces(interfaces)
-    return true
 
     function_name = 'check_interfaces'
 
     # Allowed keys for a give interface.
-    allowed_keys = [ 'on_networks',
+    allowed_keys = [ 'on_networks', # allowed for the `interfaces` key.
                      'macaddress',
                      'comment',
                      'inet',
@@ -40,12 +39,12 @@ Puppet::Functions.create_function(:'network::check_interfaces') do
         msg_options_error = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
           |#{function_name}(): the `#{ifname}` interface is not valid
           |because its hash value has neither the `inet` key nor the
-          |`inet6` key (at least one of them are required).
+          |`inet6` key (at least one of them is required).
           EOS
         raise(Puppet::ParseError, msg_options_error)
       end
 
-      # Each param must be an allowed key.
+      # Each param in settings must be an allowed key.
       settings.each do |param, value|
         unless allowed_keys.include?(param)
           msg_options_error = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
@@ -57,55 +56,66 @@ Puppet::Functions.create_function(:'network::check_interfaces') do
         end
       end
 
-      # The "on_networks" key must be mapped to a non empty array of non
-      # empty strings. It's the same for the "comment" key.
+      # The "on_networks" key must be mapped to a non-empty array of
+      # non-empty strings. It's the same for the "comment" key.
       [ 'on_networks', 'comment' ].each do |e|
         if settings.has_key?(e)
           unless call_function("::homemade::is_clean_arrayofstr", e)
             msg_options_error = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
               |#{function_name}(): the `#{ifname}` interface is not valid
               |because its hash value has the `#{e}` key which is
-              |not mapped to a non emtpy array of non empty strings.
+              |not mapped to a non-emtpy array of non-empty strings.
               EOS
             raise(Puppet::ParseError, msg_options_error)
           end
         end
       end
 
-      # The "macaddress" key must be mapped to a non empty string.
+      # The "macaddress" key must be mapped to a non-empty string.
       if settings.has_key?('macaddress')
         unless settings('macaddress').is_a?(String) and \
                not settings('macaddress').empty?
           msg_options_error = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
             |#{function_name}(): the `#{ifname}` interface is not valid
             |because its hash value has the `macaddress` key which is
-            |not mapped to a non emtpy string.
+            |not mapped to a non-emtpy string.
             EOS
           raise(Puppet::ParseError, msg_options_error)
         end
       end
 
       # The "inet" and "inet6" keys must be mapped to a hash
-      # with the "method" key at least.
+      # where the "method" key is mandatory and the "options"
+      # key is optional..
       [ 'inet', 'inet6' ].each do |family|
         if settings.has_key?(family)
-          unless settings[family].is_a?(Hash) and             \
-                 settings[family].has_key?('method') and      \
+          unless settings[family].is_a?(Hash)             and \
+                 settings[family].has_key?('method')      and \
                  settings[family]['method'].is_a?(String) and \
                  not settings[family]['method'].empty?
             msg_options_error = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
               |#{function_name}(): the `#{ifname}` interface is not valid
               |because its `#{family}` configuration is not a hash with
-              |the `method` key (as a non empty string).
+              |the `method` key (as a non-empty string).
               EOS
             raise(Puppet::ParseError, msg_options_error)
           end
-          if settings[family].has_key?('options') and
+          settings[family].each do |k, v|
+            unless inet_allowed_keys.include?(k)
+              msg_options_error = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
+                |#{function_name}(): the `#{ifname}` interface is not valid
+                |because in its `#{family}` configuration the key `#{k}`
+                |in not a allowed key.
+                EOS
+              raise(Puppet::ParseError, msg_options_error)
+            end
+          end
+          if settings[family].has_key?('options') and \
             unless call_function("::homemade::is_clean_hashofstr", settings[family]['options'])
               msg_options_error = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
                 |#{function_name}(): the `#{ifname}` interface is not valid
                 |because `options` in its `#{family}` configuration is not
-                |a non empty hash of non empty strings.
+                |a non-empty hash of non-empty strings.
                 EOS
               raise(Puppet::ParseError, msg_options_error)
             end
@@ -113,7 +123,7 @@ Puppet::Functions.create_function(:'network::check_interfaces') do
         end
       end
 
-    end # End of loop.
+    end # End of loop on interfaces.
 
   end # End of the function..
 
