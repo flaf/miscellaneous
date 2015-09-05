@@ -185,16 +185,21 @@ key and the `interfaces` key (if no comment are give in
 the `interfaces` key just the comment in the
 `inventory_networks` key will be used).
 
-If you add this entry in hiera:
+In addition of the 2 yaml examples above, if you add too
+this entry in hiera:
 
 ```yaml
 # Not recommended.
 network::restart: true
 ```
 
-then you will have a completely equivalent call of
-the class given in the "complex" example above (in
-the "usage" part) with just `include '::network'`.
+then you will have a call completely equivalent to the
+call of the class given in the "complex" example in the
+"usage" part with just this:
+
+```puppet
+include '::network'
+```
 
 
 
