@@ -33,15 +33,17 @@ Puppet::Functions.create_function(:'network::dump_cidr') do
     # Now, we are sure that the cidr_str variable
     # is a valid CIDR address.
 
-    # For the netmask address, I have no way except to
-    # handle 2 cases: the address is an IPv4 address or
-    # an IPv6 address.
+    # TODO: For the netmask address, I have found no way except
+    # to handle 2 cases: the address is an IPv4 address or an
+    # IPv6 address.
     if ip_addr.ipv4?
-      netmask_addr = IPAddr.new('0.0.0.0').~().mask(mask_num_str)
+      zero_addr = '0.0.0.0'
     else
       # It's a IPv6 adddress.
-      netmask_addr = IPAddr.new('::').~().mask(mask_num_str)
+      # TODO: maybe add a `.ipv6?` test.
+      zero_addr = '::'
     end
+    netmask_address = IPAddr.new(zero_addr).~().mask(mask_num)
 
     { 'address'        => ip_addr.to_s,
       'network'        => network_addr.to_s,

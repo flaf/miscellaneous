@@ -23,11 +23,13 @@ Puppet::Functions.create_function(:'network::dump_cidr_address') do
     # handle 2 cases: the address is an IPv4 address or
     # an IPv6 address.
     if ip_address.ipv4?
-      netmask_address = IPAddr.new('0.0.0.0').~().mask(mask_num)
+      zero_addr = '0.0.0.0'
     else
       # It's a IPv6 adddress.
-      netmask_address = IPAddr.new('::').~().mask(mask_num)
+      # TODO: maybe add a `.ipv6?` test.
+      zero_addr = '::'
     end
+    netmask_address = IPAddr.new(zero_addr).~().mask(mask_num)
 
     {
       'ip_address'        => ip_address.to_s,
