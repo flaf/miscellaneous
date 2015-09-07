@@ -150,9 +150,10 @@ as the `vlan_name` value but not always (for instance in the
 same VLAN you can have a IPv4 and IPv6 networks).
 
 The value of the `interfaces` key must be a hash with
-the same form as the `interfaces` parameter of the `::network`
-class described above exceptt you can add the optional
-`in_networks` key and put `__default__` values like this:
+the same structure as the `interfaces` parameter of the
+`::network` class described above except you can add the
+optional `in_networks` key and put the `__default__`
+value in the `options` hash like this:
 
 ```yaml
 interfaces:
@@ -184,15 +185,18 @@ interfaces:
 The `in_networks` key is optional for a given interface
 which must be a non-empty array of non-empty strings. This
 key must be present if you use at least one `__default__`
-value for this interface. In this case, the `__default__`
-value will replaced by the relevant value in the
-`inventory_networks` hash. The **first** network provided in
-the array `in_networks` will be used. To be more precise,
-with `xxx: '__default__'`, the value will be replaced by the
-value of `xxx` in the `inventory_networks` hash, except if
-`xxx` is `network`, `netmask` or `broadcast` where the
-`cidr_address` of the `inventory_networks` hash will be used
-to deduce the right value.
+value for this interface in the `options` hash. In this case,
+the `__default__` value will replaced by the relevant value
+in the `inventory_networks` hash. The **first** network
+provided in the array `in_networks` will be used. To be more
+precise, with `xxx: '__default__'`, the value will be
+replaced by the value of `xxx` in the `inventory_networks`
+hash, except if `xxx` is `network`, `netmask` or `broadcast`
+where the `cidr_address` of the `inventory_networks` hash
+will be used to deduce the right value.
+
+**Remark:** the `__default__` value is interpreted and
+replaced **only when present in the `options` hash**.
 
 The `comment` key is a little special. The final value will
 not be the value in the `interfaces` key. The `comment`
