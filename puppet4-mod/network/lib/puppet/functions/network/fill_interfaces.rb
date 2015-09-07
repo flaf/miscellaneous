@@ -34,16 +34,16 @@ Puppet::Functions.create_function(:'network::fill_interfaces') do
 
   def fill_interfaces(interfaces, inventory_networks)
 
-    call_function("::network::check_interfaces", interfaces)
-    #call_function("::network::fill_interfaces", interfaces)   # TODO
     function_name   = 'fill_interfaces'
-    ifaces_new      = {}
+
+    call_function('::network::check_interfaces', interfaces)
+    #call_function('::network::fill_interfaces', interfaces)   # TODO
+    ifaces_new      = call_function('::homemade::deep_dup', interfaces)
     default_str     = '__default__'
     default_network = nil
+    iface_networks  = nil
 
-    interfaces.each do |ifname, settings|
-
-      ifaces_new[ifname] = {}
+    ifaces_new.each do |ifname, settings|
 
       if settings.has_key?('in_networks')
 
@@ -65,31 +65,49 @@ Puppet::Functions.create_function(:'network::fill_interfaces') do
         iface_networks  = settings['in_networks']
         default_network = iface_networks[0]
 
-        # We add the in_networks key.
-        ifaces_new[ifname]['in_networks'] = iface_networks
-
-      end
-
-      # We add the macaddress key if it exists.
-      if settings.has_key?('macaddress')
-        ifaces_new[ifname]['macaddress'] = settings['macaddress']
       end
 
       # Handle of the comment key.
-      if settings.has_key?('comment')
-        interface_comment = settings['comment']
-      else
-        interface_comment = []
-      end
-      if default_network.nil?
-        # No information about the networks of the current interface.
-        final_comment = interface_comment
-      else
+      final_comment = []
+      if not default_network.nil?
         # We build a comment from each network in iface_networks.
-        
+        final_comment += [ 'Interface in the network(s):' ]
+        iface_networks.each do |netname|
+          comment      = inventory_networks[netname]['comment']
+          vlan_name    = inventory_networks[netname]['vlan_name']
+          vlan_id      = inventory_networks[netname]['vlan_id']
+          cidr_address = inventory_networks[netname]['cidr_address']
+          final_comment += [ "* #{netname} => vlan_name=#{vlan_name}, " \
+                           "vlan_id=#{vlan_id}, cidr_address=#{cidr_address}" ]
+          final_comment += comment.map { |line| '  ' + line }
+        end
+      end
+      # We add the comment specific to the interface.
+      if settings.has_key?('comment')
+        final_comment += [ '' ] settings['comment']
+      end
+      # Update the comment.
+      settings['comment'] = final_comment
+
+      [ 'inet', 'inet6' ].each do |family|
+        if not settings.has_key?(family) then next end
+        if not settings[family].has_key?('options') then next end
+        settings[family]['options'].each do |param, value|
+          if value != default_str then next end
+          if [ 'network', 'netmask', 'broadcast' ].include?(param)
+            cidr      = inventory_network[default_network]['cidr_address']
+            # TODO: what if the cidr is wrong. Catch the error?
+            dump_cidr = call_function('::network::dump_cidr', cidr)
+            settings[family]['options'][param] = dump_cidr[param]
+          end
+            # TODO: test if param key exists in the default network.
+            settings[family]['options'][param] = inventory_network[default_network][param]
+        end
       end
 
-    end
+    end # Loop on each interface.
+
+    ifaces_new
 
   end
 

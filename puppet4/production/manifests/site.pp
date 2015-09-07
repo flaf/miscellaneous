@@ -17,16 +17,52 @@ if $::role =~ String[1] {
     |- END
 }
 
-$i = {
+class { '::network':
+  restart    => true, # Not recommended.
+  interfaces => {
     eth0 => {
-      inet => {
-        method => 'dhcp',
+      macaddress => '00:1c:cf:50:0b:51',
+      comment    => [ 'This is the MySQL interface.' ],
+      inet       =>  {
+        method  => 'static',
+        options => {
+          address   => '192.168.1.123',
+          network   => '192.168.1.0',
+          netmask   => '255.255.255.0',
+          broadcast => '192.168.1.255',
       },
     },
-  }
+    eth1 => {
+      macaddress => '00:1c:cf:50:0b:52',
+      comment    => [ 'This is the management interface.' ],
+      inet       =>  {
+        method  => 'static',
+        options => {
+          address   => '172.31.0.123',
+          network   => '172.31.0.0',
+          netmask   => '255.255.0.0',
+          broadcast => '172.31.255.255',
+          gateway   => '172.31.0.1',
+      },
+    },
+  },
+}
 
-$r = ::network::fill_interfaces($i, $i)
-notify { 'Test': message => "$r" }
+
+#$i = {
+#    eth0 => {
+#      inet => {
+#        method => 'dhcp',
+#        'r'    => 'eeee',
+#      },
+#    },
+#  }
+
+#$r = ::network::fill_interfaces($i, $i)
+
+#$r = ::homemade::deep_dup($i)
+
+#notify { 'Test': message => "$r" }
 
 #$cidr = '192.168.3.4/255.240.0.0'
 #$cidr = '2607:f0d0:1002:51::4/ffff:ffff:ffff:ffff::'

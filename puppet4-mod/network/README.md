@@ -36,6 +36,7 @@ class { '::network':
           network   => '192.168.1.0',
           netmask   => '255.255.255.0',
           broadcast => '192.168.1.255',
+        },
       },
     },
     eth1 => {
@@ -49,6 +50,7 @@ class { '::network':
           netmask   => '255.255.0.0',
           broadcast => '172.31.255.255',
           gateway   => '172.31.0.1',
+        },
       },
     },
   },
