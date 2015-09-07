@@ -18,6 +18,11 @@ if $::role =~ String[1] {
 }
 
 
+#$cidr = '192.168.3.4/255.240.0.0'
+$cidr = '2607:f0d0:1002:51::4/ffff:ffff:ffff:ffff::'
+$dump = ::network::dump_cidr($cidr)
+notify { 'Test': message => $dump }
+
 
 #include '::network::interfaces'
 
