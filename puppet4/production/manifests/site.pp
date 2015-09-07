@@ -17,6 +17,16 @@ if $::role =~ String[1] {
     |- END
 }
 
+$i = {
+    eth0 => {
+      inet => {
+        method => 'dhcp',
+      },
+    },
+  }
+
+$r = ::network::fill_interfaces($i, $i)
+notify { 'Test': message => "$r" }
 
 #$cidr = '192.168.3.4/255.240.0.0'
 #$cidr = '2607:f0d0:1002:51::4/ffff:ffff:ffff:ffff::'
