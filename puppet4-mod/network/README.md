@@ -202,9 +202,11 @@ The `comment` key is a little special. The final value will
 not be the value in the `interfaces` key. The `comment`
 values will be the result of the lines concatenation between
 the `comment` value in the `inventory_networks` and the
-`comment` value in the `interfaces` (if no comment are given
-in the `interfaces` just the comment in the
-`inventory_networks` key will be used).
+`comment` value in the `interfaces`. If no comment are given
+in a interface, just the comment in the `inventory_networks`
+key will be used (if this interface has the `on_networks`
+key of course). If the interface has no `on_networks` key,
+just the comment of the interface will be inserted.
 
 In addition of the 2 yaml examples above, if you add too
 this entry in hiera:
