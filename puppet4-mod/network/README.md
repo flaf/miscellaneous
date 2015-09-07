@@ -221,3 +221,34 @@ include '::network'
 
 
 
+# The `::network::dump_cidr` function
+
+Here is an example:
+
+```puppet
+$dump = ::network::dump_cidr('172.31.3.4/20')
+
+# Or (completely equivalent):
+$dump = ::network::dump_cidr('172.31.3.4/255.255.240.0')
+
+# After this 2 equivalent calls of the function,
+# the value of the $dump variable will be:
+{ address     => '172.31.3.4',
+  network     => '172.31.0.0',
+  broadcast   => '172.31.15.255',
+  netmask     => '255.255.240.0',
+  cidr        => '172.31.3.4/20',
+  netmask_num => '20',
+}
+```
+
+If the argument of the function is not a valid CIDR
+address, the function will raise a `ParseError` exception.
+
+**Remark:** you can use IPv6 addresses too with this function.
+
+
+
+
+
+
