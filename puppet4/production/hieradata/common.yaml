@@ -2,41 +2,22 @@
 basic_ssh::server::permitrootlogin: 'yes'
 
 inventory_networks:
-  ipv4:
-    vty_admin:
-      vlan_id: '1000'
-      vlan_name: 'vty-admin'
-      comment: [ 'blibli blibli' ]
-      network: '172.31.0.0'
-      netmask: '255.255.0.0'
-      broadcast: '172.31.255.255'
-      gateway: '172.31.0.1'
-  ipv6: {}
+  admin_mgt:
+    comment:
+      - 'Network dedicated to management.'
+      - 'Blaba blabla blabla'
+      - 'Blaba blabla blabla'
+      - 'Blaba blabla blabla'
+    vlan_id: '1000'
+    vlan_name: 'admin_mgt'
+    cidr_address: '172.31.0.0/16'
+    gateway: '172.31.0.1'
+    dns: [ '172.31.10.1', '172.31.10.2' ]
+    ntp: [ '172.31.11.1', '172.31.11.2', '172.31.11.3' ]
+  mysql:
+    comment: [ 'Network dedicated to MySQL.' ]
+    vlan_id: '1001'
+    vlan_name: 'mysql'
+    cidr_address: '192.168.1.0/24'
 
-network:
-  interfaces:
-    eth0:
-      networks: [ 'vty-admin' ]
-      comment: [ 'blabla blabla...' ]
-      inet:
-        method: 'static'
-        option:
-          address: '172.31.2.3'
-          netmask: '%{::ipv4_networks.vty_admin.netmask}'
-          network: '%{::ipv4_networks.vty_admin.network}'
-          broadcast: '%{::ipv4_networks.vty_admin.broadcast}'
-          gateway: '%{::ipv4_networks.vty_admin.gateway}'
-          truc: '__default__'
-
-
-#network::interfaces::interfaces:
-#  ethHIERA:
-#    method: 'dhcp'
-
-
-#azerty: 'azerty'
-
-key1: [ 'aa%{::datacenter}a',
-        'bbb',
-      ]
 

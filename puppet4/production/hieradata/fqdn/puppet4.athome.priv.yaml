@@ -2,6 +2,29 @@
 enc_role: '::role_generic'
 enc_datacenter: 'vty'
 
-
+interfaces:
+  eth0:
+    in_networks: [ 'mysql' ]
+    macaddress: '00:1c:cf:50:0b:51'
+    comment: [ 'This is the MySQL interface.' ]
+    inet:
+      method: 'static'
+      options:
+        address: '192.168.1.123'
+        network: '__default__'
+        netmask: '__default__'
+        broadcast: '__default__'
+  eth1:
+    #in_networks: [ 'admin_mgt', 'mysql' ]
+    macaddress: '00:1c:cf:50:0b:52'
+    comment: [ 'This is the management interface.' ]
+    inet:
+      method: 'static'
+      options:
+        address: '172.31.0.123'
+        network: '__default__'
+        netmask: '__default__'
+        broadcast: '__default__'
+        gateway: '__default__'
 
 

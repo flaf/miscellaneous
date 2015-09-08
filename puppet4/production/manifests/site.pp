@@ -18,39 +18,40 @@ if $::role =~ String[1] {
 }
 
 
+include '::network'
 
-class { '::network':
-  restart    => true, # Not recommended.
-  interfaces => {
-    eth0 => {
-      macaddress => '00:1c:cf:50:0b:51',
-      comment    => [ 'This is the MySQL interface.' ],
-      inet       =>  {
-        method  => 'static',
-        options => {
-          address   => '192.168.1.123',
-          network   => '192.168.1.0',
-          netmask   => '255.255.255.0',
-          broadcast => '192.168.1.255',
-        },
-      },
-    },
-    eth1 => {
-      macaddress => '00:1c:cf:50:0b:52',
-      comment    => [ 'This is the management interface.' ],
-      inet       =>  {
-        method  => 'static',
-        options => {
-          address   => '172.31.0.123',
-          network   => '172.31.0.0',
-          netmask   => '255.255.0.0',
-          broadcast => '172.31.255.255',
-          gateway   => '172.31.0.1',
-        },
-      },
-    },
-  },
-}
+#class { '::network':
+#  restart    => true, # Not recommended.
+#  interfaces => {
+#    eth0 => {
+#      macaddress => '00:1c:cf:50:0b:51',
+#      comment    => [ 'This is the MySQL interface.' ],
+#      inet       =>  {
+#        method  => 'static',
+#        options => {
+#          address   => '192.168.1.123',
+#          network   => '192.168.1.0',
+#          netmask   => '255.255.255.0',
+#          broadcast => '192.168.1.255',
+#        },
+#      },
+#    },
+#    eth1 => {
+#      macaddress => '00:1c:cf:50:0b:52',
+#      comment    => [ 'This is the management interface.' ],
+#      inet       =>  {
+#        method  => 'static',
+#        options => {
+#          address   => '172.31.0.123',
+#          network   => '172.31.0.0',
+#          netmask   => '255.255.0.0',
+#          broadcast => '172.31.255.255',
+#          gateway   => '172.31.0.1',
+#        },
+#      },
+#    },
+#  },
+#}
 
 
 #$i = {

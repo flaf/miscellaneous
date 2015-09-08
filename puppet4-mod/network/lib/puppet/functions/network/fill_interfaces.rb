@@ -40,10 +40,13 @@ Puppet::Functions.create_function(:'network::fill_interfaces') do
     #call_function('::network::fill_interfaces', interfaces)   # TODO
     ifaces_new      = call_function('::homemade::deep_dup', interfaces)
     default_str     = '__default__'
-    default_network = nil
-    iface_networks  = nil
 
     ifaces_new.each do |ifname, settings|
+
+    # Must be re-set at each loop to forget the parameters
+    # the previous interface.
+    default_network = nil
+    iface_networks  = nil
 
       if settings.has_key?('in_networks')
 
@@ -77,14 +80,19 @@ Puppet::Functions.create_function(:'network::fill_interfaces') do
           vlan_name    = inventory_networks[netname]['vlan_name']
           vlan_id      = inventory_networks[netname]['vlan_id']
           cidr_address = inventory_networks[netname]['cidr_address']
-          final_comment += [ "* #{netname} => vlan_name=#{vlan_name}, " \
-                           "vlan_id=#{vlan_id}, cidr_address=#{cidr_address}" ]
-          final_comment += comment.map { |line| '  ' + line }
+          comment      = comment.map { |line| '#' + ' '*18 + line }.join("\n")
+          comment.sub!(/^# */, '')
+          final_comment += [ "  [#{netname}]" ]
+          final_comment += [ "    vlan_name => #{vlan_name}" ]
+          final_comment += [ "    vlan_id   => #{vlan_id}" ]
+          final_comment += [ "    CIDR      => #{cidr_address}" ]
+          final_comment += [ "    comment   => #{comment}" ]
+          #final_comment += comment.map { |line| '    ' + line }
         end
       end
       # We add the comment specific to the interface.
       if settings.has_key?('comment')
-        final_comment += [ '' ] settings['comment']
+        final_comment += [ '--' ] + settings['comment']
       end
       # Update the comment.
       settings['comment'] = final_comment
@@ -95,13 +103,15 @@ Puppet::Functions.create_function(:'network::fill_interfaces') do
         settings[family]['options'].each do |param, value|
           if value != default_str then next end
           if [ 'network', 'netmask', 'broadcast' ].include?(param)
-            cidr      = inventory_network[default_network]['cidr_address']
             # TODO: what if the cidr is wrong. Catch the error?
+            #       And what if there is no default_network.
+            cidr      = inventory_networks[default_network]['cidr_address']
             dump_cidr = call_function('::network::dump_cidr', cidr)
             settings[family]['options'][param] = dump_cidr[param]
-          end
+          else
             # TODO: test if param key exists in the default network.
-            settings[family]['options'][param] = inventory_network[default_network][param]
+            settings[family]['options'][param] = inventory_networks[default_network][param]
+          end
         end
       end
 

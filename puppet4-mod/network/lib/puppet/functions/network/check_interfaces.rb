@@ -11,7 +11,7 @@ Puppet::Functions.create_function(:'network::check_interfaces') do
     function_name = 'check_interfaces'
 
     # Allowed keys for a give interface.
-    allowed_keys = [ 'on_networks', # allowed for the `interfaces` key.
+    allowed_keys = [ 'in_networks', # allowed for the `interfaces` key.
                      'macaddress',
                      'comment',
                      'inet',
