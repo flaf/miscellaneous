@@ -30,7 +30,7 @@ Puppet::Functions.create_function(:'network::dump_cidr') do
       ip_addr_str      = ip_addr.to_s
       network_addr     = IPAddr.new(cidr_str)
       network_addr_str = network_addr.to_s
-    rescue ArgumentError
+    rescue Exception
       raise(Puppet::ParseError, msg_cidr_not_valid)
     end
 
@@ -45,10 +45,16 @@ Puppet::Functions.create_function(:'network::dump_cidr') do
       # IPv6 address.
       if ip_addr.ipv4?
         zero_addr = '0.0.0.0'
-      else
-        # It's a IPv6 adddress.
-        # TODO: maybe add a `.ipv6?` test.
+      elsif ip_addr.ipv6?
         zero_addr = '::'
+      else
+        # Normally, you should never fall in this case.
+        msg = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
+          |#{function_name}(): the `#{cidr_str}` string is not a
+          |valid CIDR address. It seems to not be a IPv4/IPv6 address.
+          EOS
+        raise(Puppet::ParseError, msg)
+
       end
 
       netmask_num_str  = netmask_str

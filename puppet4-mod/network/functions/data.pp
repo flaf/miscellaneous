@@ -7,7 +7,7 @@ $interfaces_filled  = ::network::fill_interfaces($interfaces, $inventory_network
   { network::restart                 => false,
     network::interfaces              => $interfaces_filled,
     network::supported_distributions => [ 'trusty', 'jessie' ],
-    network::stage                   => 'main'
+    network::stage                   => 'network',
   }
 
 }

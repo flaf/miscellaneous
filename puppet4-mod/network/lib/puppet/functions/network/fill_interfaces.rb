@@ -1,35 +1,11 @@
 Puppet::Functions.create_function(:'network::fill_interfaces') do
 
+  # This function create a new version of the interfaces parameter
+  # where the values '__default__' will be updated as described
+  # in the documentation of this module.
   dispatch :fill_interfaces do
     required_param 'Hash[String[1], Hash[String[1], Data, 1], 1]', :interfaces
     required_param 'Hash[String[1], Hash[String[1], Data, 1], 1]', :inventory_networks
-  end
-
-  def has_default_value(interface)
-    interface.each do |k, v|
-      if v == '__default__'
-        return true
-      
-      end
-    end
-  end
-
-  def no_in_netwoks(ifname, param, default_str, function_name)
-    msg = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
-      |#{function_name}(): the interface `#{ifname}` has a #{default_str}
-      |value for the `#{param}` parameter but has no `in_networks` key
-      |provided. So the value can't be updated.
-    EOS
-    raise(Puppet::ParseError, msg)
-  end
-
-  def value_not_found(ifname, param, default_str, network, function_name)
-    msg = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
-      |#{function_name}(): the interface `#{ifname}` has a #{default_str}
-      |value for the `#{param}` parameter but this parameter is not found
-      |in the network `#{network}`.
-    EOS
-    raise(Puppet::ParseError, msg)
   end
 
   def fill_interfaces(interfaces, inventory_networks)
@@ -37,16 +13,16 @@ Puppet::Functions.create_function(:'network::fill_interfaces') do
     function_name   = 'fill_interfaces'
 
     call_function('::network::check_interfaces', interfaces)
-    #call_function('::network::fill_interfaces', interfaces)   # TODO
+    call_function('::network::check_inventory_networks', inventory_networks)
     ifaces_new      = call_function('::homemade::deep_dup', interfaces)
     default_str     = '__default__'
 
     ifaces_new.each do |ifname, settings|
 
-    # Must be re-set at each loop to forget the parameters
-    # the previous interface.
-    default_network = nil
-    iface_networks  = nil
+      # Must be re-set at each loop to forget the parameters
+      # of the previous interface.
+      default_network = nil
+      iface_networks  = nil
 
       if settings.has_key?('in_networks')
 
@@ -102,14 +78,28 @@ Puppet::Functions.create_function(:'network::fill_interfaces') do
         if not settings[family].has_key?('options') then next end
         settings[family]['options'].each do |param, value|
           if value != default_str then next end
+          if default_network.nil?
+            msg = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
+              |#{function_name}(): the interface `#{ifname}` has a
+              |`#{default_str}` value which must be updated but
+              |the `in_networks` key is not provided for this interface.
+            EOS
+            raise(Puppet::ParseError, msg)
+          end
           if [ 'network', 'netmask', 'broadcast' ].include?(param)
-            # TODO: what if the cidr is wrong. Catch the error?
-            #       And what if there is no default_network.
             cidr      = inventory_networks[default_network]['cidr_address']
             dump_cidr = call_function('::network::dump_cidr', cidr)
             settings[family]['options'][param] = dump_cidr[param]
           else
-            # TODO: test if param key exists in the default network.
+            if not inventory_networks[default_network].has_key?(param)
+              msg = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
+                |#{function_name}(): the interface `#{ifname}` has a
+                |`#{default_str}` value which for the `#{param}` option
+                |this option is not provided in the default network
+                |`#{default_network}`.
+              EOS
+              raise(Puppet::ParseError, msg)
+            end
             settings[family]['options'][param] = inventory_networks[default_network][param]
           end
         end

@@ -125,6 +125,9 @@ Puppet::Functions.create_function(:'network::check_interfaces') do
 
     end # End of loop on interfaces.
 
+    # If no error, return true.
+    true
+
   end # End of the function..
 
 end

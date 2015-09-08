@@ -15,7 +15,7 @@ interfaces:
         netmask: '__default__'
         broadcast: '__default__'
   eth1:
-    #in_networks: [ 'admin_mgt', 'mysql' ]
+    in_networks: [ 'admin_mgt', 'mysql' ]
     macaddress: '00:1c:cf:50:0b:52'
     comment: [ 'This is the management interface.' ]
     inet:
