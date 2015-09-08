@@ -1,0 +1,21 @@
+<%- |$interfaces| -%>
+### This file is managed by Puppet, don't edit it. ###
+<%-
+  if $interfaces.filter |$x| { $x[1].has_key('macaddress') }.empty {
+    $no_macaddress = true
+  } else {
+    $no_macaddress = false
+  }
+-%>
+
+<%- if $no_macaddress  { -%>
+# Ineffective file created by Puppet because no macaddress provided.
+<%- } else { -%>
+  <%- $interfaces.keys.sort.each |$interface| { -%>
+    <%- if $interfaces[$interface].has_key('macaddress') { -%>
+      <%- $macaddress = $interfaces[$interface]['macaddress'] -%>
+SUBSYSTEM=="net", DRIVERS=="?*", ATTR{address}=="<%= $macaddress %>", NAME="<%= $interface %>"
+    <%- } -%>
+  <%- } -%>
+<%- } -%>
+

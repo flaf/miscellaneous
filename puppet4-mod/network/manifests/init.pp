@@ -3,7 +3,7 @@
 #       fails:
 #
 #         stage is a metaparameter; please choose another
-#         parameter name in the network definition at ...
+#         parameter name in the network definition at ... etc.
 #
 class network (
   Boolean                                      $restart,
@@ -19,7 +19,52 @@ class network (
                 'ifenslave',    # To have the bonding feature.
                 'bridge-utils', # To have the bridge feature.
               ]
-  ensure_packages($packages, { ensure => present, })
+  ensure_packages( $packages,
+                   { ensure => present,
+                     before => File['/etc/network/interfaces.puppet'],
+                   }
+                 )
+
+  # The udev rule to force the name of interfaces
+  # if the macaddress is given.
+  file { '/etc/udev/rules.d/70-persistent-net.rules':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    before  => File['/etc/network/interfaces.puppet'],
+    content => epp( 'network/70-persistent-net.rules.epp',
+                    { 'interfaces' => $interfaces }
+                  ),
+  }
+
+  file { '/etc/network/if-up.d/ignore_icmp_redirect':
+    ensure => present,
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0755',
+    source => 'puppet:///modules/network/ignore_icmp_redirect',
+    before => File['/etc/network/interfaces.puppet'],
+    notify => Exec['ignore_icmp_redirect_now'],
+  }
+
+  exec { 'ignore_icmp_redirect_now':
+    user        => 'root',
+    command     => '/etc/network/if-up.d/ignore_icmp_redirect NOW',
+    require     => File['/etc/network/if-up.d/ignore_icmp_redirect'],
+    before      => File['/etc/network/interfaces.puppet'],
+    refreshonly => true,
+  }
+
+  file { '/etc/network/interfaces.puppet':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0600',
+    content => epp( 'network/interfaces.puppet.epp',
+                    { 'interfaces' => $interfaces }
+                  ),
+  }
 
   # The command to restart the network properly.
   $restart_network_cmd = @(END)
@@ -42,14 +87,19 @@ class network (
     sleep 0.25
     | END
 
-  file { '/etc/network/interfaces.puppet':
-    ensure  => present,
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0600',
-    content => epp( 'network/interfaces.puppet.epp',
-                    { 'interfaces' => $interfaces }
-                  ),
+  if $restart {
+    exec { 'restart-network-now':
+      path        => '/usr/sbin:/usr/bin:/sbin:/bin',
+      command     => "${restart_network_cmd}",
+      user        => 'root',
+      group       => 'root',
+      refreshonly => true,
+      require     => File['/etc/network/interfaces.puppet'],
+      subscribe   => [
+                       File['/etc/udev/rules.d/70-persistent-net.rules'],
+                       File['/etc/network/interfaces.puppet'],
+                     ],
+    }
   }
 
   # Remark about "resolvconf"

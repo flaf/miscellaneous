@@ -9,4 +9,6 @@ interfaces:
     inet:
       method: 'dhcp'
 
+network::restart: true
+
 
