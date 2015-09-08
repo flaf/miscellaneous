@@ -1,4 +1,14 @@
 ---
 enc_role: '::role_generic'
+enc_datacenter: 'vty'
+
+interfaces:
+  eth0:
+    in_networks: [ 'vbox_adm' ]
+    macaddress: '08:00:27:bc:ce:e9'
+    inet:
+      method: 'dhcp'
+
+network::restart: true
 
 
