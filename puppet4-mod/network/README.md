@@ -57,6 +57,11 @@ class { '::network':
 }
 ```
 
+**Warning:** these calls above will probably fail if used
+verbatim because of the choice concerning the data binding.
+See below for more details.
+
+
 The `restart` parameter is a boolean. If the value
 is `true`, then the network will be restarted after
 an update of the network configuration.
@@ -91,8 +96,8 @@ will be set in order to ensure that the interface
 with the provided macaddress has really the name
 stated in the `interfaces` parameter.
 
-The `comment` key must be an array of strings.
-Each string in this array is a line of comment
+The `comment` key must be an non-empty array of non-empty
+strings. Each string in this array is a line of comment
 just above the interface settings in the file
 `/etc/network/interfaces`.
 
@@ -109,10 +114,10 @@ of these keys:
 * `inventory_networks`,
 * `interfaces`
 
-with the `lookup()` function. Theses keys **must be**
-found in hiera or in the environment (via the
-`environment::data()` function) because no default
-values are provided. For these keys, the lookup
+with the `lookup()` function. **Theses keys must be
+found in hiera or in the environment** (via the
+`environment::data()` function) because **no default
+values are provided**. For these keys, the lookup
 uses a hash-merging.
 
 In yaml format (but the format could be a puppet code too
