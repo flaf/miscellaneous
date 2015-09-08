@@ -58,8 +58,8 @@ class { '::network':
 ```
 
 **Warning:** these calls above will probably fail if used
-verbatim because of the choice concerning the data binding.
-See below for more details.
+verbatim because of the choice concerning the data binding
+for this module. See below for more details.
 
 
 The `restart` parameter is a boolean. If the value
