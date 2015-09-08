@@ -60,7 +60,7 @@ Puppet::Functions.create_function(:'network::check_interfaces') do
       # non-empty strings. It's the same for the "comment" key.
       [ 'on_networks', 'comment' ].each do |e|
         if settings.has_key?(e)
-          unless call_function('::homemade::is_clean_arrayofstr', e)
+          unless call_function('::homemade::is_clean_arrayofstr', settings[e])
             msg_options_error = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
               |#{function_name}(): the `#{ifname}` interface is not valid
               |because its hash value has the `#{e}` key which is
@@ -73,8 +73,8 @@ Puppet::Functions.create_function(:'network::check_interfaces') do
 
       # The "macaddress" key must be mapped to a non-empty string.
       if settings.has_key?('macaddress')
-        unless settings('macaddress').is_a?(String) and \
-               not settings('macaddress').empty?
+        unless settings['macaddress'].is_a?(String) and \
+               not settings['macaddress'].empty?
           msg_options_error = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
             |#{function_name}(): the `#{ifname}` interface is not valid
             |because its hash value has the `macaddress` key which is

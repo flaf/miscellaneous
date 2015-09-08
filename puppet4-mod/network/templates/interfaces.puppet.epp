@@ -4,44 +4,36 @@
 # The loopback network interface.
 auto lo
 iface lo inet loopback
-<%- keys($interfaces).each |$interface| { -%>
+<%- $interfaces.keys.sort.each |$interface| { -%>
 
   <%- $settings = $interfaces[$interface] -%>
-  <%-
-    # Aesthetic: $max is the size of the biggest string among the
-    # parameters of the interface, except 'method' and 'options'.
-    $max = keys($settings).filter |$param| {
-        $param !~ /^(method|options)$/
-    }.map |$param| {
-        size($param)
-    }.reduce |$memo, $entry| {
-      max($memo, $entry)
-    }
-  -%>
-  <%- keys($settings).each |$param| { -%>
-    <%- $value = $settings[$param] -%>
-    <%- if ($param != 'method') and ($param != 'options') { -%>
-# <%= ::homemade::ljust($param, $max, ' ') %> => <%= $value %>
-    <%- } -%>
+  <%- if $settings.has_key('comment') { -%>
+# <%= $settings['comment'].join("\n") %>
+  <%- } -%>
+  <%- if $settings.has_key('macaddress') { -%>
+# macaddress => <%= $settings['macaddress'] %>
   <%- } -%>
 auto <%= $interface %>
-iface <%= $interface %> inet <%= $settings['method'] %>
-  <%- if has_key($settings, 'options') { -%>
-    <%-
-      $options = keys($settings['options'])
-
-      # Aesthetic: $max_opt is the size of the biggest string among the
-      # options of the interface.
-      $max_opt = $options.map |$opt_name| {
-          size($opt_name)
-      }.reduce |$memo, $entry| {
-        max($memo, $entry)
-      }
-    -%>
-    <%- $options.each |$opt_name| { -%>
-  <%= ::homemade::ljust($opt_name, $max_opt, ' ') %> <%= $settings['options'][$opt_name] %>
+  <%- [ 'inet', 'inet6' ].each |$family| { -%>
+    <%- if $settings.has_key($family) { -%>
+iface <%= $interface %> <%= $family %> <%= $settings[$family]['method'] %>
+      <%- if $settings[$family].has_key('options') { -%>
+        <%-
+            # Aesthetic: $max_opt is the size of the biggest string
+            # among the options of the interface.
+            $options_list = $settings[$family]['options'].keys
+            $max_opt = $options_list.map |$opt_name| {
+              size($opt_name)
+            }.reduce |$memo, $entry| {
+              max($memo, $entry)
+            }
+        -%>
+        <%- $settings[$family]['options'].keys.sort.each |$option| { -%>
+        <%- $option_justified = ::homemade::ljust($option, $max_opt, ' ') -%>
+    <%= $option_justified %> <%= $settings[$family]['options'][$option] %>
+        <%- } -%>
+      <%- } -%>
     <%- } -%>
   <%- } -%>
 <%- } -%>
-
 
