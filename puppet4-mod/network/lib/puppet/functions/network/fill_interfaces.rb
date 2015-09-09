@@ -47,10 +47,10 @@ Puppet::Functions.create_function(:'network::fill_interfaces') do
       end
 
       # Handle of the comment key.
-      final_comment = []
+      comment_from_networks = []
       if not default_network.nil?
         # We build a comment from each network in iface_networks.
-        final_comment += [ 'Interface in the network(s):' ]
+        comment_from_networks += [ 'Interface in the network(s):' ]
         iface_networks.each do |netname|
           comment      = inventory_networks[netname]['comment']
           vlan_name    = inventory_networks[netname]['vlan_name']
@@ -58,20 +58,31 @@ Puppet::Functions.create_function(:'network::fill_interfaces') do
           cidr_address = inventory_networks[netname]['cidr_address']
           comment      = comment.map { |line| '#' + ' '*18 + line }.join("\n")
           comment.sub!(/^# */, '')
-          final_comment += [ "  [#{netname}]" ]
-          final_comment += [ "    vlan_name => #{vlan_name}" ]
-          final_comment += [ "    vlan_id   => #{vlan_id}" ]
-          final_comment += [ "    CIDR      => #{cidr_address}" ]
-          final_comment += [ "    comment   => #{comment}" ]
-          #final_comment += comment.map { |line| '    ' + line }
+          comment_from_networks += [ "  [#{netname}]" ]
+          comment_from_networks += [ "    vlan_name => #{vlan_name}" ]
+          comment_from_networks += [ "    vlan_id   => #{vlan_id}" ]
+          comment_from_networks += [ "    CIDR      => #{cidr_address}" ]
+          comment_from_networks += [ "    comment   => #{comment}" ]
         end
       end
-      # We add the comment specific to the interface.
+      # Creation of the final comment.
       if settings.has_key?('comment')
-        final_comment += [ '--' ] + settings['comment']
+        if comment_from_networks.empty?
+          final_comment = settings['comment']
+        else
+          final_comment = comment_from_networks + ['--'] + settings['comment']
+        end
+      else # No comment from the interface.
+        if comment_from_networks.empty?
+          final_comment = nil # No comment from networks and the interface.
+        else
+          final_comment = comment_from_networks # Comment from networks only.
+        end
       end
-      # Update the comment.
-      settings['comment'] = final_comment
+      # Update the comment only if it's not nil.
+      if not final_comment.nil?
+        settings['comment'] = final_comment
+      end
 
       [ 'inet', 'inet6' ].each do |family|
         if not settings.has_key?(family) then next end

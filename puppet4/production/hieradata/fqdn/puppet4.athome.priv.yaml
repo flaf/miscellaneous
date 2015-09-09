@@ -8,6 +8,17 @@ interfaces:
     macaddress: '08:00:27:bc:ce:e8'
     inet:
       method: 'dhcp'
+  eth1:
+    #in_networks: [ 'vbox_adm', 'vbox_priv' ]
+    macaddress: '08:00:27:bc:ce:e9'
+    inet:
+      method: 'dhcp'
+  eth2:
+    in_networks: [ 'vbox_priv', 'vbox_adm' ]
+    #comment: ['blabla blabla', 'blibli blibli']
+    macaddress: '08:00:27:bc:ce:e7'
+    inet:
+      method: 'dhcp'
 
 #network::restart: true
 

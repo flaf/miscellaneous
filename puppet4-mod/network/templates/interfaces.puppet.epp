@@ -9,11 +9,13 @@ iface lo inet loopback
   <%- $settings = $interfaces[$interface] -%>
   <%- if $settings.has_key('comment') { -%>
 <%= $settings['comment'].map |$line| { "# ${line}" }.join("\n") %>
+#
   <%- } -%>
   <%- if $settings.has_key('macaddress') { -%>
 # macaddress => <%= $settings['macaddress'] %>
-  <%- } -%>
+  <%- } else { -%>
 auto <%= $interface %>
+  <%- } -%>
   <%- [ 'inet', 'inet6' ].each |$family| { -%>
     <%- if $settings.has_key($family) { -%>
 iface <%= $interface %> <%= $family %> <%= $settings[$family]['method'] %>

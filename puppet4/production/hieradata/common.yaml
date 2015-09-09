@@ -17,10 +17,13 @@ inventory_networks:
     vlan_name: 'vbx_adm'
     cidr_address: '172.31.0.0/16'
     gateway: '172.31.0.1'
+    #ntp_servers: [ '172.31.0.1', '172.31.0.2', '172.31.0.3', ]
   vbox_priv:
     comment: [ 'Private LAN in VBox without dhcp.' ]
     vlan_id: '1002'
     vlan_name: 'vbox_priv'
     cidr_address: '172.20.0.0/16'
     gateway: '172.20.0.1'
+    ntp_servers: [ '172.20.0.1', '172.20.0.2', '172.20.0.3', ]
+
 
