@@ -1,6 +1,4 @@
 ---
-basic_ssh::server::permitrootlogin: 'yes'
-
 inventory_networks:
   freeboox_lan:
     comment: [ 'LAN behind the Freebox (dhcp).' ]
