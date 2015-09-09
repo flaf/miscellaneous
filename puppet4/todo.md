@@ -6,9 +6,10 @@
 admins accounts (`pwd`, `is_sudo`, bash configuration)
 
 Now:
-
-1. puppetagent
-2. puppetserver
-3. mcollective
+-1. Official repositories
+ 0. ntp
+ 1. puppetagent
+ 2. puppetserver
+ 3. mcollective
 
 
