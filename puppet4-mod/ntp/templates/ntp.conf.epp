@@ -1,0 +1,68 @@
+<%- |$interfaces, $subnets_authorized, $ipv6, $ntp_servers| -%>
+### This file is managed by Puppet, don't edit it. ###
+
+# /etc/ntp.conf, configuration for ntpd; see ntp.conf(5) for help
+
+driftfile /var/lib/ntp/ntp.drift
+
+<%- if $interfaces != 'all' { -%>
+interface ignore wildcard
+  <%- $interfaces.sort.each |$iface| { -%>
+interface listen <%= $iface %>
+  <%- } -%>
+
+<%- } -%>
+# Enable this if you want statistics to be logged.
+#statsdir /var/log/ntpstats/
+
+statistics loopstats peerstats clockstats
+filegen loopstats file loopstats type day enable
+filegen peerstats file peerstats type day enable
+filegen clockstats file clockstats type day enable
+
+# NTP server(s) to use.
+<%- $ntp_servers.sort.each |$ntp_server| { -%>
+server <%= $ntp_server %> iburst
+<%- } -%>
+
+<%- if $subnets_authorized != 'all' { -%>
+# Default rule: exchange time are not allowed.
+restrict -4 default ignore
+  <%- if $ipv6 { -%>
+restrict -6 default ignore
+  <%- } -%>
+
+# Allow exchange time with the NTP server(s) above.
+# The ntp service should be able to exchange time
+# with the ntp servers to which it refers.
+  <%- $ntp_servers.sort.each |$ntp_server| { -%>
+restrict <%= $ntp_server %> kod notrap nomodify nopeer noquery
+  <%- } -%>
+
+  <%- if ! $subnets_authorized.empty { -%>
+# Subnet(s) allowed to exchange time with the NTP service.
+    <%- $subnets_authorized.sort.each |$cidr_addr| { -%>
+      <%-
+         $dump_cidr = ::network::dump_cidr($cidr_addr)
+         $network   = $dump_cidr['network']
+         $netmask   = $dump_cidr['netmask']
+      -%>
+restrict <%= $network %> mask <%= $netmask %> kod notrap nomodify nopeer noquery
+    <%- } -%>
+
+  <%- } -%>
+<%- } else { -%>
+# Defautl rule: exchange time with everybody but don't allow configuration.
+restrict -4 default kod notrap nomodify nopeer noquery
+  <%- if $ipv6 { -%>
+restrict -6 default kod notrap nomodify nopeer noquery
+  <%- } -%>
+
+<%- } -%>
+# Local users may interrogate the ntp server more closely.
+restrict 127.0.0.1
+<%- if $ipv6 { -%>
+restrict ::1
+<%- } -%>
+
+
