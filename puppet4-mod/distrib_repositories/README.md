@@ -34,7 +34,7 @@ or `false`. The default value of this parameter is `false`.
 
 **Warning:** with this module, the file `/etc/apt/sources.list`
 and the directory `/etc/apt/sources.list.d/` will be completely
-managed by Puppet. For instance, to use a specific repository
+managed by Puppet. For instance, to use add a specific repository
 you have to do it via Puppet.
 
 
