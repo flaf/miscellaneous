@@ -27,7 +27,9 @@ Puppet::Functions.create_function(:'network::check_inventory_networks') do
           raise(Puppet::ParseError, msg)
         end
         if mkey == 'comment'
-          unless call_function('::homemade::is_clean_arrayofstr', params[mkey])
+          # TODO: PUP-5209
+          #unless call_function('::homemade::is_clean_arrayofstr', params[mkey])
+          unless call_function('::network::is_clean_arrayofstr', params[mkey])
             msg = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
               |#{function_name}(): the `#{netname}` network in
               |the inventory networks is not valid because the

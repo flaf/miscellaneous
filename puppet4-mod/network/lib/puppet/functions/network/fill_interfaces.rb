@@ -14,7 +14,9 @@ Puppet::Functions.create_function(:'network::fill_interfaces') do
 
     call_function('::network::check_interfaces', interfaces)
     call_function('::network::check_inventory_networks', inventory_networks)
-    ifaces_new      = call_function('::homemade::deep_dup', interfaces)
+    # TODO: PUP-5209
+    #ifaces_new      = call_function('::homemade::deep_dup', interfaces)
+    ifaces_new      = call_function('::network::deep_dup', interfaces)
     default_str     = '__default__'
 
     ifaces_new.each do |ifname, settings|
