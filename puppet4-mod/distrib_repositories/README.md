@@ -29,8 +29,8 @@ lines will be added, if `false` no `deb-src` lines. The
 default value is `false`.
 
 The `install_recommends` is a boolean to tell if Puppet
-set `APT::Install-Recommends "false";` or not. The
-default value of this parameter is `false`.
+sets the parameter `APT::Install-Recommends` to `true`
+or `false`. The default value of this parameter is `false`.
 
 **Warning:** with this module, the file `/etc/apt/sources.list`
 and the directory `/etc/apt/sources.list.d/` will be completely
