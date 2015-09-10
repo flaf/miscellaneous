@@ -68,7 +68,7 @@ class network (
 
   # The command to restart the network properly.
   $restart_network_cmd = @(END)
-    ifdown --all
+    timeout --signal=TERM --kill-after=5s 20s ifdown --all
     sleep 0.5
 
     if [ -f '/etc/network/interfaces.puppet' ]
@@ -83,7 +83,7 @@ class network (
     sleep 0.25
 
     # Configure all interfaces marked 'auto'.
-    ifup --all
+    timeout --signal=TERM --kill-after=5s 20s  ifup --all
     sleep 0.25
     | END
 
