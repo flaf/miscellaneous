@@ -14,7 +14,7 @@ function ntp::data {
 
   { ntp::interfaces              => 'all',
     ntp::ntp_servers             => $ntp_servers,
-    ntp::subnets_authorized      => [],
+    ntp::subnets_authorized      => 'all',
     ntp::ipv6                    => false,
     ntp::supported_distributions => [ 'trusty', 'jessie' ],
   }

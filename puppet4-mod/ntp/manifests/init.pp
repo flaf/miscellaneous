@@ -1,7 +1,7 @@
 class ntp (
   Variant[ Array[String[1], 1], Enum['all'] ] $interfaces,
   Array[String[1], 1]                         $ntp_servers,
-  Variant[ Array[String[1]], Enum['all'] ]    $subnets_authorized,
+  Variant[ Array[String[1], 1], Enum['all'] ] $subnets_authorized,
   Boolean                                     $ipv6,
   Array[String[1], 1]                         $supported_distributions,
 ) {

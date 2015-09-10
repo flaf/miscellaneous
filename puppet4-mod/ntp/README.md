@@ -21,11 +21,11 @@ class { '::ntp'
   ipv6               => false,
 }
 
-# A basic and selfish (none server can synchronize to it) ntp server.
+# A basic ntp server like after a simple `apt-get install ntp`.
 class { '::ntp'
   interfaces         => 'all',
   ntp_servers        => [ '172.31.5.1', '172.31.5.2', '172.31.5.3' ],
-  subnets_authorized => [],
+  subnets_authorized => 'all',
   ipv6               => false,
 }
 ```
@@ -36,21 +36,23 @@ specific value `"all"` (a string) which means that the
 ntp service will listen to all interfaces.
 
 The `ntp_servers` parameter is an array of ntp servers
-addresses.
+addresses to which the ntp daemon will refer.
 
 The `subnets_authorized` parameter is an array of CIDR
 addresses of only subnets authorized to exchange time
-with the NTP service (except the servers listed in the
-`ntp_servers` of course). If this parameter is `[]`
-(ie an empty array) none host can exchange time with
-the ntp service (ie it's a selfish ntp server). This
-parameter can have the specific value `"all"` (a string)
-which means that any host for any subnet can exchange
-time with the ntp service.
+with the NTP service. It concerns just the time exchange,
+in any case, the configuration will be allowed only from
+localhost. Be careful, the hosts listed in the `ntp_servers`
+parameter must be within authorized subnets. If not, the
+ntp daemon will be just unable to synchronize its time
+with the time of the remote ntp servers. The
+`subnets_authorized` parameter can have the specific
+value `"all"` (a string) which means that any host for
+any subnet can exchange time with the ntp service.
 
 The `ipv6` is a boolean. If true, IPv6 is taken into
-account in the `/etc/ntp.conf` file. If false, just
-IPv4 stanza are used in this file.
+account by the ntp daemon. If false, ntp will just
+use the IPv4 protocol.
 
 
 
@@ -74,9 +76,7 @@ this primary network, the function will take its value.
 If no ntp servers are found during the research, then the
 function returns an array of Debian ntp servers.
 
-The default value of `subnets_authorized` parameter is
-`[]` (ie an empty array) so that it will be a selfish ntp
-server.
+The default value of `subnets_authorized` parameter is `"all"`.
 
 The default value of `ipv6` is `false`.
 

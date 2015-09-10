@@ -32,26 +32,20 @@ restrict -4 default ignore
 restrict -6 default ignore
   <%- } -%>
 
-# Allow exchange time with the NTP server(s) above.
-# The ntp service should be able to exchange time
-# with the ntp servers to which it refers.
-  <%- $ntp_servers.sort.each |$ntp_server| { -%>
-restrict <%= $ntp_server %> kod notrap nomodify nopeer noquery
-  <%- } -%>
-
-  <%- if ! $subnets_authorized.empty { -%>
 # Subnet(s) allowed to exchange time with the NTP service.
-    <%- $subnets_authorized.sort.each |$cidr_addr| { -%>
-      <%-
-         $dump_cidr = ::network::dump_cidr($cidr_addr)
-         $network   = $dump_cidr['network']
-         $netmask   = $dump_cidr['netmask']
-      -%>
+# Be careful! The subnet(s) below must contain the ntp
+# servers to which this service refers.
+  <%- $subnets_authorized.sort.each |$cidr_addr| { -%>
+    <%-
+       $dump_cidr = ::network::dump_cidr($cidr_addr)
+       $network   = $dump_cidr['network']
+       $netmask   = $dump_cidr['netmask']
+    -%>
 restrict <%= $network %> mask <%= $netmask %> kod notrap nomodify nopeer noquery
-    <%- } -%>
-
   <%- } -%>
-<%- } else { -%>
+
+<%- } else {  -%>
+<%# $subnets_authorized == 'all' -%>
 # Defautl rule: exchange time with everybody but don't allow configuration.
 restrict -4 default kod notrap nomodify nopeer noquery
   <%- if $ipv6 { -%>
@@ -59,7 +53,9 @@ restrict -6 default kod notrap nomodify nopeer noquery
   <%- } -%>
 
 <%- } -%>
-# Local users may interrogate the ntp server more closely.
+# Local users may interrogate the ntp server more closely
+# with `ntpq -pn`, or `ntpq -pn4` if the daemon ntp use
+# IPv4 only.
 restrict 127.0.0.1
 <%- if $ipv6 { -%>
 restrict ::1
