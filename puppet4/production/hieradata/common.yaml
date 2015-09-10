@@ -25,6 +25,7 @@ inventory_networks:
     cidr_address: '172.20.0.0/16'
     gateway: '172.20.0.1'
 
-network::restart: true
+#network::restart: true
+
 
 
