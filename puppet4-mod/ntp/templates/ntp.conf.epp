@@ -46,7 +46,7 @@ restrict <%= $network %> mask <%= $netmask %> kod notrap nomodify nopeer noquery
 
 <%- } else {  -%>
 <%# $subnets_authorized == 'all' -%>
-# Defautl rule: exchange time with everybody but don't allow configuration.
+# Default rule: exchange time with everybody but don't allow configuration.
 restrict -4 default kod notrap nomodify nopeer noquery
   <%- if $ipv6 { -%>
 restrict -6 default kod notrap nomodify nopeer noquery
