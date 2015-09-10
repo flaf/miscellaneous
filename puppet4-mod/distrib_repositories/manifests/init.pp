@@ -8,10 +8,12 @@ class distrib_repositories (
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
-  # Now, the sources.list and sources.list.d/ are only managed by Puppet.
+  # Now, the sources.list, sources.list.d/ and preferences.d
+  # are only managed by Puppet.
   class { '::apt':
     purge => { 'sources.list'   => true,
                'sources.list.d' => true,
+               'preferences.d'  => true,
              },
   }
 

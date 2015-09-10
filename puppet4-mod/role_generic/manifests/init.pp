@@ -8,6 +8,7 @@ class role_generic {
   include '::locale'
   include '::timezone'
   include '::ntp'
+  include '::puppetagent'
 
 }
 
