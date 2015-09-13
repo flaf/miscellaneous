@@ -1,10 +1,8 @@
-# TODO: 1. add a cron feature to launch run puppet.
-#       2. Write the README file.
 class puppetagent (
   Boolean             $service_enabled,
   String[1]           $runinterval,
   String[1]           $server,
-  Boolean             $module_off,
+  Boolean             $disable_class,
   Array[String[1], 1] $supported_distributions,
 ) {
 
