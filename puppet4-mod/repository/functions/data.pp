@@ -14,6 +14,9 @@ function repository::data {
   if ! $conf.has_key('pinning_agent_version') {
     fail("The `puppet` entry must have a `pinning_agent_version` key.")
   }
+  if ! $conf.has_key('collection') {
+    fail("The `puppet` entry must have a `collection` key.")
+  }
 
   $distribs = [ 'trusty', 'jessie' ]
 
@@ -28,7 +31,7 @@ function repository::data {
 
     repository::puppet::url                      => 'http://apt.puppetlabs.com',
     repository::puppet::src                      => false,
-    repository::puppet::collection               => 'PC1',
+    repository::puppet::collection               => $conf['collection'],
     repository::puppet::pinning_agent_version    => $conf['pinning_agent_version'],
     repository::puppet::supported_distributions  => $distribs,
     repository::puppet::stage                    => $stage,

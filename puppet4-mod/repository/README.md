@@ -42,3 +42,45 @@ For instance, to add a specific repository you have to do it
 via Puppet.
 
 
+# The `::repository::puppet` class
+
+## Usage
+
+Here is an example:
+
+```puppet
+
+class { '::repository::puppet':
+  url                   => 'http://apt.puppetlabs.com',
+  src                   => false,
+  collection            => 'PC1',
+  pinning_agent_version => '1.2.*', # Don't forget the joker.
+}
+```
+
+## Data binding
+
+The `url` parameter is the url of the APT repository.
+Its default value is `http://apt.puppetlabs.com`.
+
+The `src` parameter is a boolean to tell if you
+want to include the `deb-src` line or not in the
+`sources.list.d/`.
+
+The `collection` and `pinning_agent_version`
+parameters give the name of the collection and
+the version of the `puppet-agent` package which
+will be installed. For the `pinning_agent_version`
+parameter, the special string value `none` means
+"no pinning". To find the default values of these
+2 parameters, there is a lookup of the `puppet`
+entry in hiera (or in the environment). This entry
+must have this form below:
+
+```yaml
+puppet:
+  collection: 'PC1'
+  pinning_agent_version: '1.2.*'
+```
+
+

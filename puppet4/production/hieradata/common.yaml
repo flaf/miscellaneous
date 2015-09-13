@@ -26,6 +26,7 @@ inventory_networks:
     gateway: '172.20.0.1'
 
 puppet:
+  collection: 'PC1'
   pinning_agent_version: '1.2.*'
 
 #network::restart: true
