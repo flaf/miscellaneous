@@ -1,8 +1,8 @@
 {
-  "name": "flaf-distrib_repositories",
+  "name": "flaf-repository",
   "version": "0.1.0",
   "author": "flaf",
-  "summary": "Module to set the official APT repositories of the distribution.",
+  "summary": "Module to set APT repositories.",
   "license": "Apache-2.0",
   "source": "",
   "project_page": null,

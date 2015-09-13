@@ -9,7 +9,7 @@
   "issues_url": null,
   "dependencies": [
     {"name":"flaf-network","version_requirement":">= 0.1.0"},
-    {"name":"flaf-distrib_repositories","version_requirement":">= 0.1.0"},
+    {"name":"flaf-repository","version_requirement":">= 0.1.0"},
     {"name":"flaf-basic_ssh","version_requirement":">= 0.1.0"},
     {"name":"flaf-keyboard","version_requirement":">= 0.1.0"},
     {"name":"flaf-locale","version_requirement":">= 0.1.0"},

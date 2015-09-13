@@ -1,4 +1,4 @@
-class distrib_repositories (
+class repository::distrib (
   String[1]           $url,
   Boolean             $src,
   Boolean             $install_recommends,

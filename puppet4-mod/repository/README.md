@@ -1,22 +1,25 @@
 # Module description
 
-This module configures the official APT repositories
-of the current distribution.
+This module configures APT repositories. This module
+consists of several public classes.
 
 
 
+# The `::repository::distrib` class
 
-# Usage
+## Usage
 
-Here is some examples:
+Here is an example:
 
 ```puppet
-class { '::distrib_repositories':
+class { '::repository::distrib':
   url                => 'http://ftp.fr.debian.org/debian/',
   src                => false,
   install_recommends => false,
 }
 ```
+
+## Parameters and default values
 
 The `url` parameter is the url of the repository which will be used.
 Its default value is:
@@ -32,9 +35,10 @@ The `install_recommends` is a boolean to tell if Puppet
 sets the parameter `APT::Install-Recommends` to `true`
 or `false`. The default value of this parameter is `false`.
 
-**Warning:** with this module, the file `/etc/apt/sources.list`
-and the directory `/etc/apt/sources.list.d/` will be completely
-managed by Puppet. For instance, to use add a specific repository
-you have to do it via Puppet.
+**Warning:** with this class, the file `/etc/apt/sources.list`,
+the directory `/etc/apt/sources.list.d/` and the directory
+`/etc/apt/preferences.d/` will be completely managed by Puppet.
+For instance, to add a specific repository you have to do it
+via Puppet.
 
 

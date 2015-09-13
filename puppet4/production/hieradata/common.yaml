@@ -25,9 +25,8 @@ inventory_networks:
     cidr_address: '172.20.0.0/16'
     gateway: '172.20.0.1'
 
-puppetagent:
-  collection: 'PC1'
-  package_version: '1.2.*'
+puppet:
+  pinning_agent_version: '1.2.*'
 
 #network::restart: true
 

@@ -4,10 +4,6 @@ class puppetagent (
   Boolean             $service_enabled,
   String[1]           $runinterval,
   String[1]           $server,
-  String[1]           $collection,
-  String[1]           $package_version,
-  String[1]           $stage_package,
-  Boolean             $src,
   Boolean             $module_off,
   Array[String[1], 1] $supported_distributions,
 ) {
@@ -16,7 +12,9 @@ class puppetagent (
 
     ::homemade::is_supported_distrib($supported_distributions, $title)
 
-    require '::puppetagent::package'
+    require '::repository::puppet'
+
+    ensure_packages(['puppet-agent'], { ensure => present, })
 
     if $service_enabled {
       $ensure_value = 'running'
@@ -38,6 +36,7 @@ class puppetagent (
                         'runinterval'  => $runinterval,
                       }
                     ),
+      require => Package['puppet-agent'],
       before  => Service['puppet'],
       notify  => $notify,
     }
