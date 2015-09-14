@@ -9,6 +9,7 @@ class role_generic {
   include '::timezone'
   include '::ntp'
   include '::puppetagent'
+  include '::mcollective::server'
 
 }
 

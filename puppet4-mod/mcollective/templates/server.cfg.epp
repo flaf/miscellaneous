@@ -1,0 +1,48 @@
+<%- |
+$server_private_key_file,
+$server_public_key_file,
+$mco_ssl_dir,
+$connector,
+$middleware_server,
+$middleware_port,
+$mcollective_pwd,
+$puppet_ssl_dir
+| -%>
+### This file is managed by Puppet, don't edit it. ###
+
+main_collective   = mcollective
+collectives       = mcollective
+libdir            = /opt/puppetlabs/mcollective/plugins
+logfile           = /var/log/puppetlabs/mcollective.log
+loglevel          = info
+daemonize         = 1
+
+securityprovider  = ssl
+direct_addressing = 1
+connector         = <%= $connector %>
+
+plugin.ssl_client_cert_dir  = <%= $mco_ssl_dir %>/clients
+plugin.ssl_server_private   = <%= $server_private_key_file %>
+plugin.ssl_server_public    = <%= $server_public_key_file %>
+plugin.<%= $connector %>.vhost       = /mcollective
+plugin.<%= $connector %>.pool.size   = 1
+
+plugin.<%= $connector %>.pool.1.host         = <%= $middleware_server %>
+plugin.<%= $connector %>.pool.1.port         = <%= $middleware_port %>
+plugin.<%= $connector %>.pool.1.user         = mcollective
+plugin.<%= $connector %>.pool.1.password     = <%= $mcollective_pwd %>
+plugin.<%= $connector %>.pool.1.ssl          = true
+plugin.<%= $connector %>.pool.1.ssl.ca       = <%= $puppet_ssl_dir %>/certs/ca.pem
+plugin.<%= $connector %>.pool.1.ssl.cert     = <%= $puppet_ssl_dir %>/certs/<%= $::fqdn %>.pem
+plugin.<%= $connector %>.pool.1.ssl.key      = <%= $puppet_ssl_dir %>/private_keys/<%= $::fqdn %>.pem
+plugin.<%= $connector %>.pool.1.ssl.fallback = 0
+plugin.<%= $connector %>.stomp_1_0_fallback  = 0
+plugin.<%= $connector %>.heartbeat_interval  = 30
+plugin.<%= $connector %>.max_hbread_fails    = 2
+plugin.<%= $connector %>.max_hbrlck_fails    = 0
+
+# Facts
+factsource = yaml
+plugin.yaml = /etc/puppetlabs/mcollective/facts.yaml
+
+
