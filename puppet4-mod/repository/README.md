@@ -5,7 +5,7 @@ consists of several public classes.
 
 
 
-# The `::repository::distrib` class
+# The `repository::distrib` class
 
 ## Usage
 

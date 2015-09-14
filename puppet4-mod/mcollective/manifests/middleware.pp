@@ -1,15 +1,17 @@
-# TODO: 1. Write the metadata.json
-#       2. Write the README file.
+# TODO: This class is awful (lot of exec resources etc). Could
+#       it be more simple with Activemq.
 class mcollective::middleware (
-  String[1]  $stomp_ssl_ip,
-  Integer[1] $stomp_ssl_port,
-  String[1]  $puppet_ssl_dir,
-  String[1]  $admin_pwd,
-  String[1]  $mcollective_pwd,
+  String[1]           $stomp_ssl_ip,
+  Integer[1]          $stomp_ssl_port,
+  String[1]           $puppet_ssl_dir,
+  String[1]           $admin_pwd,
+  String[1]           $mcollective_pwd,
+  Array[String[1], 1] $supported_distributions,
 ) {
 
-  $packages      = [
-                     'rabbitmq-server',
+  ::homemade::is_supported_distrib($supported_distributions, $title)
+
+  $packages      = [ 'rabbitmq-server',
                      'python',          # Needed for the cli rabbitmqadmin.
                    ]
   $ssl_dir       = '/etc/rabbitmq/ssl'
@@ -51,8 +53,7 @@ class mcollective::middleware (
     notify => Service['rabbitmq'],
   }
 
-  file { [
-           "${ssl_dir}/cacert.pem",
+  file { [ "${ssl_dir}/cacert.pem",
            "${ssl_dir}/cert.pem",
            "${ssl_dir}/key.pem",
          ]:
@@ -160,8 +161,7 @@ rabbitmq_management-*/priv/www/cli/rabbitmqadmin"
                     }
                   ),
     require => File['/root/.rabbitmqadmin.conf'],
-    notify  => [
-                 Exec['create-update-admin-account-and-push-new-conf'],
+    notify  => [ Exec['create-update-admin-account-and-push-new-conf'],
                  Exec['update-mcollective-account'],
                ],
   }
