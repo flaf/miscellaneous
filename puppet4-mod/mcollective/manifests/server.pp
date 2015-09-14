@@ -1,3 +1,5 @@
+# TODO: add feature to manage subcollectives.
+#       https://docs.puppetlabs.com/mcollective/configure/server.html#collectives
 class mcollective::server (
   String[1]                    $server_private_key,
   String[1]                    $server_public_key,
@@ -106,6 +108,7 @@ class mcollective::server (
     ensure     => running,
     hasstatus  => true,
     hasrestart => true,
+    enable     => true,
   }
 
 }
