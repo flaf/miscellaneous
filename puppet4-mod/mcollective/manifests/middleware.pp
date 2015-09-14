@@ -166,7 +166,11 @@ rabbitmq_management-*/priv/www/cli/rabbitmqadmin"
                ],
   }
 
-  $rbmqadm = 'rabbitmqadmin --config="/root/.rabbitmqadmin.conf"'
+  # It seems to me that if the rabbitmqadmin commands are
+  # launched just after the restart of the service, there
+  # are risk of errors. I think the `sleep 0.5` command
+  # decreases the risk.
+  $rbmqadm = 'sleep 0.5 && rabbitmqadmin --config="/root/.rabbitmqadmin.conf"'
 
   # Creation/update of the admin account and update of the
   # /root/.rabbitmqadmin.conf file. Indeed, the 2 actions
