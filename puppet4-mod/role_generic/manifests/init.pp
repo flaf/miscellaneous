@@ -10,6 +10,7 @@ class role_generic {
   include '::ntp'
   include '::puppetagent'
   include '::mcollective::server'
+  #include '::mcollective::client'
 
 }
 

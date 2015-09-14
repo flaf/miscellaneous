@@ -1,0 +1,34 @@
+### This file is managed by Puppet, don't edit it. ###
+
+main_collective  = mcollective
+collectives      = mcollective
+libdir           = /opt/puppetlabs/mcollective/plugins
+logger_type      = console
+loglevel         = warn
+securityprovider = ssl
+
+connector        = <%= $connector %>
+
+plugin.ssl_server_public  = <%= $server_public_key_file %>
+plugin.ssl_client_private = <%= $client_private_key_file %>
+plugin.ssl_client_public  = <%= $client_public_key_file %>
+
+plugin.<%= $connector %>.pool.size           = 1
+plugin.<%= $connector %>.vhost               = /mcollective
+plugin.<%= $connector %>.pool.1.host         = <%= $middleware_server %>
+plugin.<%= $connector %>.pool.1.port         = <%= $middleware_port %>
+plugin.<%= $connector %>.pool.1.user         = mcollective
+plugin.<%= $connector %>.pool.1.password     = <%= $mcollective_pwd %>
+plugin.<%= $connector %>.pool.1.ssl          = true
+plugin.<%= $connector %>.pool.1.ssl.ca       = <%= $puppet_ssl_dir %>/certs/ca.pem
+plugin.<%= $connector %>.pool.1.ssl.cert     = <%= $puppet_ssl_dir %>/certs/<%= $::fqdn %>.pem
+plugin.<%= $connector %>.pool.1.ssl.key      = <%= $puppet_ssl_dir %>/private_keys/<%= $::fqdn %>.pem
+plugin.<%= $connector %>.pool.1.ssl.fallback = 0
+plugin.<%= $connector %>.stomp_1_0_fallback  = 0
+plugin.<%= $connector %>.heartbeat_interval  = 30
+plugin.<%= $connector %>.max_hbread_fails    = 2
+plugin.<%= $connector %>.max_hbrlck_fails    = 0
+
+connection_timeout = 3
+
+

@@ -8,8 +8,8 @@ class mcollective::server (
   Integer[1]                   $middleware_port,
   String[1]                    $mcollective_pwd,
   String[1]                    $puppet_ssl_dir,
+  String[1]                    $mco_tag,
   Array[String[1], 1]          $supported_distributions,
-  #####$client_public_keys,
 ) {
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
@@ -22,7 +22,9 @@ class mcollective::server (
   $server_private_key_file = "${mco_ssl_dir}/server-private.pem"
   $server_public_key_file  = "${mco_ssl_dir}/server-public.pem"
 
-  file { $mco_ssl_dir:
+  file { [ "${mco_ssl_dir}",
+           "${mco_ssl_dir}/clients"
+         ]:
     ensure  => directory,
     owner   => 'root',
     group   => 'root',
@@ -56,6 +58,12 @@ class mcollective::server (
     notify  => Service['mcollective'],
   }
 
+  File <<| tag == $mco_tag |>> {
+    #require => Package['puppet-agent'],
+    #before  => Service['mcollective'],
+    #notify  => Service['mcollective'],
+  }
+
   file { '/etc/puppetlabs/mcollective/server.cfg':
     ensure  => present,
     owner   => 'root',
@@ -70,7 +78,6 @@ class mcollective::server (
                       'middleware_server'       => $middleware_server,
                       'middleware_port'         => $middleware_port,
                       'mcollective_pwd'         => $mcollective_pwd,
-                      'puppet_ssl_dir'          => $puppet_ssl_dir,
                     }
                   ),
     require => Package['puppet-agent'],

@@ -17,8 +17,20 @@ function mcollective::data {
   if ! $conf.has_key('server_public_key') {
     fail("The `mcollective` entry must have a `server_public_key` key.")
   }
+  if ! $conf.has_key('client_private_key') {
+    fail("The `mcollective` entry must have a `client_private_key` key.")
+  }
+  if ! $conf.has_key('client_public_key') {
+    fail("The `mcollective` entry must have a `client_public_key` key.")
+  }
+  if ! $conf.has_key('mco_tag') {
+    fail("The `mcollective` entry must have a `mco_tag` key.")
+  }
 
-  $middleware_port = 61614;
+  $supported_distribs = ['trusty', 'jessie']
+  $puppet_ssl_dir     = '/etc/puppetlabs/puppet/ssl'
+  $connector          = 'rabbitmq'
+  $middleware_port    = 61614;
 
   { mcollective::middleware::stomp_ssl_ip            => '0.0.0.0',
     mcollective::middleware::stomp_ssl_port          => 61614,
@@ -29,12 +41,24 @@ function mcollective::data {
 
     mcollective::server::server_private_key          => $conf['server_private_key'],
     mcollective::server::server_public_key           => $conf['server_public_key'],
-    mcollective::server::connector                   => 'rabbitmq',
+    mcollective::server::mco_tag                     => $conf['mco_tag'],
+    mcollective::server::connector                   => $connector,
     mcollective::server::middleware_server           => $conf['middleware_address'],
     mcollective::server::middleware_port             => $middleware_port,
     mcollective::server::mcollective_pwd             => $conf['mcollective_pwd'],
-    mcollective::server::puppet_ssl_dir              => '/etc/puppetlabs/puppet/ssl',
-    mcollective::server::supported_distributions     => ['trusty', 'jessie'],
+    mcollective::server::puppet_ssl_dir              => $puppet_ssl_dir,
+    mcollective::server::supported_distributions     => $supported_distribs,
+
+
+    mcollective::client::client_private_key          => $conf['client_private_key'],
+    mcollective::client::client_public_key           => $conf['client_public_key'],
+    mcollective::client::mco_tag                     => $conf['mco_tag'],
+    mcollective::client::connector                   => $connector,
+    mcollective::client::middleware_server           => $conf['middleware_address'],
+    mcollective::client::middleware_port             => $middleware_port,
+    mcollective::client::mcollective_pwd             => $conf['mcollective_pwd'],
+    mcollective::client::puppet_ssl_dir              => $puppet_ssl_dir,
+    mcollective::client::supported_distributions     => $supported_distribs,
   }
 
 }
