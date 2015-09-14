@@ -27,6 +27,8 @@ class mcollective::server (
     owner   => 'root',
     group   => 'root',
     mode    => '0500',
+    recurse => true,
+    purge   => true,
     require => Package['puppet-agent'],
     before  => Service['mcollective'],
     notify  => Service['mcollective'],
@@ -76,24 +78,28 @@ class mcollective::server (
     notify  => Service['mcollective'],
   }
 
-  $etc_default = @(END)
-    ### This file is managed by Puppet, don't edit it. ###
-    #START=true
-    #DAEMON_OPTS="--pid ${pidfile}"
-    pidfile="/var/run/mcollectived-puppetlabs.pid"
-    daemonopts="--pid=${pidfile} --config=/etc/puppetlabs/mcollective/server.cfg"
+  # TODO: workaround for PUP-5232.
+  #       https://tickets.puppetlabs.com/browse/PUP-5232
+  if $::lsbdistcodename == 'trusty' {
+    $etc_default = @(END)
+      ### This file is managed by Puppet, don't edit it. ###
+      #START=true
+      #DAEMON_OPTS="--pid ${pidfile}"
+      pidfile="/var/run/mcollectived-puppetlabs.pid"
+      daemonopts="--pid=${pidfile} --config=/etc/puppetlabs/mcollective/server.cfg"
 
-    | END
+      | END
 
-  file { '/etc/default/mcollective':
-    ensure  => present,
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0644',
-    content => $etc_default,
-    require => Package['puppet-agent'],
-    before  => Service['mcollective'],
-    notify  => Service['mcollective'],
+    file { '/etc/default/mcollective':
+      ensure  => present,
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0644',
+      content => $etc_default,
+      require => Package['puppet-agent'],
+      before  => Service['mcollective'],
+      notify  => Service['mcollective'],
+    }
   }
 
   ## Public keys of the mcollective clients.
