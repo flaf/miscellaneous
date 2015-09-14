@@ -29,4 +29,26 @@ puppet:
   collection: 'PC1'
   pinning_agent_version: '1.2.*'
 
+mcollective:
+  middleware_admin_pwd: >
+    ENC[PKCS7,MIIBiQYJKoZIhvcNAQcDoIIBejCCAXYCAQAxggEhMIIBHQIBADAFMAACAQEw
+    DQYJKoZIhvcNAQEBBQAEggEAk3faxDlaNIRYEr94c6bIixIGGDAbubmaHrx5
+    gAtCqQt77h4XU0ZzZF1EQipCB5XPsMyU9UBjVq5VvCso7qpAq3SPSsFzP24r
+    xD75+rsMbH7NqAnr/njNPIAiUieWPIxKHyEXY3vOvIPp1AoI7jEnHGcRWjKq
+    ErmnYzufy6OdjyoqurArVXrHg4M5ZKK0sqDumOuE/gkdbBj8dMb8qhX3uhNL
+    tP/xFpcac3e9ZB3xeFCp6Ms37DTdt8yKGaBAl/xCsrYl7kkQWXJClZy2CYk3
+    5FG1czCYuZ2rh+MPunEsypqNtNOQsPbimmzq8tIO0avy8BieACmblfbb0zap
+    YnWoUDBMBgkqhkiG9w0BBwEwHQYJYIZIAWUDBAEqBBDa3jITTT2dKuNXi1mL
+    hTUfgCDBHQR1k2qs8YBzOSNaDJxvwoNIAHfMkAhl0ru4x6Rl2w==]
+  mcollective_pwd: >
+    ENC[PKCS7,MIIBiQYJKoZIhvcNAQcDoIIBejCCAXYCAQAxggEhMIIBHQIBADAFMAACAQEw
+    DQYJKoZIhvcNAQEBBQAEggEAqqb9F4LNHqS9don9w+rOjXbiUuP8k6J8SwBP
+    09K8d19rquYDnIr+0kh51Ii7BDj9YGBQzlwj7Qmee/r1dZDQpunekST/BeOD
+    d+2SJwIi8M+JtEJqci3wUhj2f6+4M6PbopiSyirWpMjsCeUc9PZAyzTMYd7u
+    nSMYYWrf/AJyWXLM1UmqjL2v6DntpLyq8XVZyo4mtadhtA8FcMrQZnTvojD1
+    xwnEpP6MWLpFjFQPmShwJBX9VE2Sd2m354TvgUQTY5HE+W3dY3BL/BeJ51b7
+    7VcbrJYJW5ddaYKQO7erLIOXp8zfN9XFU8kFo3HlcaAAC4XXc/PpobCvHxri
+    HYCLiTBMBgkqhkiG9w0BBwEwHQYJYIZIAWUDBAEqBBAAIWHwHW4DonGU1VuT
+    7xtLgCBt3sLPLEFsTwUfDc35M1kLKEEVSzxNZR7DGn5s/b1szQ==]
+
 

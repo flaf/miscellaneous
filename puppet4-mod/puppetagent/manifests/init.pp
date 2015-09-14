@@ -6,7 +6,7 @@ class puppetagent (
   Array[String[1], 1] $supported_distributions,
 ) {
 
-  if ! $module_off {
+  if ! $disable_class {
 
     ::homemade::is_supported_distrib($supported_distributions, $title)
 

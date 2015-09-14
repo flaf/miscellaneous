@@ -1,5 +1,5 @@
 ---
-enc_role: '::role_generic'
+enc_role: '::role_mco_middleware'
 enc_datacenter: 'vty'
 
 network::restart: true
