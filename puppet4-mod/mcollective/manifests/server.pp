@@ -14,9 +14,7 @@ class mcollective::server (
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
-  require '::repository::puppet'
-
-  ensure_packages(['puppet-agent'], { ensure => present, })
+  require '::mcollective::package'
 
   $mco_ssl_dir             = '/etc/puppetlabs/mcollective/ssl'
   $server_private_key_file = "${mco_ssl_dir}/server-private.pem"

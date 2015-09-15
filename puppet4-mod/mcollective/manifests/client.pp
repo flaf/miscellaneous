@@ -7,16 +7,24 @@ class mcollective::client (
   Integer[1]                   $middleware_port,
   String[1]                    $mcollective_pwd,
   String[1]                    $puppet_ssl_dir,
+  String[1]                    $mco_client_keys_dir,
   Array[String[1], 1]          $supported_distributions,
 ) {
 
-  # We assume that a client is necessarily a mcollective server.
-  require '::mcollective::server'
+  require '::mcollective::package'
 
-  $mco_ssl_dir             = '/etc/puppetlabs/mcollective/ssl'
-  $client_private_key_file = "${mco_ssl_dir}/clients/${::fqdn}.priv.pem"
-  $client_public_key_file  = "${mco_ssl_dir}/clients/${::fqdn}.pub.pem"
-  $server_public_key_file  = "${mco_ssl_dir}/server-public.pem"
+  $client_private_key_file = "${mco_client_keys_dir}/${::fqdn}.priv.pem"
+  $client_public_key_file  = "${mco_client_keys_dir}/${::fqdn}.pub.pem"
+  $server_public_key_file  = "${mco_client_keys_dir}/server-public-key.pem"
+
+  file { $puppet_ssl_dir:
+    ensure  => directory,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0500',
+    recurse => true,
+    purge   => true,
+  }
 
   file { $client_private_key_file:
     ensure  => present,
@@ -26,6 +34,7 @@ class mcollective::client (
     content => $client_private_key,
   }
 
+  # This key must be exported for the mcollective servers.
   @@file { $client_public_key_file:
     ensure  => present,
     owner   => 'root',
