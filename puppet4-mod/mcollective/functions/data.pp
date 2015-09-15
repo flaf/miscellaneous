@@ -5,24 +5,31 @@ function mcollective::data {
   if ! $conf.has_key('middleware_admin_pwd') {
     fail("The `mcollective` entry must have a `middleware_admin_pwd` key.")
   }
+
   if ! $conf.has_key('mcollective_pwd') {
     fail("The `mcollective` entry must have a `mcollective_pwd` key.")
   }
+
   if ! $conf.has_key('middleware_address') {
     fail("The `mcollective` entry must have a `middleware_address` key.")
   }
+
   if ! $conf.has_key('server_private_key') {
     fail("The `mcollective` entry must have a `server_private_key` key.")
   }
+
   if ! $conf.has_key('server_public_key') {
     fail("The `mcollective` entry must have a `server_public_key` key.")
   }
+
   if ! $conf.has_key('client_private_key') {
     fail("The `mcollective` entry must have a `client_private_key` key.")
   }
+
   if ! $conf.has_key('client_public_key') {
     fail("The `mcollective` entry must have a `client_public_key` key.")
   }
+
   if ! $conf.has_key('mco_tag') {
     fail("The `mcollective` entry must have a `mco_tag` key.")
   }

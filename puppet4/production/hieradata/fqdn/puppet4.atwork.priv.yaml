@@ -1,4 +1,15 @@
 ---
 enc_role: '::role_generic'
+enc_datacenter: 'vty'
+
+puppetagent::disable_class: true
+network::restart: true
+
+interfaces:
+  eth0:
+    in_networks: [ 'vbox_adm' ]
+    macaddress: '08:00:27:ad:c9:18'
+    inet:
+      method: 'dhcp'
 
 
