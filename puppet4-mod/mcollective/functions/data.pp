@@ -62,6 +62,7 @@ function mcollective::data {
   $puppet_ssl_dir     = '/etc/puppetlabs/puppet/ssl'
   $connector          = 'rabbitmq'
   $middleware_port    = 61614
+  $ssl_versions       = ['tlsv1.2', 'tlsv1.1', 'tlsv1']
   $supported_distribs = ['trusty', 'jessie'];
 
   { mcollective::middleware::stomp_ssl_ip            => '0.0.0.0',
@@ -69,6 +70,7 @@ function mcollective::data {
     mcollective::middleware::puppet_ssl_dir          => $puppet_ssl_dir,
     mcollective::middleware::admin_pwd               => $conf['middleware_admin_pwd'],
     mcollective::middleware::mcollective_pwd         => $conf['mcollective_pwd'],
+    mcollective::middleware::ssl_versions            => $ssl_versions,
     # Currently, the mcollective::middleware works only Ubuntu Trusty.
     mcollective::middleware::supported_distributions => [ 'trusty' ],
 

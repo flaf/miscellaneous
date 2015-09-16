@@ -25,12 +25,14 @@ inventory_networks:
     cidr_address: '172.20.0.0/16'
     gateway: '172.20.0.1'
 
-# puppet-agent 1.2.4 available but currently this
-# version fails with the rabbitmq-server (the SSL
-# handshake fails).
 puppet:
   collection: 'PC1'
-  pinning_agent_version: '1.2.2*'
+  # TODO: puppet-agent 1.2.4 available but currently this
+  # version fails with the rabbitmq-server. The SSL
+  # handshake fails. It's a problem with the openssl
+  # component provided in the puppet-agent package.
+  # Need to found a solution...
+  pinning_agent_version: '1.2.2-*'
 
 mcollective:
   tag: 'mcollective'

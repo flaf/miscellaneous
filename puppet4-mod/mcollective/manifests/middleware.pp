@@ -6,6 +6,7 @@ class mcollective::middleware (
   String[1]           $puppet_ssl_dir,
   String[1]           $admin_pwd,
   String[1]           $mcollective_pwd,
+  Array[String[1]]    $ssl_versions,
   Array[String[1], 1] $supported_distributions,
 ) {
 
@@ -26,6 +27,7 @@ class mcollective::middleware (
     content => epp( 'mcollective/rabbitmq.config.epp',
                     { 'stomp_ssl_ip'   => $stomp_ssl_ip,
                       'stomp_ssl_port' => $stomp_ssl_port,
+                      'ssl_versions'   => $ssl_versions,
                     }
                   ),
     require => Package['rabbitmq-server'],
