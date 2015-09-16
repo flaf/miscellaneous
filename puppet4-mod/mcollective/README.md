@@ -60,6 +60,13 @@ server. But RabbitMQ seems to not support certificate revocation
 list (crl). Is it the case with Activemq? Activemq is in Ubuntu
 repositories now.
 
+* The README is absolutely not finished. Don't forget
+to draw a schema like in
+[this page](https://docs.puppetlabs.com/mcollective/overview_components.html).
+
+* Implement the installation of the `shell` plugin and
+the `puppet` plugin. Take the packages from puppet 3.x
+and just change the paths.
 
 
 
