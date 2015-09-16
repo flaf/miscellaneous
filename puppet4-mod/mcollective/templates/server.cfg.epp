@@ -1,7 +1,7 @@
 <%- |
-$server_private_key_file,
-$server_public_key_file,
-$mco_ssl_dir,
+$server_priv_key_path,
+$server_pub_key_path,
+$allowed_clients_dir,
 $connector,
 $middleware_server,
 $middleware_port,
@@ -21,9 +21,9 @@ securityprovider  = ssl
 direct_addressing = 1
 connector         = <%= $connector %>
 
-plugin.ssl_client_cert_dir  = <%= $mco_ssl_dir %>/clients
-plugin.ssl_server_private   = <%= $server_private_key_file %>
-plugin.ssl_server_public    = <%= $server_public_key_file %>
+plugin.ssl_client_cert_dir  = <%= $allowed_clients_dir %>
+plugin.ssl_server_private   = <%= $server_priv_key_path %>
+plugin.ssl_server_public    = <%= $server_pub_key_path %>
 plugin.<%= $connector %>.vhost       = /mcollective
 plugin.<%= $connector %>.pool.size   = 1
 

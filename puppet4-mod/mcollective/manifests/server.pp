@@ -7,8 +7,8 @@ class mcollective::server (
   String[1]                    $middleware_server,
   Integer[1]                   $middleware_port,
   String[1]                    $mcollective_pwd,
-  String[1]                    $puppet_ssl_dir,
   String[1]                    $mco_tag,
+  String[1]                    $puppet_ssl_dir,
   Array[String[1], 1]          $supported_distributions,
 ) {
 
@@ -16,12 +16,32 @@ class mcollective::server (
 
   require '::mcollective::package'
 
-  $mco_ssl_dir             = '/etc/puppetlabs/mcollective/ssl'
-  $server_private_key_file = "${mco_ssl_dir}/server-private.pem"
-  $server_public_key_file  = "${mco_ssl_dir}/server-public.pem"
+  # Just shortcuts.
+  $server_keys_dir     = $::mcollective::package::server_keys_dir
+  $allowed_clients_dir = $::mcollective::package::allowed_clients_dir
+  $client_keys_dir     = $::mcollective::package::client_keys_dir
 
-  file { [ "${mco_ssl_dir}",
-           "${mco_ssl_dir}/clients"
+  # Paths of important files.
+  $server_priv_key_path = "${server_keys_dir}/server.priv-key.pem"
+  $server_pub_key_path  = "${server_keys_dir}/server.pub-key.pem"
+
+  # mcollective::client and mcollective::server will manage this
+  # directory because the client keys are very sensitive. If a
+  # node is no longer a mcollective client, we want to remove the
+  # client keys (especially the client private key).
+  if !defined(File[$client_keys_dir]) {
+    file { $client_keys_dir:
+      ensure  => directory,
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0500',
+      recurse => true,
+      purge   => true,
+    }
+  }
+
+  file { [ "${server_keys_dir}",
+           "${allowed_clients_dir}"
          ]:
     ensure  => directory,
     owner   => 'root',
@@ -29,37 +49,34 @@ class mcollective::server (
     mode    => '0500',
     recurse => true,
     purge   => true,
-    require => Package['puppet-agent'],
     before  => Service['mcollective'],
     notify  => Service['mcollective'],
   }
 
-  file { $server_private_key_file:
+  file { $server_priv_key_path:
     ensure  => present,
     owner   => 'root',
     group   => 'root',
     mode    => '0600',
     content => $server_private_key,
-    require => Package['puppet-agent'],
     before  => Service['mcollective'],
     notify  => Service['mcollective'],
   }
 
-  file { $server_public_key_file:
+  file { $server_pub_key_path:
     ensure  => present,
     owner   => 'root',
     group   => 'root',
     mode    => '0600',
     content => $server_public_key,
-    require => Package['puppet-agent'],
     before  => Service['mcollective'],
     notify  => Service['mcollective'],
   }
 
+  # Import the exported public keys of mcollective clients with the tag.
   File <<| tag == $mco_tag |>> {
-    #require => Package['puppet-agent'],
-    #before  => Service['mcollective'],
-    #notify  => Service['mcollective'],
+    before  => Service['mcollective'],
+    notify  => Service['mcollective'],
   }
 
   file { '/etc/puppetlabs/mcollective/server.cfg':
@@ -68,17 +85,16 @@ class mcollective::server (
     group   => 'root',
     mode    => '0600',
     content => epp( 'mcollective/server.cfg.epp',
-                    { 'server_private_key_file' => $server_private_key_file,
-                      'server_public_key_file'  => $server_public_key_file,
-                      'mco_ssl_dir'             => $mco_ssl_dir,
-                      'puppet_ssl_dir'          => $puppet_ssl_dir,
-                      'connector'               => $connector,
-                      'middleware_server'       => $middleware_server,
-                      'middleware_port'         => $middleware_port,
-                      'mcollective_pwd'         => $mcollective_pwd,
+                    { 'server_priv_key_path'=> $server_priv_key_path,
+                      'server_pub_key_path' => $server_pub_key_path,
+                      'allowed_clients_dir' => $allowed_clients_dir,
+                      'puppet_ssl_dir'      => $puppet_ssl_dir,
+                      'connector'           => $connector,
+                      'middleware_server'   => $middleware_server,
+                      'middleware_port'     => $middleware_port,
+                      'mcollective_pwd'     => $mcollective_pwd,
                     }
                   ),
-    require => Package['puppet-agent'],
     before  => Service['mcollective'],
     notify  => Service['mcollective'],
   }
@@ -101,19 +117,10 @@ class mcollective::server (
       group   => 'root',
       mode    => '0644',
       content => $etc_default,
-      require => Package['puppet-agent'],
       before  => Service['mcollective'],
       notify  => Service['mcollective'],
     }
   }
-
-  ## Public keys of the mcollective clients.
-  #$defaults = {
-  #  require => Package['mcollective'],
-  #  before  => Service['mcollective'],
-  #  notify  => Service['mcollective'],
-  #}
-  #create_resources('::mcollective::mco_client_public_key', $client_public_keys, $defaults)
 
   service { 'mcollective':
     ensure     => running,

@@ -1,5 +1,5 @@
 # TODO: This class is awful (lot of exec resources etc). Could
-#       it be more simple with Activemq.
+#       it be more simple with Activemq...?
 class mcollective::middleware (
   String[1]           $stomp_ssl_ip,
   Integer[1]          $stomp_ssl_port,

@@ -9,9 +9,9 @@ securityprovider = ssl
 
 connector        = <%= $connector %>
 
-plugin.ssl_server_public  = <%= $server_public_key_file %>
-plugin.ssl_client_private = <%= $client_private_key_file %>
-plugin.ssl_client_public  = <%= $client_public_key_file %>
+plugin.ssl_server_public  = <%= $server_pub_key_path %>
+plugin.ssl_client_private = <%= $client_priv_key_path %>
+plugin.ssl_client_public  = <%= $client_pub_key_path %>
 
 plugin.<%= $connector %>.pool.size           = 1
 plugin.<%= $connector %>.vhost               = /mcollective
