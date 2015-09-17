@@ -15,6 +15,10 @@ class role_generic {
     include '::mcollective::client'
   }
 
+  if $::fqdn =~ /^client-jessie\./ {
+    include '::puppet_forge'
+  }
+
 }
 
 

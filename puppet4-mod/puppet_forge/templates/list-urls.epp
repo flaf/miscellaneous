@@ -1,0 +1,6 @@
+<%- | $listurls | -%>
+<%- $listurls.each |$url| { -%>
+<%= $url.strip %>
+<%- } -%>
+
+

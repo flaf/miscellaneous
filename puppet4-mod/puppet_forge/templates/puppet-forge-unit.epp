@@ -1,0 +1,17 @@
+### This file is managed by Puppet, don't edit it ###
+
+[Unit]
+Description=Puppet forge server
+After=network.target
+
+[Service]
+User=puppetforge
+Group=puppetforge
+PIDFile=/var/lib/puppetforge/puppetforge.pid
+ExecStart=/usr/local/bin/run-puppet-forge
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+
+
