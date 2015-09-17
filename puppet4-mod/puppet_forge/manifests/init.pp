@@ -1,3 +1,5 @@
+# TODO: implement the service "update-module".
+#
 class puppet_forge (
   String[1]           $git_url,
   String[1]           $commit_id,
