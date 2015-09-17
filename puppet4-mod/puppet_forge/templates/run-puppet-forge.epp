@@ -1,5 +1,6 @@
 <%- |
   $workdir,
+  $homedir,
   $address,
   $port,
   $modulesdir,
@@ -8,7 +9,6 @@
   $logdir,
 | -%>
 #!/bin/sh
-
 ### This file is managed by Puppet, don't edit it. ###
 
 export PATH='/usr/sbin:/usr/bin:/sbin:/bin'
@@ -25,7 +25,7 @@ else
     exit 1
 fi
 
-if ! cd <%= $workdir %>
+if ! cd "<%= $workdir %>"
 then
     echo "Sorry, the programm doesn't seem to be installed." >&2
     exit 1
@@ -36,6 +36,6 @@ bundle exec bin/puppet-forge-server --bind '<%= $address %>' --port '<%= $port %
     --proxy '<%= $remote_forge %>' \
     --cache-basedir '<%= $cachedir %>' \
     --log-dir '<%= $logdir %>' \
-    --pidfile '/var/lib/puppetforge/puppetforge.pid'
+    --pidfile '<%= $homedir %>/puppetforge.pid'
 
 

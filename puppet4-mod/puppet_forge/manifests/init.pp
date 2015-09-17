@@ -83,6 +83,7 @@ class puppet_forge (
     notify  => Service['puppetforge'],
     content => epp( 'puppet_forge/run-puppet-forge.epp',
                     { 'workdir'      => $workdir,
+                      'homedir'      => $homedir,
                       'address'      => $address,
                       'port'         => $port,
                       'modulesdir'   => $modulesdir,
@@ -101,7 +102,8 @@ class puppet_forge (
     before  => Service['puppetforge'],
     notify  => Service['puppetforge'],
     require => File['/usr/local/bin/run-puppet-forge'],
-    content => epp('puppet_forge/puppet-forge-unit.epp'),
+    content => epp('puppet_forge/puppet-forge-unit.epp',
+                   { 'homedir' => $homedir }),
   }
 
   service { 'puppetforge':

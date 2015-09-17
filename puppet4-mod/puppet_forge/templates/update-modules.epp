@@ -7,7 +7,6 @@
 #!/bin/sh
 ### This file is managed by Puppet, don't edit it ###
 
-set -x
 export PATH='/usr/sbin:/usr/bin:/sbin:/bin'
 
 user=$(id -un)
@@ -22,14 +21,14 @@ else
     exit 1
 fi
 
-gitdir="<%= $gitdir %>"
-modulesdir="<%= $modulesdir %>"
+gitdir='<%= $gitdir %>'
+modulesdir='<%= $modulesdir %>'
 
 while true
 do
 
   # Get modules.
-  for url in $(cat "<%= $listurlsfile %>")
+  for url in $(cat '<%= $listurlsfile %>')
   do
 
       repo_name=$(echo "$url" | sed -r 's|^.*/([-a-z0-9_]+)\.git$|\1|')
