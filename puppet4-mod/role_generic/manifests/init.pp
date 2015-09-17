@@ -11,14 +11,6 @@ class role_generic {
   include '::puppetagent'
   include '::mcollective::server'
 
-  if $::fqdn =~ /^puppet/ {
-    include '::mcollective::client'
-  }
-
-  if $::fqdn =~ /^client-jessie\./ {
-    include '::puppet_forge'
-  }
-
 }
 
 
