@@ -1,0 +1,18 @@
+---
+enc_role: '::role_puppetserver'
+enc_datacenter: 'vty'
+
+# Important: we disable the "puppetagent" module to avoid
+# that the puppet.conf file is managed twice (by the "puppetserver"
+# module and the "puppetagent" module.
+puppetagent::disable_class: true
+network::restart: true
+
+interfaces:
+  eth0:
+    in_networks: [ 'vbox_adm' ]
+    macaddress: '08:00:27:bc:ce:e4'
+    inet:
+      method: 'dhcp'
+
+
