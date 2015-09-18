@@ -12,7 +12,7 @@ function puppetagent::data {
   { puppetagent::service_enabled         => false,
     puppetagent::runinterval             => '7d',
     puppetagent::server                  => $server,
-    puppetagent::disable_class           => false,
+    puppetagent::manage_puppetconf       => true,
     puppetagent::supported_distributions => [ 'trusty', 'jessie' ],
   }
 

@@ -11,10 +11,10 @@ Here is an example:
 
 ```puppet
 class { '::puppetagent':
-  service_enabled => false,
-  runinterval     => '7d',
-  server          => 'puppet4.mydomain.tld',
-  disable_class   => false,
+  service_enabled   => false,
+  runinterval       => '7d',
+  server            => 'puppet4.mydomain.tld',
+  manage_puppetconf => true,
 }
 ```
 
@@ -39,19 +39,22 @@ if defined (generally when the `trusted_server_facts`
 parameter is set to `true` in the file `puppet.conf`
 of the server), else it's just the string `puppet`.
 
-The `disalbe_class` parameter is a boolean. If set
-to `true`, the puppet class do absolutely nothing.
-The goal of this parameter is to use this puppet
-class in a generic module and be able to disable
-this class for specific nodes like puppet servers
-just by adding this line:
+The `manage_puppetconf` parameter is a boolean. If set
+to `false`, the puppet class will not manage the
+`puppet.conf` file. The goal of this parameter is to
+use this puppet class in a generic module and be able
+to disable the management of the `puppet.conf` file
+for specific nodes like puppet servers which will
+probably use a `puppetserver` module where the
+`puppet.conf` file will be managed. For these kind
+of nodes, you can just add this line:
 
 ```yaml
-puppetagent::disable_class: true
+puppetagent::manage_puppetconf: false
 ```
 
 in the `$fqdn.yaml` file of these specific nodes.
-The default value of this parameter is `false`.
+The default value of this parameter is `true`.
 
 
 

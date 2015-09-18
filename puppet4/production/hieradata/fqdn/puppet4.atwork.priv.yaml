@@ -2,10 +2,11 @@
 enc_role: '::role_puppetserver'
 enc_datacenter: 'vty'
 
-# Important: we disable the "puppetagent" module to avoid
-# that the puppet.conf file is managed twice (by the "puppetserver"
-# module and the "puppetagent" module.
-puppetagent::disable_class: true
+# Important: we disable the management of puppet.conf
+# by the "puppetagent" module to avoid that the puppet.conf
+# file is managed twice (by the "puppetserver" module and
+# the "puppetagent" module.
+puppetagent::manage_puppetconf: false
 network::restart: true
 
 interfaces:

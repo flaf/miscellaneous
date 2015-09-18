@@ -2,27 +2,27 @@ class puppetagent (
   Boolean             $service_enabled,
   String[1]           $runinterval,
   String[1]           $server,
-  Boolean             $disable_class,
+  Boolean             $manage_puppetconf,
   Array[String[1], 1] $supported_distributions,
 ) {
 
-  if ! $disable_class {
+  ::homemade::is_supported_distrib($supported_distributions, $title)
 
-    ::homemade::is_supported_distrib($supported_distributions, $title)
+  require '::repository::puppet'
 
-    require '::repository::puppet'
+  ensure_packages(['puppet-agent'], { ensure => present, })
 
-    ensure_packages(['puppet-agent'], { ensure => present, })
+  if $service_enabled {
+    $ensure_value = 'running'
+    $enable_value = true
+    $notify       = Service['puppet']
+  } else {
+    $ensure_value = 'stopped'
+    $enable_value = false
+    $notify       = undef # Do not refresh the service in this case.
+  }
 
-    if $service_enabled {
-      $ensure_value = 'running'
-      $enable_value = true
-      $notify       = Service['puppet']
-    } else {
-      $ensure_value = 'stopped'
-      $enable_value = false
-      $notify       = undef # Do not refresh the service in this case.
-    }
+  if $manage_puppetconf {
 
     file { '/etc/puppetlabs/puppet/puppet.conf':
       ensure  => present,
@@ -39,17 +39,13 @@ class puppetagent (
       notify  => $notify,
     }
 
-    service { 'puppet':
-      ensure     => $ensure_value,
-      enable     => $enable_value,
-      hasrestart => true,
-      hasstatus  => true,
-    }
+  }
 
-  } else {
-
-    # Do nothing.
-
+  service { 'puppet':
+    ensure     => $ensure_value,
+    enable     => $enable_value,
+    hasrestart => true,
+    hasstatus  => true,
   }
 
 }
