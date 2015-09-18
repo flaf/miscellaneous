@@ -1,0 +1,28 @@
+<%- |$retrieve_common_hiera| -%>
+---
+### This file is managed by Puppet, don't edit. ###
+
+:backends:
+  - 'eyaml'
+
+:hierarchy:
+  - '%{::environment}/hieradata/fqdn/%{::clientcert}'
+  - '%{::environment}/hieradata/group/%{::groups_0}'
+  - '%{::environment}/hieradata/group/%{::groups_1}'
+  - '%{::environment}/hieradata/group/%{::groups_2}'
+  - '%{::environment}/hieradata/datacenter/%{::datacenter}'
+  - '%{::environment}/hieradata/common'
+<%- if $retrieve_common_hiera { -%>
+  - '%{::environment}/common-from-master.yaml'
+<%- } -%>
+
+:merge_behavior: 'deeper'
+
+:eyaml:
+  :extension: 'yaml'
+  :datadir: '/etc/puppetlabs/code/environments'
+  :pkcs7_private_key: '/etc/puppetlabs/puppet/keys/private_key.pkcs7.pem'
+  :pkcs7_public_key: '/etc/puppetlabs/puppet/keys/public_key.pkcs7.pem'
+
+
+

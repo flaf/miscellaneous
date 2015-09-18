@@ -1,0 +1,35 @@
+<%- |$user, $db, $pwd | -%>
+### This file is manged by Puppet, don't edit it.
+
+[database]
+classname   = org.postgresql.Driver
+subprotocol = postgresql
+subname     = //localhost:5432/<%= $user %>
+username    = <%= $db %>
+password    = <%= $pwd %>
+
+# Timing:
+#
+# Every "gc-interval" minutes, the garbage collector try
+# to delete data in the database.
+#
+#       1. If a node has no activity since at least "node-ttl"
+#          days, the node is marked as "deactived". But its
+#          data are not deleted yet.
+#       2. If a node is marked as "deactived" during at least
+#          "node-purge-ttl, its data are deleted from the
+#          database.
+#
+#   You can see: https://docs.puppetlabs.com/puppetdb/latest/configure.html
+#
+# The garbage colector can compact data sometime sometimes.
+gc-interval    = 60
+node-ttl       = 30d
+node-purge-ttl = 10d
+
+# Puppetdb keeps a log (a report) of puppet runs in its base.
+# If a report is older than report-ttl, it will be deleted.
+# See https://docs.puppetlabs.com/puppetdb/latest/configure.html#report-ttl:
+report-ttl = 14d
+
+

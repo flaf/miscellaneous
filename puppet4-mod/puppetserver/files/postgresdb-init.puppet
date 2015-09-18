@@ -1,0 +1,65 @@
+#!/bin/sh
+#
+# This file is managed by Puppet, don't edit it.
+#
+# Script to initialize the PostgreSQL database
+# or to just update the password of the user.
+#
+# Copyright 2015 François Lafont <francois.lafont@ac-versailles.fr>
+#
+
+export PATH='/usr/sbin:/usr/bin:/sbin:/bin'
+script_name=${0##*/}
+
+user="$1"
+db="$2"
+pwd="$3"
+
+# Test if the arguments are non empty.
+if [ -z "$user" ] || [ -z "$db" ] || [ -z "$pwd" ]
+then
+    echo "Sorry, you must provide 3 arguments."
+    echo "$script_name <user> <database> <password>"
+    echo "End of the script."
+    exit 1
+fi
+
+# Test if the current user is postgres.
+euid=$(id --user --name) # The Effective User ID.
+if [ "$euid" != 'postgres' ]
+then
+    echo "Sorry, you must execute this script with EUID == 'postgres'."
+    echo "End of the script."
+    exit 1
+fi
+
+# Test if the user exists.
+if ! psql --quiet --tuples-only --no-align -F';' -c '\du' \
+    | cut -d';' -f1 | grep -q "^${user}$"
+then
+    # The user doesn't exist. We create him.
+    sql_code="CREATE ROLE $user WITH ENCRYPTED PASSWORD '$pwd'"
+    sql_code="$sql_code NOSUPERUSER NOCREATEDB NOCREATEROLE INHERIT LOGIN"
+    psql --command "$sql_code"
+fi
+
+# Test if the base exists.
+if ! psql --quiet --tuples-only --no-align -F';' -c '\l' | cut -d';' -f1 \
+    | grep -q "^${db}$"
+then
+    # The base doesn't exist. We create it.
+    echo "CREATE DATABASE $db OWNER $user ENCODING 'UTF8';" | psql
+fi
+
+# Update of the password. It's not necessary if the user has
+# just been created by the current script (and, in this case,
+# the command below is just useless). But if the user already
+# exists before the execution of the current script, we must
+# update the password.
+echo "ALTER USER $user WITH ENCRYPTED PASSWORD '$pwd';" | psql
+
+# We don't test if the pg_trgm extension is already installed,
+# because the SQL request allow the "IF NOT EXISTS" syntax.
+psql "$db" -c 'CREATE EXTENSION IF NOT EXISTS pg_trgm'
+
+

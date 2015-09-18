@@ -1,0 +1,7 @@
+<%- |$puppetdb_addr| -%>
+### This file is managed by Puppet, don't edit it. ###
+[main]
+server = <%= $puppetdb_addr %>
+port = 8081
+
+

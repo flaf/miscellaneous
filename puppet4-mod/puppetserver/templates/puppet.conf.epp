@@ -1,0 +1,61 @@
+<%- |
+$ca_server,
+$ca_myself,
+$puppet_server_for_agent,
+$puppetserver_for_myself,
+$module_repository,
+| -%>
+### This file is managed by Puppet, don't edit it. ###
+
+# Documentation here:
+#
+#   https://docs.puppetlabs.com/references/latest/configuration.html
+#
+
+[master]
+# Present by default after a fresh install.
+vardir  = /opt/puppetlabs/server/data/puppetserver
+logdir  = /var/log/puppetlabs/puppetserver
+rundir  = /var/run/puppetlabs/puppetserver
+pidfile = /var/run/puppetlabs/puppetserver/puppetserver.pid
+codedir = /etc/puppetlabs/code
+
+# Modifications.
+external_nodes       = $environmentpath/enc
+environment_timeout  = 0
+node_terminus        = exec
+storeconfigs         = true
+storeconfigs_backend = puppetdb
+thin_storeconfigs    = false
+async_storeconfigs   = false
+ca_ttl               = 10y
+<%- if !$module_repository.empty { -%>
+module_repository    = <%= $module_repository  %>
+<%- } -%>
+
+# With this parameter set to true, we are able to use the
+# `$::server_facts` global variable (fact) in the puppet class.
+# Especially `$::server_facts['servername']` which is the
+# fqdn of the puppetserver during the puppet run.
+trusted_server_facts = true
+
+<%- if $ca_myself { -%>
+# This puppetserver is CA for its clients (the default case).
+#ca        = true
+#ca_server = $server
+<%- } else { -%>
+# This puppetserver IS NOT CA for its clients.
+ca        = false
+ca_server = <%= $ca_server %>
+<%- } -%>
+
+[agent]
+<%- if $ca_myself and $puppetserver_for_myself { -%>
+server = <%= $::fqdn %>
+ssldir = /etc/puppetlabs/puppet/ssl
+<%- } else { -%>
+server = <%= $puppet_server_for_agent %>
+ssldir = /etc/puppetlabs/puppet/sslagent
+<%- } -%>
+
+
