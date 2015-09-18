@@ -19,7 +19,7 @@ deb http://apt.puppetlabs.com $distrib $COLLECTION
 #deb-src http://apt.puppetlabs.com $distrib $COLLECTION
 " > /etc/apt/sources.list.d/puppetlabs-$collection.list
 
-apt-get update && apt-get install puppet-agent=1.2.2
+apt-get update && apt-get install puppet-agent=1.2.2-*
 
 /opt/puppetlabs/bin/puppet agent --test --server=$server --ssldir=/etc/puppetlabs/puppet/sslagent
 ```

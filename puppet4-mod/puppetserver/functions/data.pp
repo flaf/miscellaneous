@@ -4,7 +4,7 @@ function puppetserver::data {
   $puppet_memory           = '1g'
   $puppetdb_memory         = '1g'
   $retrieve_common_hiera   = true
-  $puppetdb_fqdn           = $::fqdn
+  $puppetdb_fqdn           = $::server_facts['servername']
   $ca_server               = $::server_facts['servername']
   $puppet_server_for_agent = $::server_facts['servername']
   $module_repository       = ''
