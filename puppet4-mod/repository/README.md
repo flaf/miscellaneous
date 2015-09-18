@@ -84,3 +84,26 @@ puppet:
 ```
 
 
+
+
+# The `repository::postgresql` class
+
+## Usage
+
+Here is an example:
+
+```puppet
+class { '::repository::postgresql':
+  url                => 'http://apt.postgresql.org/pub/repos/apt/',
+  src                => false,
+}
+```
+
+## Parameters and default values
+
+The default values of the parameters are exactly
+the value of the call above.
+
+
+
+

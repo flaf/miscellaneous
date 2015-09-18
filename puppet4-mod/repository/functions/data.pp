@@ -29,12 +29,17 @@ function repository::data {
     repository::distrib::supported_distributions => $distribs,
     repository::distrib::stage                   => $stage,
 
-    repository::puppet::url                      => 'http://apt.puppetlabs.com',
-    repository::puppet::src                      => false,
-    repository::puppet::collection               => $conf['collection'],
-    repository::puppet::pinning_agent_version    => $conf['pinning_agent_version'],
-    repository::puppet::supported_distributions  => $distribs,
-    repository::puppet::stage                    => $stage,
+    repository::puppet::url                     => 'http://apt.puppetlabs.com',
+    repository::puppet::src                     => false,
+    repository::puppet::collection              => $conf['collection'],
+    repository::puppet::pinning_agent_version   => $conf['pinning_agent_version'],
+    repository::puppet::supported_distributions => $distribs,
+    repository::puppet::stage                   => $stage,
+
+    repository::postgresql::url                     => 'http://apt.postgresql.org/pub/repos/apt/',
+    repository::postgresql::src                     => false,
+    repository::postgresql::supported_distributions => ['trusty'],
+    repository::postgresql::stage                   => $stage,
 
   }
 
