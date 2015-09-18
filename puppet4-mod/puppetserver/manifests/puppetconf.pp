@@ -33,13 +33,7 @@ class puppetserver::puppetconf {
     path   => '/etc/default/puppetserver',
     line   => "JAVA_ARGS=\"${java_args}\" # line edited by Puppet.",
     match  => '^JAVA_ARGS=.*$',
-  }
-
-  service { 'puppetserver':
-    ensure     => running,
-    hasstatus  => true,
-    hasrestart => true,
-    enable     => true,
+    before => Service['puppetserver'],
   }
 
   # The environment directories and its sub-directories etc.
@@ -61,6 +55,7 @@ class puppetserver::puppetconf {
     owner  => 'root',
     group  => 'root',
     mode   => '0755',
+    before => Service['puppetserver'],
   }
 
   # The environment.conf file must be present but its content
@@ -70,6 +65,7 @@ class puppetserver::puppetconf {
     owner  => 'root',
     group  => 'root',
     mode   => '0644',
+    before => Service['puppetserver'],
   }
 
   # The site.pp file.
@@ -79,6 +75,7 @@ class puppetserver::puppetconf {
     group  => 'root',
     mode   => '0644',
     source => 'puppet:///modules/puppetserver/site.pp',
+    before => Service['puppetserver'],
   }
 
   # The common.yaml file from the master.
@@ -94,6 +91,7 @@ class puppetserver::puppetconf {
     group   => 'root',
     mode    => '0644',
     content => file("${production_path}/hieradata/common.yaml"),
+    before  => Service['puppetserver'],
   }
 
   # The hiera.yaml file.
@@ -102,6 +100,7 @@ class puppetserver::puppetconf {
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
+    before  => Service['puppetserver'],
     content => epp('puppetserver/hiera.yaml.epp',
                    { 'retrieve_common_hiera' => $retrieve_common_hiera }
                   ),
@@ -114,6 +113,7 @@ class puppetserver::puppetconf {
     group  => 'root',
     mode   => '0755',
     source => 'puppet:///modules/puppetserver/enc',
+    before => Service['puppetserver'],
   }
 
   # The puppetdb.conf. This file explains to Puppet how to
@@ -131,6 +131,7 @@ class puppetserver::puppetconf {
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
+    before  => Service['puppetserver'],
     content => epp('puppetserver/puppetdb.conf.epp',
                    { 'puppetdb_addr'   => $puppetdb_addr, }
                   ),
@@ -142,6 +143,7 @@ class puppetserver::puppetconf {
     group  => 'root',
     mode   => '0644',
     source => 'puppet:///modules/puppetserver/routes.yaml',
+    before => Service['puppetserver'],
   }
 
   file { "$etc_path/puppet/puppet.conf":
@@ -149,6 +151,7 @@ class puppetserver::puppetconf {
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
+    before  => Service['puppetserver'],
     content => epp('puppetserver/puppet.conf.epp',
                    {'ca_server'               => $ca_server,
                     'ca_myself'               => $ca_myself,
@@ -170,6 +173,7 @@ class puppetserver::puppetconf {
                 Exec['install-gem-deep-merge'],
                 Exec['install-gem-hiera-eyaml-for-user'],
                 Exec['install-gem-deep-merge-for-user'],
+                Service['puppetserver'],
               ],
   }
 
@@ -179,6 +183,7 @@ class puppetserver::puppetconf {
     user    => 'root',
     group   => 'root',
     unless  => 'test -e /opt/puppetlabs/server/data/puppetserver/jruby-gems/bin/eyaml',
+    before  => Service['puppetserver'],
   }
 
   exec { 'install-gem-deep-merge':
@@ -187,6 +192,7 @@ class puppetserver::puppetconf {
     user    => 'root',
     group   => 'root',
     unless  => "find /opt/puppetlabs/server/data/puppetserver -type f -name 'deep_merge.rb' | grep -Eq '.'",
+    before  => Service['puppetserver'],
   }
 
   # Above the installation for puppetserver with Jruby.
@@ -200,6 +206,7 @@ class puppetserver::puppetconf {
     user    => 'root',
     group   => 'root',
     unless  => '/opt/puppetlabs/puppet/bin/gem list | grep -q "^hiera-eyaml "',
+    before  => Service['puppetserver'],
   }
 
   exec { 'install-gem-deep-merge-for-user':
@@ -208,6 +215,7 @@ class puppetserver::puppetconf {
     user    => 'root',
     group   => 'root',
     unless  => '/opt/puppetlabs/puppet/bin/gem list | grep -q "^deep_merge "',
+    before  => Service['puppetserver'],
   }
 
   file { $eyaml_public_key:
@@ -216,6 +224,7 @@ class puppetserver::puppetconf {
     group   => 'puppet',
     mode    => '0400',
     content => file($eyaml_public_key),
+    before  => Service['puppetserver'],
   }
 
   file { $eyaml_private_key:
@@ -224,6 +233,27 @@ class puppetserver::puppetconf {
     group   => 'puppet',
     mode    => '0400',
     content => file($eyaml_private_key),
+    before  => Service['puppetserver'],
+  }
+
+  # The puppetserver (not the agent) absolutely needs to
+  # have its ssldir created with the correct rights (ie
+  # puppet:puppet is owner of these directories).
+  file { [ "${etc_path}/puppet/ssl",
+           "${etc_path}/puppet/sslagent",
+         ]:
+    ensure => directory,
+    owner  => 'puppet',
+    group  => 'puppet',
+    mode   => '0770',
+    before => Service['puppetserver'],
+  }
+
+  service { 'puppetserver':
+    ensure     => running,
+    hasstatus  => true,
+    hasrestart => true,
+    enable     => true,
   }
 
 }

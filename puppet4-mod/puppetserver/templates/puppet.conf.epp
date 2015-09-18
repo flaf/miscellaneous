@@ -47,6 +47,7 @@ trusted_server_facts = true
 # This puppetserver IS NOT CA for its clients.
 ca        = false
 ca_server = <%= $ca_server %>
+ssldir    = /etc/puppetlabs/puppet/sslagent
 <%- } -%>
 
 [agent]
