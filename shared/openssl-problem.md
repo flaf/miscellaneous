@@ -281,7 +281,7 @@ in RabbitMQ server side:
 
 * Second, with the file `/var/log/rabbitmq/rabbit@middleware.log`
 (for me this is completely incomprehensible).
-It's [here](http://pastebin.ca/3166180)
+It's [here](http://pastebin.ca/3166180).
 
 
 Last information, if I change the configuration of the
