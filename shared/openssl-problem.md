@@ -13,7 +13,7 @@ On the client, I have 2 different versions of openssl:
 by the official Ubuntu repositories.
 
 * the "new" version which is the `1.0.2d` version provided
-by a installation of a package (`puppet-agent`) from an
+by an installation of a package (`puppet-agent`) from an
 additional and non-official repository (https://apt.puppetlabs.com/).
 
 **My problem**: my problem is that the "old" version of
