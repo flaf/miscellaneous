@@ -273,7 +273,7 @@ by the RabbitMQ team but I have exactly the same problem:
 ].
 ```
 
-During the ssl handshake which fails, here is the log
+During the ssl handshake which fails, here is the logs
 in RabbitMQ server side:
 
 * First with the log in the file `/var/log/rabbitmq/rabbit@middleware-sasl.log`
