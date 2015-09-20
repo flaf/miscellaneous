@@ -1,4 +1,4 @@
-<%- |reg_class| -%>
+<%- |$reg_class| -%>
 ### This file is managed by Puppet, please don't edit it. ###
 
 stage { 'basis': }
