@@ -122,7 +122,7 @@ class puppet_forge (
     owner   => 'root',
     group   => 'root',
     mode    => '644',
-    content => epp('puppet_forge/giturls.epp',
+    content => epp('puppet_forge/giturls.conf.epp',
                    { 'giturls' => $giturls, }
                   ),
     }
