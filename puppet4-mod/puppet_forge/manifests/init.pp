@@ -7,20 +7,20 @@ class puppet_forge (
   String[1]           $address,
   Integer[1]          $port,
   Integer[1]          $pause,
-  Array[String[1]]    $listurls,
+  Array[String[1]]    $giturls,
   Array[String[1], 1] $supported_distributions,
 ) {
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
   # Some specific directories or files.
-  $homedir      = '/var/lib/puppetforge'
-  $modulesdir   = "${homedir}/modules"
-  $cachedir     = "${homedir}/cache"
-  $gitdir       = "${homedir}/git"
-  $listurlsfile = "${homedir}/listurls.txt"
-  $logdir       = '/var/log/puppetforge'
-  $workdir      = '/opt/puppet-forge-server'
+  $homedir     = '/var/lib/puppetforge'
+  $modulesdir  = "${homedir}/modules"
+  $cachedir    = "${homedir}/cache"
+  $gitdir      = "${homedir}/git"
+  $giturlsfile = "${homedir}/giturls.conf"
+  $logdir      = '/var/log/puppetforge'
+  $workdir     = '/opt/puppet-forge-server'
 
   # 'jq' is a cli to read json in command line.
   $packages = [ 'bundler', 'ruby-dev', 'build-essential', 'git', 'jq' ]
@@ -115,29 +115,41 @@ class puppet_forge (
     enable     => true,
   }
 
-  file { $listurlsfile:
+  file { $giturlsfile:
     ensure  => present,
     owner   => 'root',
     group   => 'root',
     mode    => '644',
     content => epp('puppet_forge/list-urls.epp',
-                   { 'listurls' => $listurls, }
+                   { 'giturls' => $giturls, }
                   ),
     }
 
-  file { '/usr/local/bin/update-modules':
+  file { '/usr/local/bin/update-pp-modules':
     ensure  => present,
     owner   => 'root',
     group   => 'root',
     mode    => '755',
-    content => epp('puppet_forge/update-modules.epp',
-                   { 'gitdir'       => $gitdir,
-                     'modulesdir'   => $modulesdir,
-                     'listurlsfile' => $listurlsfile,
-                     'pause'        => $pause,
+    content => epp('puppet_forge/update-pp-modules.epp',
+                   { 'gitdir'      => $gitdir,
+                     'modulesdir'  => $modulesdir,
+                     'giturlsfile' => $giturlsfile,
+                     'pause'       => $pause,
                    }
                   ),
     }
+
+  file { '/lib/systemd/system/update-pp-modules.service':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    before  => Service['update-pp-modules'],
+    notify  => Service['update-pp-modules'],
+    require => File['/usr/local/bin/update-pp-modules'],
+    content => epp('puppet_forge/update-pp-modules.epp',
+                   { 'homedir' => $homedir }),
+  }
 
 }
 

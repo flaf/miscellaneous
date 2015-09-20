@@ -1,0 +1,79 @@
+<%- |
+  $gitdir,
+  $modulesdir,
+  $giturlsfile,
+  $pause,
+| -%>
+#!/bin/bash
+### This file is managed by Puppet, don't edit it ###
+
+export PATH='/usr/sbin:/usr/bin:/sbin:/bin'
+
+user=$(id -un)
+group=$(id -gn)
+
+if [ "$user" = 'puppetforge' ] && [ "$group" = 'puppetforge' ]
+then
+    # OK.
+    true
+else
+    echo "Sorry, you must run this program with the puppetforge account." >&2
+    exit 1
+fi
+
+gitdir='<%= $gitdir %>'
+modulesdir='<%= $modulesdir %>'
+
+while true
+do
+
+    # Get modules.
+    while read # See the input of this read at the end of the loop.
+    do
+
+        # /!\ Yes, this is only bash compatible.
+        url="$REPLY"
+
+        # Remove comments and remove spaces.
+        url=$(echo "$url" | sed -r 's/([^#]*)[[:space:]]*#?.*$/\1/')
+        url=$(echo "$url" | sed -r 's/[[:space:]]//g')
+
+        # It after the previous cleanup the line is empty,
+        # we can pass to the next line.
+        [ -z "$url" ] && continue
+
+        repo_name=$(echo "$url" | sed -r 's|^.*/([-a-z0-9_]+)\.git$|\1|')
+
+        if [ ! -d "$gitdir/$repo_name" ]
+        then
+            timeout --kill-after=20s 40s git clone $url "$gitdir/$repo_name" || continue
+        fi
+
+        cd "$gitdir/$repo_name"
+        timeout --kill-after=20s 40s git pull
+
+        tags=$(git tag | sort -V | tail)
+
+        for tag in $tags
+        do
+            git reset --hard "$tag"
+            version=$(cat metadata.json | jq -r '.version')
+            name=$(cat metadata.json | jq -r '.name')
+            full_name="$name-$version"
+            [ -f "$modulesdir/$full_name.tar.gz" ] && continue
+
+            mkdir "$modulesdir/$full_name"
+            # With find, we copy the .git/ directory too.
+            find . -mindepth 1 -maxdepth 1 -exec cp -r '{}' "$modulesdir/$full_name/" \;
+            tar -zcvf "$modulesdir/$full_name.tar.gz" "$modulesdir/$full_name"
+            rm -rf "$modulesdir/$full_name"
+            git reset HEAD^
+        done
+
+    done <<%= $giturlsfile %>
+
+    sleep <%= $pause %>
+
+done
+
+

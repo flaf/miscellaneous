@@ -8,7 +8,7 @@ function puppet_forge::data {
   $address      = '0.0.0.0'
   $port         = 8080;
   $pause        = 60
-  $listurls     = [];
+  $giturls      = [];
 
   { puppet_forge::git_url                 => $git_url,
     puppet_forge::commit_id               => $commit_id,
@@ -16,7 +16,7 @@ function puppet_forge::data {
     puppet_forge::address                 => $address,
     puppet_forge::port                    => $port,
     puppet_forge::pause                   => $pause,
-    puppet_forge::listurls                => $listurls,
+    puppet_forge::giturls                => $giturls,
     puppet_forge::supported_distributions => ['jessie'],
   }
 
