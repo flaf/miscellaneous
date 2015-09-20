@@ -212,6 +212,27 @@ class puppetserver::puppetconf {
     notify => $notify_puppetserver,
   }
 
+  # In the case of a 'client' puppetserver, it must have a
+  # copy of the CRL of the Puppet CA. It's very important to
+  # propagate the CRL of the CA to all 'client' puppetserver.
+  # So we need to redefine the cacrl parameter in puppet.conf.
+  if $profile == 'client' {
+    file { "${ssldir}/ca_crl.pem":
+      ensure  => present,
+      owner   => 'puppet',
+      group   => 'puppet',
+      mode    => '0644',
+      # The content of this file must be the same
+      # as the content of the CRL of the Puppet CA,
+      # ie the master of the current puppetserver.
+      content => file("${ssldir}/ca/ca_crl.pem"),
+      before  => Service['puppetserver'],
+      # Really important to restart the puppetserver
+      # in this case.
+      notify  => $notify_puppetserver,
+    }
+  }
+
   file { "$puppet_path/puppet.conf":
     ensure  => present,
     owner   => 'root',
@@ -224,29 +245,6 @@ class puppetserver::puppetconf {
                      'modules_repository' => $modules_repository,
                    }
                   ),
-  }
-
-  # In the case of a 'client' puppetserver, you can see in
-  # the puppet.conf.epp template that the CRL of the
-  # puppetserver is `cacrl = $ssldir/crl.pem`. So, this file
-  # must be updated when the CA has updated its CRL.
-  # It's very important to propagate the CRL of the CA to
-  # all 'client' puppetserver.
-
-  if $profile == 'client' {
-    file { "${ssldir}/crl.pem":
-      ensure  => present,
-      # It's probably more sure to let puppet manage
-      # the permissions of this file.
-      # The content of this file must be the same
-      # as the content of the CRL of the Puppet CA,
-      # ie the master of the current puppetserver.
-      content => file("${ssldir}/ca/ca_crl.pem"),
-      before  => Service['puppetserver'],
-      # Really important to restart the puppetserver
-      # in this cas.
-      notify  => $notify_puppetserver,
-    }
   }
 
   # Installation of eyaml and deep_merge.

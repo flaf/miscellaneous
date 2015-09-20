@@ -5,9 +5,12 @@
 #
 #   https://docs.puppetlabs.com/references/latest/configuration.html
 #
-<%- if !$modules_repository.empty { -%>
 
 [main]
+<%- if $profile == 'client' { -%>
+cacrl = $ssldir/crl.pem
+<%- } -%>
+<%- if !$modules_repository.empty { -%>
 module_repository = <%= $modules_repository  %>
 <%- } -%>
 
@@ -37,7 +40,6 @@ trusted_server_facts = true
 
 <%- if $profile == 'client' { -%>
 # This puppetserver IS NOT CA for its clients.
-cacrl     = $ssldir/crl.pem
 ca        = false
 ca_server = <%= $::server_facts['servername'] %>
 server    = <%= $::server_facts['servername'] %>
