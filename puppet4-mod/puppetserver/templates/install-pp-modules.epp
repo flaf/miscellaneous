@@ -1,0 +1,72 @@
+<%- |$reg_class| -%>
+#!/opt/puppetlabs/puppet/bin/ruby
+
+### This file is managed by Puppet, don't edit it. ###
+
+require 'yaml'
+
+ENV_DIR = '/etc/puppetlabs/code/environments'
+yamls_array = Dir.glob("#{ENV_DIR}/production/hieradata/fqdn/*.yaml")
+
+if yamls_array.empty?
+    puts "Sorry, in hieradata in production environment, there is " \
+         "no <fqdn>.yaml file. End of the script."
+    exit(1)
+end
+
+modules_array = []
+
+yamls_array.each do |yaml|
+
+    hash = YAML.load_file(yaml)
+    fqdn = File.basename(yaml, '.yaml')
+
+    unless hash.is_a?(Hash) and hash.has_key?('enc_included_classes')
+      puts "Sorry, in hieradata, the file `#{fqdn}.yaml' " \
+           "has no `enc_included_classes' entry. End of the script."
+      exit(1)
+    end
+
+    included_classes = hash['enc_included_classes']
+
+    unless included_classes.is_a?(Array) and not included_classes.empty?
+      puts "Sorry, in hieradata, the file `#{fqdn}.yaml' " \
+           "has a `enc_included_classes' entry which is not a non-empty " \
+           "arrray End of the script."
+      exit(1)
+    end
+
+    included_classes.each do |a_class|
+
+      unless a_class.is_a?(String) and not a_class.empty?
+        puts "Sorry, in hieradata, the file `#{fqdn}.yaml' " \
+             "has a `enc_included_classes' array which contains " \
+             "an empty string or an non-string data. End of the script."
+        exit(1)
+      end
+
+     reg_class  = /<%= $reg_class %>/
+
+      unless a_class =~ reg_class
+        puts "Sorry, in hieradata, the file `#{fqdn}.yaml' " \
+             "has a `enc_included_classes' array which contains " \
+             "an no valid string. See the site.pp file to know " \
+             "the form of a valid string. End of the script."
+        exit(1)
+      end
+
+      author           = a_class.gsub(reg_class, '\1')
+      module_name      = a_class.gsub(reg_class, '\3')
+      full_module_name = author + '-' + module_name
+
+      unless modules_array.include?(full_module_name)
+        modules_array.push(full_module_name)
+      end
+
+    end
+end
+
+# Installation of the modules.
+modules_array.each do |mod|
+
+

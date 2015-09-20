@@ -23,6 +23,14 @@ class puppetserver::puppetconf {
   $memory                  = $::puppetserver::puppet_memory
   $modules_repository      = $::puppetserver::modules_repository
 
+  $reg_author = '[a-z0-9]+'
+  $reg_mod    = '[a-z0-9][_a-z0-9]*'
+  $reg_class  = "/^\((${reg_author})\)(::(${reg_mod})(::${reg_mod})*)$/"
+  # For instance, with this `(john)::apache::vhosts` we have:
+  #     \1 the author      => "john"
+  #     \2 the class name  => "::apache::vhosts"
+  #     \3 the module name => "apache"
+
   if $profile == 'autonomous' {
     $notify_puppetserver = undef
   } else {
@@ -84,12 +92,26 @@ class puppetserver::puppetconf {
 
   # The site.pp file.
   file { "${manifests_path}/site.pp":
-    ensure => present,
-    owner  => 'root',
-    group  => 'root',
-    mode   => '0644',
-    source => 'puppet:///modules/puppetserver/site.pp',
-    before => Service['puppetserver'],
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    before  => Service['puppetserver'],
+    content => epp('puppetserver/site.pp.epp',
+                   { 'reg_class' => $reg_class }
+                  ),
+    # No need to restart the puppetserver here.
+  }
+
+  file { "/usr/local/sbin/install-pp-modules":
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0744',
+    before  => Service['puppetserver'],
+    content => epp('puppetserver/install-pp-modules.epp',
+                   { 'reg_class' => $reg_class }
+                  ),
     # No need to restart the puppetserver here.
   }
 

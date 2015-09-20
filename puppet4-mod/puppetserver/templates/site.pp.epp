@@ -1,3 +1,6 @@
+<%- |reg_class| -%>
+### This file is managed by Puppet, please don't edit it. ###
+
 stage { 'basis': }
 stage { 'network': }
 stage { 'repository': }
@@ -10,7 +13,7 @@ Stage['basis'] -> Stage['network']
 # be defined by the ENC and must be a non-empty array of
 # non-empty string(s) where each string has this form:
 #
-#   (<author>)-<fully-qualified-class-name>
+#   (<author>)<fully-qualified-class-name>
 #
 # For instance:
 #
@@ -19,15 +22,18 @@ Stage['basis'] -> Stage['network']
 # where, is this case, the class `::apache2::vhosts` will
 # be included to the catalogue.
 #
+$reg_class = <%= $reg_class %>
+
+
+
+
 if $::included_classes =~ Array[String[1], 1] {
 
   $::included_classes.each |$a_class| {
 
-    $regex_class_name = /^\([a-z0-9]+\)((::[a-z0-9][_a-z0-9]*)+)$/
+    if $a_class =~ $reg_class {
 
-    if $a_class =~ $regex_class_name {
-
-      $a_class_without_author = $a_class.regsubst($regex_class_name, '\1')
+      $a_class_without_author = $a_class.regsubst($reg_class, '\2')
       include $a_class_without_author
 
     } else {
