@@ -124,6 +124,8 @@ class puppetserver::puppetdb {
     notify  => Service['puppetdb'],
   }
 
+  # Very important to update the CRL file of the puppetdb
+  # via the CRL of the Puppet CA.
   exec { 'puppetdb-update-crl.pem':
     command => "cat '${crlpem}' >'${puppetdb_ssl_dir}/crl.pem'",
     path    => '/usr/sbin:/usr/bin:/sbin:/bin',
@@ -134,10 +136,12 @@ class puppetserver::puppetdb {
     notify  => Service['puppetdb'],
   }
 
-  # TODO: there is a problem! It seems that puppetdb (jetty in fact)
-  # can't use the CRL of the CA (like apache). Normally, puppetdb
-  # should have an updated CRL and should restart if the CRL has
-  # changed.
+  # TESTED: puppetdb (jetty in fact) have the ssl-crl-path
+  # parameter in jetty.ini. When the CRL of the puppet CA
+  # is updated (for instance after a `puppet node clean $host`,
+  # the CRL of puppetdb is really updated too and puppetdb is
+  # restarted. After that, a certificate in the CRL of puppetdb
+  # is really disable when we want to contact the puppetdb.
 
   service { 'puppetdb':
     ensure     => running,
