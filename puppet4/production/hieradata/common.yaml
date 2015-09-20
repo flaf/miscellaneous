@@ -37,7 +37,7 @@ puppet:
 
 mcollective:
   tag: 'mcollective'
-  middleware_address: '172.31.14.7'
+  middleware_address: '172.31.14.6'
   middleware_admin_pwd: "%{hiera('_middleware_admin_pwd_')}"
   mcollective_pwd: "%{hiera('_mcollective_pwd_')}"
   server_private_key: "%{hiera('_server_private_key_')}"
