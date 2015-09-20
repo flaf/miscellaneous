@@ -22,7 +22,6 @@ class puppetserver::puppetconf {
   $profile                 = $::puppetserver::profile
   $memory                  = $::puppetserver::puppet_memory
   $modules_repository      = $::puppetserver::modules_repository
-  $puppetserver_for_myself = $::puppetserver::puppetserver_for_myself
 
   if $profile == 'autonomous' {
     $notify_puppetserver = undef
@@ -285,10 +284,10 @@ class puppetserver::puppetconf {
   # launched at each start of the puppetserver service.
   if $profile == 'client' {
 
-    $bootstrap_cfg  = "${puppetlabs_path}/puppetserver/bootstrap.cfg"
-    line_enable_ca  = 'puppetlabs.services.ca.certificate-authority-\
+    $bootstrap_cfg   = "${puppetlabs_path}/puppetserver/bootstrap.cfg"
+    $line_enable_ca  = 'puppetlabs.services.ca.certificate-authority-\
 service/certificate-authority-service'
-    line_disable_ca = 'puppetlabs.services.ca.certificate-authority-\
+    $line_disable_ca = 'puppetlabs.services.ca.certificate-authority-\
 disabled-service/certificate-authority-disabled-service'
 
     file_line { 'comment-line-enable-CA-service':
