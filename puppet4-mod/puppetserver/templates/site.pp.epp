@@ -24,7 +24,7 @@ Stage['basis'] -> Stage['network']
 #
 # This regex is less complicated than it seems. ;)
 # See the puppet code to understand easily.
-$reg_class = <%= $reg_class %>
+$reg_class = /<%= $reg_class %>/
 
 
 

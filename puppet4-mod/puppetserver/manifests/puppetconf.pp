@@ -25,7 +25,7 @@ class puppetserver::puppetconf {
 
   $reg_author = '[a-z0-9]+'
   $reg_mod    = '[a-z0-9][_a-z0-9]*'
-  $reg_class  = "/^\((${reg_author})\)(::(${reg_mod})(::${reg_mod})*)$/"
+  $reg_class  = "^\((${reg_author})\)(::(${reg_mod})(::${reg_mod})*)$"
   # For instance, with this `(john)::apache::vhosts` we have:
   #     \1 the author      => "john"
   #     \2 the class name  => "::apache::vhosts"
