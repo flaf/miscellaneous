@@ -13,4 +13,7 @@ interfaces:
     inet:
       method: 'dhcp'
 
+puppet_forge::giturls:
+  - 'http://github.com/flaf/flaf-moda.git'
+
 
