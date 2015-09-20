@@ -25,4 +25,3 @@
   :pkcs7_public_key: '/etc/puppetlabs/puppet/keys/public_key.pkcs7.pem'
 
 
-
