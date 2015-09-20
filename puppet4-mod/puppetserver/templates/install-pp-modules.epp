@@ -36,7 +36,7 @@ yamls_array.each do |yaml|
     unless included_classes.is_a?(Array) and not included_classes.empty?
       puts "Sorry, in hieradata, the file `#{fqdn}.yaml' " \
            "has a `enc_included_classes' entry which is not a non-empty " \
-           "arrray End of the script."
+           "arrray. End of the script."
       exit(1)
     end
 
@@ -45,7 +45,7 @@ yamls_array.each do |yaml|
       unless a_class.is_a?(String) and not a_class.empty?
         puts "Sorry, in hieradata, the file `#{fqdn}.yaml' " \
              "has a `enc_included_classes' array which contains " \
-             "an empty string or an non-string data. End of the script."
+             "an empty string or a non-string data. End of the script."
         exit(1)
       end
 
@@ -56,7 +56,7 @@ yamls_array.each do |yaml|
       unless a_class =~ reg_class
         puts "Sorry, in hieradata, the file `#{fqdn}.yaml' " \
              "has a `enc_included_classes' array which contains " \
-             "an no valid string. See the site.pp file to know " \
+             "a non-valid string. See the site.pp file to know " \
              "the form of a valid string. End of the script."
         exit(1)
       end
