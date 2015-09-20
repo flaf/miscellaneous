@@ -1,7 +1,6 @@
-<%- |
-$puppetdb_ssl_dir
-| -%>
+<%- |$puppetdb_ssl_dir| -%>
 ### This file is managed by Puppet, don't edit it. ###
+
 [jetty]
 # IP address or hostname to listen for clear-text HTTP. To avoid resolution
 # issues, IP addresses are recommended over hostnames.

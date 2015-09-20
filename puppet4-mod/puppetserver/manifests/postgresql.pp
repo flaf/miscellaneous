@@ -1,12 +1,20 @@
 class puppetserver::postgresql {
 
+  # With Puppet 4, a recent version of PostgreSQL is necessary.
   require '::repository::postgresql'
-  ensure_packages([ 'postgresql-9.4', 'postgresql-contrib-9.4' ], { ensure => present, })
+  ensure_packages( [ 'postgresql-9.4', 'postgresql-contrib-9.4' ],
+                   { ensure => present, }
+                 )
 
   $db   = $::puppetserver::puppetdb_name
   $user = $::puppetserver::puppetdb_user
   $pwd  = $::puppetserver::puppetdb_pwd
-  $warn = "# This file is managed by Puppet, don't edit it."
+
+  $warn = @(END)
+    # This file is managed by Puppet, don't edit it.
+    # Warning, any change of this file can potentially trigger
+    # a password update in the database.
+    | END
 
 
   file { 'postgresdb-init-file':
@@ -21,7 +29,7 @@ class puppetserver::postgresql {
   # With this file, root can connect to the puppetdb with the
   # puppetdb user without input the password, just with:
   #
-  #   psql --host localhost $db $user
+  #   psql --host localhost "$db" "$user"
   #
   # This is this file that puppet will use to know, for
   # instance, if the password must be updated.
@@ -31,7 +39,7 @@ class puppetserver::postgresql {
     group   => 'root',
     mode    => '0600',
     content => "${warn}\n\nlocalhost:5432:${db}:${user}:${pwd}\n\n",
-    notify  => Exec['postgresdb-init']
+    notify  => Exec['postgresdb-init'],
   }
 
   exec { 'postgresdb-init':

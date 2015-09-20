@@ -3,17 +3,11 @@ class puppetserver::puppetdb {
   require '::repository::puppet'
   ensure_packages(['puppetdb'], { ensure => present, })
 
-  $db           = $::puppetserver::puppetdb_name
-  $user         = $::puppetserver::puppetdb_user
-  $pwd          = $::puppetserver::puppetdb_pwd
-  $memory       = $::puppetserver::puppetdb_memory
-  $ca_myself    = $::puppetserver::ca_myself
-
-  if $ca_myself {
-    $puppet_ssl_dir = '/etc/puppetlabs/puppet/ssl'
-  } else {
-    $puppet_ssl_dir = '/etc/puppetlabs/puppet/sslagent'
-  }
+  $db               = $::puppetserver::puppetdb_name
+  $user             = $::puppetserver::puppetdb_user
+  $pwd              = $::puppetserver::puppetdb_pwd
+  $memory           = $::puppetserver::puppetdb_memory
+  $puppet_ssl_dir   = '/etc/puppetlabs/puppet/ssl'
   $puppetdb_ssl_dir = '/etc/puppetlabs/puppetdb/ssl'
 
   # Set the memory for the JVM which runs the puppetdb.
@@ -27,13 +21,16 @@ class puppetserver::puppetdb {
     notify => Service['puppetdb'],
   }
 
+  # This file tell to the puppetdb web server how to
+  # contact the database.
   file { '/etc/puppetlabs/puppetdb/conf.d/database.ini':
     ensure  => present,
     owner   => 'puppetdb',
     group   => 'puppetdb',
     mode    => '0600',
     content => epp( 'puppetserver/database.ini.epp',
-                    { 'user' => $user,
+                    {
+                      'user' => $user,
                       'db'   => $db,
                       'pwd'  => $pwd,
                     },
@@ -48,8 +45,7 @@ class puppetserver::puppetdb {
     group   => 'root',
     mode    => '0644',
     content => epp( 'puppetserver/jetty.ini.epp',
-                    { 'puppetdb_ssl_dir' => $puppetdb_ssl_dir,
-                    },
+                    { 'puppetdb_ssl_dir' => $puppetdb_ssl_dir, },
                   ),
     before => Service['puppetdb'],
     notify => Service['puppetdb'],
@@ -90,45 +86,50 @@ class puppetserver::puppetdb {
   #    }
   #
   # But in this case, the content of the file appears in the
-  # working directory of puppet (in /var/lib/puppet/) which it
-  # bothers me a little. So I prefer some "exec" resources.
+  # working directory of puppe which it bothers me a little.
+  # So I choose some inelegant "exec" resources.
+
+  $privpem = "${puppet_ssl_dir}/private_keys/${::fqdn}.pem"
+  $pubpem  = "${puppet_ssl_dir}/certs/${::fqdn}.pem"
+  $capem   = "${puppet_ssl_dir}/certs/ca.pem"
+  $crlpem  = "${puppet_ssl_dir}/ca/ca_crl.pem"
 
   exec { 'puppetdb-update-private.pem':
-    command => "cat '${puppet_ssl_dir}/private_keys/${::fqdn}.pem' >'${puppetdb_ssl_dir}/private.pem'",
+    command => "cat '${privpem}' >'${puppetdb_ssl_dir}/private.pem'",
     path    => '/usr/sbin:/usr/bin:/sbin:/bin',
     user    => 'root',
     group   => 'root',
-    unless  => "diff -q '${puppet_ssl_dir}/private_keys/${::fqdn}.pem' '${puppetdb_ssl_dir}/private.pem'",
-    before  => Service['puppetdb'],
-    notify  => Service['puppetdb'],
-  }
-
-  exec { 'puppetdb-update-ca.pem':
-    command => "cat '${puppet_ssl_dir}/certs/ca.pem' >'${puppetdb_ssl_dir}/ca.pem'",
-    path    => '/usr/sbin:/usr/bin:/sbin:/bin',
-    user    => 'root',
-    group   => 'root',
-    unless  => "diff -q '${puppet_ssl_dir}/certs/ca.pem' '${puppetdb_ssl_dir}/ca.pem'",
+    unless  => "diff -q '${privpem}' '${puppetdb_ssl_dir}/private.pem'",
     before  => Service['puppetdb'],
     notify  => Service['puppetdb'],
   }
 
   exec { 'puppetdb-update-public.pem':
-    command => "cat '${puppet_ssl_dir}/certs/${::fqdn}.pem' >'${puppetdb_ssl_dir}/public.pem'",
+    command => "cat '${pubpem}' >'${puppetdb_ssl_dir}/public.pem'",
     path    => '/usr/sbin:/usr/bin:/sbin:/bin',
     user    => 'root',
     group   => 'root',
-    unless  => "diff -q '${puppet_ssl_dir}/certs/${::fqdn}.pem' '${puppetdb_ssl_dir}/public.pem'",
+    unless  => "diff -q '${pubpem}' '${puppetdb_ssl_dir}/public.pem'",
+    before  => Service['puppetdb'],
+    notify  => Service['puppetdb'],
+  }
+
+  exec { 'puppetdb-update-ca.pem':
+    command => "cat '${capem}' >'${puppetdb_ssl_dir}/ca.pem'",
+    path    => '/usr/sbin:/usr/bin:/sbin:/bin',
+    user    => 'root',
+    group   => 'root',
+    unless  => "diff -q '${capem}' '${puppetdb_ssl_dir}/ca.pem'",
     before  => Service['puppetdb'],
     notify  => Service['puppetdb'],
   }
 
   exec { 'puppetdb-update-crl.pem':
-    command => "cat '${puppet_ssl_dir}/crl.pem' >'${puppetdb_ssl_dir}/crl.pem'",
+    command => "cat '${crlpem}' >'${puppetdb_ssl_dir}/crl.pem'",
     path    => '/usr/sbin:/usr/bin:/sbin:/bin',
     user    => 'root',
     group   => 'root',
-    unless  => "diff -q '${puppet_ssl_dir}/crl.pem' '${puppetdb_ssl_dir}/crl.pem'",
+    unless  => "diff -q '${crlpem}' '${puppetdb_ssl_dir}/crl.pem'",
     before  => Service['puppetdb'],
     notify  => Service['puppetdb'],
   }

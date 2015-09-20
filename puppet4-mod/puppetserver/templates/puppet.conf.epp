@@ -1,10 +1,4 @@
-<%- |
-$ca_server,
-$ca_myself,
-$puppet_server_for_agent,
-$puppetserver_for_myself,
-$module_repository,
-| -%>
+<%- |$profile, $modules_repository| -%>
 ### This file is managed by Puppet, don't edit it. ###
 
 # Documentation here:
@@ -29,34 +23,33 @@ storeconfigs_backend = puppetdb
 thin_storeconfigs    = false
 async_storeconfigs   = false
 ca_ttl               = 10y
-<%- if !$module_repository.empty { -%>
-module_repository    = <%= $module_repository  %>
+<%- if !$modules_repository.empty { -%>
+module_repository    = <%= $modules_repository  %>
 <%- } -%>
 
 # With this parameter set to true, we are able to use the
-# `$::server_facts` global variable (fact) in the puppet class.
-# Especially `$::server_facts['servername']` which is the
-# fqdn of the puppetserver during the puppet run.
+# `$::server_facts` global variable (fact) in the puppet
+# class. Especially `$::server_facts['servername']` which is
+# the fqdn of the puppetserver during the puppet run.
 trusted_server_facts = true
 
-<%- if $ca_myself { -%>
-# This puppetserver is CA for its clients (the default case).
+<%- if $profile == 'client' { -%>
+# This puppetserver IS NOT CA for its clients.
+cacrl     = $ssldir/crl.pem
+ca        = false
+ca_server = <%= $::server_facts['servername'] %>
+server    = <%= $::server_facts['servername'] %>
+<%- } else { -%>
+# This puppetserver IS A ROOT CA.
 #ca        = true
 #ca_server = $server
-<%- } else { -%>
-# This puppetserver IS NOT CA for its clients.
-ca        = false
-ca_server = <%= $ca_server %>
-ssldir    = /etc/puppetlabs/puppet/sslagent
 <%- } -%>
 
 [agent]
-<%- if $ca_myself and $puppetserver_for_myself { -%>
-server = <%= $::fqdn %>
-ssldir = /etc/puppetlabs/puppet/ssl
+<%- if $profile == 'client' { -%>
+server = <%= $::server_facts['servername'] %>
 <%- } else { -%>
-server = <%= $puppet_server_for_agent %>
-ssldir = /etc/puppetlabs/puppet/sslagent
+server = <%= $::fqdn %>
 <%- } -%>
 
 

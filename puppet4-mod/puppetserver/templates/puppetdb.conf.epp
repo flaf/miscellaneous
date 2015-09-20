@@ -1,7 +1,7 @@
-<%- |$puppetdb_addr| -%>
+<%- |$puppetdb_fqdn| -%>
 ### This file is managed by Puppet, don't edit it. ###
 [main]
-server = <%= $puppetdb_addr %>
-port = 8081
+server = <%= $puppetdb_fqdn %>
+port   = 8081
 
 

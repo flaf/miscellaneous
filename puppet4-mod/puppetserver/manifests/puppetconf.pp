@@ -1,30 +1,40 @@
 class puppetserver::puppetconf {
 
   # /!\ Warning /!\
-  # It complicated to restart the puppetserver service during
-  # a puppet run because, in this case, the puppet client can't
-  # talk with the service which is restarting. Generally, we
-  # have a error during the puppet run like this:
+  #
+  # If the puppetserver host has the "autonomous" profile,
+  # During a puppet run, its puppet agent (ie the client)
+  # will communicate with its hosted puppetserver (the server).
+  # In this case, it's complicated to restart the puppetserver
+  # service during a puppet run because, in this case, the
+  # puppet client can't talk with the service which is
+  # restarting. Generally, we have an error during the puppet
+  # run like this:
   #
   #   Error: Could not send report: Connection refused - connect(2)
   #   for "puppet4.dom.tld" port 8140
   #
   # It's logical. So, in this class there is no refresh of the
-  # puppetserver service. If you notice changes during the puppet
+  # puppetserver service in the case where the node has the
+  # "autonomus" profile.. If you notice changes during the puppet
   # run, you should restart yourself the puppetserver service.
 
+  $profile                 = $::puppetserver::profile
   $memory                  = $::puppetserver::puppet_memory
-  $retrieve_common_hiera   = $::puppetserver::retrieve_common_hiera
-  $puppetdb_fqdn           = $::puppetserver::puppetdb_fqdn
-  $ca_server               = $::puppetserver::ca_server
-  $puppet_server_for_agent = $::puppetserver::puppet_server_for_agent
-  $module_repository       = $::puppetserver::module_repository
-  $puppetdb_myself         = $::puppetserver::puppetdb_myself
-  $ca_myself               = $::puppetserver::ca_myself
+  $modules_repository      = $::puppetserver::modules_repository
   $puppetserver_for_myself = $::puppetserver::puppetserver_for_myself
 
+  if $profile == 'autonomous' {
+    $notify_puppetserver = undef
+  } else {
+    # So $profile == client.
+    $notify_puppetserver = Service['puppetserver']
+  }
+
   require '::repository::puppet'
-  ensure_packages(['puppetserver', 'puppetdb-termini'], { ensure => present, })
+  ensure_packages( ['puppetserver', 'puppetdb-termini'],
+                   { ensure => present, }
+                 )
 
   # Set the memory for the JVM which runs the puppetserver.
   $java_args ="-Xms${memory} -Xmx${memory} -XX:MaxPermSize=256m"
@@ -34,17 +44,20 @@ class puppetserver::puppetconf {
     line   => "JAVA_ARGS=\"${java_args}\" # line edited by Puppet.",
     match  => '^JAVA_ARGS=.*$',
     before => Service['puppetserver'],
+    notify => $notify_puppetserver,
   }
 
   # The environment directories and its sub-directories etc.
-  $etc_path          = '/etc/puppetlabs'
-  $code_path         = "${etc_path}/code"
+  $puppetlabs_path   = '/etc/puppetlabs'
+  $code_path         = "${puppetlabs_path}/code"
   $environment_path  = "${code_path}/environments"
   $production_path   = "${environment_path}/production"
   $manifests_path    = "${production_path}/manifests"
   $modules_path      = "${production_path}/modules"
-  $eyaml_public_key  = "${etc_path}/puppet/keys/public_key.pkcs7.pem"
-  $eyaml_private_key = "${etc_path}/puppet/keys/private_key.pkcs7.pem"
+  $puppet_path       = "${puppetlabs_path}/puppet"
+  $keys_path         = "${puppet_path}/keys"
+  $eyaml_public_key  = "${keys_path}/public_key.pkcs7.pem"
+  $eyaml_private_key = "${keys_path}/private_key.pkcs7.pem"
 
   file { [ $environment_path,
            $production_path,
@@ -56,6 +69,7 @@ class puppetserver::puppetconf {
     group  => 'root',
     mode   => '0755',
     before => Service['puppetserver'],
+    notify => $notify_puppetserver,
   }
 
   # The environment.conf file must be present but its content
@@ -66,6 +80,7 @@ class puppetserver::puppetconf {
     group  => 'root',
     mode   => '0644',
     before => Service['puppetserver'],
+    notify => $notify_puppetserver,
   }
 
   # The site.pp file.
@@ -76,33 +91,45 @@ class puppetserver::puppetconf {
     mode   => '0644',
     source => 'puppet:///modules/puppetserver/site.pp',
     before => Service['puppetserver'],
+    # No need to restart the puppetserver here.
   }
 
-  # The common.yaml file from the master.
-  if $retrieve_common_hiera {
-    $ensure_common = 'present'
+  # The "common-from-master.yaml" file (ie the cfm file)
+  # from the master present only when the puppetserver
+  # has the "client" profile, not when it has the "autonomous"
+  # profile.
+  if $profile == 'autonomous' {
+    $cfm_ensure  = 'absent'
+    $cfm_content = undef
   } else {
-    $ensure_common = 'absent'
+    # The puppetserver has the "client" profile.
+    # file() takes the content from the master puppet.
+    # So the file must exist in the master.
+    $cfm_ensure  = 'present'
+    $cfm_content = file("${production_path}/hieradata/common.yaml")
   }
 
   file { "${production_path}/common-from-master.yaml":
-    ensure  => $ensure_common,
+    ensure  => $cfm_ensure,
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    content => file("${production_path}/hieradata/common.yaml"),
+    content => $cfm_content,
     before  => Service['puppetserver'],
+    # No need to restart the puppetserver here.
   }
 
-  # The hiera.yaml file.
+  # The hiera.yaml file. This file must trigger a restart
+  # of the server when it is updated.
   file { "${code_path}/hiera.yaml":
     ensure  => present,
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
     before  => Service['puppetserver'],
+    notify  => $notify_puppetserver,
     content => epp('puppetserver/hiera.yaml.epp',
-                   { 'retrieve_common_hiera' => $retrieve_common_hiera }
+                   { 'profile' => $profile }
                   ),
   }
 
@@ -114,60 +141,66 @@ class puppetserver::puppetconf {
     mode   => '0755',
     source => 'puppet:///modules/puppetserver/enc',
     before => Service['puppetserver'],
+    # No need to restart the puppetserver here.
   }
 
-  # The puppetdb.conf. This file explains to Puppet how to
-  # contact the puppetdb. You must use a https connection,
-  # so the localhost address is impossible (because puppetdb
-  # doesn't use ssl on localhost) and you must provide a
-  # fqdn for the address.
-  if $puppetdb_myself {
-    $puppetdb_addr = $::fqdn
+  # The puppetdb.conf file. This file explains to Puppet how to
+  # contact the puppetdb. You must use a http*s* connection, so
+  # the localhost address is impossible (because puppetdb doesn't
+  # use ssl on localhost) and you must provide a fqdn for the
+  # address.
+  if $profile == 'autonomous' {
+    # The puppetdb is the server itself.
+    $puppetdb_fqdn = $::fqdn
   } else {
-    $puppetdb_addr = $puppetdb_fqdn
+    # The puppetserver is a client of its master which is
+    # the puppetdb.
+    $puppetdb_fqdn = $::server_facts['servername']
   }
-  file { "$etc_path/puppet/puppetdb.conf":
+
+  file { "$puppet_path/puppetdb.conf":
     ensure  => present,
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
     before  => Service['puppetserver'],
+    notify  => $notify_puppetserver,
     content => epp('puppetserver/puppetdb.conf.epp',
-                   { 'puppetdb_addr'   => $puppetdb_addr, }
+                   { 'puppetdb_fqdn' => $puppetdb_fqdn, }
                   ),
   }
 
-  file { "$etc_path/puppet/routes.yaml":
+  file { "$puppet_path/routes.yaml":
     ensure => present,
     owner  => 'root',
     group  => 'root',
     mode   => '0644',
     source => 'puppet:///modules/puppetserver/routes.yaml',
     before => Service['puppetserver'],
+    notify => $notify_puppetserver,
   }
 
-  file { "$etc_path/puppet/puppet.conf":
+  file { "$puppet_path/puppet.conf":
     ensure  => present,
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
     before  => Service['puppetserver'],
+    notify  => $notify_puppetserver,
     content => epp('puppetserver/puppet.conf.epp',
-                   {'ca_server'               => $ca_server,
-                    'ca_myself'               => $ca_myself,
-                    'puppet_server_for_agent' => $puppet_server_for_agent,
-                    'puppetserver_for_myself' => $puppetserver_for_myself,
-                    'module_repository'       => $module_repository,
+                   { 'profile'            => $profile,
+                     'modules_repository' => $modules_repository,
                    }
                   ),
   }
 
-  # Installation de eyaml etc.
-  file { "${etc_path}/puppet/keys":
+  # Installation of eyaml and deep_merge.
+  file { "${puppet_path}/keys":
     ensure => directory,
     owner  => 'puppet',
     group  => 'puppet',
     mode   => '0755',
+    notify => $notify_puppetserver,
     before => [
                 Exec['install-gem-hiera-eyaml'],
                 Exec['install-gem-deep-merge'],
@@ -177,29 +210,36 @@ class puppetserver::puppetconf {
               ],
   }
 
+  $ppsrv_bin = '/opt/puppetlabs/bin/puppetserver'
+  $eyaml_bin = '/opt/puppetlabs/server/data/puppetserver/jruby-gems/bin/eyaml'
+  $data_dir  = '/opt/puppetlabs/server/data/puppetserver'
+
   exec { 'install-gem-hiera-eyaml':
-    command => '/opt/puppetlabs/bin/puppetserver gem install hiera-eyaml --no-ri --no-rdoc',
+    command => "${ppsrv_bin} gem install hiera-eyaml --no-ri --no-rdoc",
     path    => '/usr/sbin:/usr/bin:/sbin:/bin',
     user    => 'root',
     group   => 'root',
-    unless  => 'test -e /opt/puppetlabs/server/data/puppetserver/jruby-gems/bin/eyaml',
+    unless  => "test -e '${eyaml_bin}'",
     before  => Service['puppetserver'],
+    notify  => $notify_puppetserver,
   }
 
   exec { 'install-gem-deep-merge':
-    command => '/opt/puppetlabs/bin/puppetserver gem install deep_merge --no-ri --no-rdoc',
+    command => "${ppsrv_bin} gem install deep_merge --no-ri --no-rdoc",
     path    => '/usr/sbin:/usr/bin:/sbin:/bin',
     user    => 'root',
     group   => 'root',
-    unless  => "find /opt/puppetlabs/server/data/puppetserver -type f -name 'deep_merge.rb' | grep -Eq '.'",
+    unless  => "find ${data_dir} -type f -name 'deep_merge.rb' | grep -Eq '.'",
     before  => Service['puppetserver'],
+    notify  => $notify_puppetserver,
   }
 
   # Above the installation for puppetserver with Jruby.
   # But we must install the gems for users too. I think
-  # it's the same program and only the interpretor changes.
+  # it's the same program and only the interpretor changes
+  # (jruby versus ruby).
   # TODO: I thought that a user could take the gem from the
-  # puppetserver mais I have not found the way.
+  # puppetserver but I have not found the way to do that.
   exec { 'install-gem-hiera-eyaml-for-user':
     command => '/opt/puppetlabs/puppet/bin/gem install hiera-eyaml',
     path    => '/usr/sbin:/usr/bin:/sbin:/bin',
@@ -207,6 +247,7 @@ class puppetserver::puppetconf {
     group   => 'root',
     unless  => '/opt/puppetlabs/puppet/bin/gem list | grep -q "^hiera-eyaml "',
     before  => Service['puppetserver'],
+    # No need to restart the puppetserver here.
   }
 
   exec { 'install-gem-deep-merge-for-user':
@@ -216,6 +257,7 @@ class puppetserver::puppetconf {
     group   => 'root',
     unless  => '/opt/puppetlabs/puppet/bin/gem list | grep -q "^deep_merge "',
     before  => Service['puppetserver'],
+    # No need to restart the puppetserver here.
   }
 
   file { $eyaml_public_key:
@@ -225,6 +267,7 @@ class puppetserver::puppetconf {
     mode    => '0400',
     content => file($eyaml_public_key),
     before  => Service['puppetserver'],
+    notify  => $notify_puppetserver,
   }
 
   file { $eyaml_private_key:
@@ -234,19 +277,7 @@ class puppetserver::puppetconf {
     mode    => '0400',
     content => file($eyaml_private_key),
     before  => Service['puppetserver'],
-  }
-
-  # The puppetserver (not the agent) absolutely needs to
-  # have its ssldir created with the correct rights (ie
-  # puppet:puppet is owner of these directories).
-  file { [ "${etc_path}/puppet/ssl",
-           "${etc_path}/puppet/sslagent",
-         ]:
-    ensure => directory,
-    owner  => 'puppet',
-    group  => 'puppet',
-    mode   => '0770',
-    before => Service['puppetserver'],
+    notify  => $notify_puppetserver,
   }
 
   service { 'puppetserver':

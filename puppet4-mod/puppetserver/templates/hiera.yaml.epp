@@ -1,4 +1,4 @@
-<%- |$retrieve_common_hiera| -%>
+<%- |$profile| -%>
 ---
 ### This file is managed by Puppet, don't edit. ###
 
@@ -12,7 +12,7 @@
   - '%{::environment}/hieradata/group/%{::groups_2}'
   - '%{::environment}/hieradata/datacenter/%{::datacenter}'
   - '%{::environment}/hieradata/common'
-<%- if $retrieve_common_hiera { -%>
+<%- if $profile == 'client' { -%>
   - '%{::environment}/common-from-master.yaml'
 <%- } -%>
 
