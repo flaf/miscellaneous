@@ -1,0 +1,25 @@
+---
+enc_included_classes:
+  - '(flaf)::role_generic'
+  - '(flaf)::puppetserver'
+enc_datacenter: 'vty'
+
+# Important: we disable the management of puppet.conf
+# by the "puppetagent" module to avoid that the puppet.conf
+# file is managed twice (by the "puppetserver" module and
+# the "puppetagent" module.
+puppetagent::manage_puppetconf: false
+network::restart: true
+
+puppetserver::puppet_memory: '512m'
+puppetserver::profile: 'client'
+puppetserver::modules_repository: 'http://client-jessie:8080'
+
+interfaces:
+  eth0:
+    in_networks: [ 'vbox_adm' ]
+    macaddress: '08:00:27:bc:ce:e6'
+    inet:
+      method: 'dhcp'
+
+

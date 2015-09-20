@@ -316,11 +316,13 @@ class puppetserver::puppetconf {
   # launched at each start of the puppetserver service.
   if $profile == 'client' {
 
+    # Be careful, break a long line of strings with backslash works only
+    # with double quotes (ie "...") not with simple quotes (ie '...').
     $bootstrap_cfg   = "${puppetlabs_path}/puppetserver/bootstrap.cfg"
-    $line_enable_ca  = 'puppetlabs.services.ca.certificate-authority-\
-service/certificate-authority-service'
-    $line_disable_ca = 'puppetlabs.services.ca.certificate-authority-\
-disabled-service/certificate-authority-disabled-service'
+    $line_enable_ca  = "puppetlabs.services.ca.certificate-authority-\
+service/certificate-authority-service"
+    $line_disable_ca = "puppetlabs.services.ca.certificate-authority-\
+disabled-service/certificate-authority-disabled-service"
 
     file_line { 'comment-line-enable-CA-service':
       path    => $bootstrap_cfg,
