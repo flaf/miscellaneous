@@ -1,8 +1,3 @@
-# TODO: now there is no apache server. So one question: if
-#       a certificate is in the CRL (certificate revocation
-#       list), is it necessary to restart puppetserver to
-#       have an effective revocation of the certificate.
-#       Same check with Puppetdb.
 class puppetserver (
   String[1]                    $puppet_memory,
   String[1]                    $puppetdb_memory,

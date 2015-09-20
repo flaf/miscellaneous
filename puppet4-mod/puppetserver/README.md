@@ -1,6 +1,16 @@
+# TODO
+
+* Write the README file.
+* Make a schema (with puppetserver, puppetdb and postresql).
+
+
+
+
 # Module description
 
 This module allows to install a Puppet4 server.
+
+
 
 
 # Quick start
@@ -19,16 +29,27 @@ deb http://apt.puppetlabs.com $distrib $COLLECTION
 #deb-src http://apt.puppetlabs.com $distrib $COLLECTION
 " > /etc/apt/sources.list.d/puppetlabs-$collection.list
 
+# Force the version number as below.
 apt-get update && apt-get install puppet-agent=1.2.4-*
 
+# For a 'autonomous' puppetserver.
 /opt/puppetlabs/bin/puppet agent --test --server=$server --ssldir=/etc/puppetlabs/puppet/sslagent
+
+# For a 'client' puppetserver.
+/opt/puppetlabs/bin/puppet agent --test --server=$server
 ```
 
 
+# A security point
 
+The propagation of the CRL (Certificate Revocation List)
+of the CA is an important point:
 
-# TODO
+* puppetserver uses a CRL and must be restarted when the CRL
+is updated. Typically, after a simple `puppet node clean $fqdn`,
+the client is able to run puppet until the puppertserver has
+restarted.
 
-* Write the README file.
+* Idem for puppetdb.
 
 
