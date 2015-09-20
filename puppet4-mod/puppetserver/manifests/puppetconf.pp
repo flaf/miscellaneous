@@ -27,6 +27,7 @@ class puppetserver::puppetconf {
   $memory                  = $::puppetserver::puppet_memory
   $modules_repository      = $::puppetserver::modules_repository
   $puppet_bin_dir          = '/opt/puppetlabs/puppet/bin'
+  $ssldir                  = '/etc/puppetlabs/puppet/ssl'
 
   $reg_author = '[a-z0-9]+'
   $reg_mod    = '[a-z0-9][_a-z0-9]*'
@@ -223,6 +224,29 @@ class puppetserver::puppetconf {
                      'modules_repository' => $modules_repository,
                    }
                   ),
+  }
+
+  # In the case of a 'client' puppetserver, you can see in
+  # the puppet.conf.epp template that the CRL of the
+  # puppetserver is `cacrl = $ssldir/crl.pem`. So, this file
+  # must be updated when the CA has updated its CRL.
+  # It's very important to propagate the CRL of the CA to
+  # all 'client' puppetserver.
+
+  if $profile == 'client' {
+    file { "${ssldir}/crl.pem":
+      ensure  => present,
+      # It's probably more sure to let puppet manage
+      # the permissions of this file.
+      # The content of this file must be the same
+      # as the content of the CRL of the Puppet CA,
+      # ie the master of the current puppetserver.
+      content => file("${ssldir}/ca/ca_crl.pem"),
+      before  => Service['puppetserver'],
+      # Really important to restart the puppetserver
+      # in this cas.
+      notify  => $notify_puppetserver,
+    }
   }
 
   # Installation of eyaml and deep_merge.
