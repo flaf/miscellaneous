@@ -1,3 +1,7 @@
+# TODO: currently the script install-pp-modules doesn't
+#       take into account the version of a module. Is
+#       it possible to support the version number of
+#       specific puppet modules and is it useful?
 class puppetserver::puppetconf {
 
   # /!\ Warning /!\
