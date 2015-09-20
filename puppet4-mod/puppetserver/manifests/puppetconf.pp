@@ -280,6 +280,34 @@ class puppetserver::puppetconf {
     notify  => $notify_puppetserver,
   }
 
+  # If the puppetserver has the 'client' profile, we have to
+  # disable the CA service which is, by default, automatically
+  # launched at each start of the puppetserver service.
+  if $profile == 'client' {
+
+    $bootstrap_cfg  = "${puppetlabs_path}/puppetserver/bootstrap.cfg"
+    line_enable_ca  = 'puppetlabs.services.ca.certificate-authority-\
+service/certificate-authority-service'
+    line_disable_ca = 'puppetlabs.services.ca.certificate-authority-\
+disabled-service/certificate-authority-disabled-service'
+
+    file_line { 'comment-line-enable-CA-service':
+      path    => $bootstrap_cfg,
+      line    => "# ${line_enable_ca} # Edited by Puppet.",
+      match   => "^#?[[:space:]]*${line_enable_ca}[[:space:]]*$",
+      before  => Service['puppetserver'],
+      notify  => $notify_puppetserver,
+    }
+
+    file_line { 'uncomment-line-disable-CA-service':
+      path    => $bootstrap_cfg,
+      line    => "${line_disable_ca} # Edited by Puppet.",
+      match   => "^#?[[:space:]]*${line_disable_ca}[[:space:]]*$",
+      before  => Service['puppetserver'],
+      notify  => $notify_puppetserver,
+    }
+  }
+
   service { 'puppetserver':
     ensure     => running,
     hasstatus  => true,
