@@ -67,7 +67,7 @@ class puppet_forge (
     managehome => true,
     home       => $homedir,
     password   => $pwd,
-    shell      => '/bin/false',
+    shell      => '/bin/bash',
     system     => false,
   }
 
