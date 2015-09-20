@@ -1,11 +1,15 @@
-<%- |$reg_class| -%>
-#!/opt/puppetlabs/puppet/bin/ruby
+<%- |
+  $reg_class,
+  $environment_path,
+  $puppet_bin_dir,
+| -%>
+#!<%= $puppet_bin_dir %>/ruby
 
 ### This file is managed by Puppet, don't edit it. ###
 
 require 'yaml'
 
-ENV_DIR = '/etc/puppetlabs/code/environments'
+ENV_DIR = '<%= $environment_path %>'
 yamls_array = Dir.glob("#{ENV_DIR}/production/hieradata/fqdn/*.yaml")
 
 if yamls_array.empty?
@@ -70,5 +74,6 @@ end
 
 # Installation of the modules.
 modules_array.each do |mod|
-
+  system "<%= $puppet_bin_dir %>/puppet module install '#{mod}'"
+end
 

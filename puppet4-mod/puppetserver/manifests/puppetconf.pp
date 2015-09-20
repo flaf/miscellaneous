@@ -22,6 +22,7 @@ class puppetserver::puppetconf {
   $profile                 = $::puppetserver::profile
   $memory                  = $::puppetserver::puppet_memory
   $modules_repository      = $::puppetserver::modules_repository
+  $puppet_bin_dir          = '/opt/puppetlabs/puppet/bin'
 
   $reg_author = '[a-z0-9]+'
   $reg_mod    = '[a-z0-9][_a-z0-9]*'
@@ -110,7 +111,10 @@ class puppetserver::puppetconf {
     mode    => '0744',
     before  => Service['puppetserver'],
     content => epp('puppetserver/install-pp-modules.epp',
-                   { 'reg_class' => $reg_class }
+                   { 'reg_class'        => $reg_class,
+                     'environment_path' => $environment_path,
+                     'puppet_bin_dir'   => $puppet_bin_dir,
+                   }
                   ),
     # No need to restart the puppetserver here.
   }
