@@ -45,6 +45,8 @@ yamls_array.each do |yaml|
         exit(1)
       end
 
+     # This regex is less complicated than it seems. ;)
+     # See the puppet code to understand easily.
      reg_class  = /<%= $reg_class %>/
 
       unless a_class =~ reg_class

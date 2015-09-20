@@ -22,6 +22,8 @@ Stage['basis'] -> Stage['network']
 # where, is this case, the class `::apache2::vhosts` will
 # be included to the catalogue.
 #
+# This regex is less complicated than it seems. ;)
+# See the puppet code to understand easily.
 $reg_class = <%= $reg_class %>
 
 
