@@ -8,7 +8,7 @@ function puppetserver::data {
   $puppetdb_name           = 'puppet'
   $puppetdb_user           = 'puppet'
   $puppetdb_pwd            = md5($::fqdn)
-  $supported_distributions = ['trusty'];
+  $supported_distributions = [ 'trusty' ];
 
   {
     puppetserver::puppet_memory           => $puppet_memory,

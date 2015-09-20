@@ -27,12 +27,13 @@ inventory_networks:
 
 puppet:
   collection: 'PC1'
-  # TODO: puppet-agent 1.2.4 available but currently this
-  # version fails with the rabbitmq-server. The SSL
-  # handshake fails. It's a problem with the openssl
-  # component provided in the puppet-agent package.
-  # Need to found a solution...
-  pinning_agent_version: '1.2.2-*'
+  # TODO: puppet-agent 1.2.4 available but this
+  # version fails with the rabbitmq-server on Ubuntu
+  # Trusty. The SSL handshake fails. You must install
+  # rabbitmq-server necessarily on Debian Jessie.
+  # It's a problem with a shared library used by
+  # rabbitmq-server but I don't know which one.
+  pinning_agent_version: '1.2.4-*'
 
 mcollective:
   tag: 'mcollective'
