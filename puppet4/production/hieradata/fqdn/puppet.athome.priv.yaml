@@ -13,7 +13,7 @@ network::restart: true
 
 puppetserver::puppetdb_memory: '512m'
 puppetserver::profile: 'autonomous'
-puppetserver::modules_repository: 'http://client-jessie'
+puppetserver::modules_repository: 'http://client-jessie:8080'
 
 interfaces:
   eth0:
