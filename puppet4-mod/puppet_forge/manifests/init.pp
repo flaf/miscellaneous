@@ -16,13 +16,15 @@ class puppet_forge (
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
   # Some specific directories or files.
-  $homedir     = '/var/lib/puppetforge'
-  $modulesdir  = "${homedir}/modules"
-  $cachedir    = "${homedir}/cache"
-  $gitdir      = "${homedir}/git"
-  $giturlsfile = "${homedir}/giturls.conf"
-  $logdir      = '/var/log/puppetforge'
-  $workdir     = '/opt/puppet-forge-server'
+  $homedir               = '/var/lib/puppetforge'
+  $modulesdir            = "${homedir}/modules"
+  $cachedir              = "${homedir}/cache"
+  $gitdir                = "${homedir}/git"
+  $giturlsfile           = "${homedir}/giturls.conf"
+  $logdir                = '/var/log/puppetforge'
+  $workdir               = '/opt/puppet-forge-server'
+  $puppet_forge_pid      = "${homedir}/puppet-forge.pid"
+  $update_pp_modules_pid = "${homedir}/update-pp-modules.pid"
 
   # 'jq' is a cli to read json in command line.
   $packages = [ 'bundler', 'ruby-dev', 'build-essential', 'git', 'jq' ]
@@ -86,14 +88,15 @@ class puppet_forge (
     require => User['puppetforge'],
     notify  => Service['puppet-forge'],
     content => epp( 'puppet_forge/puppet-forge.epp',
-                    { 'workdir'      => $workdir,
-                      'homedir'      => $homedir,
-                      'address'      => $address,
-                      'port'         => $port,
-                      'modulesdir'   => $modulesdir,
-                      'remote_forge' => $remote_forge,
-                      'cachedir'     => $cachedir,
-                      'logdir'       => $logdir,
+                    { 'workdir'          => $workdir,
+                      'homedir'          => $homedir,
+                      'address'          => $address,
+                      'port'             => $port,
+                      'modulesdir'       => $modulesdir,
+                      'remote_forge'     => $remote_forge,
+                      'cachedir'         => $cachedir,
+                      'logdir'           => $logdir,
+                      'puppet_forge_pid' => $puppet_forge_pid,
                     }
                   ),
   }
@@ -107,7 +110,8 @@ class puppet_forge (
     notify  => Service['puppet-forge'],
     require => File['/usr/local/bin/puppet-forge'],
     content => epp('puppet_forge/puppet-forge-unit.epp',
-                   { 'homedir' => $homedir }),
+                   { 'puppet_forge_pid' => $puppet_forge_pid, }
+                  ),
   }
 
   service { 'puppet-forge':
@@ -133,10 +137,11 @@ class puppet_forge (
     group   => 'root',
     mode    => '755',
     content => epp('puppet_forge/update-pp-modules.epp',
-                   { 'gitdir'      => $gitdir,
-                     'modulesdir'  => $modulesdir,
-                     'giturlsfile' => $giturlsfile,
-                     'pause'       => $pause,
+                   { 'gitdir'                => $gitdir,
+                     'modulesdir'            => $modulesdir,
+                     'giturlsfile'           => $giturlsfile,
+                     'pause'                 => $pause,
+                     'update_pp_modules_pid' => $update_pp_modules_pid,
                    }
                   ),
     }
@@ -150,7 +155,8 @@ class puppet_forge (
     notify  => Service['update-pp-modules'],
     require => File['/usr/local/bin/update-pp-modules'],
     content => epp('puppet_forge/update-pp-modules-unit.epp',
-                   { 'homedir' => $homedir }),
+                   { 'update_pp_modules_pid' => $update_pp_modules_pid, }
+                  ),
   }
 
   service { 'update-pp-modules':

@@ -1,9 +1,9 @@
+<%- |$giturls| -%>
 ### This file is managed by Puppet, please don't edit it. ###
 
 # This list of git urls to retrieve the sources of the puppet modules.
-<%- | $listurls | -%>
-<%- $listurls.each |$url| { -%>
-<%= $url.strip %>
+<%- $giturls.each |$giturl| { -%>
+<%= $giturl.strip %>
 <%- } -%>
 
 

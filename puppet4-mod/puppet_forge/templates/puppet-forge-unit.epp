@@ -1,4 +1,4 @@
-<%- |$homedir| -%>
+<%- |$puppet_forge_pid| -%>
 ### This file is managed by Puppet, don't edit it ###
 
 [Unit]
@@ -8,7 +8,7 @@ After=network.target
 [Service]
 User=puppetforge
 Group=puppetforge
-PIDFile=<%= $homedir %>/puppet-forge.pid
+PIDFile=<%= $puppet_forge_pid %>
 ExecStart=/usr/local/bin/puppet-forge
 Restart=on-failure
 

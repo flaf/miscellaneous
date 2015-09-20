@@ -1,4 +1,4 @@
-<%- |$homedir| -%>
+<%- |$update_pp_modules_pid| -%>
 ### This file is managed by Puppet, don't edit it ###
 
 [Unit]
@@ -8,7 +8,7 @@ After=network.target
 [Service]
 User=puppetforge
 Group=puppetforge
-PIDFile=<%= $homedir %>/update-pp-modules.pid
+PIDFile=<%= $update_pp_modules_pid %>
 ExecStart=/usr/local/bin/update-pp-modules
 Restart=on-failure
 
