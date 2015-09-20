@@ -1,5 +1,7 @@
 #!/opt/puppetlabs/puppet/bin/ruby
 
+### This file is managed by Puppet, don't edit it.
+
 require 'yaml'
 
 # The absolute path of the directory which contains the ENC script.

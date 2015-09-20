@@ -1,5 +1,5 @@
 <%- |$user, $db, $pwd | -%>
-### This file is manged by Puppet, don't edit it.
+### This file is managed by Puppet, don't edit it.
 
 [database]
 classname   = org.postgresql.Driver
