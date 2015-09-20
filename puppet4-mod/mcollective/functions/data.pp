@@ -71,8 +71,7 @@ function mcollective::data {
     mcollective::middleware::admin_pwd               => $conf['middleware_admin_pwd'],
     mcollective::middleware::mcollective_pwd         => $conf['mcollective_pwd'],
     mcollective::middleware::ssl_versions            => $ssl_versions,
-    # Currently, the mcollective::middleware works only Ubuntu Trusty.
-    mcollective::middleware::supported_distributions => [ 'trusty' ],
+    mcollective::middleware::supported_distributions => $supported_distribs,
 
 
     mcollective::server::server_private_key      => $conf['server_private_key'],
