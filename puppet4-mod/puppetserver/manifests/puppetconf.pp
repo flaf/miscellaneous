@@ -326,7 +326,7 @@ disabled-service/certificate-authority-disabled-service"
 
     file_line { 'comment-line-enable-CA-service':
       path    => $bootstrap_cfg,
-      line    => "# ${line_enable_ca} # Edited by Puppet.",
+      line    => "#${line_enable_ca} # Edited by Puppet.",
       match   => "^#?[[:space:]]*${line_enable_ca}[[:space:]]*$",
       before  => Service['puppetserver'],
       notify  => $notify_puppetserver,
