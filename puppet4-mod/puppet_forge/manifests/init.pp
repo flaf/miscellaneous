@@ -1,4 +1,6 @@
-# TODO: implement the service "update-module".
+# TODO: implement the service "update-pp-module" via a push
+#       system (ie the host receives a message from the
+#       git server and so trigger an update locally.
 #
 class puppet_forge (
   String[1]           $git_url,
@@ -61,7 +63,7 @@ class puppet_forge (
     comment    => 'Puppet Forge,,,',
     expiry     => absent,
     managehome => true,
-    home       => '/var/lib/puppetforge',
+    home       => $homedir,
     password   => $pwd,
     shell      => '/bin/false',
     system     => false,
@@ -82,7 +84,7 @@ class puppet_forge (
     group   => 'root',
     mode    => '0755',
     require => User['puppetforge'],
-    notify  => Service['puppetforge'],
+    notify  => Service['puppet-forge'],
     content => epp( 'puppet_forge/puppet-forge.epp',
                     { 'workdir'      => $workdir,
                       'homedir'      => $homedir,
@@ -96,19 +98,19 @@ class puppet_forge (
                   ),
   }
 
-  file { '/lib/systemd/system/puppetforge.service':
+  file { '/lib/systemd/system/puppet-forge.service':
     ensure  => present,
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    before  => Service['puppetforge'],
-    notify  => Service['puppetforge'],
+    before  => Service['puppet-forge'],
+    notify  => Service['puppet-forge'],
     require => File['/usr/local/bin/puppet-forge'],
     content => epp('puppet_forge/puppet-forge-unit.epp',
                    { 'homedir' => $homedir }),
   }
 
-  service { 'puppetforge':
+  service { 'puppet-forge':
     ensure     => running,
     hasstatus  => true,
     hasrestart => true,
@@ -147,8 +149,15 @@ class puppet_forge (
     before  => Service['update-pp-modules'],
     notify  => Service['update-pp-modules'],
     require => File['/usr/local/bin/update-pp-modules'],
-    content => epp('puppet_forge/update-pp-modules.epp',
+    content => epp('puppet_forge/update-pp-modules-unit.epp',
                    { 'homedir' => $homedir }),
+  }
+
+  service { 'update-pp-modules':
+    ensure     => running,
+    hasstatus  => true,
+    hasrestart => true,
+    enable     => true,
   }
 
 }

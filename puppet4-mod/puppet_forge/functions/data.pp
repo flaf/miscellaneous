@@ -16,8 +16,8 @@ function puppet_forge::data {
     puppet_forge::address                 => $address,
     puppet_forge::port                    => $port,
     puppet_forge::pause                   => $pause,
-    puppet_forge::giturls                => $giturls,
-    puppet_forge::supported_distributions => ['jessie'],
+    puppet_forge::giturls                 => $giturls,
+    puppet_forge::supported_distributions => [ 'jessie' ],
   }
 
 }
