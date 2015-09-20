@@ -9,7 +9,7 @@ After=network.target
 User=puppetforge
 Group=puppetforge
 PIDFile=<%= $homedir %>/puppetforge.pid
-ExecStart=/usr/local/bin/run-puppet-forge
+ExecStart=/usr/local/bin/puppet-forge
 Restart=on-failure
 
 [Install]

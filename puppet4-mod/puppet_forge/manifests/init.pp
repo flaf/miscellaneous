@@ -73,17 +73,17 @@ class puppet_forge (
     group   => 'puppetforge',
     mode    => '0750',
     require => User['puppetforge'],
-    before  => File['/usr/local/bin/run-puppet-forge'],
+    before  => File['/usr/local/bin/puppet-forge'],
   }
 
-  file { '/usr/local/bin/run-puppet-forge':
+  file { '/usr/local/bin/puppet-forge':
     ensure  => present,
     owner   => 'root',
     group   => 'root',
     mode    => '0755',
     require => User['puppetforge'],
     notify  => Service['puppetforge'],
-    content => epp( 'puppet_forge/run-puppet-forge.epp',
+    content => epp( 'puppet_forge/puppet-forge.epp',
                     { 'workdir'      => $workdir,
                       'homedir'      => $homedir,
                       'address'      => $address,
@@ -103,7 +103,7 @@ class puppet_forge (
     mode    => '0644',
     before  => Service['puppetforge'],
     notify  => Service['puppetforge'],
-    require => File['/usr/local/bin/run-puppet-forge'],
+    require => File['/usr/local/bin/puppet-forge'],
     content => epp('puppet_forge/puppet-forge-unit.epp',
                    { 'homedir' => $homedir }),
   }
