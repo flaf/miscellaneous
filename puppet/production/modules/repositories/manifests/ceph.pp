@@ -43,10 +43,10 @@ class repositories::ceph (
   #
   # To install this APT key:
   #
-  #   url='https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc'
+  #   url='https://git.ceph.com/release.asc'
   #   wget -q -O- "$url" | apt-key add -
   #
-  $key = '7F6C9F236D170493FCF404F27EBFDD5D17ED316D'
+  $key = '08B73419AC32B4E966C1A330E84AC2C0460F3994'
 
   apt::source { 'ceph':
     comment     => 'The Ceph repository.',
