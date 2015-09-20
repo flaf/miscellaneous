@@ -11,7 +11,7 @@ enc_datacenter: 'vty'
 puppetagent::manage_puppetconf: false
 network::restart: true
 
-puppetserver::puppet_memory: '512m'
+puppetserver::puppet_memory: '750m'
 puppetserver::profile: 'client'
 puppetserver::modules_repository: 'http://client-jessie:8080'
 
