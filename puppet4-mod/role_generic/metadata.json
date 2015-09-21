@@ -14,7 +14,6 @@
     {"name":"flaf-keyboard","version_requirement":">= 0.1.0"},
     {"name":"flaf-locale","version_requirement":">= 0.1.0"},
     {"name":"flaf-timezone","version_requirement":">= 0.1.0"},
-    {"name":"flaf-ntp","version_requirement":">= 0.1.0"},
     {"name":"flaf-puppetagent","version_requirement":">= 0.1.0"},
     {"name":"flaf-mcollective","version_requirement":">= 0.1.0"}
   ]
