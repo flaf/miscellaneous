@@ -15,7 +15,7 @@ class network::ntp (
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    content => epp( 'ntp/ntp.conf.epp',
+    content => epp( 'network/ntp.conf.epp',
                     { 'interfaces'         => $interfaces,
                       'subnets_authorized' => $subnets_authorized,
                       'ipv6'               => $ipv6,
