@@ -7,19 +7,7 @@ function network::get_ntp_servers {
                          ]
   $inventory_networks  = ::network::get_inventory_networks()
   $interfaces          = ::network::get_interfaces()
-
-  # Create an array of interface names among $interfaces
-  # for each interface in a network where 'ntp_servers'
-  # key is defined.
-  $ifaces_candidates  = $interfaces.keys.sort.filter |$iface| {
-    if $interfaces[$iface].has_key('in_networks') {
-      $network_candidate = $interfaces[$iface]['in_networks'][0];
-      $inventory_networks[$network_candidate].has_key('ntp_servers')
-    }
-    else {
-      false
-    }
-  }
+  $ifaces_candidates   = ::network::get_interfaces_candidates_for('ntp_servers')
 
   if $ifaces_candidates.empty {
     # No interface found, so no ntp servers.

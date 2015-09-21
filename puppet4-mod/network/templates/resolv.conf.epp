@@ -1,0 +1,16 @@
+<%- |
+$domain,
+$search,
+$nameservers
+$timeout,
+| -%>
+### This file is managed by Puppet, don't edit it. ###
+
+domain <%= $domain %>
+search <%= search.join(' ') %>
+timeout:<%= $timeout %>
+<%- $nameservers.each |$nameserver| -%>
+nameserver <%= $nameserver %>
+<%- -%>
+
+
