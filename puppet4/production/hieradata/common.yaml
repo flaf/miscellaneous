@@ -8,6 +8,14 @@ inventory_networks:
     gateway: '195.221.98.1'
     dns_servers: [ '195.221.98.7', '195.221.98.7' ]
     ntp_servers: [ 'hades.crdp.ac-versailles.fr' ]
+  net97:
+    comment: [ 'Historical "97" network.' ]
+    vlan_id: '97'
+    vlan_name: 'vlan97'
+    cidr_address: '195.221.97.1/24'
+    gateway: '195.221.97.1'
+    dns_servers: [ '195.221.98.7', '195.221.98.7' ]
+    ntp_servers: [ 'hades.crdp.ac-versailles.fr' ]
   freeboox_lan:
     comment: [ 'LAN behind the Freebox (dhcp).' ]
     vlan_id: '1000'
@@ -26,7 +34,7 @@ inventory_networks:
     cidr_address: '172.31.0.0/16'
     gateway: '172.31.0.1'
     ntp_servers: [ '172.31.0.1' ]
-    nameservers: [ '172.31.0.1' ]
+    dns_servers: [ '172.31.0.1' ]
   vbox_priv:
     comment: [ 'Private LAN in VBox without dhcp.' ]
     vlan_id: '1002'

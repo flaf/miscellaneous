@@ -1,4 +1,4 @@
-class ntp (
+class network::ntp (
   Variant[ Array[String[1], 1], Enum['all'] ] $interfaces,
   Array[String[1], 1]                         $ntp_servers,
   Variant[ Array[String[1], 1], Enum['all'] ] $subnets_authorized,

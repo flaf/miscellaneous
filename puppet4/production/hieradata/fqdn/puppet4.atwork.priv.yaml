@@ -12,7 +12,8 @@ network::restart: true
 
 interfaces:
   eth0:
-    in_networks: [ 'vbox_adm' ]
+    #in_networks: [ 'vbox_adm' ]
+    in_networks: [ 'net97' ]
     macaddress: '08:00:27:ad:c9:18'
     inet:
       method: 'dhcp'
