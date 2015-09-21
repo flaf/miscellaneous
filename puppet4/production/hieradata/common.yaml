@@ -1,5 +1,13 @@
 ---
 inventory_networks:
+  net98:
+    comment: [ 'Historical "98" network.' ]
+    vlan_id: '98'
+    vlan_name: 'vlan98'
+    cidr_address: '195.221.98.1/24'
+    gateway: '195.221.98.1'
+    dns_servers: [ '195.221.98.7', '195.221.98.7' ]
+    ntp_servers: [ 'hades.crdp.ac-versailles.fr' ]
   freeboox_lan:
     comment: [ 'LAN behind the Freebox (dhcp).' ]
     vlan_id: '1000'

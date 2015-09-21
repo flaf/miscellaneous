@@ -13,10 +13,10 @@ function network::data {
                            '3.debian.pool.ntp.org',
                  ]
 
-  $nameservers = ::network::get_param($interfaces, $inventory_networks,
-                                      'nameservers', $default_dns)
-  $search      = ::network::get_param($interfaces, $inventory_networks,
-                                      'search', [ $::domain ])
+  $dns_servers = ::network::get_param($interfaces, $inventory_networks,
+                                      'dns_servers', $default_dns)
+  $dns_search  = ::network::get_param($interfaces, $inventory_networks,
+                                      'dns_search', [ $::domain ])
   $ntp_servers = ::network::get_param($interfaces, $inventory_networks,
                                       'ntp_servers', $default_ntp)
 
@@ -29,8 +29,8 @@ function network::data {
     network::stage                   => $defaut_stage,
 
     network::resolv_conf::domain                  => $::domain,
-    network::resolv_conf::search                  => $search,
-    network::resolv_conf::nameservers             => $nameservers,
+    network::resolv_conf::search                  => $dns_search,
+    network::resolv_conf::nameservers             => $dns_servers,
     network::resolv_conf::timeout                 => 2,
     network::resolv_conf::supported_distributions => $supported_distribs,
     network::resolv_conf::stage                   => $defaut_stage,
