@@ -2,7 +2,11 @@
 
 * Write the README file.
 * Make a schema (with puppetserver, puppetdb and postresql).
-
+* A client uses the `$ssldir/crl.pem` file as CRL. This file
+should be the same as the file `$ssldir/ca/ca_crl.pem` in
+the puppet CA. We could imagine the CA which exports this
+file `$ssldir/ca/ca_crl.pem` and puppet-agents retrieve this
+file...
 
 
 
