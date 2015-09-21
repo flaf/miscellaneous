@@ -1,3 +1,12 @@
+# TODO
+
+* README not updated. The documentation concerning the
+class `network::resolv_conf` is missing.
+* Create a class `network::host`.
+
+
+
+
 # Module description
 
 This module implements a configuration of the
