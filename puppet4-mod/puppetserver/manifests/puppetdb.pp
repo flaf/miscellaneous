@@ -51,6 +51,15 @@ class puppetserver::puppetdb {
     notify => Service['puppetdb'],
   }
 
+  file { $puppetdb_ssl_dir:
+    ensure => directory,
+    owner  => 'puppetdb',
+    group  => 'puppetdb',
+    mode   => '0600',
+    before => Service['puppetdb'],
+    notify => Service['puppetdb'],
+  }
+
   file { [
            "${puppetdb_ssl_dir}/ca.pem",
            "${puppetdb_ssl_dir}/public.pem",
