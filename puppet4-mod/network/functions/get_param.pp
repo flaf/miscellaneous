@@ -10,8 +10,8 @@ function network::get_param (
   # key is defined.
   $ifaces_candidates  = $interfaces.keys.sort.filter |$iface| {
     if $interfaces[$iface].has_key('in_networks') {
-      $network_candidate = $interfaces[$iface]['in_networks'][0];
-      $inventory_networks[$network_candidate].has_key($param)
+      $primary_network = $interfaces[$iface]['in_networks'][0];
+      $inventory_networks[$primary_network].has_key($param)
     }
     else {
       false
