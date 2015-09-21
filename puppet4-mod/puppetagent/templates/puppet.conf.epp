@@ -9,9 +9,8 @@
 # - https://docs.puppetlabs.com/references/latest/configuration.html
 
 [main]
-<%- if $server { -%>
 server      = <%= $server %>
-<%- } -%>
+ca_server   = <%= $ca_server %>
 runinterval = <%= $runinterval %>
 
 

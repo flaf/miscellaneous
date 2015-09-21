@@ -14,6 +14,8 @@ class { '::puppetagent':
   service_enabled   => false,
   runinterval       => '7d',
   server            => 'puppet4.mydomain.tld',
+  ca_server         => '$server',
+  cron              => 'per-week',
   manage_puppetconf => true,
 }
 ```
@@ -38,6 +40,18 @@ Its default value is `$::server_facts['servername']`
 if defined (generally when the `trusted_server_facts`
 parameter is set to `true` in the file `puppet.conf`
 of the server), else it's just the string `puppet`.
+
+The `ca_server` parameter is a string to define the
+CA server. This parameter is necessary during the
+the first and the second puppet run where the client
+do some SSL operations. The default value of this
+parameter is the string `$server`, ie the CA server
+is the same as the puppetmaster.
+
+The `cron` parameter accepts only 3 values :
+- `per-day` for per-day cron,
+- `per-weel` for per-week cron,
+- `disabled`where no cron will run puppet.
 
 The `manage_puppetconf` parameter is a boolean. If set
 to `false`, the puppet class will not manage the

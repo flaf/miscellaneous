@@ -1,0 +1,11 @@
+#!/bin/bash
+
+### This file is managed by puppet, don't exist
+
+export LC_ALL=C
+export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:'
+
+exec >/dev/null 2>&1
+timeout --signal TERM --kill-after 120s 360s /opt/puppetlabs/bin/puppet \
+    agent  --test --server='<%= $server %>' --ca_server='<%= $ca_server %>'
+
