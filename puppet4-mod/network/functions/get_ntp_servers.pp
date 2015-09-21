@@ -18,6 +18,13 @@ function network::get_ntp_servers {
     # first network.
     $network_candidate = $interfaces[$ifaces_candidates[0]]['in_networks'][0]
     $ntp_servers       = $inventory_networks[$network_candidate]['ntp_servers']
+  }
+
+  unless $ntp_servers =~ Array[String[1], 1] {
+    fail(regsubst(@(END), '\n', ' ', 'G'))
+      Sorry, the `ntp_servers` key in the inventory networks
+      must be a non-empty array of non-empty strings.
+      |- END
   };
 
   $ntp_servers
