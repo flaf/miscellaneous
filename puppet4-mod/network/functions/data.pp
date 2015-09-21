@@ -16,20 +16,24 @@ function network::data {
   $nameservers = ::network::get_param($interfaces, $inventory_networks,
                                       'nameservers', $default_dns)
   $search      = ::network::get_param($interfaces, $inventory_networks,
-                                      'search', $::domain)
+                                      'search', [ $::domain ])
   $ntp_servers = ::network::get_param($interfaces, $inventory_networks,
                                       'ntp_servers', $default_ntp)
 
+  $defaut_stage       = 'network'
+  $supported_distribs = [ 'trusty', 'jessie' ];
 
   { network::restart                 => false,
     network::interfaces              => $interfaces,
-    network::supported_distributions => [ 'trusty', 'jessie' ],
-    network::stage                   => 'network',
+    network::supported_distributions => $supported_distribs,
+    network::stage                   => $defaut_stage,
 
-    network::resolv_conf::domain      => $::domain,
-    network::resolv_conf::search      => $search,
-    network::resolv_conf::nameservers => $nameservers,
-    network::resolv_conf::timeout     => 2,
+    network::resolv_conf::domain                  => $::domain,
+    network::resolv_conf::search                  => $search,
+    network::resolv_conf::nameservers             => $nameservers,
+    network::resolv_conf::timeout                 => 2,
+    network::resolv_conf::supported_distributions => $supported_distribs,
+    network::resolv_conf::stage                   => $defaut_stage,
 
     # This is not a puppet class here, but the value could
     # be used by another classes (like a ntp puppet class
