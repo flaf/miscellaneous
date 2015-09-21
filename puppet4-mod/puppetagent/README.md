@@ -50,8 +50,9 @@ is the same as the puppetmaster.
 
 The `cron` parameter accepts only 3 values :
 - `per-day` for per-day cron,
-- `per-weel` for per-week cron,
+- `per-week` for per-week cron,
 - `disabled`where no cron will run puppet.
+Its default value is `per-week`.
 
 The `manage_puppetconf` parameter is a boolean. If set
 to `false`, the puppet class will not manage the
