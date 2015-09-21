@@ -2,7 +2,7 @@
 #       system (ie the host receives a message from the
 #       git server and so trigger an update locally.
 #
-class puppet_forge (
+class puppetforge (
   String[1]           $git_url,
   String[1]           $commit_id,
   String[1]           $remote_forge,
@@ -22,15 +22,15 @@ class puppet_forge (
   $gitdir                = "${homedir}/git"
   $giturlsfile           = "${homedir}/giturls.conf"
   $logdir                = '/var/log/puppetforge'
-  $workdir               = '/opt/puppet-forge-server'
-  $puppet_forge_pid      = "${homedir}/puppet-forge.pid"
+  $workdir               = '/opt/puppetforge-server'
+  $puppetforge_pid       = "${homedir}/puppetforge.pid"
   $update_pp_modules_pid = "${homedir}/update-pp-modules.pid"
 
   # 'jq' is a cli to read json in command line.
   $packages = [ 'bundler', 'ruby-dev', 'build-essential', 'git', 'jq' ]
   ensure_packages( $packages,
                    { ensure => present,
-                     before => Exec['install-puppet-forge-server'],
+                     before => Exec['install-puppetforge-server'],
                    }
                  )
 
@@ -39,13 +39,13 @@ class puppet_forge (
   $script_install = @("END")
     [ ! -d '/opt' ] && mkdir '/opt'
     cd '/opt'
-    { git clone '$git_url' && cd 'puppet-forge-server/'; } || exit 1
-    git reset --hard '$commit_id'
+    { git clone '$git_url' && cd '${workdir}'; } || exit 1
+    git reset --hard '${commit_id}'
     bundle install || exit 1
     echo "Puppet forge server installed."
     | END
 
-  exec { 'install-puppet-forge-server':
+  exec { 'install-puppetforge-server':
     path    => '/usr/sbin:/usr/bin:/sbin:/bin',
     user    => 'root',
     command => $script_install,
@@ -77,44 +77,45 @@ class puppet_forge (
     group   => 'puppetforge',
     mode    => '0750',
     require => User['puppetforge'],
-    before  => File['/usr/local/bin/puppet-forge'],
+    before  => File['/usr/local/bin/puppetforge'],
   }
 
-  file { '/usr/local/bin/puppet-forge':
+  file { '/usr/local/bin/puppetforge':
     ensure  => present,
     owner   => 'root',
     group   => 'root',
     mode    => '0755',
     require => User['puppetforge'],
-    notify  => Service['puppet-forge'],
-    content => epp( 'puppet_forge/puppet-forge.epp',
-                    { 'workdir'          => $workdir,
-                      'homedir'          => $homedir,
-                      'address'          => $address,
-                      'port'             => $port,
-                      'modulesdir'       => $modulesdir,
-                      'remote_forge'     => $remote_forge,
-                      'cachedir'         => $cachedir,
-                      'logdir'           => $logdir,
-                      'puppet_forge_pid' => $puppet_forge_pid,
+    notify  => Service['puppetforge'],
+    content => epp( 'puppetforge/puppetforge.epp',
+                    {
+                      'workdir'         => $workdir,
+                      'homedir'         => $homedir,
+                      'address'         => $address,
+                      'port'            => $port,
+                      'modulesdir'      => $modulesdir,
+                      'remote_forge'    => $remote_forge,
+                      'cachedir'        => $cachedir,
+                      'logdir'          => $logdir,
+                      'puppetforge_pid' => $puppetforge_pid,
                     }
                   ),
   }
 
-  file { '/lib/systemd/system/puppet-forge.service':
+  file { '/lib/systemd/system/puppetforge.service':
     ensure  => present,
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    before  => Service['puppet-forge'],
-    notify  => Service['puppet-forge'],
-    require => File['/usr/local/bin/puppet-forge'],
-    content => epp('puppet_forge/puppet-forge-unit.epp',
-                   { 'puppet_forge_pid' => $puppet_forge_pid, }
+    before  => Service['puppetforge'],
+    notify  => Service['puppetforge'],
+    require => File['/usr/local/bin/puppetforge'],
+    content => epp('puppetforge/puppetforge-unit.epp',
+                   { 'puppetforge_pid' => $puppetforge_pid, }
                   ),
   }
 
-  service { 'puppet-forge':
+  service { 'puppetforge':
     ensure     => running,
     hasstatus  => true,
     hasrestart => true,
@@ -126,7 +127,7 @@ class puppet_forge (
     owner   => 'root',
     group   => 'root',
     mode    => '644',
-    content => epp('puppet_forge/giturls.conf.epp',
+    content => epp('puppetforge/giturls.conf.epp',
                    { 'giturls' => $giturls, }
                   ),
     }
@@ -136,8 +137,9 @@ class puppet_forge (
     owner   => 'root',
     group   => 'root',
     mode    => '755',
-    content => epp('puppet_forge/update-pp-modules.epp',
-                   { 'gitdir'                => $gitdir,
+    content => epp('puppetforge/update-pp-modules.epp',
+                   {
+                     'gitdir'                => $gitdir,
                      'modulesdir'            => $modulesdir,
                      'giturlsfile'           => $giturlsfile,
                      'pause'                 => $pause,
@@ -154,7 +156,7 @@ class puppet_forge (
     before  => Service['update-pp-modules'],
     notify  => Service['update-pp-modules'],
     require => File['/usr/local/bin/update-pp-modules'],
-    content => epp('puppet_forge/update-pp-modules-unit.epp',
+    content => epp('puppetforge/update-pp-modules-unit.epp',
                    { 'update_pp_modules_pid' => $update_pp_modules_pid, }
                   ),
   }

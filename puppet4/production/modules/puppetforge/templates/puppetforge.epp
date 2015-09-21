@@ -7,7 +7,7 @@
   $remote_forge,
   $cachedir,
   $logdir,
-  $puppet_forge_pid,
+  $puppetforge_pid,
 | -%>
 #!/bin/sh
 ### This file is managed by Puppet, don't edit it. ###
@@ -37,6 +37,6 @@ bundle exec bin/puppet-forge-server --bind '<%= $address %>' --port '<%= $port %
     --proxy '<%= $remote_forge %>' \
     --cache-basedir '<%= $cachedir %>' \
     --log-dir '<%= $logdir %>' \
-    --pidfile '<%= $puppet_forge_pid %>'
+    --pidfile '<%= $puppetforge_pid %>'
 
 
