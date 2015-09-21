@@ -5,6 +5,10 @@ class network::resolv_conf (
   Integer[1]          $timeout,
 ) {
 
+  # With "ensure => file" is the file is a symlink to
+  # "../run/resolvconf/resolv.conf", the symlink will
+  # be removed and replaced by a regular file. So,
+  # resolvconf mechanism will be disabled.
   file { '/etc/resolv.conf':
     ensure  => file,
     owner   => 'root',

@@ -18,6 +18,7 @@ inventory_networks:
     cidr_address: '172.31.0.0/16'
     gateway: '172.31.0.1'
     ntp_servers: [ '172.31.0.1' ]
+    nameservers: 'rrrr'
   vbox_priv:
     comment: [ 'Private LAN in VBox without dhcp.' ]
     vlan_id: '1002'
