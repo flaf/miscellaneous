@@ -26,8 +26,6 @@ class puppetserver::puppetconf {
   $profile                 = $::puppetserver::profile
   $memory                  = $::puppetserver::puppet_memory
   $modules_repository      = $::puppetserver::modules_repository
-  $puppet_bin_dir          = '/opt/puppetlabs/puppet/bin'
-  $ssldir                  = '/etc/puppetlabs/puppet/ssl'
 
   $reg_author = '[a-z0-9]+'
   $reg_mod    = '[a-z0-9][_a-z0-9]*'
@@ -70,9 +68,11 @@ class puppetserver::puppetconf {
   $manifests_path    = "${production_path}/manifests"
   $modules_path      = "${production_path}/modules"
   $puppet_path       = "${puppetlabs_path}/puppet"
+  $ssldir            = "${puppet_path}/ssl"
   $keys_path         = "${puppet_path}/keys"
   $eyaml_public_key  = "${keys_path}/public_key.pkcs7.pem"
   $eyaml_private_key = "${keys_path}/private_key.pkcs7.pem"
+  $puppet_bin_dir    = '/opt/puppetlabs/puppet/bin'
 
   file { [ $environment_path,
            $production_path,
@@ -368,6 +368,21 @@ disabled-service/certificate-authority-disabled-service"
     hasstatus  => true,
     hasrestart => true,
     enable     => true,
+  }
+
+  # TODO: We don't manage the content of this file but
+  # just ensure the Unix rights to avoid something which
+  # seems to be a bug for me:
+  #
+  #   https://tickets.puppetlabs.com/browse/SERVER-906
+  #
+  file { "${ssldir}/ca/ca_key.pem":
+    ensure  => present,
+    owner   => 'puppet',
+    group   => 'puppet',
+    mode    => '0640',
+    # Indeed, the file exists only once the puppetserver is started.
+    require => Service['puppetserver'],
   }
 
 }
