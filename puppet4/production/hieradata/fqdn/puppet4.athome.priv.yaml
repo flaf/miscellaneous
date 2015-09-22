@@ -18,4 +18,13 @@ interfaces:
       method: 'dhcp'
 network::resolv_conf::override_dhcp: true
 
+# If a @@ is present, the hosts entry is exported.
+#
+#hosts:
+#  tag: 'realm-foo'
+#  entries:
+#    '@@%{::facts.networking.interfaces.eth0.bindings.0.address}':
+#      - '%{::fqdn}'
+#      - '%{::hostname}'
+
 
