@@ -74,21 +74,18 @@ class puppetagent (
   case $cron {
 
     'per-day': {
-      $ensure_cron_bin = 'present'
-      $ensure_cron     = 'present'
-      $weekday         = '*' # [i] See remark below.
+      $ensure_cron = 'present'
+      $weekday     = '*' # [i] See remark below.
     }
 
     'per-week': {
-      $ensure_cron_bin = 'present'
-      $ensure_cron     = 'present'
-      $weekday         = fqdn_rand(7)
+      $ensure_cron = 'present'
+      $weekday     = fqdn_rand(7)
     }
 
     'disabled': {
-      $ensure_cron_bin = 'absent'
-      $ensure_cron     = 'absent'
-      $weekday         = undef # Value useless in this case.
+      $ensure_cron = 'absent'
+      $weekday     = undef # Value useless in this case.
     }
 
   }
@@ -96,7 +93,7 @@ class puppetagent (
   $cron_bin = '/usr/local/sbin/cron-run-puppet'
 
   file { $cron_bin:
-    ensure => $ensure_cron_bin,
+    ensure => $ensure_cron,
     owner  => 'root',
     group  => 'root',
     mode   => '0750',
