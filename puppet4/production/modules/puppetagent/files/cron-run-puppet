@@ -2,14 +2,21 @@
 
 ### This file is managed by puppet, don't exist
 #
-# It's just a basic script to launch a puppet run
-# via a cron task.
-#
+# It's just a basic script to launch a puppet run via a cron
+# task. We use bash here (instead of /bin/sh) to have the
+# RANDOM variable and add again a little touch of random in
+# the moment where the puppet run will start.
+
+# No output. Regular puppet runs should not be checked via
+# a cron notification.
+exec >/dev/null 2>&1
 
 export LC_ALL=C
 export PATH='/opt/puppetlabs/bin:/usr/sbin:/usr/bin:/sbin:/bin'
 
-exec >/dev/null 2>&1
+# A sleep during x seconds where 0 =< x < 300.
+sleep $((RANDOM % 300))
+
 timeout --signal TERM --kill-after 120s 360s puppet agent --test
 
 
