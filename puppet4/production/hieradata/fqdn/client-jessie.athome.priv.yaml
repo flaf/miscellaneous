@@ -18,4 +18,13 @@ network::resolv_conf::override_dhcp: true
 puppetforge::giturls:
   - 'http://github.com/flaf/flaf-moda.git'
 
+hosts:
+#  tag: 'prout'
+  entries:
+    '127.0.0.1': [ '%{::fqdn}', '%{::hostname}xxxxxxxxxx' ]
+    '127.0.0.2': [ 'aaa.%{::fqdn}', 'aaa.%{::hostname}' ]
+    '172.123.12.254': [ 'bbb.%{::fqdn}', 'bbb.%{::hostname}' ]
+#    '127.0.0.4': [ '%{::fqdn}', '%{::hostname}xxxxxxxxxx' ]
+#  #  '%{::facts.networking.interfaces.eth0.bindings.0.address}': ['cephmaster']
+
 

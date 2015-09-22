@@ -1,6 +1,7 @@
 class role_generic {
 
   include '::network'
+  include '::network::hosts'
   include '::network::resolv_conf'
   include '::network::ntp'
   include '::repository::distrib'

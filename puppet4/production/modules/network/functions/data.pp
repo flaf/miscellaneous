@@ -4,6 +4,7 @@ function network::data {
   $inventory_networks = lookup('inventory_networks', Hash[String[1], Data, 1],
                                'hash')
   $ifaces             = lookup('interfaces', Hash[String[1], Data, 1], 'hash')
+  $hosts_conf         = lookup('hosts', Hash[String[1], Data], 'hash', {})
 
   # Data handle.
   $interfaces         = ::network::fill_interfaces($ifaces, $inventory_networks)
@@ -25,15 +26,35 @@ function network::data {
                                              'dns_search', [ $::domain ])
   $ntp_servers        = ::network::get_param($interfaces, $inventory_networks,
                                       'ntp_servers', $default_ntp)
-  $defaut_stage       = 'network'
-  $hosts_tag          = ''
+  $default_stage      = 'network'
+
+  # Default is no tag and the one basic hosts entry.
+  $default_hosts_tag = ''
+  $default_hosts_entries = { '127.0.1.1' => [$::fqdn, $::hostname ] }
+
+  if $hosts_conf.empty {
+    $hosts_tag     = $default_hosts_tag
+    $hosts_entries = $default_hosts_entries
+  } else {
+    if $hosts_conf.has_key('tag') {
+      $hosts_tag = $hosts_conf['tag']
+    } else {
+      $hosts_tag = $default_hosts_tag
+    }
+    if $hosts_conf.has_key('entries') {
+      $hosts_entries = $hosts_conf['entries']
+    } else {
+      $hosts_entries = $default_hosts_entries
+    }
+  }
+
   $supported_distribs = [ 'trusty', 'jessie' ];
 
   {
     network::restart                 => false,
     network::interfaces              => $interfaces,
     network::supported_distributions => $supported_distribs,
-    network::stage                   => $defaut_stage,
+    network::stage                   => $default_stage,
 
     network::resolv_conf::domain                  => $::domain,
     network::resolv_conf::search                  => $dns_search,
@@ -42,7 +63,12 @@ function network::data {
     network::resolv_conf::local_resolver          => $local_resolver,
     network::resolv_conf::override_dhcp           => $override_dhcp,
     network::resolv_conf::supported_distributions => $supported_distribs,
-    network::resolv_conf::stage                   => $defaut_stage,
+    network::resolv_conf::stage                   => $default_stage,
+
+    network::hosts::entries                 => $hosts_entries,
+    network::hosts::from_tag                => $hosts_tag,
+    network::hosts::supported_distributions => $supported_distribs,
+    network::hosts::stage                   => $default_stage,
 
     network::ntp::interfaces              => 'all',
     network::ntp::ntp_servers             => $ntp_servers,
