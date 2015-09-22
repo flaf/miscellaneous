@@ -1,5 +1,6 @@
 class role_generic {
 
+  include '::unix_accounts'
   include '::network'
   include '::network::hosts'
   include '::network::resolv_conf'
