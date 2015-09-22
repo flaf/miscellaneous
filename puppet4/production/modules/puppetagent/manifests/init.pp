@@ -52,11 +52,13 @@ class puppetagent (
   #   https://tickets.puppetlabs.com/browse/SERVER-906
   #
   # Of course, we don't manage the content of this file,
-  # just the Unix rights.
+  # just the Unix rights. We don't manage the owner and
+  # the group too because the owner can be root:root if
+  # just the "puppet-agent" package is installed but will
+  # be puppet:puppet if the "puppetserver" package is
+  # installed.
   file { "/etc/puppetlabs/puppet/ssl/private_keys/${::fqdn}.pem":
     ensure => present,
-    owner  => 'puppet',
-    group  => 'puppet',
     mode   => '0640',
   }
 
