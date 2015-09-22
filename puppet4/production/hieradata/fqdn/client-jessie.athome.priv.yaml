@@ -13,8 +13,9 @@ interfaces:
     macaddress: '08:00:27:bc:ce:e9'
     inet:
       method: 'dhcp'
+network::resolv_conf::override_dhcp: true
 
 puppetforge::giturls:
   - 'http://github.com/flaf/flaf-moda.git'
 
-network::resolv_conf::override_dhcp: true
+

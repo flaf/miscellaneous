@@ -16,5 +16,6 @@ interfaces:
     macaddress: '08:00:27:bc:ce:e8'
     inet:
       method: 'dhcp'
+network::resolv_conf::override_dhcp: true
 
 
