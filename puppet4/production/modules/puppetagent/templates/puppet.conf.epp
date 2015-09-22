@@ -1,4 +1,4 @@
-<%- |$server, $runinterval| -%>
+<%- |$server, $ca_server, $runinterval| -%>
 ### This is a file managed by Puppet, don't edit it. ###
 
 # This file can be used to override the default puppet settings.

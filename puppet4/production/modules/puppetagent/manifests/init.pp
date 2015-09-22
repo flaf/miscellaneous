@@ -32,8 +32,10 @@ class puppetagent (
       group   => 'root',
       mode    => '0644',
       content => epp( 'puppetagent/puppet.conf.epp',
-                      { 'server'       => $server,
-                        'runinterval'  => $runinterval,
+                      {
+                        'server'      => $server,
+                        'ca_server'   => $ca_server,
+                        'runinterval' => $runinterval,
                       }
                     ),
       require => Package['puppet-agent'],
@@ -69,46 +71,55 @@ class puppetagent (
     hasstatus  => true,
   }
 
-  if $cron != 'disabled' {
+  $cron_bin = '/usr/local/sbin/cron-run-puppet'
 
-    if $cron == 'per-day' {
+  if $cron != 'disabled' {
+    $ensure_cron_bin = 'present'
+  } else {
+    $ensure_cron_bin = 'absent'
+  }
+
+  file { $cron_bin:
+    ensure => $ensure_cron_bin,
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0750',
+    source => 'puppet:///modules/puppetagent/cron-run-puppet',
+  }
+
+  case $cron {
+
+    'per-day': {
+      # [i]: if we change the cron from 'per-week' to 'per-day',
+      # the cron task will be already defined and the weekday
+      # value will not be changed if its value is not defined in
+      # the resource below. In other words, if weekday is not
+      # defined below, the current value (if the cron already
+      # exists) will be kept.
       cron { 'cron-puppet-run':
         ensure  => present,
         user    => 'root',
-        command => '/usr/local/sbin/run-puppet',
+        command => $cron_bin,
         hour    => fqdn_rand(24),
         minute  => fqdn_rand(60),
-        weekday => '*',
-        require => File['/usr/local/sbin/run-puppet'],
+        weekday => '*', # must be explicitly set [i].
+        require => File[$cron_bin],
       }
     }
 
-    if $cron == 'per-week' {
+    'per-week': {
       cron { 'cron-puppet-run':
         ensure  => present,
         user    => 'root',
-        command => '/usr/local/sbin/run-puppet',
+        command => $cron_bin,
         hour    => fqdn_rand(24),
         minute  => fqdn_rand(60),
         weekday => fqdn_rand(7),
-        require => File['/usr/local/sbin/run-puppet'],
+        require => File[$cron_bin],
       }
     }
 
-    file { '/usr/local/sbin/run-puppet':
-      ensure  => present,
-      owner   => 'root',
-      group   => 'root',
-      mode    => '0750',
-      content => epp( 'puppetagent/run-puppet.epp',
-                      { 'server'    => $server,
-                        'ca_server' => $ca_server,
-                      }
-                    ),
-
-    }
-
-  } # Enf of the if.
+  }
 
 }
 
