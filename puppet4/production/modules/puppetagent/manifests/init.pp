@@ -43,6 +43,23 @@ class puppetagent (
 
   }
 
+  # TODO: to ensure the Unix rights of the host private key.
+  # Indeed, I have already seen these rights on this file
+  # [rw-r--r-- puppet:puppet] and I prefer [rw-r----- puppet:puppet].
+  # This is not very critic because the parent directory
+  # of this file has restrained Unix rights.
+  #
+  #   https://tickets.puppetlabs.com/browse/SERVER-906
+  #
+  # Of course, we don't manage the content of this file,
+  # just the Unix rights.
+  file { "/etc/puppetlabs/puppet/ssl/private_keys/${::fqdn}.pem":
+    ensure => present,
+    owner  => 'puppet',
+    group  => 'puppet',
+    mode   => '0640',
+  }
+
   service { 'puppet':
     ensure     => $ensure_value,
     enable     => $enable_value,
