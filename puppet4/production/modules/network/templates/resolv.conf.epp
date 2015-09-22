@@ -3,12 +3,16 @@ $domain,
 $search,
 $nameservers,
 $timeout,
+$local_resolver,
 | -%>
 ### This file is managed by Puppet, don't edit it. ###
 
 timeout:<%= $timeout %>
 domain <%= $domain %>
 search <%= $search.join(' ') %>
+<%- if $local_resolver { -%>
+nameserver 127.0.0.1
+<%- } -%>
 <%- $nameservers.each |$nameserver| { -%>
 nameserver <%= $nameserver %>
 <%- } -%>

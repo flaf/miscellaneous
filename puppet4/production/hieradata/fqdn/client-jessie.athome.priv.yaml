@@ -17,4 +17,4 @@ interfaces:
 puppetforge::giturls:
   - 'http://github.com/flaf/flaf-moda.git'
 
-
+network::resolv_conf::override_dhcp: true

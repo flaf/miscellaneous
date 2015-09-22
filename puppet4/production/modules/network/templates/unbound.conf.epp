@@ -1,0 +1,9 @@
+### This file is managed by Puppet, don't edit it. ###
+
+forward-zone:
+  name: "."
+  <%- $nameservers.each |$nameserver| { -%>
+  forward-addr: <%= $nameserver %>
+  <%- } -%>
+
+
