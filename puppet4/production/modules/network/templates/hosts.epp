@@ -1,0 +1,20 @@
+<%- |$entries| -%>
+<%-
+    # Aesthetic: $max is the size of the biggest address
+    #            with 127.0.0.1 included.
+    $addresses = $entries.keys.concat('127.0.0.1')
+    $max       = $addresses.map |$addr| { size($addr) }.reduce |$memo, $entry| {
+                   max($memo, $entry)
+                 }
+-%>
+### This file is managed by Puppet, don't edit it ###
+<%= ::homemade::ljust('127.0.0.1', $max, ' ') %>  localhost
+<%- $entries.keys.sort.each |$addr| { -%>
+<%= ::homemade::ljust($addr, $max, ' ') %>  <%= $entries[$addr].join(' ') %>
+<%- } -%>
+
+
+# The following lines are desirable for IPv6 capable hosts
+::1     localhost ip6-localhost ip6-loopback
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
