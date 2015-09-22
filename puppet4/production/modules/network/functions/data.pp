@@ -3,7 +3,7 @@ function network::data {
   # Data lookup in hiera or in the environment.conf.
   $inventory_networks = lookup('inventory_networks', Hash[String[1], Data, 1],
                                'hash')
-  $ifaces      = lookup('interfaces', Hash[String[1], Data, 1], 'hash')
+  $ifaces             = lookup('interfaces', Hash[String[1], Data, 1], 'hash')
 
   # Data handle.
   $interfaces         = ::network::fill_interfaces($ifaces, $inventory_networks)
@@ -26,6 +26,7 @@ function network::data {
   $ntp_servers        = ::network::get_param($interfaces, $inventory_networks,
                                       'ntp_servers', $default_ntp)
   $defaut_stage       = 'network'
+  $hosts_tag          = ''
   $supported_distribs = [ 'trusty', 'jessie' ];
 
   {
