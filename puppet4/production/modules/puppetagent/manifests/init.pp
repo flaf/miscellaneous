@@ -71,13 +71,29 @@ class puppetagent (
     hasstatus  => true,
   }
 
-  $cron_bin = '/usr/local/sbin/cron-run-puppet'
+  case $cron {
 
-  if $cron != 'disabled' {
-    $ensure_cron_bin = 'present'
-  } else {
-    $ensure_cron_bin = 'absent'
+    'per-day': {
+      $ensure_cron_bin = 'present'
+      $ensure_cron     = 'present'
+      $weekday         = '*' # [i] See remark below.
+    }
+
+    'per-week': {
+      $ensure_cron_bin = 'present'
+      $ensure_cron     = 'present'
+      $weekday         = fqdn_rand(7)
+    }
+
+    'disabled': {
+      $ensure_cron_bin = 'absent'
+      $ensure_cron     = 'absent'
+      $weekday         = undef # Value useless in this case.
+    }
+
   }
+
+  $cron_bin = '/usr/local/sbin/cron-run-puppet'
 
   file { $cron_bin:
     ensure => $ensure_cron_bin,
@@ -87,38 +103,20 @@ class puppetagent (
     source => 'puppet:///modules/puppetagent/cron-run-puppet',
   }
 
-  case $cron {
-
-    'per-day': {
-      # [i]: if we change the cron from 'per-week' to 'per-day',
-      # the cron task will be already defined and the weekday
-      # value will not be changed if its value is not defined in
-      # the resource below. In other words, if weekday is not
-      # defined below, the current value (if the cron already
-      # exists) will be kept.
-      cron { 'cron-puppet-run':
-        ensure  => present,
-        user    => 'root',
-        command => $cron_bin,
-        hour    => fqdn_rand(24),
-        minute  => fqdn_rand(60),
-        weekday => '*', # must be explicitly set [i].
-        require => File[$cron_bin],
-      }
-    }
-
-    'per-week': {
-      cron { 'cron-puppet-run':
-        ensure  => present,
-        user    => 'root',
-        command => $cron_bin,
-        hour    => fqdn_rand(24),
-        minute  => fqdn_rand(60),
-        weekday => fqdn_rand(7),
-        require => File[$cron_bin],
-      }
-    }
-
+  # [i]: if we change the cron from 'per-week' to 'per-day',
+  # and if the cron task was already defined, the weekday
+  # value will not be changed if its value is not defined in
+  # the resource below. In other words, if weekday is not
+  # defined below, the current value (if the cron already
+  # exists) will be kept.
+  cron { 'cron-puppet-run':
+    ensure  => $ensure_cron,
+    user    => 'root',
+    command => $cron_bin,
+    hour    => fqdn_rand(24),
+    minute  => fqdn_rand(60),
+    weekday => $weekday,
+    require => File[$cron_bin],
   }
 
 }
