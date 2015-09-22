@@ -90,14 +90,14 @@ class puppetagent (
 
   }
 
-  $cron_bin = '/usr/local/sbin/cron-run-puppet'
+  $cron_bin = '/usr/local/sbin/run-cron.puppet'
 
   file { $cron_bin:
     ensure => $ensure_cron,
     owner  => 'root',
     group  => 'root',
     mode   => '0750',
-    source => 'puppet:///modules/puppetagent/cron-run-puppet',
+    source => 'puppet:///modules/puppetagent/run-cron.puppet',
   }
 
   # [i]: if we change the cron from 'per-week' to 'per-day',
