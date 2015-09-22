@@ -58,6 +58,12 @@ Puppet::Functions.create_function(:'network::fill_interfaces') do
           vlan_name    = inventory_networks[netname]['vlan_name']
           vlan_id      = inventory_networks[netname]['vlan_id']
           cidr_address = inventory_networks[netname]['cidr_address']
+          # TODO: this formatting of the "comment" variable below is
+          #       a bad thing. Indeed, the comment variable should
+          #       keep the form "one line = one element of the array"
+          #       and the formatting should be handled in the template.
+          #       The "comment" variable should keep just the data
+          #       without formatting.
           comment      = comment.map { |line| '#' + ' '*18 + line }.join("\n")
           comment.sub!(/^# */, '')
           comment_from_networks += [ "  [#{netname}]" ]
