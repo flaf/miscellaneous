@@ -80,11 +80,9 @@ class network::resolv_conf (
   $interfaces = ::network::data()['network::interfaces']
 
   # Get the interfaces configured via DHCP.
-  # Be careful, with .filter if the first argument is
-  # a hash, the loop entry is an array with [key, value].
-  $dhcp_ifaces = $interfaces.filter |$iface| {
+  $dhcp_ifaces = $interfaces.filter |$ifname, $settings| {
     $dhcp_families = ['inet', 'inet6'].filter |$family| {
-      if $iface[1].has_key($family) and $iface[1][$family]['method'] == 'dhcp' {
+      if $settings.has_key($family) and $settings[$family]['method'] == 'dhcp' {
         true
       } else {
         false
