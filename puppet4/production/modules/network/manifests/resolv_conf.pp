@@ -129,6 +129,37 @@ class network::resolv_conf (
   # "../run/resolvconf/resolv.conf", the symlink will
   # be removed and replaced by a regular file. So,
   # resolvconf mechanism will be disabled.
+  #
+  #
+  # TODO: the "resolvconf" case (only with Trusty)
+  #
+  # In fact, this is not enough. For instance, on
+  # Ubuntu Trusty with unbound, I have some problems.
+  # During a restart of unbound I have:
+  #
+  #   ~# service unbound restart
+  #    * Restarting recursive DNS server unbound
+  #     /etc/resolvconf/update.d/libc: Warning: /etc/resolv.conf is not a symbolic link to /run/resolvconf/resolv.conf
+  #     /etc/resolvconf/update.d/libc: Warning: /etc/resolv.conf is not a symbolic link to /run/resolvconf/resolv.conf
+  #
+  # And I have strange behaviors of unbound. After the
+  # remove of "resolvconf" and a reboot, all is fine.
+  # The remove of "resolvconf" triggers a remove of
+  # "ubuntu-minimal" (because of dependency). And in
+  # the description of this package, we can see it's
+  # not recommended to remove it. But I have no other
+  # solution and I have noticed no problem to remove
+  # the "ubuntu-minimal" package so far.
+  #
+  #
+  # Warning: during a manual `apt-get remove resolvconf`
+  # we have a message that says "a reboot is needed after
+  # the remove".
+  package { 'resolvconf':
+    ensure => absent,
+    before => File['/etc/resolv.conf'],
+  }
+
   file { '/etc/resolv.conf':
     ensure  => file,
     owner   => 'root',
