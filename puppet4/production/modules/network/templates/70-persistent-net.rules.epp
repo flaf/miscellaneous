@@ -1,11 +1,9 @@
 <%- |$interfaces| -%>
 ### This file is managed by Puppet, don't edit it. ###
 <%-
-  if $interfaces.filter |$x| { $x[1].has_key('macaddress') }.empty {
-    $no_macaddress = true
-  } else {
-    $no_macaddress = false
-  }
+$no_macaddress = $interfaces.filter |$ifname, $settings| {
+                    $settings.has_key('macaddress')
+                 }.empty
 -%>
 
 <%- if $no_macaddress  { -%>
