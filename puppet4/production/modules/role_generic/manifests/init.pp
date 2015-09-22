@@ -8,6 +8,7 @@ class role_generic {
   include '::repository::distrib'
   include '::basic_ssh::server'
   include '::basic_ssh::client'
+  include '::basic_packages'
   include '::keyboard'
   include '::locale'
   include '::timezone'
