@@ -25,6 +25,7 @@ class puppetforge (
   $workdir               = '/opt/puppetforge-server'
   $puppetforge_pid       = "${homedir}/puppetforge.pid"
   $update_pp_modules_pid = "${homedir}/update-pp-modules.pid"
+  $puppetforge_bin       = '/usr/local/bin/puppetforge'
 
   # 'jq' is a cli to read json in command line.
   $packages = [ 'bundler', 'ruby-dev', 'build-essential', 'git', 'jq' ]
@@ -39,7 +40,7 @@ class puppetforge (
   $script_install = @("END")
     [ ! -d '/opt' ] && mkdir '/opt'
     cd '/opt'
-    { git clone '$git_url' && cd '${workdir}'; } || exit 1
+    { git clone '$git_url' puppetforge-server && cd '${workdir}'; } || exit 1
     git reset --hard '${commit_id}'
     bundle install || exit 1
     echo "Puppet forge server installed."
@@ -77,10 +78,10 @@ class puppetforge (
     group   => 'puppetforge',
     mode    => '0750',
     require => User['puppetforge'],
-    before  => File['/usr/local/bin/puppetforge'],
+    before  => File[$puppetforge_bin],
   }
 
-  file { '/usr/local/bin/puppetforge':
+  file { $puppetforge_bin:
     ensure  => present,
     owner   => 'root',
     group   => 'root',
@@ -109,9 +110,12 @@ class puppetforge (
     mode    => '0644',
     before  => Service['puppetforge'],
     notify  => Service['puppetforge'],
-    require => File['/usr/local/bin/puppetforge'],
+    require => File[$puppetforge_bin],
     content => epp('puppetforge/puppetforge-unit.epp',
-                   { 'puppetforge_pid' => $puppetforge_pid, }
+                   {
+                    'puppetforge_pid' => $puppetforge_pid,
+                    'puppetforge_bin' => $puppetforge_bin,
+                   }
                   ),
   }
 

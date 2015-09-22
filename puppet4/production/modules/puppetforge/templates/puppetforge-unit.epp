@@ -1,4 +1,4 @@
-<%- |$puppetforge_pid| -%>
+<%- |$puppetforge_pid, $puppetforge_bin| -%>
 ### This file is managed by Puppet, don't edit it ###
 
 [Unit]
