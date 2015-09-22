@@ -6,7 +6,11 @@
 should be the same as the file `$ssldir/ca/ca_crl.pem` in
 the puppet CA. We could imagine the CA which exports this
 file `$ssldir/ca/ca_crl.pem` and puppet-agents retrieve this
-file...
+file... Currently, if a "client" puppet P is revoked by its
+"autonomous" puppet, the clients of puppet P will always be
+able to do a puppet run (with a request to puppet P) without
+any error.
+
 
 
 
