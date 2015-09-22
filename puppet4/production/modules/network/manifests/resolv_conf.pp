@@ -26,7 +26,8 @@ class network::resolv_conf (
     ensure_packages(['unbound'],
                     {
                      ensure => present,
-                     before => File['/etc/resolv.conf'],
+                     before => Service['unbound'],
+                     notify => Service['unbound'],
                     }
                    )
 
@@ -36,10 +37,31 @@ class network::resolv_conf (
       group   => 'root',
       mode    => '0644',
       require => Package['unbound'],
-      before  => File['/etc/resolv.conf'],
+      before  => Service['unbound'],
+      notify  => Service['unbound'],
       content => epp('network/unbound.conf.epp',
                      { 'nameservers' => $nameservers, }
                     ),
+    }
+
+    # We move the file which configures unbound to use
+    # the root DNS. Thus, the file will no be included
+    # in the configuration. The /etc/unbound/unbound.conf
+    # contains this line:
+    #
+    #   include: "/etc/unbound/unbound.conf.d/*.conf"
+    #
+    # After the mv command, the file will not be retrieved
+    # by unbound.
+    $file_auto_trust = '/etc/unbound/unbound.conf.d/root-auto-trust-anchor-file.conf'
+    $cmd = "mv '${file_auto_trust}' '${file_auto_trust}.disabled'"
+
+    exec { 'unbound-disable-root-auto-trust':
+      path    => '/usr/sbin:/usr/bin:/sbin:/bin',
+      command => $cmd,
+      onlyif  => "test -f '${file_auto_trust}'",
+      before  => Service['unbound'],
+      notify  => Service['unbound'],
     }
 
     if $::lsbdistcodename == 'jessie' {
@@ -58,12 +80,12 @@ class network::resolv_conf (
       hasstatus  => true,
       hasrestart => true,
       enable     => true,
-      require    => File['/etc/unbound/unbound.conf.d/forward.conf'],
+      require    => Exec['unbound-disable-root-auto-trust'],
       before     => File['/etc/resolv.conf'],
       provider   => $unbound_provider,
     }
 
-  }
+  } # Enf of if $local_resolver.
 
   $interfaces = ::network::data()['network::interfaces']
 
