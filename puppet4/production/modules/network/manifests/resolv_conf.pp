@@ -1,13 +1,3 @@
-# TODO: add the boolean parameter "local_resolver".
-#       If true, it installs unbound (for instance)
-#       and the server uses:
-#
-#           nameserver localhost
-#           nameserver <the list of $nameservers parameter>
-#
-#       in resolv.conf. And unbound will forwards to
-#       the nameservers in $nameservers.
-#
 class network::resolv_conf (
   String[1]           $domain,
   Array[String[1], 1] $search,
