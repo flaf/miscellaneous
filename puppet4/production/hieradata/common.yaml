@@ -42,6 +42,11 @@ inventory_networks:
     cidr_address: '172.20.0.0/16'
     gateway: '172.20.0.1'
 
+unix_accounts:
+  flaf:
+    ensure: 'present'
+    password: '%{hiera("_flaf_pwd_")}'
+
 puppet:
   collection: 'PC1'
   # TODO: puppet-agent 1.2.4 available but this
@@ -61,6 +66,22 @@ mcollective:
   server_public_key: "%{hiera('_server_public_key_')}"
 
 
+
+
+### Long values below ###
+
+_flaf_pwd_: >
+    ENC[PKCS7,MIIB2gYJKoZIhvcNAQcDoIIByzCCAccCAQAxggEhMIIBHQIBADAFMAACAQEw
+    DQYJKoZIhvcNAQEBBQAEggEA0kheKwBe4bZ3+iYrAYFmbLUxjG4cUkm/rRwx
+    m7Le45Cc2Yq6YdR8r0B2Bz4T56o9yqAMeAwgu5P1vJhQZjGVObgBv37JzLbc
+    PYV480YYkkZIKEpp+Cs/eaH30f57TmxdqWTsQz7NPx3NYTe4WI30JP3vnGT/
+    rFL18ZBwaCE/fotoI1L3eM+xSVzmeChgPrlf8y5AuDbnuAqQzsM7P7GYC5bf
+    CCtJFhne7hLEbjHmQOBTNdOlLY8PFpwCszgaIgZOMPCkP4+hqNJVzGvZq3y0
+    L40LC9+nEIrN9z93c+3WbzkGQIDxU7GFi8lVU/NGTgIW8UaJ6tsXl8K7WsMc
+    b4ZaDTCBnAYJKoZIhvcNAQcBMB0GCWCGSAFlAwQBKgQQcsUKC3VgG8/3LWNa
+    IdS3QoBwPoxWtzGolE+B6dMrOYoIdCBDsCd9sX9zliVIBaCMt7FMunhDm9u7
+    QI9C3bDvqZa4TzW4FaKNMAxuJY7CzM1K+ZWw1cBMh6Z+9DQ+VF8+wRuUQ/D7
+    KIzbsYUdS1azpeDZs7tYlLUbKNendeXIePQiDQ==]
 
 _middleware_admin_pwd_: >
   ENC[PKCS7,MIIBiQYJKoZIhvcNAQcDoIIBejCCAXYCAQAxggEhMIIBHQIBADAFMAACAQEw
