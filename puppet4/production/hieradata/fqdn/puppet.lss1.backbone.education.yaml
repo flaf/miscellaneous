@@ -31,7 +31,7 @@ interfaces:
 
 hosts:
   entries:
-    '195.221.97.134':
-      - 'puppet4.atwork.priv'
-      - 'puppet4'
+    '127.0.1.1': [ '%{::fqdn}', '%{::hostname}' ]
+    '195.221.97.134': [ 'puppet4.atwork.priv', 'puppet4' ]
+
 
