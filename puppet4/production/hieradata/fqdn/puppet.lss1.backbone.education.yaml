@@ -29,4 +29,9 @@ interfaces:
         broadcast: '__default__'
         gateway: '__default__'
 
+hosts:
+  entries:
+    '195.221.97.134':
+      - 'puppet4.atwork.priv'
+      - 'puppet4'
 
