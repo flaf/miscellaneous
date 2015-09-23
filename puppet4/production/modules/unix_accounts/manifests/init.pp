@@ -1,5 +1,6 @@
 class unix_accounts (
   Hash[String[1], Hash[String[1], Data, 1], 1] $users,
+  Hash[String[1], String[1], 1]                $sshkeys,
   Array[String[1], 1]                          $supported_distributions,
   String[1]                                    $stage = 'main',
 ) {
@@ -37,12 +38,12 @@ class unix_accounts (
     }
 
     # The "sshkeys" parameter is optional but must be a non-empty
-    # hash of non-empty strings.
-    $type_sshkeys = Hash[String[1], String[1], 1]
+    # array of non-empty strings.
+    $type_sshkeys = Array[String[1], 1]
     if $params.has_key('sshkeys') and $params['sshkeys'] !~ $type_sshkeys {
       @("END").regsubst('\n', ' ', 'G').fail
         ${title}: `$user` account has the `sshkeys` key but its value must
-        be only a non-empty hash of non-empty strings.
+        be only a non-empty array of non-empty strings.
         |- END
     }
 
@@ -61,23 +62,34 @@ class unix_accounts (
     }
 
     if $params.has_key('sshkeys') {
-      $sshkeys = $params['sshkeys']
+      $sshkeys_of_user = $params['sshkeys']
     } else {
-      $sshkeys = []
+      $sshkeys_of_user = []
     }
 
     # Management of the sshkeys only if the user has ensure == 'present'.
     # If not, maybe the user exists no longer and if he exists, he will
     # be deleted.
     if $ensure_account == 'present' {
-      $sshkeys.each |$keyname, $value| {
+
+      $sshkeys_of_user.each |$keyname| {
+
+        if !$sshkeys.has_key($keyname) {
+          @("END").regsubst('\n', ' ', 'G').fail
+            ${title}: `$user` account should have the `$keyname` ssh key as
+            authorized key but this key do not exist in the list of ssh keys.
+            |- END
+        }
+
         ssh_authorized_key { "${user}@${keyname}":
           user => $user,
           type => 'ssh-rsa',
           # To allow sshkeys in hiera in multilines with >.
-          key  => $value.regsubst(' ', '', 'G').strip,
+          key  => $sshkeys[$keyname].regsubst(' ', '', 'G').strip,
         }
+
       }
+
     }
 
     if $user != 'root' {

@@ -45,16 +45,13 @@ inventory_networks:
 unix_accounts:
   root:
     password: '%{hiera("_root_pwd_")}'
-    sshkeys:
-      router: '%{hiera("_flaf_sshkey_router_")}'
+    sshkeys: [ 'flaf_sshkey' ]
 
   flaf:
     ensure: 'present'
     password: '%{hiera("_flaf_pwd_")}'
     sudo: true
-    sshkeys:
-      paula: '%{hiera("_flaf_sshkey_paula_")}'
-      #router: '%{hiera("_flaf_sshkey_router_")}'
+    sshkeys: [ 'flaf_sshkey', 'flaf_sshkey_paula' ]
 
 puppet:
   collection: 'PC1'
@@ -73,23 +70,23 @@ mcollective:
 
 ### Long values below ###
 
-_flaf_sshkey_router_: >
-  AAAAB3NzaC1yc2EAAAADAQABAAABAQCwetNOQ3Iq25gIIg1ZL8unmd
-  OCzLINnd5owsQ32vop+pVZzohmHNMzj0nVt1FkLnO/aW7+RMj1wbcf
-  z3z1GMLN3XHcjF5bdV7qFjO7NThCfEcUbMKRy/ODMQpCHks+AuHRuq
-  E/lcS9EMvGbix/RdSBhLvYQYYbS02R3Nik1md54Qhxv+JondHIM2QI
-  EepJfdshEJ9yjofAsMQqQ6U4UW42G1LN1F7K7tFjo9A4LcuzT/KzTF
-  R6SV1VE6C4UwJrmEgYKwy2cr0lJCG2psh5hguxcC+CzHBuq3mbnWzL
-  nKUyWcXDf/GwgIUjgsu8T7vEP3YSNbxezytCpjTgf9hukaH/
-
-_flaf_sshkey_paula_: >
-  AAAAB3NzaC1yc2EAAAADAQABAAABAQDNq07pd/NMP9/Hisa39t/1rsx
-  25wnSvrQrdCo3emIcA9ETPQDGGJHt8MVCInCk8exJNsztdn0ePgQOQU
-  pVCV1zxLe8EzI/QKy1DKhRtJ7tJEiygZNOutQinTv57hnhqM0/r/KkF
-  D6KnNqjpo78LQ+92nIufPC+EPikru6ZeyqBeL4zrkNRCfoMWSk6LI18
-  reApz1WP8EdIP1ZSCEGxZf384dWQXHT2HSoVIJrqqpLBXon94B3OuCB
-  BLETS+Zs8NuySTO2f+q6roRnwhcBcLN5J9ODFv56QkzSqmD/mOgtMsF
-  kOMhTB8OzKgz4gDtfwacaN4EcUwkBAFzY0MeOUTtDb
+sshkeys:
+  flaf_sshkey: >
+    AAAAB3NzaC1yc2EAAAADAQABAAABAQCwetNOQ3Iq25gIIg1ZL8unmd
+    OCzLINnd5owsQ32vop+pVZzohmHNMzj0nVt1FkLnO/aW7+RMj1wbcf
+    z3z1GMLN3XHcjF5bdV7qFjO7NThCfEcUbMKRy/ODMQpCHks+AuHRuq
+    E/lcS9EMvGbix/RdSBhLvYQYYbS02R3Nik1md54Qhxv+JondHIM2QI
+    EepJfdshEJ9yjofAsMQqQ6U4UW42G1LN1F7K7tFjo9A4LcuzT/KzTF
+    R6SV1VE6C4UwJrmEgYKwy2cr0lJCG2psh5hguxcC+CzHBuq3mbnWzL
+    nKUyWcXDf/GwgIUjgsu8T7vEP3YSNbxezytCpjTgf9hukaH/
+  flaf_sshkey_paula: >
+    AAAAB3NzaC1yc2EAAAADAQABAAABAQDNq07pd/NMP9/Hisa39t/1rsx
+    25wnSvrQrdCo3emIcA9ETPQDGGJHt8MVCInCk8exJNsztdn0ePgQOQU
+    pVCV1zxLe8EzI/QKy1DKhRtJ7tJEiygZNOutQinTv57hnhqM0/r/KkF
+    D6KnNqjpo78LQ+92nIufPC+EPikru6ZeyqBeL4zrkNRCfoMWSk6LI18
+    reApz1WP8EdIP1ZSCEGxZf384dWQXHT2HSoVIJrqqpLBXon94B3OuCB
+    BLETS+Zs8NuySTO2f+q6roRnwhcBcLN5J9ODFv56QkzSqmD/mOgtMsF
+    kOMhTB8OzKgz4gDtfwacaN4EcUwkBAFzY0MeOUTtDb
 
 # It's the password => root
 _root_pwd_: >
