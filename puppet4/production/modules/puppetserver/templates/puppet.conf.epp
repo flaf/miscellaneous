@@ -44,7 +44,7 @@ ca        = false
 ca_server = <%= $::server_facts['servername'] %>
 server    = <%= $::server_facts['servername'] %>
 <%- } else { -%>
-# This puppetserver IS A ROOT CA.
+# This puppetserver IS A ROOT CA. We can keep the default value below.
 #ca        = true
 #ca_server = $server
 <%- } -%>
