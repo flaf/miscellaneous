@@ -152,11 +152,11 @@ class network::resolv_conf (
   # the "ubuntu-minimal" package so far.
   #
   #
-  # Warning: during a manual `apt-get remove resolvconf`
+  # Warning: during a manual `apt-get purge resolvconf`
   # we have a message that says "a reboot is needed after
   # the remove".
   package { 'resolvconf':
-    ensure => absent,
+    ensure => purged,
     before => File['/etc/resolv.conf'],
   }
 
