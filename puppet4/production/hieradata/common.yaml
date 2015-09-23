@@ -43,18 +43,21 @@ inventory_networks:
     gateway: '172.20.0.1'
 
 unix_accounts:
+  root:
+    password: '%{hiera("_root_pwd_")}'
+    sshkeys:
+      router: '%{hiera("_flaf_sshkey_router_")}'
+
   flaf:
     ensure: 'present'
     password: '%{hiera("_flaf_pwd_")}'
+    sudo: true
+    sshkeys:
+      paula: '%{hiera("_flaf_sshkey_paula_")}'
+      #router: '%{hiera("_flaf_sshkey_router_")}'
 
 puppet:
   collection: 'PC1'
-  # TODO: puppet-agent 1.2.4 available but this
-  # version fails with the rabbitmq-server on Ubuntu
-  # Trusty. The SSL handshake fails. You must install
-  # rabbitmq-server necessarily on Debian Jessie.
-  # It's a problem with a shared library used by
-  # rabbitmq-server but I don't know which one.
   pinning_agent_version: '1.2.4-*'
 
 mcollective:
@@ -69,6 +72,52 @@ mcollective:
 
 
 ### Long values below ###
+
+_flaf_sshkey_router_: >
+  AAAAB3NzaC1yc2EAAAADAQABAAABAQCwetNOQ3Iq25gIIg1ZL8unmd
+  OCzLINnd5owsQ32vop+pVZzohmHNMzj0nVt1FkLnO/aW7+RMj1wbcf
+  z3z1GMLN3XHcjF5bdV7qFjO7NThCfEcUbMKRy/ODMQpCHks+AuHRuq
+  E/lcS9EMvGbix/RdSBhLvYQYYbS02R3Nik1md54Qhxv+JondHIM2QI
+  EepJfdshEJ9yjofAsMQqQ6U4UW42G1LN1F7K7tFjo9A4LcuzT/KzTF
+  R6SV1VE6C4UwJrmEgYKwy2cr0lJCG2psh5hguxcC+CzHBuq3mbnWzL
+  nKUyWcXDf/GwgIUjgsu8T7vEP3YSNbxezytCpjTgf9hukaH/
+
+_flaf_sshkey_paula_: >
+  AAAAB3NzaC1yc2EAAAADAQABAAABAQDNq07pd/NMP9/Hisa39t/1rsx
+  25wnSvrQrdCo3emIcA9ETPQDGGJHt8MVCInCk8exJNsztdn0ePgQOQU
+  pVCV1zxLe8EzI/QKy1DKhRtJ7tJEiygZNOutQinTv57hnhqM0/r/KkF
+  D6KnNqjpo78LQ+92nIufPC+EPikru6ZeyqBeL4zrkNRCfoMWSk6LI18
+  reApz1WP8EdIP1ZSCEGxZf384dWQXHT2HSoVIJrqqpLBXon94B3OuCB
+  BLETS+Zs8NuySTO2f+q6roRnwhcBcLN5J9ODFv56QkzSqmD/mOgtMsF
+  kOMhTB8OzKgz4gDtfwacaN4EcUwkBAFzY0MeOUTtDb
+
+# It's the password => root
+_root_pwd_: >
+    ENC[PKCS7,MIIB2gYJKoZIhvcNAQcDoIIByzCCAccCAQAxggEhMIIBHQIBADAFMAACAQEw
+    DQYJKoZIhvcNAQEBBQAEggEAP0at5h1KJesZPcZ2nJkG4O3alvOmO83tmgbP
+    u6gTqEChnLWSzmTLOANtpleyTKKsti86RNx1I1BMXjZDH5fkYnD+a/IAcU5z
+    NJaQTd4vK9YEAubczLBzvB7jfnFLShv9wKL3y9ylVVT6+Uieo49+m0YSf0AT
+    RCTZ6eJ7AAB5xccaBFOabkDBlzxhhSLlrEmxcOj+w0+ado/4cW06WF3O4HFr
+    SD8ZtJG8BM2eEfzTVRZ1kMcGrBD5Lon5rDAgrDsGgbxZ3/E1G5LrV6MW5vKT
+    A0FWJnitRXkU4PtipZH0UnwZVIKtfAjbOvrWGKLjBBfW0tWjIJtm4L1rdrsq
+    tqsGZTCBnAYJKoZIhvcNAQcBMB0GCWCGSAFlAwQBKgQQCNngWmQ52PKOX0OR
+    ROGlcoBwcagbl+Zf7jKFhVelb1wG6nLcwpp4SOr+fywF+J88/5Za1V36sdJi
+    nIVy46P5mDbSgK5qKMrLD8wYLCjAfLordNui72bHDuFFedVjhOr/KJFmfVlU
+    uyr5dpn5ROCJMwm4gnCGylI7YB8xvSUay9dYcA==]
+
+# It's the password => toto
+#_root_pwd_: >
+#    ENC[PKCS7,MIIB2gYJKoZIhvcNAQcDoIIByzCCAccCAQAxggEhMIIBHQIBADAFMAACAQEw
+#    DQYJKoZIhvcNAQEBBQAEggEAIoLWYmbv2nT8D71YE8VHoJv6QzP0xCaJjMBM
+#    AkfjN5s3hqO6+TBQSDAA222FmGuNAW8UBub47yjNhZGbdRMiHWOdy7yRHXtW
+#    omnG8iu1Ejq/onlD4wITAeC0sjZC1+Wk/bKSlIgtOGAzHdLIEg/NUin//JyX
+#    NWCREvm1tOzQEP/qSheMU5/UPYz6wf/LX+vPYqOwUOTso7crS3LxmMfpwbD7
+#    lLpIUaV6GfSNvSFseEIudfvr7+vyW/PTusn2pgU7dev+e/n6TiXStcI+WVjp
+#    xsqPGtYh+qQ4CgtPChtnQ58YmzKEsexVK9AoH9dYR4HJowr86MkNVjl9ov0D
+#    IFaXcTCBnAYJKoZIhvcNAQcBMB0GCWCGSAFlAwQBKgQQSzPORBeiOVdBZvNR
+#    nyYMxoBwP7njMeoySt+frfRvfrO9MI9gp29pcim9iutplzC6QZlNrJg0d5DZ
+#    tBXDbiJdstvK1rGsXIYG52tGsTToJlVQtnNlMJiqsJyFADIlaIsBR7GXNHTK
+#    sFs0GsNxwCzg8BF0Zl/qO4oxQpvDw7Wj5UO4hg==]
 
 _flaf_pwd_: >
     ENC[PKCS7,MIIB2gYJKoZIhvcNAQcDoIIByzCCAccCAQAxggEhMIIBHQIBADAFMAACAQEw
