@@ -8,6 +8,7 @@ function puppetserver::data {
   $puppetdb_name           = 'puppet'
   $puppetdb_user           = 'puppet'
   $puppetdb_pwd            = md5($::fqdn)
+  $modules_versions        = {} # no pinning by default
   $supported_distributions = [ 'trusty' ];
 
   {
@@ -18,6 +19,7 @@ function puppetserver::data {
     puppetserver::puppetdb_name           => $puppetdb_name,
     puppetserver::puppetdb_user           => $puppetdb_user,
     puppetserver::puppetdb_pwd            => $puppetdb_pwd,
+    puppetserver::modules_versions        => $modules_versions,
     puppetserver::supported_distributions => $supported_distributions,
   }
 

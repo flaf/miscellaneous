@@ -1,6 +1,7 @@
 <%- |
   $environment_path,
   $puppet_bin_dir,
+  $modules_versions,
 | -%>
 #!<%= $puppet_bin_dir %>/ruby
 
@@ -71,8 +72,20 @@ yamls_array.each do |yaml|
     end
 end
 
+# Handle of pinning.
+modules_versions = {}
+<%- $modules_versions.each |$module_name, $version| { -%>
+modules_versions['<%= $module_name %>'] = '<%= $version %>'
+<%- } -%>
+
 # Installation of the modules.
 modules_array.each do |mod|
-  system "<%= $puppet_bin_dir %>/puppet module install '#{mod}'"
+  cmd = "<%= $puppet_bin_dir %>/puppet module install '#{mod}'"
+  if modules_versions.include?(mod)
+    version = modules_versions[mod]
+    cmd = "#{cmd} --version '#{version}'"
+  end
+    system cmd
 end
+
 

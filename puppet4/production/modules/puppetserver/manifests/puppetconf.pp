@@ -111,6 +111,7 @@ class puppetserver::puppetconf {
                    {
                      'environment_path' => $environment_path,
                      'puppet_bin_dir'   => $puppet_bin_dir,
+                     'modules_versions' => $modules_versions,
                    }
                   ),
     # No need to restart the puppetserver here.

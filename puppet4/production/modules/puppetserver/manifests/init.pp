@@ -6,6 +6,7 @@ class puppetserver (
   String[1]                    $puppetdb_name,
   String[1]                    $puppetdb_user,
   String[1]                    $puppetdb_pwd,
+  Hash[String[1], String[1]]   $modules_versions,
   Array[String[1], 1]          $supported_distributions,
 ) {
 
