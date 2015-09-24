@@ -1,5 +1,4 @@
 <%- |
-  $reg_class,
   $environment_path,
   $puppet_bin_dir,
 | -%>
@@ -40,30 +39,30 @@ yamls_array.each do |yaml|
       exit(1)
     end
 
-    included_classes.each do |a_class|
+    included_classes.each do |author_class|
 
-      unless a_class.is_a?(String) and not a_class.empty?
+      unless author_class?(Array) and not author_class.size == 2
         puts "Sorry, in hieradata, the file `#{fqdn}.yaml' " \
-             "has a `enc_included_classes' array which contains " \
-             "an empty string or a non-string data. End of the script."
+             "has a `enc_included_classes' array but this array " \
+             "must contain only arrays of size == 2, this is not " \
+             "the case currently. End of the script."
         exit(1)
       end
 
-     # This regex is less complicated than it seems. ;)
-     # See the puppet code to understand easily.
-     reg_class  = /<%= $reg_class %>/
-
-      unless a_class =~ reg_class
-        puts "Sorry, in hieradata, the file `#{fqdn}.yaml' " \
-             "has a `enc_included_classes' array which contains " \
-             "a non-valid string. See the site.pp file to know " \
-             "the form of a valid string. End of the script."
-        exit(1)
+      author_class.each do |e|
+        unless e.is_a?(String) and not e.empty
+          puts "Sorry, in hieradata, the file `#{fqdn}.yaml' " \
+               "has a `enc_included_classes' array which contains " \
+               "a non-valid data. See the site.pp file to know " \
+               "the form of a valid value. End of the script."
+          exit(1)
+        end
       end
 
-      author           = a_class.gsub(reg_class, '\1')
-      module_name      = a_class.gsub(reg_class, '\3')
-      full_module_name = author + '-' + module_name
+      author           = author_class[0]
+      full_class_name  = author_class[1]
+      module_name      = full_class_name.gsub(/^(::)?/, '').split('::')[0]
+      full_module_name = "#{author}-#{module_name}"
 
       unless modules_array.include?(full_module_name)
         modules_array.push(full_module_name)
