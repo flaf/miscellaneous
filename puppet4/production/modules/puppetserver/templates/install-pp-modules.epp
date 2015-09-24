@@ -42,7 +42,7 @@ yamls_array.each do |yaml|
 
     included_classes.each do |author_class|
 
-      unless author_class?(Array) and not author_class.size == 2
+      unless author_class.is_a?(Array) and author_class.size == 2
         puts "Sorry, in hieradata, the file `#{fqdn}.yaml' " \
              "has a `enc_included_classes' array but this array " \
              "must contain only arrays of size == 2, this is not " \
@@ -51,7 +51,7 @@ yamls_array.each do |yaml|
       end
 
       author_class.each do |e|
-        unless e.is_a?(String) and not e.empty
+        unless e.is_a?(String) and not e.empty?
           puts "Sorry, in hieradata, the file `#{fqdn}.yaml' " \
                "has a `enc_included_classes' array which contains " \
                "a non-valid data. See the site.pp file to know " \
@@ -85,6 +85,7 @@ modules_array.each do |mod|
     version = modules_versions[mod]
     cmd = "#{cmd} --version '#{version}'"
   end
+    puts "Run this command => #{cmd}"
     system cmd
 end
 

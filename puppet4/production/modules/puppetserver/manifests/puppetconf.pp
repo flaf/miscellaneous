@@ -26,6 +26,7 @@ class puppetserver::puppetconf {
   $profile                 = $::puppetserver::profile
   $memory                  = $::puppetserver::puppet_memory
   $modules_repository      = $::puppetserver::modules_repository
+  $modules_versions        = $::puppetserver::modules_versions
 
   if $profile == 'autonomous' {
     $notify_puppetserver = undef
