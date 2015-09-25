@@ -6,8 +6,8 @@ function puppetforge::data {
   $commit_id    = '6f1b224a4e666c754876139f3643b22f3515f5e6'
   $remote_forge = 'https://forgeapi.puppetlabs.com'
   $address      = '0.0.0.0'
-  $port         = 8080;
-  $pause        = 60
+  $port         = 8080
+  $pause        = 300
   $giturls      = [];
 
   { puppetforge::git_url                 => $git_url,
