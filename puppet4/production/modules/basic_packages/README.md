@@ -5,7 +5,7 @@ packages.
 
 # Usage
 
-Here is a example:
+Here is an example:
 
 ```puppet
 include '::basic_packages'

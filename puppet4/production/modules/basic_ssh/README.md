@@ -4,7 +4,7 @@ This module implements a basic ssh configuration.
 
 # Usage
 
-Here is a example:
+Here is an example:
 
 ```puppet
 # To just install the ssh client.
@@ -21,6 +21,7 @@ installs the ssh client.
 
 The class `basic_ssh::server` has only one parameter which
 must be equal to the strings `yes`, `without-password`,
-`forced-commands-only` or `no`. Its default value is `yes`.
+`forced-commands-only` or `no`. Its default value is
+`without-password`.
 
 
