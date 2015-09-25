@@ -60,6 +60,8 @@ do
         do
             git reset --hard "$tag"
             version=$(cat metadata.json | jq -r '.version')
+            # The tag must match with the version number.
+            [ "$version" != "$tag"  ] && continue
             name=$(cat metadata.json | jq -r '.name')
             full_name="$name-$version"
             [ -f "$modulesdir/$full_name.tar.gz" ] && continue
