@@ -1,7 +1,3 @@
-# TODO: currently the script install-pp-modules doesn't
-#       take into account a version for the modules. Is
-#       it possible to support the version number of
-#       specific puppet modules and is it useful?
 class puppetserver::puppetconf {
 
   # /!\ Warning /!\
@@ -102,13 +98,13 @@ class puppetserver::puppetconf {
     # No need to restart the puppetserver here.
   }
 
-  file { "/usr/local/sbin/install-pp-modules":
+  file { "/usr/local/sbin/install-modules.puppet":
     ensure  => present,
     owner   => 'root',
     group   => 'root',
     mode    => '0744',
     before  => Service['puppetserver'],
-    content => epp('puppetserver/install-pp-modules.epp',
+    content => epp('puppetserver/install-modules.puppet.epp',
                    {
                      'environment_path' => $environment_path,
                      'puppet_bin_dir'   => $puppet_bin_dir,
