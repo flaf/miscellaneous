@@ -1,0 +1,8 @@
+<%- |$user| -%>
+### This file is managed by Puppet, don't edit it. ###
+
+Cmnd_Alias CMD_NO_PWD = /bin/su
+
+<%= $user %> ALL = (root) NOPASSWD: CMD_NO_PWD
+
+

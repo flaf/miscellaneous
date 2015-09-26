@@ -1,6 +1,6 @@
 class unix_accounts (
   Hash[String[1], Hash[String[1], Data, 1], 1] $users,
-  Hash[String[1], String[1], 1]                $sshkeys,
+  Hash[String[1], String[1], 1]                $ssh_public_keys,
   Array[String[1], 1]                          $supported_distributions,
   String[1]                                    $stage = 'main',
 ) {
@@ -22,28 +22,29 @@ class unix_accounts (
 
     # The "ensure" parameter is optional but must be 'present' or
     # 'absent'.
-    if $params.has_key('ensure') and $params['ensure'] !~ Enum['present', 'absent'] {
+    if $params.has_key('ensure')
+    and $params['ensure'] !~ Enum['present', 'absent'] {
       @("END").regsubst('\n', ' ', 'G').fail
         ${title}: `$user` account has the `ensure` key but its value must
         be only 'present' or 'absent'.
         |- END
     }
 
-    # The "sudo" parameter is optional but must be a boolean.
-    if $params.has_key('sudo') and $params['sudo'] !~ Boolean {
+    # The "is_sudo" parameter is optional but must be a boolean if it exists.
+    if $params.has_key('is_sudo') and $params['is_sudo'] !~ Boolean {
       @("END").regsubst('\n', ' ', 'G').fail
-        ${title}: `$user` account has the `sudo` key but its value must
+        ${title}: `$user` account has the `is_sudo` key but its value must
         be only a boolean.
         |- END
     }
 
-    # The "sshkeys" parameter is optional but must be a non-empty
-    # array of non-empty strings.
-    $type_sshkeys = Array[String[1], 1]
-    if $params.has_key('sshkeys') and $params['sshkeys'] !~ $type_sshkeys {
+    # The "ssh_authorized_keys" parameter is optional but must be a non-empty
+    # array of non-empty strings if it exists.
+    if $params.has_key('ssh_authorized_keys')
+    and $params['ssh_authorized_keys'] !~ Array[String[1], 1] {
       @("END").regsubst('\n', ' ', 'G').fail
-        ${title}: `$user` account has the `sshkeys` key but its value must
-        be only a non-empty array of non-empty strings.
+        ${title}: `$user` account has the `ssh_authorized_keys` key but
+        its value must be only a non-empty array of non-empty strings.
         |- END
     }
 
@@ -55,37 +56,40 @@ class unix_accounts (
       $ensure_account = 'present' # the default value is 'present' of course.
     }
 
-    if $params.has_key('sudo') and $params['sudo'] {
+    if $params.has_key('is_sudo') and $params['is_sudo'] {
+      $is_sudo              = true
       $supplementary_groups = [ 'sudo' ]
     } else {
+      $is_sudo              = false
       $supplementary_groups = []
     }
 
-    if $params.has_key('sshkeys') {
-      $sshkeys_of_user = $params['sshkeys']
+    if $params.has_key('ssh_authorized_keys') {
+      $ssh_authorized_keys = $params['ssh_authorized_keys']
     } else {
-      $sshkeys_of_user = []
+      $ssh_authorized_keys = []
     }
 
-    # Management of the sshkeys only if the user has ensure == 'present'.
-    # If not, maybe the user exists no longer and if he exists, he will
-    # be deleted.
+    # Management of the ssh_authorized_keys only if the user
+    # has ensure == 'present'. If not, maybe the user exists
+    # no longer and if he exists, he will be deleted.
     if $ensure_account == 'present' {
 
-      $sshkeys_of_user.each |$keyname| {
+      $ssh_authorized_keys.each |$keyname| {
 
-        if !$sshkeys.has_key($keyname) {
+        unless $ssh_public_keys.has_key($keyname) {
           @("END").regsubst('\n', ' ', 'G').fail
             ${title}: `$user` account should have the `$keyname` ssh key as
-            authorized key but this key do not exist in the list of ssh keys.
+            authorized key but this key does not exist in the list of ssh
+            public keys.
             |- END
         }
 
         ssh_authorized_key { "${user}~${keyname}":
           user => $user,
           type => 'ssh-rsa',
-          # To allow sshkeys in hiera in multilines with >.
-          key  => $sshkeys[$keyname].regsubst(' ', '', 'G').strip,
+          # To allow ssh_public_keys in hiera in multilines with ">".
+          key  => $ssh_public_keys[$keyname].regsubst(' ', '', 'G').strip,
         }
 
       }
@@ -93,6 +97,17 @@ class unix_accounts (
     }
 
     if $user != 'root' {
+
+      if $ensure_account == 'present' {
+        $purge_ssh_keys = true
+      } else {
+        # If this parameter is set to true when the user has
+        # "ensure => absent", it can trigger errors because
+        # the home has been deleted and Puppet can no longer
+        # manage the ssh authorized keys (even in order to
+        # purge these keys).
+        $purge_ssh_keys = false
+      }
 
       user { $user:
         name           => $user,
@@ -104,11 +119,32 @@ class unix_accounts (
         shell          => '/bin/bash',
         system         => false,
         groups         => $supplementary_groups,
-        purge_ssh_keys => true,
-        before         => Package['sudo'],
+        purge_ssh_keys => $purge_ssh_keys,
+        require        => Package['sudo'],
       }
 
-      if $ensure_account == 'present' and $supplementary_groups.empty {
+      # Management of the sudo file of $user.
+      if $ensure_account == 'present' and $is_sudo {
+        $ensure_sudo_file = 'present'
+      } else {
+        $ensure_sudo_file = 'absent'
+      }
+
+      file { "/etc/sudoers.d/${user}":
+        ensure  => $ensure_sudo_file,
+        owner   => 'root',
+        group   => 'root',
+        mode    => '0440',
+        content => epp('unix_accounts/sudofile.epp',
+                       { 'user' => $user, }
+                      ),
+        require => [
+                     Package['sudo'],
+                     User[$user],
+                   ]
+      }
+
+      if $ensure_account == 'present' and !$is_sudo {
         # Unfortunately, with "groups => []", the account is
         # not automatically removed from the "sudo" group. So
         # we need to remove the account from this group manually.

@@ -29,15 +29,15 @@ inventory_networks:
 unix_accounts:
   root:
     password: '%{hiera("_root_pwd_")}'
-    sshkeys:
+    ssh_authorized_keys:
       - 'root@router.athome.priv'
       - 'francois@flpc.athome.priv'
 
   flaf:
     ensure: 'present'
     password: '%{hiera("_flaf_pwd_")}'
-    sudo: true
-    sshkeys:
+    is_sudo: true
+    ssh_authorized_keys:
       - 'root@router.athome.priv'
       - 'francois@flpc.athome.priv'
 
@@ -58,7 +58,7 @@ mcollective:
 
 ### Long values below ###
 
-sshkeys:
+ssh_public_keys:
   root@router.athome.priv: >
     AAAAB3NzaC1yc2EAAAADAQABAAABAQCwetNOQ3Iq25gIIg1ZL8unmd
     OCzLINnd5owsQ32vop+pVZzohmHNMzj0nVt1FkLnO/aW7+RMj1wbcf
