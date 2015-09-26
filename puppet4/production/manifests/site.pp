@@ -2,8 +2,8 @@ stage { 'basis': }
 stage { 'network': }
 stage { 'repository': }
 
-Stage['basis'] -> Stage['network']
-               -> Stage['repository']
+Stage['basis'] -> Stage['repository']
+               -> Stage['network']
                -> Stage['main']
 
 # We assume that the $::included_classes variable must

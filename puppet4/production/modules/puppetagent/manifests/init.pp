@@ -59,10 +59,30 @@ class puppetagent (
   # just the "puppet-agent" package is installed but will
   # be puppet:puppet if the "puppetserver" package is
   # installed.
-  file { "/etc/puppetlabs/puppet/ssl/private_keys/${::fqdn}.pem":
-    ensure => present,
-    mode   => '0640',
+  $ssldir = '/etc/puppetlabs/puppet/ssl'
+  file { [ "${ssldir}",
+           "${ssldir}/private_keys",
+         ]:
+    ensure  => directory,
+    mode    => '0750',
+    require => Service['puppet'],
   }
+  file { "${ssldir}/private_keys/${::fqdn}.pem":
+    ensure  => present,
+    mode    => '0640',
+    require => File["${ssldir}/private_keys"],
+  }
+  # It's just a hack because in some cases, in fact it's
+  # probably only when the node is an autonomous
+  # puppetserver, an empty file can be created by the
+  # previous resource and it crashes the puppet server.
+  exec { "rm-${::fqdn}.pem-if-empty":
+    path    => '/usr/sbin:/usr/bin:/sbin:/bin',
+    command => "rm '${ssldir}/private_keys/${::fqdn}.pem'",
+    unless  => "test -s '${ssldir}/private_keys/${::fqdn}.pem'",
+    require => File["${ssldir}/private_keys/${::fqdn}.pem"],
+  }
+  ### End ot the TODO.
 
   service { 'puppet':
     ensure     => $ensure_value,

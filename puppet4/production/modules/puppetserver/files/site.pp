@@ -1,12 +1,56 @@
 ### This file is managed by Puppet, please don't edit it. ###
 
-stage { 'basis': }
-stage { 'network': }
-stage { 'repository': }
+# Typically during this stage there are:
+# - management of the root password,
+# - creation of another administrator accounts,
+# - management of public ssh keys,
+# - and that's all!
+#
+# This stage is the first stage because it contains the
+# management of the root account (especially the root
+# password). For instance, in a file resource, if you just
+# have "owner => 'root'", the resource must be managed after
+# the root user resource (this is involved just by the
+# simple presence of 'root' in the "owner" attribute). So
+# you can imagine that the root user resource must be
+# managed before lot of file resources. So it's a good idea
+# to put this stage at the first place.
+stage { 'basis':
+  before => Stage['repository'],
+}
 
-Stage['basis'] -> Stage['network']
-               -> Stage['repository']
-               -> Stage['main']
+# Typically during this stage there are:
+# - management of APT repositories,
+# - and that's all!
+#
+# We must put this stage before the "network" stage because
+# in the "network" stage it's possible to have packages
+# installations (for instance the "vlan" package or
+# sometimes "unbound" etc). So it's safer to manage the APT
+# configuration before the "network" stage. Normally, this
+# is not a problem because, even if the network is not yet
+# configured during this stage, when you run the puppet
+# agent for the first time, you have generally already a
+# valid network configuration which allows the node to reach
+# Internet.
+stage { 'repository':
+  before => Stage['network'],
+}
+
+# Typically during this stage:
+# - management of the /etc/network/interfaces file,
+# - management of the /etc/revsolv.conf file,
+# - management of the /etc/hosts file,
+# - management of the ntp service,
+# - and that's all!
+#
+# And the "network" stage which is naturally placed before
+# the built-in "main" stage.
+stage { 'network':
+  before => Stage['main'],
+}
+
+
 
 # We assume that the $::included_classes variable must
 # be defined by the ENC and must be a non-empty array of
