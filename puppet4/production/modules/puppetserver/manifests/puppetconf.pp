@@ -368,13 +368,17 @@ disabled-service/certificate-authority-disabled-service"
   #
   #   https://tickets.puppetlabs.com/browse/SERVER-906
   #
-  file { "${ssldir}/ca/ca_key.pem":
-    ensure  => present,
-    owner   => 'puppet',
-    group   => 'puppet',
-    mode    => '0640',
-    # Indeed, the file exists only once the puppetserver is started.
-    require => Service['puppetserver'],
+  # Only if the node is an autonomous puppetserver, ie
+  # a Puppet CA.
+  if $profile == 'autonomous' {
+    file { "${ssldir}/ca/ca_key.pem":
+      ensure  => present,
+      owner   => 'puppet',
+      group   => 'puppet',
+      mode    => '0640',
+      # Indeed, the file exists only once the puppetserver is started.
+      require => Service['puppetserver'],
+    }
   }
 
 }
