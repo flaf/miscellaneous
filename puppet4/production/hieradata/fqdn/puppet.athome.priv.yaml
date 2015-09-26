@@ -24,11 +24,11 @@ interfaces:
       method: 'dhcp'
 
 mcollective:
-  client_private_key: "%{hiera('_client_private_key_')}"
-  client_public_key: "%{hiera('_client_public_key_')}"
+  client_private_key: "%{hiera('_mcollective_client_private_key_')}"
+  client_public_key: "%{hiera('_mcollective_client_public_key_')}"
 
 
-_client_private_key_: >
+_mcollective_client_private_key_: >
   ENC[PKCS7,MIIOHQYJKoZIhvcNAQcDoIIODjCCDgoCAQAxggEhMIIBHQIBADAFMAACAQEw
   DQYJKoZIhvcNAQEBBQAEggEAqy9QXcoJ++YukPuTtjrIlQWhUaUnwTC6Ry+p
   UtMfJjBQAq3KCjsi8SHwxzt+I7FD08ZrqUxj5Pmnz5DbgwEDsHr1u4XkMcJh
@@ -111,7 +111,7 @@ _client_private_key_: >
   SbRz8cNpTqLMI/cSPN88ldnOWm7/E7UnGR8pNBqCCVKHmF9wZ32OkO+v4Jyw
   wdbpnRM9yovCy9Pc5XjMOdk=]
 
-_client_public_key_: >
+_mcollective_client_public_key_: >
   ENC[PKCS7,MIIEnQYJKoZIhvcNAQcDoIIEjjCCBIoCAQAxggEhMIIBHQIBADAFMAACAQEw
   DQYJKoZIhvcNAQEBBQAEggEAbaUvY3q6G32/TWkozBgdmDaK2rJ2j2zwnx7j
   OYLz1pBpmjXxsMDhpyw5IL96i1VlgB2F9ta/LXeiGIv6EtiM+HLDgRRUirO/

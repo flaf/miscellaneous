@@ -29,13 +29,17 @@ inventory_networks:
 unix_accounts:
   root:
     password: '%{hiera("_root_pwd_")}'
-    sshkeys: [ 'flaf_sshkey' ]
+    sshkeys:
+      - 'root@router.athome.priv'
+      - 'francois@flpc.athome.priv'
 
   flaf:
     ensure: 'present'
     password: '%{hiera("_flaf_pwd_")}'
     sudo: true
-    sshkeys: [ 'flaf_sshkey', 'flaf_sshkey_paula' ]
+    sshkeys:
+      - 'root@router.athome.priv'
+      - 'francois@flpc.athome.priv'
 
 puppet:
   collection: 'PC1'
@@ -46,8 +50,8 @@ mcollective:
   middleware_address: '172.31.14.6'
   middleware_admin_pwd: "%{hiera('_middleware_admin_pwd_')}"
   mcollective_pwd: "%{hiera('_mcollective_pwd_')}"
-  server_private_key: "%{hiera('_server_private_key_')}"
-  server_public_key: "%{hiera('_server_public_key_')}"
+  server_private_key: "%{hiera('_mcollective_server_private_key_')}"
+  server_public_key: "%{hiera('_mcollective_server_public_key_')}"
 
 
 
@@ -55,7 +59,7 @@ mcollective:
 ### Long values below ###
 
 sshkeys:
-  flaf_sshkey: >
+  root@router.athome.priv: >
     AAAAB3NzaC1yc2EAAAADAQABAAABAQCwetNOQ3Iq25gIIg1ZL8unmd
     OCzLINnd5owsQ32vop+pVZzohmHNMzj0nVt1FkLnO/aW7+RMj1wbcf
     z3z1GMLN3XHcjF5bdV7qFjO7NThCfEcUbMKRy/ODMQpCHks+AuHRuq
@@ -63,7 +67,7 @@ sshkeys:
     EepJfdshEJ9yjofAsMQqQ6U4UW42G1LN1F7K7tFjo9A4LcuzT/KzTF
     R6SV1VE6C4UwJrmEgYKwy2cr0lJCG2psh5hguxcC+CzHBuq3mbnWzL
     nKUyWcXDf/GwgIUjgsu8T7vEP3YSNbxezytCpjTgf9hukaH/
-  flaf_sshkey_paula: >
+  francois@flpc.athome.priv: >
     AAAAB3NzaC1yc2EAAAADAQABAAABAQDNq07pd/NMP9/Hisa39t/1rsx
     25wnSvrQrdCo3emIcA9ETPQDGGJHt8MVCInCk8exJNsztdn0ePgQOQU
     pVCV1zxLe8EzI/QKy1DKhRtJ7tJEiygZNOutQinTv57hnhqM0/r/KkF
@@ -85,20 +89,6 @@ _root_pwd_: >
     ROGlcoBwcagbl+Zf7jKFhVelb1wG6nLcwpp4SOr+fywF+J88/5Za1V36sdJi
     nIVy46P5mDbSgK5qKMrLD8wYLCjAfLordNui72bHDuFFedVjhOr/KJFmfVlU
     uyr5dpn5ROCJMwm4gnCGylI7YB8xvSUay9dYcA==]
-
-# It's the password => toto
-#_root_pwd_: >
-#    ENC[PKCS7,MIIB2gYJKoZIhvcNAQcDoIIByzCCAccCAQAxggEhMIIBHQIBADAFMAACAQEw
-#    DQYJKoZIhvcNAQEBBQAEggEAIoLWYmbv2nT8D71YE8VHoJv6QzP0xCaJjMBM
-#    AkfjN5s3hqO6+TBQSDAA222FmGuNAW8UBub47yjNhZGbdRMiHWOdy7yRHXtW
-#    omnG8iu1Ejq/onlD4wITAeC0sjZC1+Wk/bKSlIgtOGAzHdLIEg/NUin//JyX
-#    NWCREvm1tOzQEP/qSheMU5/UPYz6wf/LX+vPYqOwUOTso7crS3LxmMfpwbD7
-#    lLpIUaV6GfSNvSFseEIudfvr7+vyW/PTusn2pgU7dev+e/n6TiXStcI+WVjp
-#    xsqPGtYh+qQ4CgtPChtnQ58YmzKEsexVK9AoH9dYR4HJowr86MkNVjl9ov0D
-#    IFaXcTCBnAYJKoZIhvcNAQcBMB0GCWCGSAFlAwQBKgQQSzPORBeiOVdBZvNR
-#    nyYMxoBwP7njMeoySt+frfRvfrO9MI9gp29pcim9iutplzC6QZlNrJg0d5DZ
-#    tBXDbiJdstvK1rGsXIYG52tGsTToJlVQtnNlMJiqsJyFADIlaIsBR7GXNHTK
-#    sFs0GsNxwCzg8BF0Zl/qO4oxQpvDw7Wj5UO4hg==]
 
 _flaf_pwd_: >
     ENC[PKCS7,MIIB2gYJKoZIhvcNAQcDoIIByzCCAccCAQAxggEhMIIBHQIBADAFMAACAQEw
@@ -135,7 +125,7 @@ _mcollective_pwd_: >
   HYCLiTBMBgkqhkiG9w0BBwEwHQYJYIZIAWUDBAEqBBAAIWHwHW4DonGU1VuT
   7xtLgCBt3sLPLEFsTwUfDc35M1kLKEEVSzxNZR7DGn5s/b1szQ==]
 
-_server_private_key_: >
+_mcollective_server_private_key_: >
   ENC[PKCS7,MIIOHQYJKoZIhvcNAQcDoIIODjCCDgoCAQAxggEhMIIBHQIBADAFMAACAQEw
   DQYJKoZIhvcNAQEBBQAEggEAm9ySJXOBjuRovclnU4zaBWLXcK2s2AlXNJU9
   LnjP7+QXNo8KODqxcEQ6H5+orYRxey+L3wnoLxAIU2/pYnOxh1JhcJbrcbce
@@ -218,7 +208,7 @@ _server_private_key_: >
   s+1JWrowXCIsvDcPCnS43cuhTMWfYLO16idzvL8dqR7aH4j+dAup3EbYR38b
   hrYhJfBghIZkPpFNkMk8Q+c=]
 
-_server_public_key_: >
+_mcollective_server_public_key_: >
   ENC[PKCS7,MIIEnQYJKoZIhvcNAQcDoIIEjjCCBIoCAQAxggEhMIIBHQIBADAFMAACAQEw
   DQYJKoZIhvcNAQEBBQAEggEAcRW5STNIyAydH5qX2zC5cEk+vg+5lkr0jSSd
   cA48BoN//xgHEsiMjpJLXGz5PrKaqYKjBtqONvhC2cHwEUeGri5rlLCZdqCy
