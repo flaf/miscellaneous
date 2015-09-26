@@ -56,6 +56,15 @@ class network (
     refreshonly => true,
   }
 
+  file { '/usr/local/sbin/restart-network.puppet':
+    ensure => present,
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0750',
+    source => 'puppet:///modules/network/restart-network.puppet',
+    before => File['/etc/network/interfaces.puppet'],
+  }
+
   file { '/etc/network/interfaces.puppet':
     ensure  => present,
     owner   => 'root',
@@ -66,51 +75,24 @@ class network (
                   ),
   }
 
-  # The command to restart the network properly.
-  $restart_network_cmd = @(END)
-    timeout --signal=TERM --kill-after=5s 20s ifdown --all
-    sleep 0.5
-
-    if [ -f '/etc/network/interfaces.puppet' ]
-    then
-      cat '/etc/network/interfaces.puppet' >'/etc/network/interfaces'
-    fi
-
-    # Refresh the names of interfaces.
-    udevadm control --reload-rules
-    sleep 0.25
-    udevadm trigger --subsystem-match='net' --action='add'
-    sleep 0.25
-
-    # Configure all interfaces marked 'auto'.
-    timeout --signal=TERM --kill-after=5s 20s  ifup --all
-    sleep 0.25
-    | END
-
   if $restart {
+
+    # Just to avoid a long line below.
+    $ifaces_file = '/etc/network/interfaces'
+
     exec { 'restart-network-now':
-      path        => '/usr/sbin:/usr/bin:/sbin:/bin',
-      command     => "${restart_network_cmd}",
-      user        => 'root',
-      group       => 'root',
-      refreshonly => true,
-      require     => File['/etc/network/interfaces.puppet'],
-      subscribe   => [
-                       File['/etc/udev/rules.d/70-persistent-net.rules'],
-                       File['/etc/network/interfaces.puppet'],
-                     ],
+      path    => '/usr/sbin:/usr/bin:/sbin:/bin',
+      command => '/usr/local/sbin/restart-network.puppet',
+      user    => 'root',
+      group   => 'root',
+      # Execute only when the files are different.
+      unless  => "diff -q '${ifaces_file}' '${ifaces_file}.puppet'",
+      # Normally if /etc/network/interfaces.puppet is already managed,
+      # all others resources in this class are already managed too,
+      # so all is ready for the restart.
+      require => File['/etc/network/interfaces.puppet'],
     }
   }
-
-  # Remark about "resolvconf"
-  #
-  # Trusty uses the package "resolvconf" by default and it's
-  # not recommended to remove "resolvconf" in Trusty (if you
-  # do that, you will remove the "ubuntu-minimal" package that
-  # is not recommended). To come back to the classical
-  # /etc/resolv.conf in Trusty, just keep the "resolvconf"
-  # package and replace the symlink /etc/resolv.conf by a
-  # regular file.
 
 }
 
