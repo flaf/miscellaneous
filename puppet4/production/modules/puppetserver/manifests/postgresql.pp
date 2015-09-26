@@ -22,7 +22,7 @@ class puppetserver::postgresql {
     ensure => present,
     owner  => 'root',
     group  => 'postgres',
-    mode   => '0754',
+    mode   => '0750',
     source => 'puppet:///modules/puppetserver/postgresdb-init.puppet',
   }
 

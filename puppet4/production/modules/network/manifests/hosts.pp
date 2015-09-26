@@ -60,7 +60,7 @@ class network::hosts (
     ensure  => present,
     owner   => 'root',
     group   => 'root',
-    mode    => '0754',
+    mode    => '0750',
     content => epp('network/refresh-hosts.puppet.epp',
                    { 'my_entries' => $my_entries }
                   ),

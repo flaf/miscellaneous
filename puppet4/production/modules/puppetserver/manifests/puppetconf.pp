@@ -102,7 +102,7 @@ class puppetserver::puppetconf {
     ensure  => present,
     owner   => 'root',
     group   => 'root',
-    mode    => '0744',
+    mode    => '0750',
     before  => Service['puppetserver'],
     content => epp('puppetserver/install-modules.puppet.epp',
                    {
