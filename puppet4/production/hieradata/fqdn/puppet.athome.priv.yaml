@@ -10,12 +10,13 @@ enc_datacenter: 'vboxhome'
 # file is managed twice (by the "puppetserver" module and
 # the "puppetagent" module.
 puppetagent::manage_puppetconf: false
-network::restart: true
 
 puppetserver::puppetdb_memory: '512m'
 puppetserver::profile: 'autonomous'
 puppetserver::modules_repository: 'http://client-jessie:8080'
 
+network::resolv_conf::override_dhcp: true
+network::restart: true
 interfaces:
   eth0:
     in_networks: [ 'vbox_adm' ]
@@ -26,6 +27,8 @@ interfaces:
 mcollective:
   client_private_key: "%{hiera('_mcollective_client_private_key_')}"
   client_public_key: "%{hiera('_mcollective_client_public_key_')}"
+
+
 
 
 _mcollective_client_private_key_: >

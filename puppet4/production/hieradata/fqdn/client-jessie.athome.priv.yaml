@@ -5,18 +5,17 @@ enc_included_classes:
   - [ 'flaf', '::puppetforge' ]
 enc_datacenter: 'vboxhome'
 
+network::resolv_conf::override_dhcp: true
 network::restart: true
-
 interfaces:
   eth0:
     in_networks: [ 'vbox_adm' ]
     macaddress: '08:00:27:bc:ce:e9'
     inet:
       method: 'dhcp'
-network::resolv_conf::override_dhcp: true
 
-puppetforge::giturls:
-  - 'http://github.com/flaf/flaf-moda.git'
+#puppetforge::giturls:
+#  - 'http://github.com/flaf/flaf-moda.git'
 
 #hosts:
 #  tag: 'realm-foo'

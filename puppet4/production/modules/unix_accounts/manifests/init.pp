@@ -81,7 +81,7 @@ class unix_accounts (
             |- END
         }
 
-        ssh_authorized_key { "${user}@${keyname}":
+        ssh_authorized_key { "${user}~${keyname}":
           user => $user,
           type => 'ssh-rsa',
           # To allow sshkeys in hiera in multilines with >.
