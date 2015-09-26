@@ -41,6 +41,7 @@ unix_accounts:
       - 'root@router.athome.priv'
       - 'francois@flpc.athome.priv'
 
+puppetagent::ca_server: 'puppet.%{::domain}'
 puppet:
   collection: 'PC1'
   pinning_agent_version: '1.2.4-*'
