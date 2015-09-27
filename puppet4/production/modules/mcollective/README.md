@@ -112,6 +112,8 @@ Keep in min this:
 with the middleware (even the mcollective server requests
 the middleware to establish a connection, this is not the
 reverse).
+* A host can be mcollective client *and* mcollective server
+(and middleware too).
 
 All the mcollective servers shared the same couple of public
 and private keys. Each client has its own couple of private
