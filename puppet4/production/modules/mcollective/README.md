@@ -58,44 +58,49 @@ mcollective:
 Here is a schema to resume the mcollective architecture:
 
 ```
-                    +-------------------------+
-                    | The middleware service  |
-                    |                         |
-                    |   Currently it's a      |
-               +--->|   RabbitMQ server.      |<------------------------------------+
-               |    |   It uses the STOMP     |                                     |
-               |    |   protocol port 61614.  |                                     |
-               |    +-------------------------+                                     |
-   2-way SSL   |                                                                    | 2-way SSL
-   connection  |    * Configuration at /etc/rabbitmq/rabbitmq.config.               | connection
-               |                                                                    |
-               |    * It uses the certificate, the private key and the              |
-               |      CA certificate from the puppet-agent service.                 |
-               |                                                                    |
-               |                                                                    |
-               |                                                                    |
-   +-----------+-----------------------+                                        +---+-----------------------------------+
-   | The mcollective client (client 1) |                                        | A mcollective server                  |
-   |                                   |                                        |                                       |
-   | shared password: 123456           |                                        | shared password: 123456               |
-   |                                   |                                        |                                       |
-   | Client private key: cpriv1.pem    |                                        | Servers private key: spriv.pem        |
-   | Client public key:  cpub1.pem     |                                        | Servers public key:  spub.pem         |
-   | Servers public key: spub.pem      |                                        |                                       |
-   |                                   |                                          Public keys of authorized clients:    |
-   |                                   |                                        |    - cpub1.pem                        |
-   |                                   |                                        |    - ...                              |
-   +-----------------------------------+                                        +---------------------------------------+
+                 +-------------------------+
+                 | The middleware service  |
+                 |                         |
+                 |   Currently it's a      |
+            +--->|   RabbitMQ server.      |<---------------+
+            |    |   It uses the STOMP     |                |
+            |    |   protocol port 61614.  |                |
+            |    +-------------------------+                |
+2-way SSL   |                                               | 2-way SSL
+connection  |    * Configuration at                         | connection
+            |      /etc/rabbitmq/rabbitmq.config.           |
+            |                                               |
+            |    * It uses the certificate, the private     |
+            |      key and the CA certificate from the      |
+            |      puppet-agent service.                    |
+            |                                               |
+            |                                               |
+            |                                               |
++-----------+--------------------+                    +-----+---------------------------------+
+| The mcollective client         |                    | A mcollective server                  |
+| (client 1)                     |                    |                                       |
+|                                |                    |                                       |
+| shared password: 123456        |                    | shared password: 123456               |
+|                                |                    |                                       |
+| Client private key: cpriv1.pem |                    | Servers private key: spriv.pem        |
+| Client public key:  cpub1.pem  |                    | Servers public key:  spub.pem         |
+| Servers public key: spub.pem   |                    |                                       |
+|                                |                    | Public keys of authorized clients:    |
+|                                |                    |    - cpub1.pem                        |
+|                                |                    |    - ...                              |
++--------------------------------+                    +---------------------------------------+
 
-   * Configuration at /etc/puppetlabs/mcollective/client.cfg.                   * Configuration at /etc/puppetlabs/mcollective/server.cfg.
+* Configuration at                                    * Configuration at
+  /etc/puppetlabs/mcollective/client.cfg.               /etc/puppetlabs/mcollective/server.cfg.
 
-   * It uses the certificate, the private key and the                           * It uses the certificate, the private key and the
-     CA certificate from the puppet-agent service to                              CA certificate from the puppet-agent service to
-     establish the SSL connection with the middleware.                            establish the SSL connection with the middleware.
 
-   * Keys used by the client at /etc/puppetlabs/mcollective/client-keys/.       * Keys used by the server at:
-                                                                                    - /etc/puppetlabs/mcollective/server-keys/
-                                                                                    - /etc/puppetlabs/mcollective/allowed-clients/
+* It uses the certificate, the private key and the    * It uses the certificate, the private key and the
+  CA certificate from the puppet-agent service to       CA certificate from the puppet-agent service to
+  establish the SSL connection with the middleware.     establish the SSL connection with the middleware.
+
+* Keys used by the client at                          * Keys used by the server at:
+  /etc/puppetlabs/mcollective/client-keys/.               - /etc/puppetlabs/mcollective/server-keys/
+                                                          - /etc/puppetlabs/mcollective/allowed-clients/
 ```
 
 * The mcollective client sends commands.
