@@ -52,9 +52,9 @@ $v = 'hello'::homemade::ljust(10, ' ')
 
 These functions are just wrappers of the `ljust()` and
 `rjust()` ruby methods, except that:
-* the first argument must be a non empty string,
+* the first argument must be a non-empty string,
 * the second argument must be an integer `> 0`,
-* the third argument must be a non empty string.
+* the third argument must be a non-empty string.
 
 
 # `is_clean_arrayofstr()` and `is_clean_hashofstr()` functions
@@ -73,7 +73,7 @@ These functions can take *anything* as argument. `is_clean_arrayofstr`
 will return `true` if the argument is an non-empty array of non-empty
 string(s), else it will return `false`. `is_clean_hashofstr` will
 return `true` if the argument is an non-empty hash of non-empty
-string(s) for the keys *and* the values.
+string(s) for the keys *and* the values, else it will return `false`.
 
 
 # `deep_dup()` function
@@ -116,7 +116,9 @@ The function returns a copy of the argument. The copy is
 completely independent on the original object. It can be
 useful in a ruby function to avoid to change the state of
 variables defined in puppet manifests and given as arguments
-of the current function (like the `a_hash` variable in the
-example above).
+of the current function, like the `a_hash` variable in the
+example above. Indeed without precaution, if the `a_hash`
+variable is modified in the function, the value of the
+`$a_hash` will be modified too in the calling puppet class.
 
 
