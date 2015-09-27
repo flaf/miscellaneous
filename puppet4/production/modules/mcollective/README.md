@@ -53,6 +53,93 @@ mcollective:
 ```
 
 
+# mcollective architecture
+
+Here is a schema to resume the mcollective architecture:
+
+```
+                    +-------------------------+
+                    | The middleware service  |
+                    |                         |
+                    |   Currently it's a      |
+               +--->|   RabbitMQ server.      |<------------------------------------+
+               |    |   It uses the STOMP     |                                     |
+               |    |   protocol port 61614.  |                                     |
+               |    +-------------------------+                                     |
+   2-way SSL   |                                                                    | 2-way SSL
+   connection  |    * Configuration at /etc/rabbitmq/rabbitmq.config.               | connection
+               |                                                                    |
+               |    * It uses the certificate, the private key and the              |
+               |      CA certificate from the puppet-agent service.                 |
+               |                                                                    |
+               |                                                                    |
+               |                                                                    |
+   +-----------+-----------------------+                                        +---+-----------------------------------+
+   | The mcollective client (client 1) |                                        | A mcollective server                  |
+   |                                   |                                        |                                       |
+   | shared password: 123456           |                                        | shared password: 123456               |
+   |                                   |                                        |                                       |
+   | Client private key: cpriv1.pem    |                                        | Servers private key: spriv.pem        |
+   | Client public key:  cpub1.pem     |                                        | Servers public key:  spub.pem         |
+   | Servers public key: spub.pem      |                                        |                                       |
+   |                                   |                                          Public keys of authorized clients:    |
+   |                                   |                                        |    - cpub1.pem                        |
+   |                                   |                                        |    - ...                              |
+   +-----------------------------------+                                        +---------------------------------------+
+
+   * Configuration at /etc/puppetlabs/mcollective/client.cfg.                   * Configuration at /etc/puppetlabs/mcollective/server.cfg.
+
+   * It uses the certificate, the private key and the                           * It uses the certificate, the private key and the
+     CA certificate from the puppet-agent service to                              CA certificate from the puppet-agent service to
+     establish the SSL connection with the middleware.                            establish the SSL connection with the middleware.
+
+   * Keys used by the client at /etc/puppetlabs/mcollective/client-keys/.       * Keys used by the server at:
+                                                                                    - /etc/puppetlabs/mcollective/server-keys/
+                                                                                    - /etc/puppetlabs/mcollective/allowed-clients/
+```
+
+* The mcollective client sends commands.
+* The mcollective servers receive commands from the client.
+* The mcollective client and servers establish a connection
+with the middleware (even the mcollective server requests
+the middleware to establish a connection, this is not the
+reverse).
+
+All the mcollective servers shared the same couple of public
+and private keys. Each client has its own couple of private
+nd public keys.
+
+To be able to send commands, a client must:
+- establish a SSL connection with the middleware,
+- have the shared password,
+- have the shared public key of the servers (to send encrypted
+messages to the servers),
+- have its own couple of private and public keys.
+
+To be able to receive and execute commands from a client,
+a server must:
+- establish a SSL connection with the middleware,
+- have the shared password,
+- have the public key of each client,
+- have the shared private and public keys of servers.
+
+**Remark 1:** it's the same principle as SSH. A server
+will accept commands from only clients of which the server
+has the public key in its configuration (like the
+`ssh_authorized_keys` with SSH).
+
+**Remark 2:** if a server is compromised by a hacker, the
+hacker can receive commands from clients. You have to change
+the shared private/public keys of the servers. If a client
+is compromised by a hacker, it's big problem. Indeed, the
+hacker can launch commands on all servers. You have to
+remove quickly the public of the client in all the servers
+(in `/etc/puppetlabs/mcollective/allowed-clients/`).
+
+
+
+
+
 # TODO
 
 * The `mcollective::middleware` class installs a RabbitMQ
