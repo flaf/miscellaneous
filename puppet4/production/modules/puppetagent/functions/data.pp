@@ -9,7 +9,8 @@ function puppetagent::data {
     $server = 'puppet'
   };
 
-  { puppetagent::service_enabled         => false,
+  {
+    puppetagent::service_enabled         => false,
     puppetagent::runinterval             => '7d',
     puppetagent::server                  => $server,
     puppetagent::ca_server               => '$server',

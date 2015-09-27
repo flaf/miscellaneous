@@ -65,7 +65,8 @@ function mcollective::data {
   $ssl_versions       = ['tlsv1.2', 'tlsv1.1', 'tlsv1']
   $supported_distribs = ['trusty', 'jessie'];
 
-  { mcollective::middleware::stomp_ssl_ip            => '0.0.0.0',
+  {
+    mcollective::middleware::stomp_ssl_ip            => '0.0.0.0',
     mcollective::middleware::stomp_ssl_port          => 61614,
     mcollective::middleware::puppet_ssl_dir          => $puppet_ssl_dir,
     mcollective::middleware::admin_pwd               => $conf['middleware_admin_pwd'],

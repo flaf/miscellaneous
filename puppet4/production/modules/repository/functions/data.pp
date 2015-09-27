@@ -23,7 +23,8 @@ function repository::data {
   # Dedicated stage for this module.
   $stage = 'repository';
 
-  { repository::distrib::url                     => $distrib_url,
+  {
+    repository::distrib::url                     => $distrib_url,
     repository::distrib::src                     => false,
     repository::distrib::install_recommends      => false,
     repository::distrib::supported_distributions => $distribs,
@@ -40,7 +41,6 @@ function repository::data {
     repository::postgresql::src                     => false,
     repository::postgresql::supported_distributions => ['trusty'],
     repository::postgresql::stage                   => $stage,
-
   }
 
 }

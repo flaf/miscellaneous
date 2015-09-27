@@ -1,7 +1,7 @@
 # Module description
 
 This module configures mcollective server/client
-and middleware (with ssl).
+and middleware with ssl.
 
 
 
