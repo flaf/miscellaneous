@@ -30,15 +30,15 @@ connection  |    * Configuration at                         | connection
             |                                               |
             |                                               |
 +-----------+--------------------+                    +-----+---------------------------------+
-| The mcollective client         |                    | A mcollective server                  |
+| A mcollective client           |                    | A mcollective server                  |
 | (client Y)                     |                    |                                       |
 |                                |                    |                                       |
 | shared password: 123456        |                    | shared password: 123456               |
 |                                |                    |                                       |
 | Client private key: cprivY.pem |                    | Servers private key: spriv.pem        |
 | Client public key:  cpubY.pem  |                    | Servers public key:  spub.pem         |
-| Servers public key: spub.pem   |                    |                                       |
-|                                |                    | Public keys of authorized clients:    |
+|                                |                    |                                       |
+| Servers public key: spub.pem   |                    | Public keys of authorized clients:    |
 |                                |                    |    - cpubY.pem                        |
 |                                |                    |    - cpubZ.pem                        |
 |                                |                    |    - ...                              |
@@ -69,7 +69,7 @@ reverse).
 
 All the mcollective servers shared the same couple of public
 and private keys. Each client has its own couple of private
-nd public keys.
+and public keys.
 
 To be able to send commands, a client must:
 - establish a SSL connection with the middleware,
@@ -81,9 +81,9 @@ messages to the servers),
 To be able to receive and execute commands from a client,
 a server must:
 - establish a SSL connection with the middleware,
-- have the shared password,
-- have the public key of each client,
-- have the shared private and public keys of servers.
+- have the shared password (the same as the client of course),
+- have the public key of the client (to send encrypted messages to the client),
+- have the shared private and public keys of the servers.
 
 **Remark 1:** it's the same principle as SSH. A server
 will accept commands from only clients of which the server
@@ -93,10 +93,10 @@ has the public key in its configuration (like the
 **Remark 2:** if a server is compromised by a hacker, the
 hacker can receive commands from clients. You have to change
 the shared private/public keys of the servers. If a client
-is compromised by a hacker, it's big problem. Indeed, the
+is compromised by a hacker, it's a big problem. Indeed, the
 hacker can launch commands on all servers. You have to
-remove quickly the public of the client in all the servers
-(in `/etc/puppetlabs/mcollective/allowed-clients/`).
+remove quickly the public of the compromised client in all
+servers (in `/etc/puppetlabs/mcollective/allowed-clients/`).
 
 
 
