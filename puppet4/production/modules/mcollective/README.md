@@ -86,7 +86,7 @@ a server must:
 - have the shared private and public keys of the servers.
 
 **Remark 1:** it's the same principle as SSH. A server
-will accept commands from only clients of which the server
+will accept commands from only clients of which it
 has the public key in its configuration (like the
 `ssh_authorized_keys` with SSH).
 
