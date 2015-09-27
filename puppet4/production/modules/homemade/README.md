@@ -117,8 +117,12 @@ completely independent on the original object. It can be
 useful in a ruby function to avoid to change the state of
 variables defined in puppet manifests and given as arguments
 of the current function, like the `a_hash` variable in the
-example above. Indeed without precaution, if the `a_hash`
-variable is modified in the function, the value of the
-`$a_hash` will be modified too in the calling puppet class.
+example above. Indeed, without precaution, if the `a_hash`
+variable is modified in the body of the `foo` function, the
+value of the `$a_hash` variable *in the calling manifest*
+will be modified too. With ruby functions in Puppet,
+variables can be mutable which is not the Puppet philosophy.
+See [PUP-4825](https://tickets.puppetlabs.com/browse/PUP-4825)
+for more explanations.
 
 
