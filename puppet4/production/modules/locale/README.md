@@ -8,8 +8,11 @@ The `locale` class has only one parameter:
 
 ```puppet
 class { '::locale':
-  default_locale => 'fr_FR.utf8',
+  default_locale => 'en_US.utf8',
 }
+
+# Equivalent to:
+include '::locale'
 ```
 
 The `default_locale` parameter accepts only two values (two
