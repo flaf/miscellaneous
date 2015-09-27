@@ -78,15 +78,16 @@ connection  |    * Configuration at                         | connection
             |                                               |
 +-----------+--------------------+                    +-----+---------------------------------+
 | The mcollective client         |                    | A mcollective server                  |
-| (client 1)                     |                    |                                       |
+| (client Y)                     |                    |                                       |
 |                                |                    |                                       |
 | shared password: 123456        |                    | shared password: 123456               |
 |                                |                    |                                       |
-| Client private key: cpriv1.pem |                    | Servers private key: spriv.pem        |
-| Client public key:  cpub1.pem  |                    | Servers public key:  spub.pem         |
+| Client private key: cprivY.pem |                    | Servers private key: spriv.pem        |
+| Client public key:  cpubY.pem  |                    | Servers public key:  spub.pem         |
 | Servers public key: spub.pem   |                    |                                       |
 |                                |                    | Public keys of authorized clients:    |
-|                                |                    |    - cpub1.pem                        |
+|                                |                    |    - cpubY.pem                        |
+|                                |                    |    - cpubZ.pem                        |
 |                                |                    |    - ...                              |
 +--------------------------------+                    +---------------------------------------+
 
@@ -102,6 +103,8 @@ connection  |    * Configuration at                         | connection
   /etc/puppetlabs/mcollective/client-keys/.               - /etc/puppetlabs/mcollective/server-keys/
                                                           - /etc/puppetlabs/mcollective/allowed-clients/
 ```
+
+Keep in min this:
 
 * The mcollective client sends commands.
 * The mcollective servers receive commands from the client.
