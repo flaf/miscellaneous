@@ -28,7 +28,7 @@ class foo {
 The function raises an error if the distribution of the
 current node is not present in the array of the first
 argument, else the function does nothing. The function
-uses the `lsbdistcodename` facter to know the distribution
+uses the `lsbdistcodename` fact to know the distribution
 of the node and the comparisons are case sensitive.
 
 The second argument is just to give to the function the
