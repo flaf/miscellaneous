@@ -53,7 +53,7 @@ mcollective:
 ```
 
 
-# mcollective architecture
+# Mcollective architecture
 
 Here is a schema to resume the mcollective architecture:
 
