@@ -62,7 +62,7 @@ function mcollective::data {
   $puppet_ssl_dir     = '/etc/puppetlabs/puppet/ssl'
   $connector          = 'rabbitmq'
   $middleware_port    = 61614
-  $ssl_versions       = ['tlsv1.2', 'tlsv1.1', 'tlsv1']
+  $ssl_versions       = ['tlsv1.2', 'tlsv1.1']
   $supported_distribs = ['trusty', 'jessie'];
 
   {
