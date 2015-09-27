@@ -41,11 +41,11 @@ an explicit error message if the function fails.
 Examples of usage:
 
 ```puppet
-# Will return => '     hello'.
+# Will return => '     hello'
 $v = ::homemade::rjust('hello', 10, ' ')
 $v = 'hello'.::homemade::rjust(10, ' ')
 
-# Will return 'hello     '.
+# Will return => 'hello     '
 $v = ::homemade::ljust('hello', 10, ' ')
 $v = 'hello'::homemade::ljust(10, ' ')
 ```
@@ -56,5 +56,67 @@ These functions are just wrappers of the `ljust()` and
 * the second argument must be an integer `> 0`,
 * the third argument must be a non empty string.
 
+
+# `is_clean_arrayofstr()` and `is_clean_hashofstr()` functions
+
+Examples:
+
+```puppet
+# Will return => false
+$v = ::homemade::is_clean_arrayofstr( ['aaa', 'bbb', 1234] )
+
+# Will return => true
+$v = ::homemade::is_clean_hashofstr( { 'a' => '1', 'b' => '2' } )
+```
+
+These functions can take *anything* as argument. `is_clean_arrayofstr`
+will return `true` if the argument is an non-empty array of non-empty
+string(s), else it will return `false`. `is_clean_hashofstr` will
+return `true` if the argument is an non-empty hash of non-empty
+string(s) for the keys *and* the values.
+
+
+# `deep_dup()` function
+
+This function will be useful only in the context of a ruby
+function. Here is an example:
+
+```ruby
+Puppet::Functions.create_function(:'module::foo') do
+
+  dispatch :foo do
+    required_param 'Hash[String[1], String[1], 1]', :a_hash
+  end
+
+  def foo(a_hash)
+
+    a_hash_copy = call_function('::homemade::deep_dup', a_hash)
+
+    # Code to change the `a_hash_copy` variable.
+    # ...
+
+    modified_a_hash_copy
+
+  end
+
+end
+```
+
+This function takes one argument which can be:
+
+- a string,
+- an integer,
+- a float,
+- a hash or an array of the previous types above,
+- a hash or an array of the previous types above,
+- a hash or an array of the previous types above,
+- etc.
+
+The function returns a copy of the argument. The copy is
+completely independent on the original object. It can be
+useful in a ruby function to avoid to change the state of
+variables defined in puppet manifests and given as arguments
+of the current function (like the `a_hash` variable in the
+example above).
 
 
