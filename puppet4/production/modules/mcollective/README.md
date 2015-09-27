@@ -95,8 +95,9 @@ hacker can receive commands from clients. You have to change
 the shared private/public keys of the servers. If a client
 is compromised by a hacker, it's a big problem. Indeed, the
 hacker can launch commands on all servers. You have to
-remove quickly the public of the compromised client in all
-servers (in `/etc/puppetlabs/mcollective/allowed-clients/`).
+remove quickly the public key of the compromised client in all
+servers (in the `/etc/puppetlabs/mcollective/allowed-clients/`
+directory).
 
 
 
