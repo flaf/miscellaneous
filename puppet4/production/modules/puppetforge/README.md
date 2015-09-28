@@ -62,11 +62,13 @@ The `modules_git_urls` parameter is an array of non-empty strings
 which defines the git repositories of the modules retrieved
 by the Puppet forge. The Puppet forge server will apply
 these modules to the puppetserver (clients of the Puppet
-forge server). **If a git repository of a module has a tag N
-and if on the commit linked to the tag N, the version of the
-module matches the tag value, the Puppet forge will release
-the module version N** (the Puppet forge can host several
-versions of a module).
+forge server). **If a git repository of a module has a tag T
+and if on the commit linked to the tag T, the version of the
+module matches with the tag value, the Puppet forge will release
+the module version T** (the Puppet forge can host several
+versions of a module). The default value of this parameter
+is `[]` (an empty array), in this case the Puppet forge server
+retrieves no module.
 
 The Puppet forge retrieves new commits (via a `git pull`)
 of the modules listed in `modules_git_urls` every `pause` seconds.
