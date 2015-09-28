@@ -3,7 +3,7 @@
 This module manages a Puppet forge server.
 This module uses this very simple and functional
 [software](https://github.com/unibet/puppet-forge-server).
-The Puppet forge server has in fact two services:
+The Puppet forge server hosts in fact two services:
 - a http server which will be requested by the puppetservers to
 install Puppet modules,
 - a daemon which retrieves modules given in a list of git repositories.
