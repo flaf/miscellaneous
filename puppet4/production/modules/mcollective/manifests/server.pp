@@ -4,7 +4,7 @@ class mcollective::server (
   String[1]                    $server_private_key,
   String[1]                    $server_public_key,
   Enum['rabbitmq', 'activemq'] $connector,
-  String[1]                    $middleware_server,
+  String[1]                    $middleware_address,
   Integer[1]                   $middleware_port,
   String[1]                    $mcollective_pwd,
   String[1]                    $mco_tag,
@@ -90,7 +90,7 @@ class mcollective::server (
                       'allowed_clients_dir' => $allowed_clients_dir,
                       'puppet_ssl_dir'      => $puppet_ssl_dir,
                       'connector'           => $connector,
-                      'middleware_server'   => $middleware_server,
+                      'middleware_address'  => $middleware_address,
                       'middleware_port'     => $middleware_port,
                       'mcollective_pwd'     => $mcollective_pwd,
                     }

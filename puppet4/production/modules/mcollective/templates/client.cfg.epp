@@ -1,3 +1,13 @@
+<%- |
+$server_pub_key_path,
+$client_pub_key_path,
+$client_priv_key_path,
+$connector,
+$middleware_address,
+$middleware_port,
+$mcollective_pwd,
+$puppet_ssl_dir,
+| -%>
 ### This file is managed by Puppet, don't edit it. ###
 
 main_collective  = mcollective
@@ -15,7 +25,7 @@ plugin.ssl_client_public  = <%= $client_pub_key_path %>
 
 plugin.<%= $connector %>.pool.size           = 1
 plugin.<%= $connector %>.vhost               = /mcollective
-plugin.<%= $connector %>.pool.1.host         = <%= $middleware_server %>
+plugin.<%= $connector %>.pool.1.host         = <%= $middleware_address %>
 plugin.<%= $connector %>.pool.1.port         = <%= $middleware_port %>
 plugin.<%= $connector %>.pool.1.user         = mcollective
 plugin.<%= $connector %>.pool.1.password     = <%= $mcollective_pwd %>

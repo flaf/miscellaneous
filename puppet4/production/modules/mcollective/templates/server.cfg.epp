@@ -3,7 +3,7 @@ $server_priv_key_path,
 $server_pub_key_path,
 $allowed_clients_dir,
 $connector,
-$middleware_server,
+$middleware_address,
 $middleware_port,
 $mcollective_pwd,
 $puppet_ssl_dir
@@ -27,7 +27,7 @@ plugin.ssl_server_public    = <%= $server_pub_key_path %>
 plugin.<%= $connector %>.vhost       = /mcollective
 plugin.<%= $connector %>.pool.size   = 1
 
-plugin.<%= $connector %>.pool.1.host         = <%= $middleware_server %>
+plugin.<%= $connector %>.pool.1.host         = <%= $middleware_address %>
 plugin.<%= $connector %>.pool.1.port         = <%= $middleware_port %>
 plugin.<%= $connector %>.pool.1.user         = mcollective
 plugin.<%= $connector %>.pool.1.password     = <%= $mcollective_pwd %>

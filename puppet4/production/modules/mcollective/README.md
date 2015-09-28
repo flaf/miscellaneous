@@ -11,16 +11,19 @@ and middleware with ssl.
 First, here is a schema to summarize the mcollective architecture:
 
 ```
-                 +-------------------------+
-                 | The middleware service  |
-                 |                         |
-                 |   Currently it's a      |
-            +--->|   RabbitMQ server.      |<---------------+
-            |    |   It uses the STOMP     |                |
-            |    |   protocol port 61614.  |                |
-            |    +-------------------------+                |
-2-way SSL   |                                               | 2-way SSL
-connection  |    * Configuration at                         | connection
+                 +----------------------------+
+                 | The middleware service     |
+                 |                            |
+                 | Currently it's a           |
+            +--->| RabbitMQ server.           |<------------+
+            |    | It uses the STOMP          |             |
+            |    | protocol port 61614.       |             |
+            |    |                            |             |
+            |    | RabbitMQ user: mcollective |             |
+            |    | RabbitMQ pwd: 123456       |             |
+            |    +----------------------------+             |
+ 2-way SSL  |                                               | 2-way SSL
+ connection |    * Configuration at                         | connection
             |      /etc/rabbitmq/rabbitmq.config.           |
             |                                               |
             |    * It uses the certificate, the private     |
@@ -33,7 +36,8 @@ connection  |    * Configuration at                         | connection
 | A mcollective client           |                    | A mcollective server                  |
 | (client Y)                     |                    |                                       |
 |                                |                    |                                       |
-| shared password: 123456        |                    | shared password: 123456               |
+| RabbitMQ user: mcollective     |                    | RabbitMQ user: mcollective            |
+| RabbitMQ pwd: 123456           |                    | RabbitMQ pwd: 123456                  |
 |                                |                    |                                       |
 | Client private key: cprivY.pem |                    | Servers private key: spriv.pem        |
 | Client public key:  cpubY.pem  |                    | Servers public key:  spub.pem         |
@@ -72,16 +76,18 @@ and private keys. Each client has its own couple of private
 and public keys.
 
 To be able to send commands, a client must:
+- have the password of the `mcollective` RabbitMQ user
+(to connect to the middleware),
 - establish a SSL connection with the middleware,
-- have the shared password,
 - have the shared public key of the servers (to send encrypted
 messages to the servers),
 - have its own couple of private and public keys.
 
 To be able to receive and execute commands from a client,
 a server must:
+- have the password of the `mcollective` RabbitMQ user
+(to connect to the middleware),
 - establish a SSL connection with the middleware,
-- have the shared password (the same as the client of course),
 - have the public key of the client (to send encrypted messages to the client),
 - have the shared private and public keys of the servers.
 
@@ -112,6 +118,7 @@ Here is an example:
 class { '::mcollective::middleware':
   stomp_ssl_ip    => '0.0.0.0',
   stomp_ssl_port  => 61614,
+  ssl_versions    => ['tlsv1.2', 'tlsv1.1'],
   puppet_ssl_dir  => '/etc/puppetlabs/puppet/ssl',
   admin_pwd       => 'xEd67+er',
   mcollective_pwd => '@mC0+45mpLSs',
@@ -120,33 +127,182 @@ class { '::mcollective::middleware':
 
 ## Data binding
 
-The `stomp_ssl_ip` parameter defines the address used by
-the middleware server. The default value is the string
-`'0.0.0.0'` which means "any address of the host".
-The `stomp_ssl_port` parameter must be an integer
-and its default value is `61614`.
+The `stomp_ssl_ip` parameter defines the address used by the
+middleware server. The default value is the string
+`'0.0.0.0'` which means "listening on any address of current
+the host". The `stomp_ssl_port` parameter must be an integer
+and its default value is `61614`. The `ssl_versions`
+parameter is an array of non-empty strings which gives the
+versions of TLS/SSL supported by the middleware server. The
+default value of this parameter is `['tlsv1.2', 'tlsv1.1']`.
+The value `[]` (ie an empty array) is possible for this
+parameter. In this case, no TLS/SSL version is put in the
+RabbitMQ configuration so that the supported versions are
+the default supported versions of the current RabbitMQ
+server (and it depends on the version of the installed
+software).
 
-The `puppet_ssl_dir` parameter is the ssl directory
-of the puppet installation. Indeed, this class installs
-a middleware server with ssl and it uses the certificate
-of the puppet client (which is present in the ssl
-directory of the puppet installation). The default value
-of this parameter is the string `'/etc/puppetlabs/puppet/ssl'`
-which is the ssl directory of a classical puppet 4
-installation.
+The `puppet_ssl_dir` parameter is the ssl directory of the
+puppet installation. Indeed, this class installs a
+middleware server with 2-way SSL connection and it uses the
+certificate, the private key and the CA certificate of the
+puppet agent (which is present in the `$ssldir` directory of
+the puppet installation). The default value of this
+parameter is the string `'/etc/puppetlabs/puppet/ssl'` which
+is the ssl directory of a classical puppet 4 installation.
+Normally, you should never need to change this setting.
 
 The `admin_pwd` parameter is the password of the `admin`
-rabbitmq account and `mcollective_pwd` is the password
-of the `mcollective` rabbitmq account.
+rabbitMQ account. Its default value is `sha1($::fqdn)`.
 
-For the default values of these parameters, there is
-a lookup in hiera or in the `environment.conf`. **You
-must provide this entry**:
+The `mcollective_pwd` is the password of the `mcollective`
+rabbitMQ account. For the default values of this parameter,
+there is a lookup in hiera or in the `environment.conf`.
+**You must provide this entry**:
 
 ```yaml
 mcollective:
-  middleware_admin_pwd: '<value-of-admin_pwd>'
-  mcollective_pwd: '<value-of-mcollective_pwd>'
+  middleware_mcollective_pwd: '<value-of-mcollective-pwd>'
+```
+
+As you can see in the schema above, the mcollective password
+is shared by the middleware, the clients and the servers. So
+you will probably put this entry in a `common.yaml` file in
+hiera or something like that.
+
+
+
+
+# The `mcollective::server` class
+
+## Usage
+
+Here is an example:
+
+```puppet
+$pubkey  = '<content-of-the-public-key>'
+$privkey = '<content-of-the-private-key>'
+
+class { '::mcollective::server':
+  server_private_key => $privkey,
+  server_public_key  => $pubkey,
+  connector          => 'rabbitmq',
+  middleware_address => '172.31.10.12',
+  middleware_port    => 61614,
+  mcollective_pwd    => '@mC0+45mpLSs',
+  mco_tag            => 'mcollective_clients_pub_keys',
+  puppet_ssl_dir     => '/etc/puppetlabs/puppet/ssl',
+}
+```
+
+## Data binding
+
+Some of theses parameters will be searched via a lookup in
+hiera or in the `environment.conf` and **you must provide
+these entries**:
+
+```yaml
+mcollective:
+  middleware_mcollective_pwd: '<value of the $mcollective_pwd parameter>'
+  middleware_address: '<value of the $middleware_address parameter>'
+  server_private_key: '<value of the $server_private_key parameter>'
+  server_public_key: '<value of the $server_public_key parameter>'
+  tag: '<value of the $mco_tag parameter>' # optional entry (see below)
+```
+
+The `server_private_key` and `server_public_key` parameters
+are non-empty strings to provide the shared mcollective
+private and public keys. The default values of these
+parameters are set in the hiera entries above.
+
+To generate these keys, you can execute these commands:
+
+```sh
+# Generate the private key.
+openssl genrsa -out 'private_key.pem' 4096
+
+# Generate the public key matching the previous private key.
+openssl rsa -in 'private_key.pem' -out 'public_key.pem' -outform PEM -pubout
+```
+
+The `connector` parameter is the connector used by mcollective
+to connect to the middleware server. The authorized values are
+only `rabbitmq` or `activemq`. Its default value is `rabbitmq`.
+
+The `$middleware_address` parameter is the address of the
+middleware server (an IP, a fqdn etc). The default value
+of this parameter is set in the hiera entries above.
+
+The `middleware_port` parameter is the port used by the
+middleware server. It's an integer and its default value
+is `61614`.
+
+The `mcollective_pwd` parameter is the password of the
+`mcollective` rabbitMQ account. The default value of this
+parameter is set in the hiera entries above.
+
+The `mco_tag` parameter is a non-empty string which gives the
+name of the tag used to import public keys of the
+mcollective client. Indeed, the mcollective servers need the
+public keys of each authorized client in its configuration.
+Each client will export its public key with a specific tag
+and the servers will retrieve these public keys via the same
+tag given by the `mco_tag` parameter. The default value of
+this parameter can be set by the `tag` entry in the hiera
+entries above but it's optional. If the `tag` entry is not
+present, the value `'mcollective_client_public_key'` will be
+used.
+
+The `puppet_ssl_dir` parameter has exactly the same meaning
+of the `puppet_ssl_dir` parameter in the
+`::mcollective::middleware` class.
+
+
+
+
+# The `mcollective::client` class
+
+## Usage
+
+Here is an example:
+
+```puppet
+$client_pubkey  = '<content-of-the-public-key>'
+$client_privkey = '<content-of-the-private-key>'
+$server_pubkey  = '<content-of-the-public-servers-public-key>'
+
+class { '::mcollective::client':
+  client_private_key => $server_pubkey,
+  client_public_key  => $client_pubkey,
+  server_public_key  => $server_pubkey,
+  mco_tag            => 'mcollective_clients_pub_keys',
+  connector          => 'rabbitmq',
+  middleware_address => '172.31.10.12',
+  middleware_port    => 61614,
+  mcollective_pwd    => '@mC0+45mpLSs',
+  puppet_ssl_dir     => '/etc/puppetlabs/puppet/ssl',
+}
+```
+
+## Data binding
+
+Except the `client_private_key` and `client_public_key`
+parameters, the remaining parameters have exactly the same
+meaning of the parameters of the `::mcollective::server`
+class. The meaning of the `client_private_key` and
+`client_public_key` parameters is clear. The default values
+of these parameters will be set via a lookup in hiera or in
+the `environment.conf` (see below). Finally for a
+mcollective client **you must provide these entries**:
+
+```yaml
+mcollective:
+  client_private_key: '<value of the $client_private_key parameter>'
+  client_public_key: '<value of the $client_public_key parameter>'
+  middleware_mcollective_pwd: '<value of the $mcollective_pwd parameter>'
+  middleware_address: '<value of the $middleware_address parameter>'
+  server_public_key: '<value of the $server_public_key parameter>'
+  #tag: '<value of the $mco_tag parameter>' # optional entry
 ```
 
 
@@ -159,13 +315,12 @@ server. But RabbitMQ seems to not support certificate revocation
 list (crl). Is it the case with Activemq? Activemq is in Ubuntu
 repositories now.
 
-* The README is absolutely not finished. Don't forget
-to draw a schema like in
-[this page](https://docs.puppetlabs.com/mcollective/overview_components.html).
+* The installations of the mcollective `shell` plugin and the
+mcollective `puppet` plugin are currently missing because no
+package is available in the PC1 collection. But it's expected
+to add these package in PC1
+(see [here](https://groups.google.com/forum/#!topic/puppet-users/XSSXGY_rmy0)).
 
-* Implement the installation of the `shell` plugin and
-the `puppet` plugin. Take the packages from puppet 3.x
-and just change the paths.
 
 
 
