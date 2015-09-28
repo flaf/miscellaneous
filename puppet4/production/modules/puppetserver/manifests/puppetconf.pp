@@ -377,6 +377,36 @@ disabled-service/certificate-authority-disabled-service"
     }
   }
 
+  $git_ssh_wrapper_content = @(END)
+  #!/bin/bash
+
+  ### This file is managed by Puppet, don't edit it. ###
+
+  # Wrapper to allow several sudo unix accounts to edit the
+  # same ssh repository (owned by root) with his owned ssh
+  # private key.
+  #
+  # Just put this in your .bashrc:
+  #
+  #   export GIT_SSH=/usr/local/bin/git_ssh_wrapper
+  #
+  # And after a `sudo su -p`, you could edit the git
+  # repository with your owned ssh private key.
+
+  export PATH='/usr/sbin:/usr/bin:/sbin:/bin'
+
+  ssh -i ~/.ssh/id_rsa "$1" "$2"
+
+  | END
+
+  file { '/usr/local/bin/git_ssh_wrapper':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '755',
+    content => $git_ssh_wrapper_content,
+  }
+
 }
 
 
