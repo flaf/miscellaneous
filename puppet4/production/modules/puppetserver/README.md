@@ -29,34 +29,35 @@ The `puppet_memory` and `puppetdb_memory` parameter set
 the RAM available for the JVM of the puppetserver and the
 RAM available for the JVM of the puppetdb server. The
 default value of these parameters is `'1g'` (ie 1GB).
-Another value possible is `'512m'` for instance (ie
+Another possible value is `'512m'` for instance (ie
 512MB).
 
 The `profile` parameter is important. The two possible
-value for this parameter are `'client'` or `'autonomous'`:
+values for this parameter are `'client'` or `'autonomous'`:
 
 * If the value is `'autonomous'`, the puppetserver will
-be the Puppet CA and will be puppet client of itself.
-The puppetdb service will be installed too.
+be the Puppet CA and its puppet agent will become puppet
+client of itself. The puppetdb service will be installed too.
 
-* If the value is `'client'`, the puppetserver will be and
-will stay the client of its current puppetserver. The current
-puppetserver will be the puppet CA too. Then, the puppetdb
-service will not be installed this hosts (and the parameters
-related to Puppetdb will be ignored).
+* If the value is `'client'`, the puppet agent will be and
+will stay the client of its current puppetserver which will
+stay the puppet CA too. Then, the puppetdb service will not
+be installed on this host (and the parameters related to
+Puppetdb will be ignored).
 
 
 The `modules_repository` parameter is the url address of
 a Puppet forge server requested by the puppetserver. The
 default value of this parameter is `''` (the empty string).
 In this case the puppetserver will request directly the
-offcial Puppetlabs forge.
+official Puppetlabs forge.
 
 The `puppetdb_name`, `puppetdb_user` and `puppetdb_pwd`
-set the name of the PostgreSQL database, the PostreSQL
-user account and its password, PostgreSQL account used
-by the puppetdb service. The default values of theses
-parameters are `'puppet'`, `'pupppet'` and `sha1($::fqdn)`.
+parameters set the name of the PostgreSQL database, the
+PostgreSQL user account and its password. The PostgreSQL
+account will be used by the puppetdb service. The default
+values of theses parameters are `'puppet'`, `'pupppet'` and
+`sha1($::fqdn)`.
 
 
 The `modules_versions` is a hash like above to force the
