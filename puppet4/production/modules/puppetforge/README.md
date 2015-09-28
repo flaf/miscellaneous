@@ -54,9 +54,9 @@ Puppetlabs forge. Normally, you should never change this
 value.
 
 The `address` and the `port` parameters allow to set the
-address used by the Puppet forge service (which is a simple
-http service). The default value of these parameters are
-`'0.0.0.0'` (listen to all interfaces) and `8080` (an
+address used by the http Puppet forge service (which is a
+simple http service). The default value of these parameters
+are `'0.0.0.0'` (listen to all interfaces) and `8080` (an
 integer).
 
 The `modules_git_urls` parameter is an array of non-empty strings
