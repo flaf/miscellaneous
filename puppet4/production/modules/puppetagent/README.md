@@ -74,3 +74,49 @@ The default value of this parameter is `true`.
 
 
 
+# Manual installation of the puppet agent
+
+Normally, the installation of the puppet-agent is "manual".
+Here is the commands:
+
+```sh
+# Should be already installed.
+apt-get install lsb-release
+
+KEY='47B320EB4C7C375AA9DAE1A01054B7A24BD6EC30'
+apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys "$KEY"
+COLLECTION='PC1'
+distrib=$(lsb_release -sc)
+collection=$(echo $COLLECTION | tr '[:upper:]' '[:lower:]')
+
+echo "# Puppetlabs $COLLECTION $distrib Repository.
+deb http://apt.puppetlabs.com $distrib $COLLECTION
+#deb-src http://apt.puppetlabs.com $distrib $COLLECTION
+" > /etc/apt/sources.list.d/puppetlabs-$collection.list
+
+# Force the version number as below.
+apt-get update && apt-get install puppet-agent=1.2.4-*
+```
+
+After that, you can run the first puppet run:
+
+```sh
+# For a classical puppet client of the Puppet CA:
+/opt/puppetlabs/bin/puppet agent --test --server=$server
+
+# If you want to install a 'autonomous' puppetserver:
+/opt/puppetlabs/bin/puppet agent --test --server=$server --ssldir=/etc/puppetlabs/puppet/sslagent
+rm -r /etc/puppetlabs/puppet/sslagent
+# After installation, you can run the next puppet run like this:
+/opt/puppetlabs/bin/puppet agent --test
+
+# For a 'client' puppetserver.
+/opt/puppetlabs/bin/puppet agent --test --server=$server
+
+# For a puppet client of a 'client' puppetserver:
+/opt/puppetlabs/bin/puppet agent --test --server=$server --ca_server=$ca_server
+```
+
+
+
+
