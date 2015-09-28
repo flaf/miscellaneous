@@ -47,7 +47,7 @@ which points to the version 1.8.0 of the software.
 The `remote_forge` parameter is the url of the remote forge
 used by the server. Like a DNS server, if the Puppet forge
 server receives a request for a module which is not hosted
-by it, it forwards the request to this remove forge. The
+by itsel, it forwards the request to this remove forge. The
 default value of this parameter is
 `'https://forgeapi.puppetlabs.com'` which is the official
 Puppetlabs forge. Normally, you should never change this
