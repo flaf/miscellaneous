@@ -6,7 +6,7 @@ This module uses this very simple and functional
 The Puppet forge server has in fact two services:
 - a http server which will be requested by the puppetservers to
 install Puppet modules,
-- a daemon which retrieves modules given in a list a git repositories.
+- a daemon which retrieves modules given in a list of git repositories.
 
 
 # Usage
