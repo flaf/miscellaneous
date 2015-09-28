@@ -28,7 +28,7 @@ class { '::puppetagent':
 The `service_enabled` parameter is a boolean to tell
 if you want enable the `puppet` daemon, ie the client
 daemon ("enable" means "the service will be automatically
-started at each reboot). If the daemon is enabled, then
+started at each reboot"). If the daemon is enabled, then
 the puppet run will be launched with the `runinterval`
 frequency. The default value of `service_enabled` is
 `false` and the default value of `runinterval` is
@@ -41,14 +41,14 @@ if defined (generally when the `trusted_server_facts`
 parameter is set to `true` in the file `puppet.conf`
 of the server), else it's just the string `puppet`.
 
-The `ca_server` parameter is a string to define the
-CA server. This parameter is necessary during the
-the first and the second puppet run where the client
-do some SSL operations. The default value of this
-parameter is the string `$server`, ie the CA server
-is the same as the puppetmaster.
+The `ca_server` parameter is a string to define the CA
+server in the `puppet.conf` file. This parameter is
+necessary during the first and the second puppet run where
+the client does some SSL operations. The default value of
+this parameter is the string `$server`, ie the CA server is
+the same as the puppetmaster.
 
-The `cron` parameter accepts only 3 values :
+The `cron` parameter accepts only 3 values:
 - `per-day` for per-day cron,
 - `per-week` for per-week cron,
 - `disabled`where no cron will run puppet.
@@ -70,15 +70,6 @@ puppetagent::manage_puppetconf: false
 
 in the `$fqdn.yaml` file of these specific nodes.
 The default value of this parameter is `true`.
-
-
-
-
-# TODO
-
-* Add a feature to be able to launch puppet run
-by a cron task. It seems to me a better way than
-a running daemon.
 
 
 
