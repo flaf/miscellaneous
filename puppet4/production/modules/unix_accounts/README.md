@@ -22,7 +22,7 @@ $users = { 'root' => { 'password'            => 'xxx',
                                                   'boo@home',
                                                 ],
                      }
-}
+         }
 
 $ssh_public_keys = { 'bob@foo'  => 'XXXXXXXXX...',
                      'joe@bar'  => 'XXXXXXXXX...',
@@ -39,13 +39,13 @@ For the root account, only the parameters `password`
 and `ssh_authorized_keys` are necessary. For this
 account, the rest is just ignored.
 
-For this other accounts, the parameters `ensure` and
+For the other accounts, the parameters `ensure` and
 `is_sudo` are optional. The `ensure` parameter can
 take 2 values: the string `'present'` or the string
-`'absent'` (to remove completely the account *and his
-home*). The default value is `'present'`.
+`'absent'` (to remove completely the account **and his
+home**). The default value is `'present'`.
 
-The `is_sudo` is a boolean parameter and its default
+The `is_sudo` parameter is a boolean and its default
 value is `false`.
 
 
@@ -53,11 +53,12 @@ value is `false`.
 
 # Data binding
 
-If the class is called without parameter, the module make a
+If the class is called without parameter, the module makes a
 lookup of the `unix_accounts` entry in hiera or in
 `environment.conf` to set the value of the `users` parameter
-and make a lookup of the `ssh_public_keys` entry to set the
+and makes a lookup of the `ssh_public_keys` entry to set the
 value of the `ssh_public_keys` parameter. If the class is
-called without any parameter, you must provide these data.
+called without any parameter, you must provide these two
+entries.
 
 
