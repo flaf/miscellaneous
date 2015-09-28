@@ -5,6 +5,67 @@ This module allows to install a Puppet4 server.
 
 
 
+# Usage:
+
+Here is examples:
+
+```puppet
+class { '::puppetserver':
+  puppet_memory      => '4g',
+  puppetdb_memory    => '1g',
+  profile            => 'autonomous',
+  modules_repository => 'http://puppetforge.domain.tld',
+  puppetdb_name      => 'puppet',
+  puppetdb_user      => 'puppet',
+  puppetdb_pwd       => '123456',
+  modules_versions   => {
+                          'author-modA' => '1.2.1',
+                          'author-modB' => '0.4.0',
+                        },
+}
+```
+
+The `puppet_memory` and `puppetdb_memory` parameter set
+the RAM available for the JVM of the puppetserver and the
+RAM available for the JVM of the puppetdb server. The
+default value of these parameters is `'1g'` (ie 1GB).
+Another value possible is `'512m'` for instance (ie
+512MB).
+
+The `profile` parameter is important. The two possible
+value for this parameter are `'client'` or `'autonomous'`:
+
+* If the value is `'autonomous'`, the puppetserver will
+be the Puppet CA and will be puppet client of itself.
+The puppetdb service will be installed too.
+
+* If the value is `'client'`, the puppetserver will be and
+will stay the client of its current puppetserver. The current
+puppetserver will be the puppet CA too. Then, the puppetdb
+service will not be installed this hosts (and the parameters
+related to Puppetdb will be ignored).
+
+
+The `modules_repository` parameter is the url address of
+a Puppet forge server requested by the puppetserver. The
+default value of this parameter is `''` (the empty string).
+In this case the puppetserver will request directly the
+offcial Puppetlabs forge.
+
+The `puppetdb_name`, `puppetdb_user` and `puppetdb_pwd`
+set the name of the PostgreSQL database, the PostreSQL
+user account and its password, PostgreSQL account used
+by the puppetdb service. The default values of theses
+parameters are `'puppet'`, `'pupppet'` and `sha1($::fqdn)`.
+
+
+The `modules_versions` is a hash like above to force the
+installation of specific modules with a specific version
+during the execution of the script `install-modules.puppet`.
+The default value of this parameter is `{}` (an emtpy hash)
+which means that there are no pinning of a specific version.
+
+
 # A security point
 
 The propagation of the CRL (Certificate Revocation List)

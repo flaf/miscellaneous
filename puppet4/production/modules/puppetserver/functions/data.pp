@@ -7,7 +7,7 @@ function puppetserver::data {
   $modules_repository      = ''
   $puppetdb_name           = 'puppet'
   $puppetdb_user           = 'puppet'
-  $puppetdb_pwd            = md5($::fqdn)
+  $puppetdb_pwd            = sha1($::fqdn)
   $modules_versions        = {} # no pinning by default
   $supported_distributions = [ 'trusty' ];
 
