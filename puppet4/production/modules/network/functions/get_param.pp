@@ -23,6 +23,14 @@ function network::get_param (
   } else {
     # We take the value of $param in the primary network of the first
     # candidate interface.
+    #
+    #
+    # TODO: it's probably possible to make this function smarter
+    #       and prefer to chose an interface which has an IP address
+    #       (if possible) instead of taking the first candidate
+    #       interface.
+    #
+    #
     $network_param = $interfaces[$ifaces_candidates[0]]['in_networks'][0]
     $result        = $inventory_networks[$network_param][$param]
   };
