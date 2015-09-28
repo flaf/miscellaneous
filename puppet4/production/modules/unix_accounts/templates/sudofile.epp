@@ -1,8 +1,12 @@
 <%- |$user| -%>
+<%-
+$user_upper = $user.upcase
+$cmd_alias = "CMD_NO_PWD_FOR_${user_upper}"
+-%>
 ### This file is managed by Puppet, don't edit it. ###
 
-Cmnd_Alias CMD_NO_PWD = /bin/su
+Cmnd_Alias <%= $cmd_alias %> = /bin/su
 
-<%= $user %> ALL = (root) NOPASSWD: CMD_NO_PWD
+<%= $user %> ALL = (root) NOPASSWD: <%= $cmd_alias %>
 
 

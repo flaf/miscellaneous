@@ -176,6 +176,45 @@ class unix_accounts (
 
     }
 
+    # Management of .bashrc.
+    if $ensure_account == 'present' or $user == 'root'  {
+
+        if $user == 'root' {
+          $homeuser = '/root'
+        } else {
+          $homeuser = "/home/${user}"
+        }
+
+        file_line { "edit-bashrc-of-${user}":
+          path    => "${homeuser}/.bashrc",
+          line    => ". ${homeuser}/.bashrc.puppet # Edited by Puppet.",
+          require => User[$user],
+        }
+
+        $bash_colors = {
+          # color  => number in bash (see the templates)
+          'red'    => '31',
+          'green'  => '32',
+          'yellow' => '33',
+          'blue'   => '34',
+          'purple' => '35',
+          'cyan'   => '36',
+          'white'  => '37',
+        }
+
+        file { "${homeuser}/.bashrc.puppet":
+          owner   => $user,
+          group   => $user,
+          mode    => '0644',
+          require => User[$user],
+          content => epp('unix_accounts/bashrc.puppet.epp',
+                         { 'bash_colors' => $bash_colors, }
+                        ),
+        }
+
+    }
+
+
   } # End of the loop of users.
 
 }

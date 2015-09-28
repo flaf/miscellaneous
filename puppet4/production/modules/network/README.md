@@ -65,7 +65,13 @@ for this module. See below for more details.
 
 The `restart` parameter is a boolean. If the value
 is `true`, then the network will be restarted after
-an update of the network configuration.
+an update of the network configuration. **It is not
+recommended to set this parameter to `true`**. With a
+basic network configuration (one interface with one IP
+address) it will probably work but with a more complicated
+network configuration (several interfaces with bridges
+etc.), this will certainly fail and you will lose the
+network connection.
 
 In the `interfaces` parameter, for each interface,
 you can put:

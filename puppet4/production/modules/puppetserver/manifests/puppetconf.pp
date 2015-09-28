@@ -407,6 +407,12 @@ disabled-service/certificate-authority-disabled-service"
     content => $git_ssh_wrapper_content,
   }
 
+  # it's just a convenience.
+  file { '/puppet':
+    ensure => link,
+    target => '/etc/puppetlabs/code/environments/production',
+  }
+
 }
 
 

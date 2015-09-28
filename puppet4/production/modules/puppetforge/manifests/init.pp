@@ -131,6 +131,8 @@ class puppetforge (
     owner   => 'root',
     group   => 'root',
     mode    => '644',
+    before  => Service['update-pp-modules'],
+    notify  => Service['update-pp-modules'],
     content => epp('puppetforge/giturls.conf.epp',
                    { 'modules_git_urls' => $modules_git_urls, }
                   ),
@@ -141,6 +143,8 @@ class puppetforge (
     owner   => 'root',
     group   => 'root',
     mode    => '755',
+    before  => Service['update-pp-modules'],
+    notify  => Service['update-pp-modules'],
     content => epp('puppetforge/update-pp-modules.epp',
                    {
                      'gitdir'                => $gitdir,

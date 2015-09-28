@@ -4,7 +4,7 @@
 # The loopback network interface.
 auto lo
 iface lo inet loopback
-<%- $interfaces.keys.sort.each |$interface| { -%>
+<%- $interfaces.keys.each |$interface| { -%>
 
   <%- $settings = $interfaces[$interface] -%>
   <%- if $settings.has_key('comment') { -%>
@@ -29,7 +29,7 @@ iface <%= $interface %> <%= $family %> <%= $settings[$family]['method'] %>
               max($memo, $entry)
             }
         -%>
-        <%- $settings[$family]['options'].keys.sort.each |$option| { -%>
+        <%- $settings[$family]['options'].keys.each |$option| { -%>
         <%- $option_justified = ::homemade::ljust($option, $max_opt, ' ') -%>
     <%= $option_justified %> <%= $settings[$family]['options'][$option] %>
         <%- } -%>
