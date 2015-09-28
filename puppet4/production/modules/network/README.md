@@ -270,9 +270,10 @@ The `domain` parameter is a string which sets the `domain`
 stanza in the file `/etc/resolv.conf`. The default value
 of this parameter is `$::domain`.
 
-The `search` is a non-empty array of non-empty strings
-which sets the `search` stanza in the file `/etc/resolv.conf`.
-The default value of this parameter is the value of:
+The `search` parameter is a non-empty array of non-empty
+strings which sets the `search` stanza in the file
+`/etc/resolv.conf`. The default value of this parameter is
+the value of:
 
 ```puppet
 $dns_search = ::network::get_param( $interfaces,
@@ -294,12 +295,12 @@ $dns_servers = ::network::get_param( $interfaces,
                                      $default_dns )
 ```
 
-The `local_resolver` parameter is a boolean. If true,
-the class will install unbound which listen on localhost.
-unbound will be a dns forwarder which forwards all DNS
-queries to the DNS servers of the `$nameservers` parameter.
-In this case, the file `/etc/resolv.conf` will be updated
-and the stanza below will be inserted:
+The `local_resolver` parameter is a boolean. If true, the
+class will install the unbound service which listens on
+localhost. unbound will be a DNS forwarder which will forward
+all DNS queries to the DNS servers of the `$nameservers`
+parameter. In this case, the file `/etc/resolv.conf` will be
+updated and the stanza below will be inserted:
 
 ```
 nameserver 127.0.0.1
@@ -309,11 +310,11 @@ The `timeout` parameter is an integer which sets the
 `timeout:` stanza in the file `/etc/resolv.conf`. Its
 default value is `5`.
 
-The `override_dhcp` parameter is a boolean. If a interface
-of the host in configured via DHCP, by default the file
-`/etc/resolv.conf` is not managed. If the parameter is set
-to `true`, the file will be managed even if a interface is
-configured via DHCP.
+The `override_dhcp` parameter is a boolean. If an interface
+of the host is configured via DHCP, by default the file
+`/etc/resolv.conf` is not managed. If this parameter is set
+to `true`, the file will be managed even if there is an
+interface configured via DHCP.
 
 
 
@@ -348,10 +349,10 @@ IP addresses and the values are arrays of host names.
 In the `entries` parameter, if an address begins with
 `@@`, the host entry will be exported with the tag
 given by the `from_tag` parameter and the host will
-retrieves all the hosts entries from the `from_tag`
+retrieve all the hosts entries from the `from_tag`
 tag.
 
-The default values of these parameters will be retrieved
+The default values of these two parameters will be retrieved
 from the `hosts` entry in hiera or in the `environment.conf`
 **if it exists**. Here is an example of `hosts` entry which
 matches with the call of the class above:
@@ -373,11 +374,11 @@ hosts:
 ```
 
 If the `hosts` entry doesn't exist in hiera, the default
-value of the `entries` parameter will be `{ '127.0.1.1' => [
-$::fqdn, $::hostname ] }` and the default value of the
-`from_tag` will be `''` (the empty string) which means that
-the host exports no hosts entry and retrieves no exported
-hosts entry.
+value of the `entries` parameter will be
+`{ '127.0.1.1' => [ $::fqdn, $::hostname ] }`
+and the default value of the `from_tag` will be `''` (the
+empty string) which means that the host exports no hosts
+entry and retrieves no exported hosts entry.
 
 
 
