@@ -6,6 +6,7 @@ class basic_packages (
 
   $packages = [ 'vim',
                 'gawk',
+                'bash-completion',
                 'less',
                 'lsb-release',
                 'tree',        # In Trusty, "tree" is in "universe".

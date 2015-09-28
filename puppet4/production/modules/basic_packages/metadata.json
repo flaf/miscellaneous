@@ -1,6 +1,6 @@
 {
   "name": "flaf-basic_packages",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "flaf",
   "summary": "Module to just install some basic packages",
   "license": "Apache-2.0",
