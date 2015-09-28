@@ -44,13 +44,14 @@ git repository used to installd the Puppet forge.
 Its default value is `'6f1b224a4e666c754876139f3643b22f3515f5e6'`
 which points to the version 1.8.0 of the software.
 
-The `remote_forge` parameter is the url of the forge used
-by the server. Like a DNS server, if the Puppet forge server
-receives a request for a module which is not hosted by it,
-it forwards the request to this remove forge. The default
-value of this parameter is `'https://forgeapi.puppetlabs.com'`
-which is the official Puppetlabs forge. Normally, you
-should never change this value.
+The `remote_forge` parameter is the url of the remote forge
+used by the server. Like a DNS server, if the Puppet forge
+server receives a request for a module which is not hosted
+by it, it forwards the request to this remove forge. The
+default value of this parameter is
+`'https://forgeapi.puppetlabs.com'` which is the official
+Puppetlabs forge. Normally, you should never change this
+value.
 
 The `address` and the `port` parameters allow to set the
 address used by the Puppet forge service (which is a simple
