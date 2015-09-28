@@ -3,13 +3,13 @@
 #       git server and so trigger an update locally.
 #
 class puppetforge (
-  String[1]           $git_url,
+  String[1]           $puppetforge_git_url,
   String[1]           $commit_id,
   String[1]           $remote_forge,
   String[1]           $address,
   Integer[1]          $port,
   Integer[1]          $pause,
-  Array[String[1]]    $giturls,
+  Array[String[1]]    $modules_git_urls,
   Array[String[1], 1] $supported_distributions,
 ) {
 
@@ -40,7 +40,7 @@ class puppetforge (
   $script_install = @("END")
     [ ! -d '/opt' ] && mkdir '/opt'
     cd '/opt'
-    { git clone '$git_url' puppetforge-server && cd '${workdir}'; } || exit 1
+    { git clone '$puppetforge_git_url' puppetforge-server && cd '${workdir}'; } || exit 1
     git reset --hard '${commit_id}'
     bundle install || exit 1
     echo "Puppet forge server installed."
@@ -132,7 +132,7 @@ class puppetforge (
     group   => 'root',
     mode    => '644',
     content => epp('puppetforge/giturls.conf.epp',
-                   { 'giturls' => $giturls, }
+                   { 'modules_git_urls' => $modules_git_urls, }
                   ),
     }
 

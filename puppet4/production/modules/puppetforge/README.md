@@ -14,27 +14,27 @@ install Puppet modules,
 Here is an example:
 
 ```puppet
-$giturls = [
-             'git@github.com/flaf/foo1.git',
-             'git@github.com/flaf/foo2.git',
-             'git@github.com/flaf/foo3.git',
-           ]
+$modules_git_urls = [
+                      'git@github.com/flaf/foo1.git',
+                      'git@github.com/flaf/foo2.git',
+                      'git@github.com/flaf/foo3.git',
+                    ]
 
 class { '::puppetforge':
-  git_url      => 'http://github.com/unibet/puppet-forge-server',
-  commit_id    => '6f1b224a4e666c754876139f3643b22f3515f5e6',
-  remote_forge => 'https://forgeapi.puppetlabs.com',
-  address      => '0.0.0.0',
-  port         => 8080,
-  giturls      => $giturls,
-  pause        => 300,
+  puppetforge_git_url => 'http://github.com/unibet/puppet-forge-server',
+  commit_id           => '6f1b224a4e666c754876139f3643b22f3515f5e6',
+  remote_forge        => 'https://forgeapi.puppetlabs.com',
+  address             => '0.0.0.0',
+  port                => 8080,
+  modules_git_urls    => $modules_git_urls,
+  pause               => 300,
 }
 ```
 
 
 # Data binding
 
-The `git_url` is the url of the repository used to
+The `puppetforge_git_url` is the url of the repository used to
 installed the Puppet forge. The default value of this
 parameter is `'http://github.com/unibet/puppet-forge-server'`
 and you should probably never change this value.
@@ -58,7 +58,7 @@ http service). The default value of these parameters are
 `'0.0.0.0'` (listen to all interfaces) and `8080` (an
 integer).
 
-The `giturls` parameter is an array of non-empty strings
+The `modules_git_urls` parameter is an array of non-empty strings
 which defines the git repositories of the modules retrieved
 by the Puppet forge. The Puppet forge server will apply
 these modules to the puppetserver (clients of the Puppet
@@ -69,7 +69,7 @@ the module version N** (the Puppet forge can host several
 versions of a module).
 
 The Puppet forge retrieves new commits (via a `git pull`)
-of the modules listed in `giturls` every `pause` seconds.
+of the modules listed in `modules_git_urls` every `pause` seconds.
 The default value of the `pause` parameter is 300 (seconds).
 
 

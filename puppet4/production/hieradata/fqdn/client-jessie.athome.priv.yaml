@@ -16,7 +16,7 @@ interfaces:
 
 mcollective::middleware::admin_pwd: '%{hiera("_middleware_admin_pwd_")}'
 
-#puppetforge::giturls:
+#puppetforge::modules_git_urls:
 #  - 'http://github.com/flaf/flaf-moda.git'
 
 _middleware_admin_pwd_: >
