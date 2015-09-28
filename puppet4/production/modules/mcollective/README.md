@@ -133,18 +133,18 @@ middleware server. The default value is the string
 the host". The `stomp_ssl_port` parameter must be an integer
 and its default value is `61614`. The `ssl_versions`
 parameter is an array of non-empty strings which gives the
-versions of TLS/SSL supported by the middleware server. The
+versions of TLS/SSL accepted by the middleware server. The
 default value of this parameter is `['tlsv1.2', 'tlsv1.1']`.
 The value `[]` (ie an empty array) is possible for this
-parameter. In this case, no TLS/SSL version is put in the
-RabbitMQ configuration so that the supported versions are
-the default supported versions of the current RabbitMQ
-server (and it depends on the version of the installed
-software).
+parameter. In this case, no TLS/SSL version is explicitly
+put in the RabbitMQ configuration so that the accepted
+versions are the default accepted versions of the current
+RabbitMQ server (and it depends on the version of the
+installed software).
 
 The `puppet_ssl_dir` parameter is the ssl directory of the
 puppet installation. Indeed, this class installs a
-middleware server with 2-way SSL connection and it uses the
+middleware server with 2-way SSL connections and it uses the
 certificate, the private key and the CA certificate of the
 puppet agent (which is present in the `$ssldir` directory of
 the puppet installation). The default value of this
@@ -156,7 +156,7 @@ The `admin_pwd` parameter is the password of the `admin`
 rabbitMQ account. Its default value is `sha1($::fqdn)`.
 
 The `mcollective_pwd` is the password of the `mcollective`
-rabbitMQ account. For the default values of this parameter,
+rabbitMQ account. For the default value of this parameter,
 there is a lookup in hiera or in the `environment.conf`.
 **You must provide this entry**:
 
@@ -197,7 +197,7 @@ class { '::mcollective::server':
 
 ## Data binding
 
-Some of theses parameters will be searched via a lookup in
+Some of these parameters will be searched via a lookup in
 hiera or in the `environment.conf` and **you must provide
 these entries**:
 
@@ -211,9 +211,9 @@ mcollective:
 ```
 
 The `server_private_key` and `server_public_key` parameters
-are non-empty strings to provide the shared mcollective
-private and public keys. The default values of these
-parameters are set in the hiera entries above.
+are non-empty strings to provide mcollective private and
+public keys shared by all the servers. The default values of
+these parameters are set in the hiera entries above.
 
 To generate these keys, you can execute these commands:
 
@@ -229,7 +229,7 @@ The `connector` parameter is the connector used by mcollective
 to connect to the middleware server. The authorized values are
 only `rabbitmq` or `activemq`. Its default value is `rabbitmq`.
 
-The `$middleware_address` parameter is the address of the
+The `middleware_address` parameter is the address of the
 middleware server (an IP, a fqdn etc). The default value
 of this parameter is set in the hiera entries above.
 
@@ -243,7 +243,7 @@ parameter is set in the hiera entries above.
 
 The `mco_tag` parameter is a non-empty string which gives the
 name of the tag used to import public keys of the
-mcollective client. Indeed, the mcollective servers need the
+mcollective clients. Indeed, the mcollective servers need the
 public keys of each authorized client in its configuration.
 Each client will export its public key with a specific tag
 and the servers will retrieve these public keys via the same
@@ -315,10 +315,9 @@ server. But RabbitMQ seems to not support certificate revocation
 list (crl). Is it the case with Activemq? Activemq is in Ubuntu
 repositories now.
 
-* The installations of the mcollective `shell` plugin and the
-mcollective `puppet` plugin are currently missing because no
-package is available in the PC1 collection. But it's expected
-to add these package in PC1
+* The mcollective `shell` plugin and the mcollective `puppet` plugin
+are not currently packaged in the PC1 APT repository. But it's expected
+to add these packages in PC1
 (see [here](https://groups.google.com/forum/#!topic/puppet-users/XSSXGY_rmy0)).
 
 
