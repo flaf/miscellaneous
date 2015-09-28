@@ -94,8 +94,8 @@ Here is an example:
 
 ```puppet
 class { '::repository::postgresql':
-  url                => 'http://apt.postgresql.org/pub/repos/apt/',
-  src                => false,
+  url => 'http://apt.postgresql.org/pub/repos/apt/',
+  src => false,
 }
 ```
 
