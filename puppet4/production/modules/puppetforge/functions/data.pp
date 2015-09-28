@@ -1,7 +1,7 @@
 function puppetforge::data {
 
   $git_url            = 'http://github.com/unibet/puppet-forge-server'
-  # This is the commit which corresponds to the 1.8.0 of this
+  # This is the commit which corresponds to the version 1.8.0 of this
   # software. It seems to work well.
   $commit_id          = '6f1b224a4e666c754876139f3643b22f3515f5e6'
   $remote_forge       = 'https://forgeapi.puppetlabs.com'
