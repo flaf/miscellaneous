@@ -6,8 +6,8 @@ function network::get_param (
 ) {
 
   # Create an array of interface names among $interfaces
-  # for each interface in a network where $param
-  # key is defined.
+  # where each interface has a primary network and where
+  # $param key is defined in this primary network.
   $ifaces_candidates  = $interfaces.keys.sort.filter |$iface| {
     if $interfaces[$iface].has_key('in_networks') {
       $primary_network = $interfaces[$iface]['in_networks'][0];
@@ -21,6 +21,8 @@ function network::get_param (
   if $ifaces_candidates.empty {
     $result = $default
   } else {
+    # We take the value of $param in the primary network of the first
+    # candidate interface.
     $network_param = $interfaces[$ifaces_candidates[0]]['in_networks'][0]
     $result        = $inventory_networks[$network_param][$param]
   };

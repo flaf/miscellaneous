@@ -14,6 +14,7 @@ function network::data {
                          '8.8.8.8',
                          '8.8.4.4',
                         ]
+  $default_timeout    = 5
   $default_ntp        = [
                          '0.debian.pool.ntp.org',
                          '1.debian.pool.ntp.org',
@@ -59,7 +60,7 @@ function network::data {
     network::resolv_conf::domain                  => $::domain,
     network::resolv_conf::search                  => $dns_search,
     network::resolv_conf::nameservers             => $dns_servers,
-    network::resolv_conf::timeout                 => 2,
+    network::resolv_conf::timeout                 => $default_timeout,
     network::resolv_conf::local_resolver          => $local_resolver,
     network::resolv_conf::override_dhcp           => $override_dhcp,
     network::resolv_conf::supported_distributions => $supported_distribs,

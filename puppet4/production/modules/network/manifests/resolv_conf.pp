@@ -44,7 +44,7 @@ class network::resolv_conf (
     # After the mv command, the file will not be retrieved
     # by unbound.
     $file_auto_trust = '/etc/unbound/unbound.conf.d/root-auto-trust-anchor-file.conf'
-    $cmd = "mv '${file_auto_trust}' '${file_auto_trust}.disabled'"
+    $cmd             = "mv '${file_auto_trust}' '${file_auto_trust}.disabled'"
 
     exec { 'unbound-disable-root-auto-trust':
       path    => '/usr/sbin:/usr/bin:/sbin:/bin',

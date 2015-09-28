@@ -241,6 +241,147 @@ call of the class given in the "complex" example in the
 include '::network'
 ```
 
+
+
+
+# The `network::resolv_conf` class
+
+This class manages the file `/etc/resolv.conf`.
+
+## Usage
+
+Here is an example:
+
+```puppet
+class { '::network::resolv_conf':
+  domain         => $::domain,
+  search         => $::domain,
+  nameservers    => [ '8.8.8.8', '8.8.4.4' ],
+  local_resolver => true,
+  timeout        => 5,
+  override_dhcp  => false,
+}
+```
+
+
+## Data binding
+
+The `domain` parameter is a string which sets the `domain`
+stanza in the file `/etc/resolv.conf`. The default value
+of this parameter is `$::domain`.
+
+The `search` is a non-empty array of non-empty strings
+which sets the `search` stanza in the file `/etc/resolv.conf`.
+The default value of this parameter is the value of:
+
+```puppet
+$dns_search = ::network::get_param( $interfaces,
+                                    $inventory_networks,
+                                    'dns_search',
+                                    [ $::domain ] )
+```
+
+The `nameservers` parameter is a non-empty array of
+non-empty strings which sets the `nameserver` stanzas
+in the `/etc/resolv.conf`. The default value of this
+parameter is the value of:
+
+```puppet
+$default_dns = [ '8.8.8.8', '8.8.4.4' ]
+$dns_servers = ::network::get_param( $interfaces,
+                                     $inventory_networks,
+                                     'dns_servers',
+                                     $default_dns )
+```
+
+The `local_resolver` parameter is a boolean. If true,
+the class will install unbound which listen on localhost.
+unbound will be a dns forwarder which forwards all DNS
+queries to the DNS servers of the `$nameservers` parameter.
+In this case, the file `/etc/resolv.conf` will be updated
+and the stanza below will be inserted:
+
+```
+nameserver 127.0.0.1
+```
+
+The `timeout` parameter is an integer which sets the
+`timeout:` stanza in the file `/etc/resolv.conf`. Its
+default value is `5`.
+
+The `override_dhcp` parameter is a boolean. If a interface
+of the host in configured via DHCP, by default the file
+`/etc/resolv.conf` is not managed. If the parameter is set
+to `true`, the file will be managed even if a interface is
+configured via DHCP.
+
+
+
+
+# The `network::hosts` class
+
+This class manages the file `/etc/hosts`.
+
+
+## Usage
+
+Here is an example:
+
+```puppet
+$address_eth0 = $::facts['networking']['interfaces']['eth0']['bindings'][0]['address']
+
+class { '::network::hosts':
+  entries  => {
+               '127.0.1.1'         => [ $::fqdn, $::hostname ],
+               "@@${address_eth0}" => [ "monitor-1.${::domain}", 'monitor-1' ],
+              },
+  from_tag => 'ceph-cluster',
+}
+```
+
+## Data binding
+
+The `entries` parameter is a hash where the keys are
+IP addresses and the values are arrays of host names.
+
+
+In the `entries` parameter, if an address begins with
+`@@`, the host entry will be exported with the tag
+given by the `from_tag` parameter and the host will
+retrieves all the hosts entries from the `from_tag`
+tag.
+
+The default values of these parameters will be retrieved
+from the `hosts` entry in hiera or in the `environment.conf`
+**if it exists**. Here is an example of `hosts` entry which
+matches with the call of the class above:
+
+```yaml
+# Here, we use the interpolation token in hiera:
+#
+#   http://docs.puppetlabs.com/hiera/3.0/variables.html
+#
+hosts:
+  entries:
+    '127.0.1.1':
+      - '%{::fqdn}'
+      - '%{::hostname}'
+    '@@%{::facts.networking.interfaces.eth0.bindings.0.address}':
+      - 'monitor-1.%{::domain}'
+      - 'monitor-1'
+  tag: 'ceph-cluster'
+```
+
+If the `hosts` entry doesn't exist in hiera, the default
+value of the `entries` parameter will be `{ '127.0.1.1' => [
+$::fqdn, $::hostname ] }` and the default value of the
+`from_tag` will be `''` (the empty string) which means that
+the host exports no hosts entry and retrieves no exported
+hosts entry.
+
+
+
+
 # The `network::ntp` class
 
 ## Usage
@@ -333,7 +474,8 @@ $dump = ::network::dump_cidr('172.31.3.4/255.255.240.0')
 
 # After this 2 equivalent calls of the function,
 # the value of the $dump variable will be:
-{ address     => '172.31.3.4',
+{
+  address     => '172.31.3.4',
   network     => '172.31.0.0',
   broadcast   => '172.31.15.255',
   netmask     => '255.255.240.0',
@@ -350,5 +492,28 @@ address, the function will raise a `ParseError` exception.
 
 
 
+# The `::network::get_param()` function
 
+Here is an example:
+
+```puppet
+$dns_servers = ::network::get_param( $interfaces,
+                                     $inventory_networks,
+                                     'dns_servers',
+                                     $default )
+```
+
+The `$interfaces` and `$inventory_networks` arguments are
+hashes with the structure described above. The function
+creates an array A of interfaces among `$interfaces` where
+each interface has a primary network and where the
+`'dns_servers'` key is defined in this primary network. If
+the array A is empty, the function returns `$default`, else
+the function returns the value of the `'dns_servers'` key in
+the primary network of the first interface of the array A.
+
+**Simple and usual case :** if the host has just only one
+interface in a only one network N, the function will return
+the value of the `'dns_servers'` key in the network N if
+this key exists, else the function will return `$default`.
 

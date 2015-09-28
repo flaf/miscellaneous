@@ -19,14 +19,6 @@ mcollective::middleware::admin_pwd: '%{hiera("_middleware_admin_pwd_")}'
 #puppetforge::giturls:
 #  - 'http://github.com/flaf/flaf-moda.git'
 
-#hosts:
-#  tag: 'realm-foo'
-#  entries:
-#    '@@%{::facts.networking.interfaces.eth0.bindings.0.address}':
-#      - '%{::fqdn}'
-#      - '%{::hostname}'
-
-
 _middleware_admin_pwd_: >
   ENC[PKCS7,MIIBiQYJKoZIhvcNAQcDoIIBejCCAXYCAQAxggEhMIIBHQIBADAFMAACAQEw
   DQYJKoZIhvcNAQEBBQAEggEAk3faxDlaNIRYEr94c6bIixIGGDAbubmaHrx5
