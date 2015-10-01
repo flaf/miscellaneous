@@ -95,4 +95,10 @@ by its "autonomous" puppetserver, the clients of puppet P
 will always be able to do a puppet run (with a request to
 puppet P) without any error.
 
+* Create and use a specific account as owner of the puppet
+code (hieradata and modules). Modify `install-modules.puppet`
+to be executable for this account. If the command is run
+by root, make a chown of the directory. Probably need to
+change the Unix rights of the eyaml keys.
+
 

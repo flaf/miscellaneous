@@ -1,0 +1,9 @@
+""" This file is managed by Puppet, don't edit it.
+
+" Turn on color syntax highlighting.
+syntax on
+
+" Display the status line.
+set laststatus=2
+
+

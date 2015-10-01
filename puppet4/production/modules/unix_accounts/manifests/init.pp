@@ -204,7 +204,7 @@ class unix_accounts (
         group   => $user,
         mode    => '0644',
         require => User[$user],
-        content => "syntax on\n\n",
+        source  => 'puppet:///modules/unix_accounts/vimrc',
       }
 
     }
