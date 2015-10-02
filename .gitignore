@@ -1,4 +1,4 @@
 puppet/production/doc/created.rid
-puppet4/production/modules/stdlib/
-puppet4/production/modules/apt/
+puppet/modules/stdlib/
+puppet/modules/apt/
 
