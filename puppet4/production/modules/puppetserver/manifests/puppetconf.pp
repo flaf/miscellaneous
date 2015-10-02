@@ -34,7 +34,7 @@ class puppetserver::puppetconf {
   require '::repository::puppet'
   # git is to be able to change modules directly in the
   # puppetserver.
-  ensure_packages( ['puppetserver', 'puppetdb-termini', 'git'],
+  ensure_packages( ['puppetserver', 'puppetdb-termini', 'git', 'jq'],
                    { ensure => present, }
                  )
 
