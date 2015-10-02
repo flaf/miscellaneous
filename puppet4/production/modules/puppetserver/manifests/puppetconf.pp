@@ -34,7 +34,7 @@ class puppetserver::puppetconf {
   require '::repository::puppet'
   # git is to be able to change modules directly in the
   # puppetserver.
-  ensure_packages( ['puppetserver', 'puppetdb-termini', 'git', 'jq'],
+  ensure_packages( ['puppetserver', 'puppetdb-termini', 'git'],
                    { ensure => present, }
                  )
 
@@ -107,6 +107,22 @@ class puppetserver::puppetconf {
     content => epp('puppetserver/install-modules.puppet.epp',
                    {
                      'environment_path' => $environment_path,
+                     'puppet_bin_dir'   => $puppet_bin_dir,
+                     'modules_versions' => $modules_versions,
+                   }
+                  ),
+    # No need to restart the puppetserver here.
+  }
+
+  file { "/usr/local/sbin/update-modules.puppet":
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0750',
+    before  => Service['puppetserver'],
+    content => epp('puppetserver/update-modules.puppet.epp',
+                   {
+                     'modules_path'     => $modules_path,
                      'puppet_bin_dir'   => $puppet_bin_dir,
                      'modules_versions' => $modules_versions,
                    }

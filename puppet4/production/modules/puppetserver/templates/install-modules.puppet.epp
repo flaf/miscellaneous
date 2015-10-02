@@ -74,8 +74,12 @@ end
 
 # Handle of pinning.
 modules_versions = {}
-<%- $modules_versions.each |$module_name, $version| { -%>
+<%- if $modules_versions.empty { -%>
+# No pinning defined.
+<%- } else { -%>
+  <%- $modules_versions.each |$module_name, $version| { -%>
 modules_versions['<%= $module_name %>'] = '<%= $version %>'
+  <%- } -%>
 <%- } -%>
 
 # Installation of the modules.
