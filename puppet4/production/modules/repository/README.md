@@ -102,7 +102,32 @@ class { '::repository::postgresql':
 ## Parameters and default values
 
 The default values of the parameters are exactly
-the value of the call above.
+the values of the call above.
+
+
+
+
+# The `repository::ceph` class
+
+## Usage
+
+Here is an example:
+
+```puppet
+class { '::repository::ceph':
+  url     => 'http://ceph.com',
+  version => 'hammer'
+  src     => false,
+}
+```
+
+## Parameters and default values
+
+The default values of the parameters are exactly
+the values of the call above. The complete url
+used by APT is `"${url}/debian-${version}"` which
+is the nomenclature used by the official Ceph
+repository.
 
 
 

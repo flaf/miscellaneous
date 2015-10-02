@@ -7,7 +7,7 @@ class repository::postgresql (
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
-  $key         = 'B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8'
+  $key = 'B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8'
 
   apt::source { 'postgresql':
     comment     => 'PostgreSQL Repository.',

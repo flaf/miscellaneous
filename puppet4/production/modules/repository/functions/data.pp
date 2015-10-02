@@ -18,7 +18,8 @@ function repository::data {
     fail("The `puppet` entry must have a `collection` key.")
   }
 
-  $distribs = [ 'trusty', 'jessie' ]
+  $distribs     = [ 'trusty', 'jessie' ]
+  $ceph_version = 'hammer'
 
   # Dedicated stage for this module.
   $stage = 'repository';
@@ -41,6 +42,12 @@ function repository::data {
     repository::postgresql::src                     => false,
     repository::postgresql::supported_distributions => ['trusty'],
     repository::postgresql::stage                   => $stage,
+
+    repository::ceph::url                     => 'http://ceph.com',
+    repository::ceph::version                 => $ceph_version,
+    repository::ceph::src                     => false,
+    repository::ceph::supported_distributions => $distribs,
+    repository::ceph::stage                   => $stage,
   }
 
 }
