@@ -1,0 +1,50 @@
+<%- |
+  $modules_path,
+  $puppet_bin_dir,
+  $modules_versions,
+| -%>
+#!<%= $puppet_bin_dir %>/ruby
+
+### This file is managed by Puppet, don't edit it. ###
+
+require 'json'
+
+PUPPET_BIN_DIR = '<%= $puppet_bin_dir %>'
+MODULES_DIR    = '<%= $modules_path %>'
+
+metadata_array = Dir.glob("#{MODULES_DIR}/*/metadata.json")
+
+if metadata_array.empty?
+    puts "Sorry, no modules with metadata.json installed."
+    puts "Action aborted."
+    exit(1)
+end
+
+# Handle of pinning.
+modules_versions = {}
+<%- if $modules_versions.empty { -%>
+# No pinning defined.
+<%- } else { -%>
+  <%- $modules_versions.each |$module_name, $version| { -%>
+modules_versions['<%= $module_name %>'] = '<%= $version %>'
+  <%- } -%>
+<%- } -%>
+
+
+metadata_array.each do |metadata|
+
+    metadata_file = File.read(metadata)
+    metadata_hash = JSON.parse(metadata_file)
+    module_name   = metadata_hash['name']
+
+  cmd = "<%= #{PUPPET_BIN_DIR}/puppet module upgrade '#{module_name}'"
+  if modules_versions.include?(module_name)
+    version = modules_versions[module_name]
+    cmd = "#{cmd} --version '#{version}'"
+  end
+    puts "Run this command => #{cmd}"
+    system cmd
+
+end
+
+
