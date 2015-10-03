@@ -45,9 +45,9 @@ metadata_array.each do |metadata|
   else
     version = 'latest'
   end
-    puts "==== #{module_name} / update to #{version} ===="
-    puts "Run this command => #{cmd}"
-    system cmd
+  puts "==== #{module_name} / update to #{version} ===="
+  puts "Run this command => #{cmd}"
+  system cmd
 
 end
 

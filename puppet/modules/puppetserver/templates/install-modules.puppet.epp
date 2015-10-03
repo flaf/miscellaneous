@@ -84,13 +84,17 @@ modules_versions['<%= $module_name %>'] = '<%= $version %>'
 
 # Installation of the modules.
 modules_array.each do |mod|
+  puts ""
   cmd = "<%= $puppet_bin_dir %>/puppet module install '#{mod}'"
   if modules_versions.include?(mod)
     version = modules_versions[mod]
     cmd = "#{cmd} --version '#{version}'"
+  else
+    version = 'latest'
   end
-    puts "Run this command => #{cmd}"
-    system cmd
+  puts "==== #{module_name} / install version #{version} ===="
+  puts "Run this command => #{cmd}"
+  system cmd
 end
 
 
