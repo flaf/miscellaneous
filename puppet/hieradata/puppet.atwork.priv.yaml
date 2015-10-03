@@ -1,0 +1,47 @@
+---
+enc_included_classes:
+  - [ 'flaf', '::role_generic' ]
+  - [ 'flaf', '::puppetserver' ]
+enc_datacenter: 'vboxwork'
+
+# Important: we disable the management of puppet.conf
+# by the "puppetagent" module to avoid that the puppet.conf
+# file is managed twice (by the "puppetserver" module and
+# the "puppetagent" module.
+puppetagent::manage_puppetconf: false
+
+puppetserver::puppetdb_memory: '512m'
+puppetserver::puppet_memory: '1g'
+puppetserver::profile: 'autonomous'
+puppetserver::modules_repository: 'http://puppetforge.lss1.backbone.education:8080'
+puppetserver::puppetdb_pwd: '%{hiera("_puppetdb_pwd_")}'
+
+interfaces:
+  eth0:
+    macaddress: '08:00:27:ad:c9:17'
+    inet:
+      method: 'dhcp'
+
+
+
+
+####################################
+### Long values referenced above ###
+####################################
+
+
+_puppetdb_pwd_: >
+    ENC[PKCS7,MIIBeQYJKoZIhvcNAQcDoIIBajCCAWYCAQAxggEhMIIBHQIBADAFMAACAQEw
+    DQYJKoZIhvcNAQEBBQAEggEAacdBAnqAXcgqMI5ssI0jl6Q56udh4qmF9pWv
+    PaJUr3cjZbQy28WwZvma+rOJlMePKfTgsExFVV0UAUilHSecLBpPgYWCgO0k
+    K8fVjhF0IoliC0JNx9zqY12HUnbb9/KSfLXLoYRaS8LCfvvi44q8Kh7WHF6s
+    uhE8201vNFFZzqfdMa4gCAwQxiMzkss6VLESgzRH5SQ7VRqnNkrJl4HUmGoP
+    9usqEuc4XU4J58A2IhBkiPqaj39g+hWmWPCZ4vC7mfG7j/RiD+SLBVAA/cNO
+    lC5h19j3h/ZqPtayd9uZsYl1mFKTAXT5MwC7k/bYs7i7dzQ5EgFRYcYaKeWk
+    7ZCmvDA8BgkqhkiG9w0BBwEwHQYJYIZIAWUDBAEqBBAo19V/FAsE0boEKIMx
+    NnWegBBqYg5YGwqZjCIB5RXum3Yd]
+
+
+
+
+
