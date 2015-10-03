@@ -37,10 +37,14 @@ metadata_array.each do |metadata|
     metadata_hash = JSON.parse(metadata_file)
     module_name   = metadata_hash['name']
 
+  puts ""
   cmd = "<%= #{PUPPET_BIN_DIR}/puppet module upgrade '#{module_name}'"
   if modules_versions.include?(module_name)
     version = modules_versions[module_name]
     cmd = "#{cmd} --version '#{version}'"
+    puts "==== Module #{module_name} pinned version #{version} ===="
+  else
+    puts "==== Module #{module_name} ===="
   end
     puts "Run this command => #{cmd}"
     system cmd
