@@ -42,10 +42,10 @@ metadata_array.each do |metadata|
   if modules_versions.include?(module_name)
     version = modules_versions[module_name]
     cmd = "#{cmd} --version '#{version}'"
-    puts "==== Module #{module_name} pinned version #{version} ===="
   else
-    puts "==== Module #{module_name} ===="
+    version = 'latest'
   end
+    puts "==== #{module_name} / update to #{version} ===="
     puts "Run this command => #{cmd}"
     system cmd
 
