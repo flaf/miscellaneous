@@ -31,8 +31,8 @@ unix_accounts:
     password: '%{hiera("_root_unix_pwd_")}'
     ssh_authorized_keys:
       - 'root@router.athome.priv'
+      - 'root@router.atwork.priv'
       - 'francois@flpc.athome.priv'
-      - 'francois@flpc.atwork.priv'
 
   flaf:
     ensure: 'present'
@@ -40,6 +40,7 @@ unix_accounts:
     is_sudo: true
     ssh_authorized_keys:
       - 'root@router.athome.priv'
+      - 'root@router.atwork.priv'
       - 'francois@flpc.athome.priv'
 
 puppetagent::ca_server: 'middleware.%{::domain}'
