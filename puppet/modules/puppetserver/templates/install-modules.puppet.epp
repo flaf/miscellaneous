@@ -9,8 +9,9 @@
 
 require 'yaml'
 
-ENV_DIR = '<%= $environment_path %>'
-yamls_array = Dir.glob("#{ENV_DIR}/production/hieradata/fqdn/*.yaml")
+ENV_DIR        = '<%= $environment_path %>'
+PUPPET_BIN_DIR = '<%= $puppet_bin_dir %>'
+yamls_array    = Dir.glob("#{ENV_DIR}/production/hieradata/fqdn/*.yaml")
 
 if yamls_array.empty?
     puts "Sorry, in hieradata in production environment, there is " \
@@ -85,7 +86,7 @@ modules_versions['<%= $module_name %>'] = '<%= $version %>'
 # Installation of the modules.
 modules_array.each do |mod|
   puts ""
-  cmd = "<%= $puppet_bin_dir %>/puppet module install '#{mod}'"
+  cmd = "#{PUPPET_BIN_DIR}/puppet module install '#{mod}'"
   if modules_versions.include?(mod)
     version = modules_versions[mod]
     cmd = "#{cmd} --version '#{version}'"
@@ -96,5 +97,9 @@ modules_array.each do |mod|
   puts "Run this command => #{cmd}"
   system cmd
 end
+
+puts ""
+puts "==== Summary ===="
+system "#{PUPPET_BIN_DIR}/puppet module list"
 
 

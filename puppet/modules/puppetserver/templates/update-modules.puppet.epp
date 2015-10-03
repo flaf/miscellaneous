@@ -32,11 +32,9 @@ modules_versions['<%= $module_name %>'] = '<%= $version %>'
 
 
 metadata_array.each do |metadata|
-
-    metadata_file = File.read(metadata)
-    metadata_hash = JSON.parse(metadata_file)
-    module_name   = metadata_hash['name']
-
+  metadata_file = File.read(metadata)
+  metadata_hash = JSON.parse(metadata_file)
+  module_name   = metadata_hash['name']
   puts ""
   cmd = "#{PUPPET_BIN_DIR}/puppet module upgrade '#{module_name}'"
   if modules_versions.include?(module_name)
@@ -48,7 +46,10 @@ metadata_array.each do |metadata|
   puts "==== Module [#{module_name}], update to #{version} ===="
   puts "Run this command => #{cmd}"
   system cmd
-
 end
+
+puts ""
+puts "==== Summary ===="
+system "#{PUPPET_BIN_DIR}/puppet module list"
 
 
