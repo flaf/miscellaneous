@@ -38,7 +38,7 @@ metadata_array.each do |metadata|
     module_name   = metadata_hash['name']
 
   puts ""
-  cmd = "<%= #{PUPPET_BIN_DIR}/puppet module upgrade '#{module_name}'"
+  cmd = "#{PUPPET_BIN_DIR}/puppet module upgrade '#{module_name}'"
   if modules_versions.include?(module_name)
     version = modules_versions[module_name]
     cmd = "#{cmd} --version '#{version}'"
