@@ -16,7 +16,7 @@ puppetserver::puppet_memory: '1g'
 puppetserver::profile: 'autonomous'
 puppetserver::modules_repository: 'http://puppetforge.lss1.backbone.education:8080'
 puppetserver::modules_versions:
-  flaf-network: '0.2.0'
+  flaf-role_generic: '0.1.0'
 
 network::resolv_conf::override_dhcp: true
 network::restart: true

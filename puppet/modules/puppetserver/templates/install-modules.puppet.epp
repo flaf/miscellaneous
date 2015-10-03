@@ -92,7 +92,7 @@ modules_array.each do |mod|
   else
     version = 'latest'
   end
-  puts "==== #{module_name} / install version #{version} ===="
+  puts "==== Module [#{mod}], installation version #{version} ===="
   puts "Run this command => #{cmd}"
   system cmd
 end

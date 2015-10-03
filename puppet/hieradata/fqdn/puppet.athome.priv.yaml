@@ -15,7 +15,7 @@ puppetserver::puppetdb_memory: '512m'
 puppetserver::profile: 'autonomous'
 puppetserver::modules_repository: 'http://client-jessie:8080'
 puppetserver::modules_versions:
-  flaf-network: '0.2.0'
+  flaf-role_generic: '0.1.0'
 
 network::resolv_conf::override_dhcp: true
 network::restart: true
