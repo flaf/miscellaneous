@@ -47,7 +47,7 @@ puppet:
   pinning_agent_version: '1.2.4-*'
 
 mcollective:
-  middleware_address: '172.31.14.6'
+  middleware_address: 'middleware.%{::domain}'
   middleware_mcollective_pwd: "%{hiera('_middleware_mcollective_pwd_')}"
   server_private_key: "%{hiera('_mcollective_server_private_key_')}"
   server_public_key: "%{hiera('_mcollective_server_public_key_')}"
