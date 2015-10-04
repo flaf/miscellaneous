@@ -1,0 +1,31 @@
+### This file is managed by Puppet, don't edit it. ###
+FastCgiExternalServer <%= @cmd_fcgi %> -socket /var/run/ceph/<%= @cluster_name %>.<%= @account %>.fastcgi.sock
+
+<VirtualHost *:80>
+
+    ServerName <%= scope['::fqdn'] %>
+    ServerAlias *.<%= scope['::fqdn'] %>
+    ServerAdmin <%= @admin_email %>
+    DocumentRoot /var/www
+    RewriteEngine On
+    RewriteRule  ^/(.*) /<%= @bin %>?%{QUERY_STRING} [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]
+
+    <IfModule mod_fastcgi.c>
+    <Directory /var/www>
+            Options +ExecCGI
+            AllowOverride All
+            SetHandler fastcgi-script
+            Order allow,deny
+            Allow from all
+            AuthBasicAuthoritative Off
+        </Directory>
+    </IfModule>
+
+    AllowEncodedSlashes On
+    ErrorLog /var/log/apache2/error.log
+    CustomLog /var/log/apache2/access.log combined
+    ServerSignature Off
+
+</VirtualHost>
+
+
