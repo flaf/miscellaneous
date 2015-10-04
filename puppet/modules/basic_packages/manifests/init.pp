@@ -9,7 +9,9 @@ class basic_packages (
                 'bash-completion',
                 'less',
                 'lsb-release',
-                'tree',        # In Trusty, "tree" is in "universe".
+                'tree', # Warning, in Trusty, "tree" is in "universe".
+                'tcpdump',
+                'screen',
               ]
   ensure_packages( $packages, { ensure => present } )
 
