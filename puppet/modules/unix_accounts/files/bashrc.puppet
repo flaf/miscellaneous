@@ -45,8 +45,11 @@ alias ll='\ls --color -lap'
 alias grep='grep --color'
 alias gs='git status'
 alias gd='git diff'
-HISTSIZE='1000'
-HISTFILESIZE='1000'
+alias runpuppet='puppet agent --test'
+alias dist-upgrade='sudo apt-get update && sudo apt-get dist-upgrade'
+alias upgrade='sudo apt-get update && sudo apt-get upgrade'
+HISTSIZE='5000'
+HISTFILESIZE='5000'
 HISTCONTROL='ignoredups:ignorespace'
 
 
