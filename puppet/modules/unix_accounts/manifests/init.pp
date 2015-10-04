@@ -123,6 +123,18 @@ class unix_accounts (
         require        => Package['sudo'],
       }
 
+      # Just set to 0750 the Unix rights of the home directory
+      # (instead of the default 0755).
+      if $ensure_account == 'present' {
+        file { "/home/${user}":
+          ensure  => directory,
+          owner   => $user,
+          group   => $user,
+          mode    => '0750',
+          require => User[$user],
+        }
+      }
+
       # Management of the sudo file of $user.
       if $ensure_account == 'present' and $is_sudo {
         $ensure_sudo_file = 'present'
