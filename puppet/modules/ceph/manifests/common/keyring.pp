@@ -56,37 +56,35 @@
 #
 #
 define ceph::common::keyring (
-  $cluster_name = 'ceph',
-  $account,
-  $key,
-  $properties,
-  $owner        = 'root',
-  $group        = 'root',
-  $mode         = '0600',
+  String[1]           $cluster_name,
+  String[1]           $account,
+  String[1]           $key,
+  Array[String[1], 1] $properties,
+  String[1]           $owner         = 'root',
+  String[1]           $group         = 'root',
+  String[1]           $mode          = '0600',
 ) {
 
-  validate_string(
-    $cluster_name,
-    $account,
-    $key,
-    $owner,
-    $group,
-    $mode,
-  )
-
-  validate_array($properties)
+  $filename = "/etc/ceph/${cluster_name}.client.${account}.keyring"
 
   # Maybe the node is client and server too. In this case,
-  # the resource defined by the "cluster" class wins (if
-  # called before this current user-defined).
-  if !defined(File["/etc/ceph/${cluster_name}.client.${account}.keyring"]) {
-    file { "/etc/ceph/${cluster_name}.client.${account}.keyring":
+  # the resource defined by the class called at first wins.
+  if !defined(File[$filename]) {
+
+    file { $filename:
       ensure  => present,
       owner   => $owner,
       group   => $group,
       mode    => $mode,
-      content => template('ceph/ceph.client.keyring.erb'),
+      content => epp('ceph/ceph.client.keyring.epp',
+                     {
+                      'account'    => $account,
+                      'key'        => $key,
+                      'properties' => $properties,
+                     }
+                    ),
     }
+
   }
 
 }

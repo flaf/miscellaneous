@@ -1,8 +1,0 @@
-### This file is managed by Puppet, don't edit it ###
-
-[client.<%= @account %>]
-  key = <%= @key %>
-  <%- @properties.sort.each do |line| -%>
-  <%= line %>
-  <%- end -%>
-

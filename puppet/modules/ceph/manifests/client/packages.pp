@@ -3,7 +3,7 @@
 #
 class ceph::client::packages {
 
-  private("Sorry, ${title} is a private class.")
+  require '::repository::ceph'
 
   $packages = [
                 'ceph',           # Seems to be surer to install ceph in a

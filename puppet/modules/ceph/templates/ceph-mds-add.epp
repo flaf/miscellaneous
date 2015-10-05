@@ -1,0 +1,131 @@
+<%- |$ceph_script_common| -%>
+#!/bin/sh
+### This is a file managed by Puppet, don't edit it. ###
+
+SCRIPT_NAME="${0##*/}"
+export LC_ALL='C'
+export PATH='/usr/sbin:/usr/bin:/sbin:/bin'
+
+SYNOPSIS="[--cluster <cluster>] [--monitor <address>] --id <id> [--no-start]"
+SHORT_OPTIONS='h,c:,m:,i:,n'
+LONG_OPTIONS='help,cluster:,monitor:,id:,no-start'
+
+print_help () {
+    cat <<EOF
+The syntax is:
+    $SCRIPT_NAME --help
+    $SCRIPT_NAME $SYNOPSIS
+EOF
+}
+
+if ! TEMP=$(getopt -o "$SHORT_OPTIONS" -l "$LONG_OPTIONS" \
+                   -n "$SCRIPT_NAME" -- "$@")
+then
+    echo "Syntax error with $SCRIPT_NAME command." >&2
+    print_help
+    exit '1'
+fi
+
+eval set -- "$TEMP"
+unset TEMP
+
+# Default values of options.
+cluster='ceph'
+mds_id='bad-value' # The user must provide and change this option.
+no_start='false'
+
+while true
+do
+    case "$1" in
+
+        --help|-h)
+            print_help
+            exit 0
+        ;;
+
+        --cluster|-c)
+            cluster="$2"
+            if [ -z "$cluster" ]
+            then
+                printf "The --cluster option must be provided with a non empty value.\n"
+                printf "End of the script.\n"
+                exit 1
+            fi
+            shift 2
+        ;;
+
+        --monitor|-m)
+            monitor="$2"
+            if [ -z "$monitor" ]
+            then
+                printf "The --monitor option must be provided with a non empty value.\n"
+                printf "End of the script.\n"
+                exit 1
+            fi
+            shift 2
+        ;;
+
+        --id|-i)
+            mds_id="$2"
+            shift 2
+        ;;
+
+        --no-start|-n)
+            no_start='true'
+            shift 1
+        ;;
+
+        --)
+            shift 1
+            break
+        ;;
+
+    esac
+done
+
+if ! echo "$mds_id" | grep -qE '^[1-9][0-9]*$'
+then
+    printf "The --id option is mandatory and its value must be an integer.\n"
+    printf "End of the script.\n"
+    exit 1
+fi
+
+if [ -z "$monitor" ]
+then
+    # The ceph client will choose himself the monotor to request.
+    mon_opt=""
+else
+    # Request a specific monitor.
+    mon_opt="-m $monitor"
+fi
+
+# Creation of the working directory.
+if ! mkdir "/var/lib/ceph/mds/$cluster-$mds_id"
+then
+    printf "Sorry, error during the creation of the working directory "
+    printf "/var/lib/ceph/mds/$cluster-$mds_id/.\n"
+    printf "End of the script.\n"
+    exit 1
+fi
+
+# Creation of the "mds.$mds_id" ceph account.
+ceph auth get-or-create "mds.$mds_id"                   \
+    mds "allow" osd "allow rwx" mon "allow profile mds" \
+    -o "/var/lib/ceph/mds/$cluster-$mds_id/keyring"     \
+    --cluster "$cluster" $mon_opt
+
+# Without these files, the mds daemon doesn't start.
+touch "/var/lib/ceph/mds/$cluster-$mds_id/done"
+touch "/var/lib/ceph/mds/$cluster-$mds_id/upstart"
+
+if "$no_start"
+then
+    echo "Daemon mds not started."
+else
+    # Start the mds daemon.
+    stop ceph-mds cluster="$cluster" id="$mds_id"
+    sleep 0.5
+    start ceph-mds cluster="$cluster" id="$mds_id"
+fi
+
+

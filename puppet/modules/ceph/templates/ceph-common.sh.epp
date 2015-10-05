@@ -1,0 +1,364 @@
+<%- |$ceph_script_common| -%>
+#!/bin/sh
+### This file is managed by Puppet, don't edit it ###
+
+SCRIPT_NAME="${0##*/}"
+export LC_ALL='C'
+export PATH='/usr/sbin:/usr/bin:/sbin:/bin'
+
+COMMON_SYNOPSIS="[--cluster <cluster>] [--test] [--device <device> --mount-options <options> [--yes]] [--no-start]"
+COMMON_SHORT_OPTIONS='h,c:,t,d:,o:,y,n'
+COMMON_LONG_OPTIONS='help,cluster:,test,device:,mount-options:,yes,no-start'
+
+print_help () {
+    cat <<EOF
+The syntax is:
+    $SCRIPT_NAME --help
+    $SCRIPT_NAME $COMMON_SYNOPSIS $SPECIFIC_SYNOPSIS
+EOF
+}
+
+# Check the script which sources this present file.
+case "$SCRIPT_NAME" in
+
+    ceph-monitor-init)
+        service='mon'
+    ;;
+
+    ceph-monitor-add)
+        service='mon'
+    ;;
+
+    ceph-osd-add)
+        service='osd'
+    ;;
+
+    *)
+        printf "Script non authorized to source the "
+        printf "<%= $ceph_script_common %> file.\n"
+        printf "End of the script.\n"
+        exit 1
+    ;;
+
+esac
+
+if ! TEMP=$(getopt -o "$COMMON_SHORT_OPTIONS,$SPECIFIC_SHORT_OPTIONS" \
+                   -l "$COMMON_LONG_OPTIONS,$SPECIFIC_LONG_OPTIONS"   \
+                   -n "$SCRIPT_NAME" -- "$@")
+then
+    echo "Syntax error with $SCRIPT_NAME command." >&2
+    print_help
+    exit '1'
+fi
+
+eval set -- "$TEMP"
+unset TEMP
+
+# Default values of options.
+cluster='ceph'
+test='false'
+device='' # means no device.
+mount_options=''
+yes='false'
+no_start='false'
+
+# internal variable.
+use_device='false'
+
+while true
+do
+    case "$1" in
+
+        --cluster|-c)
+            cluster="$2"
+            if [ -z "$cluster" ]
+            then
+                printf "The --cluster option must be provided with a non empty value.\n"
+                printf "End of the script.\n"
+                exit 1
+            fi
+            shift 2
+        ;;
+
+        --test|-t)
+            test='true'
+            shift 1
+        ;;
+
+        --device|-d)
+            use_device='true'
+            device="$2"
+            shift 2
+            if [ -b "$device" ] && [ -L "$device" ]
+            then
+                # It's fine.
+                true
+            else
+                printf "Sorry, you must provide a symlink for the device "
+                printf "and the target must be a block device.\n"
+                printf "End of the script.\n"
+                exit 1
+            fi
+        ;;
+
+        --mount-options|-o)
+            use_device='true'
+            mount_options="$2"
+            shift 2
+        ;;
+
+        --yes|-y)
+            yes='true'
+            shift 1
+        ;;
+
+        --no-start|-n)
+            no_start='true'
+            shift 1
+        ;;
+
+        --help|-h)
+            print_help
+            exit 0
+        ;;
+
+        --)
+            shift 1
+            break
+        ;;
+
+        *)
+            GET_SPECIFIC_OPTIONS "$1" "$2" || shift "$?"
+        ;;
+
+    esac
+done
+
+# Check options.
+if "$use_device"
+then
+    if [ -z "$device" ] || [ -z "$mount_options" ]
+    then
+        printf "The options --device and --mount-options must be provided "
+        printf "together with a non empty value.\n"
+        printf "End of the script.\n"
+        exit 1
+    fi
+fi
+
+# Check if the id is a number string.
+check_id () {
+
+    local id
+    id="$1"
+
+    if echo "$id" | grep -Eq '^[0-9]+$'
+    then
+        return 0
+    else
+        printf "The value of the option --id must be a integer.\n"
+        return 1
+    fi
+
+}
+
+# Check if the working directory of the service (monitor or osd)
+# if available and check the device if provided.
+check_working_dir () {
+
+    #### Begin of TODO
+    #
+    # This check is run 2 times, so the question is asked to times.
+    # The admin must be careful, I forget this check.
+    #
+    # Specific case for the monitor service. One monitor per
+    # host is enough. So if "ceph-mon" is already running in
+    # the host, we should not run another ceph-mon and the
+    # current check will return 1.
+    #if [ "$service" = "mon" ]
+    #then
+    #    ps ax -o "pid,state,etime,user,command" | sed -n '1p;/ceph-mon/p'
+    #    echo
+    #    printf "Above the processes which match \"ceph-mon\".\n"
+    #    printf "Be careful, for a given cluster, just one monitor "
+    #    printf "per node must be started.\n"
+    #    printf "Continue? (yes or anything else) "
+
+    #    local answer
+    #    read answer
+
+    #    if [ "$answer" != 'yes' ]
+    #    then
+    #        return 1
+    #    fi
+
+    #    # The package procps must be installed.
+    #    #if pgrep 'ceph-mon' >/dev/null
+    #    #then
+    #    #    printf "There is already a running monitor in this host.\n"
+    #    #    return 1
+    #    #fi
+    #fi
+    #### End of TODO
+
+    # This function takes one argument which is the ID
+    # of the monitor or osd service.
+    local id
+    id="$1"
+
+    if ! check_id "$id"
+    then
+        return 1
+    fi
+
+    # Check if ceph directories are present.
+    if [ ! -d '/var/lib/ceph' ]
+    then
+        printf "The directory /var/lib/ceph is not present. "
+        printf "Are you sure that ceph is installed?\n"
+        return 1
+    fi
+
+    # Check if ceph directories are present.
+    if [ ! -d "/var/lib/ceph/$service" ]
+    then
+        printf "The directory /var/lib/ceph/$service is not present. "
+        printf "Are you sure that ceph is installed?\n"
+        return 1
+    fi
+
+    # check the device if provided.
+    if "$use_device"
+    then
+        # Get the UUID and the filesystem type of the partition.
+        UUID=''
+        TYPE=''
+        eval $(blkid -o export "$device")
+
+        if [ -z "$UUID" ]
+        then
+            printf "No UUID found for the device $device.\n"
+            return 1
+        fi
+
+        if [ -z "$TYPE" ]
+        then
+            printf "No filesystem type found for the device $device.\n"
+            return 1
+        fi
+
+        if grep -Eq "/var/lib/ceph/$service/$cluster-$id/?[[:space:]]+" '/etc/fstab'
+        then
+            printf "The mountpoint /var/lib/ceph/$service/$cluster-$id/ "
+            printf "already exists in /etc/fstab.\n"
+            return 1
+        fi
+
+        if grep -Eq "$device" '/etc/fstab'
+        then
+            printf "A partition $device "
+            printf "already exists in /etc/fstab.\n"
+            return 1
+        fi
+
+        local canonical_dev
+        canonical_dev=$(readlink -f $device)
+        if mount | grep -Eq "^$canonical_dev[[:space:]]+"
+        then
+            printf "Sorry, the partition $device seems to be "
+            printf "already mounted.\n"
+            return 1
+        fi
+    fi
+
+    # Check if the working directory is not already present
+    if [ -e "/var/lib/ceph/$service/$cluster-$id" ]
+    then
+        printf "The file or directory /var/lib/ceph/$service/$cluster-$id "
+        printf "already exists.\n"
+        return 1
+    fi
+
+    # All tests were successful.
+    return 0
+
+}
+
+# Create the new working directory of the service (monitor or
+# osd). If the service uses a specific device, this device
+# will be mounted and a new entry is added in the /etc/fstab
+# file.
+create_new_working_dir () {
+
+    # This function takes one argument which is the ID
+    # of the monitor or osd service.
+    local id
+    id="$1"
+
+    check_working_dir "$id"
+
+    if ! mkdir "/var/lib/ceph/$service/$cluster-$id"
+    then
+        printf "Impossible to create the directory "
+        printf "/var/lib/ceph/$service/$cluster-$id.\n"
+        return 1
+    fi
+
+    # mkdir command is enough if there is no specific device
+    # but if there is a specific device, the /etc/fstab file
+    # must be updated.
+    if "$use_device"
+    then
+
+        printf "\n\nBe careful, updating of /etc/fstab...\n\n"
+
+        # Get the UUID and the filesystem type of the partition.
+        # Checking has already been launched.
+        UUID=''
+        TYPE=''
+        eval $(blkid -o export "$device")
+
+        printf "\n$device /var/lib/ceph/$service/$cluster-$id/ " >> '/etc/fstab'
+        printf "$TYPE $mount_options 0 2\n"  >> '/etc/fstab'
+
+        if ! mount "/var/lib/ceph/$service/$cluster-$id/"
+        then
+            printf "Sorry, \`mount /var/lib/ceph/$service/$cluster-$id/\` "
+            printf "failed. See the file /etc/fstab for more information.\n"
+            return 1
+        fi
+
+        if "$yes"
+        then
+            printf "The --yes is provided so, no checking of the content of "
+            printf "$device.\n"
+        else
+
+            printf "Here is the content of $device mounted "
+            printf "on /var/lib/ceph/$service/$cluster-$id/:\n\n"
+
+            ls -al "/var/lib/ceph/$service/$cluster-$id/"
+
+            printf "\nNormally, it should be empty. This content will be "
+            printf "modified during the initialization of the $service "
+            printf "working directory.\n"
+            printf "Do you want to continue (either \"yes\" or whatever)? "
+
+            read continue
+
+            if [ "$continue" != 'yes' ]
+            then
+                return 1
+            fi
+
+        fi
+
+    fi # End of the $use_device condition.
+
+    # All tests were successful and the creation of the new
+    # working directory is OK.
+    return 0
+
+}
+
+

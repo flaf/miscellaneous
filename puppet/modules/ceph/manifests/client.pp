@@ -117,59 +117,17 @@
 #  }
 #
 define ceph::client (
-  $cluster_name    = 'ceph',
-  $owner           = 'root',
-  $group           = 'root',
-  $mode            = '0600',
-  $account         = $title,
-  $secret_file     = false,
-  $key,
-  $properties,
-  $global_options,
-  $monitors,
-  $is_radosgw      = false,
-  $rgw_dns_name    = undef,
+  String[1]                                         $cluster_name = $title,
+  Hash[String[1], Hash[String[1], Data, 1], 1]      $keyrings,
+  Hash[String[1], Hash[String[1], String[1], 1], 1] $monitors,
+  Hash[String[1], String[1], 1]                     $global_options,
 ) {
 
   require '::ceph::client::packages'
   require '::ceph::common::ceph_dir'
 
-  validate_string(
-    $cluster_name,
-    $owner,
-    $group,
-    $mode,
-    $account,
-    $key,
-  )
-
-  validate_array($properties)
-
-  validate_hash(
-    $global_options,
-    $monitors,
-  )
-
-  validate_bool(
-    $is_radosgw,
-    $secret_file,
-  )
-
-  if $is_radosgw {
-    if $rgw_dns_name != undef {
-      validate_string($rgw_dns_name)
-    }
-  }
-
-  unless has_key($global_options, 'fsid') {
-    fail("Class ${title} problem, the `global_options` hash must have \
-the 'fsid' key.")
-  }
-
-  # Maybe the current node is server too. Or maybe
-  # the current node is client of this cluster with
-  # several ceph account. In these cases, the file
-  # is already defined.
+  # Maybe the current node is server too. In these cases,
+  # the file is already defined.
   if !defined(File["/etc/ceph/${cluster_name}.conf"]) {
     # Configuration file of the cluster.
     file { "/etc/ceph/${cluster_name}.conf":
@@ -177,36 +135,65 @@ the 'fsid' key.")
       owner   => 'root',
       group   => 'root',
       mode    => '0644',
-      content => template('ceph/ceph.conf.erb'),
+      content => epp('ceph/ceph.conf.epp',
+                     {
+                       'cluster_name'   => $cluster_name,
+                       'global_options' => $global_options,
+                       'monitors'       => $monitors,
+                       'keyrings'       => $keyrings,
+                     }
+                    ),
     }
   }
 
-  ::ceph::common::keyring { "${cluster_name}.client.${account}.keyring":
-    cluster_name => $cluster_name,
-    account      => $account,
-    key          => $key,
-    properties   => $properties,
-    owner        => $owner,
-    group        => $group,
-    mode         => $mode,
-  }
+  $keyrings.each |$account, $params| {
 
-  if $secret_file {
+    if $params.has_key('owner') {
+      $owner = $params['owner']
+    } else {
+      $owner = 'root'
+    }
+
+    if $params.has_key('group') {
+      $group = $params['group']
+    } else {
+      $group = 'root'
+    }
+
+    if $params.has_key('mode') {
+      $mode = $params['mode']
+    } else {
+      $mode = '0600'
+    }
+
+    ::ceph::common::keyring { "client.${account}@${cluster_name}":
+      cluster_name => $cluster_name,
+      account      => $account,
+      key          => $params['key'],
+      properties   => $params['properties'],
+      owner        => $owner,
+      group        => $group,
+      mode         => $mode,
+    }
+
+    $key = $params['key']
+
     file { "/etc/ceph/${cluster_name}.client.${account}.secret":
       owner   => $owner,
       group   => $group,
       mode    => $mode,
       content => "${key}\n",
-      require => ::Ceph::Common::Keyring["${cluster_name}.client.${account}.keyring"],
     }
+
   }
+
+  $is_radosgw = !$keyrings.keys.filter |$k| { $k =~ /^radosgw/ }.empty
 
   if $is_radosgw {
 
     ::ceph::radosgw { "${cluster_name}-${account}":
       cluster_name => $cluster_name,
       account      => $account,
-      rgw_dns_name => $rgw_dns_name,
     }
 
   }

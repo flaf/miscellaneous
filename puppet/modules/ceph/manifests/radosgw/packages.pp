@@ -3,7 +3,7 @@
 #
 class ceph::radosgw::packages {
 
-  private("Sorry, ${title} is a private class.")
+  require '::repository::ceph'
 
   $packages = [
                 # We use civetweb.
@@ -16,4 +16,5 @@ class ceph::radosgw::packages {
   ensure_packages($packages, { ensure => present, })
 
 }
+
 

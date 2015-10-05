@@ -2,19 +2,9 @@
 # Private class.
 #
 define ceph::radosgw (
-  $cluster_name = 'ceph',
+  $cluster_name,
   $account,
-  $rgw_dns_name = undef,
 ){
-
-  private("Sorry, ${title} is a private class.")
-
-  case $::lsbdistcodename {
-    trusty: {}
-    default: {
-      fail("Class ${title} has never been tested on ${::lsbdistcodename}.")
-    }
-  }
 
   require '::ceph::radosgw::packages'
 
@@ -26,6 +16,7 @@ define ceph::radosgw (
     recurse => false,
     purge   => false,
     force   => false,
+    before  => Exec["radosgw-${cluster_name}-${account}"],
   }
 
   # To have a start of radosgw at boot.
@@ -35,6 +26,7 @@ define ceph::radosgw (
     group   => 'root',
     mode    => '0755',
     content => "# Managed by Puppet.\n",
+    before  => Exec["radosgw-${cluster_name}-${account}"],
   }
 
   exec { "radosgw-${cluster_name}-${account}":

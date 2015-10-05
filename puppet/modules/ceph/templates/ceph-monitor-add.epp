@@ -1,0 +1,123 @@
+<%- |$ceph_script_common| -%>
+#!/bin/sh
+### This is a file managed by Puppet, don't edit it. ###
+
+SPECIFIC_SHORT_OPTIONS='i:,m:'
+SPECIFIC_LONG_OPTIONS='id:,monitor:'
+SPECIFIC_SYNOPSIS='--id <num> [--monitor <address>]'
+
+GET_SPECIFIC_OPTIONS () {
+    case "$1" in
+
+        --id|-i)
+            id="$2"
+            return 2
+        ;;
+
+        --monitor|-m)
+            monitor="$2"
+            if [ -z "$monitor" ]
+            then
+                printf "The --monitor option must be provided with a non empty value.\n"
+                printf "End of the script.\n"
+                exit 1
+            fi
+            return 2
+        ;;
+
+    esac
+    return 0
+}
+
+. '<%= $ceph_script_common %>'
+
+if [ -z "$monitor" ]
+then
+    # The ceph client will choose himself the monotor to request.
+    mon_opt=""
+else
+    # Request a specific monitor.
+    mon_opt="-m $monitor"
+fi
+
+if [ -z "$id" ]
+then
+    printf "The --id option is mandatory.\n"
+    printf "End of the script.\n"
+    exit 1
+fi
+
+if check_working_dir "$id"
+then
+    printf "The working directory seems to be available for creation "
+    printf "and initialization.\n"
+    if "$test"
+    then
+        # If it's just a test, we stop the script here.
+        exit 0
+    else
+        # This is not a test, so we continue.
+        true
+    fi
+else
+    if "$test"
+    then
+        # If it's just a test, we stop the script here.
+        exit 1
+    else
+        # This is not a test but checking failed. We stop.
+        printf "End of the script.\n"
+        exit 1
+    fi
+fi
+
+if ! create_new_working_dir "$id"
+then
+    printf "End of the script.\n"
+    exit 1
+fi
+
+# Retrieve the shared monitors key with a request to
+# the initial monitor of the cluster. By default the
+# command uses the client.admin account and normally
+# the /etc/ceph/$cluster.client.admin.conf is already
+# present in the local host.
+if ! timeout --signal=TERM --kill-after=20 10s ceph auth \
+    get mon. -o "/tmp/$cluster.mon.keyring"              \
+    $mon_opt --cluster "$cluster"
+then
+    printf "Request to retrieved the shared monitors key failed.\n"
+    printf "End of the script.\n"
+    exit 1
+fi
+
+# Retrieve the monitor map with a request to the monitor(s)
+# in order to initialize the monitor working directory of
+# the local host.
+ceph mon getmap -o "/tmp/monmap" $mon_opt --cluster "$cluster"
+
+# Creation and initialization of the monitor working directory
+# which will be "/var/lib/ceph/mon/$cluster-$id".
+ceph-mon --mkfs -i "$id" --conf "/etc/ceph/$cluster.conf"         \
+    --monmap "/tmp/monmap" --keyring "/tmp/$cluster.mon.keyring"  \
+    --cluster "$cluster"
+
+# Delete the files in /tmp/.
+rm "/tmp/$cluster.mon.keyring"
+rm "/tmp/monmap"
+
+# Without these files, the monitor daemon doesn't start.
+touch "/var/lib/ceph/mon/$cluster-$id/done"
+touch "/var/lib/ceph/mon/$cluster-$id/upstart"
+
+if "$no_start"
+then
+    echo "Daemon monitor not started."
+else
+    # Start the monitor daemon.
+    stop ceph-mon cluster="$cluster" id="$id"
+    sleep 0.5
+    start ceph-mon cluster="$cluster" id="$id"
+fi
+
+
