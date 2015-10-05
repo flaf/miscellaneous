@@ -1,6 +1,3 @@
-#
-# Private class.
-#
 class ceph::client::packages {
 
   require '::repository::ceph'

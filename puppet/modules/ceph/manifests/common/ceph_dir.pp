@@ -1,6 +1,3 @@
-#
-# Private class.
-#
 class ceph::common::ceph_dir {
 
   file { '/etc/ceph':

@@ -1,6 +1,3 @@
-#
-# Private class.
-#
 class ceph::radosgw::packages {
 
   require '::repository::ceph'

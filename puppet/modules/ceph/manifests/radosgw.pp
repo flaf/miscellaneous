@@ -1,6 +1,3 @@
-#
-# Private class.
-#
 define ceph::radosgw (
   $cluster_name,
   $account,

@@ -1,6 +1,3 @@
-#
-# Private class.
-#
 class ceph::cluster::scripts {
 
   file { '/usr/local/share/ceph':

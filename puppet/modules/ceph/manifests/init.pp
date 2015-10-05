@@ -7,6 +7,8 @@ class ceph (
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
+  # TODO: check the structure of the parameters.
+
   if $force_clusternode {
     $is_clusternode = true
   } else {
@@ -26,6 +28,8 @@ class ceph (
     }
 
     $all_keyrings    = $clusters_conf[$cluster_name]['keyrings']
+
+    # Filter keyrings only from $client_accounts.
     $client_keyrings = $all_keyrings.filter |$account, $properties| {
       $accounts_array.member($account)
     }

@@ -1,6 +1,3 @@
-#
-# Private class.
-#
 class ceph::cluster::packages {
 
   require '::repository::ceph'

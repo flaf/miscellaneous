@@ -1,9 +1,11 @@
-# The defined resource `ceph::clusternode`
+# Module description
 
-It's a defined type to manage a Ceph cluster node.
+This module allows to manage Ceph clusters and Ceph clients.
 
 
-## Warning
+
+
+# Warning
 
 This module manages installation and configuration of files
 but no cluster will be up after a run puppet. After a puppet
@@ -54,6 +56,61 @@ ceph-mds-add --id 1
 ceph-mds-add --id 2
 # Etc...
 ```
+
+
+
+
+# Usage
+
+Here is an example:
+
+```puppet
+$clusters_conf = {
+  'ceph' => { 'global_options' => { 'fsid'                      => 'e865b3d0-535a-4f18-9883-2793079d400b',
+                                    'cluster_network'           => '192.168.22.0/24',
+                                    'public_network'            => '10.0.2.0/24',
+                                    'auth_cluster_required'     => 'cephx',
+                                    'auth_service_required'     => 'cephx',
+                                    'auth_client_required'      => 'cephx',
+                                    'filestore_xattr_use_omap'  => 'true',
+                                    'osd_pool_default_size'     => '2',
+                                    'osd_pool_default_min_size' => '1',
+                                    'osd_pool_default_pg_num'   => '64',
+                                    'osd_pool_default_pgp_num'  => '64',
+                                    'osd_crush_chooseleaf_type' => '1',
+                                    'osd_journal_size'          => '0',
+                                    'osd_max_backfills'         => '1',
+                                    'osd_recovery_max_active'   => '1',
+                                    'osd_client_op_priority'    => '63',
+                                    'osd_recovery_op_priority'  => '1',
+                                    'osd_op_threads'            => '4',
+                                    'mds_cache_size'            => '1000000',
+                                    'osd_scrub_begin_hour'      => '3',
+                                    'osd_scrub_end_hour'        => '5',
+                                    'mon_allow_pool_delete'     => 'false',
+                                  },
+              'monitors'       => { 'monitor-1' => { 'id' => '0', 'address' => '10.0.2.150' },
+                                    'monitor-2' => { 'id' => '1', 'address' => '10.0.2.151' },
+                                    'monitor-3' => { 'id' => '2', 'address' => '10.0.2.152' },
+                                  },
+              'keyrings'       => { 'cephfs'
+        key: '12234556'
+        properties:
+          - 'caps mon = "allow r"'
+          - 'caps osd = "allow class-read object_prefix rbd_children, allow rwx pool=data, allow rwx pool=metadata"'
+
+$clients_accounts = {}
+
+
+class { '::ceph':
+  force_clusternode => false,
+  clusters_conf     => $clusters_conf,
+  client_accounts   => $client_accounts,
+}
+```
+
+
+
 
 
 ## Parameters of the defined resource `ceph::clusternode`
