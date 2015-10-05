@@ -3,9 +3,12 @@
 #
 class ceph::cluster::packages {
 
-  private("Sorry, ${title} is a private class.")
+  require '::repository::ceph'
 
   # With Trusty, it's better to use a 3.16 kernel.
+  #
+  # TODO: there is too the linux-image-generic-lts-vivid, ie a
+  #       Linux kernel version 3.19. Maybe make some tests.
   if $::lsbdistcodename == 'trusty' {
     ensure_packages(['linux-image-generic-lts-utopic'], { ensure => present, })
   }

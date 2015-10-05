@@ -3,8 +3,6 @@
 #
 class ceph::cluster::scripts {
 
-  private("Sorry, ${title} is a private class.")
-
   file { '/usr/local/share/ceph':
     ensure  => directory,
     owner   => 'root',
@@ -22,7 +20,9 @@ class ceph::cluster::scripts {
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    content => template('ceph/ceph-common.sh.erb'),
+    content => epp('ceph/ceph-common.sh.epp',
+                   { 'ceph_script_common' => $ceph_script_common, }
+                  ),
   }
 
   file { '/usr/local/sbin/ceph-monitor-init':
@@ -30,7 +30,9 @@ class ceph::cluster::scripts {
     owner   => 'root',
     group   => 'root',
     mode    => '0700',
-    content => template('ceph/ceph-monitor-init.erb'),
+    content => epp('ceph/ceph-monitor-init.epp',
+                   { 'ceph_script_common' => $ceph_script_common, }
+                  ),
   }
 
   file { '/usr/local/sbin/ceph-monitor-add':
@@ -38,7 +40,9 @@ class ceph::cluster::scripts {
     owner   => 'root',
     group   => 'root',
     mode    => '0700',
-    content => template('ceph/ceph-monitor-add.erb'),
+    content => epp('ceph/ceph-monitor-add.epp',
+                   { 'ceph_script_common' => $ceph_script_common, }
+                  ),
   }
 
   file { '/usr/local/sbin/ceph-osd-add':
@@ -46,7 +50,9 @@ class ceph::cluster::scripts {
     owner   => 'root',
     group   => 'root',
     mode    => '0700',
-    content => template('ceph/ceph-osd-add.erb'),
+    content => epp('ceph/ceph-osd-add.epp',
+                   { 'ceph_script_common' => $ceph_script_common, }
+                  ),
   }
 
   file { '/usr/local/sbin/ceph-mds-add':
@@ -54,7 +60,9 @@ class ceph::cluster::scripts {
     owner   => 'root',
     group   => 'root',
     mode    => '0700',
-    content => template('ceph/ceph-mds-add.erb'),
+    content => epp('ceph/ceph-mds-add.epp',
+                   { 'ceph_script_common' => $ceph_script_common, }
+                  ),
   }
 
 }

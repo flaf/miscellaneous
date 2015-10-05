@@ -3,8 +3,6 @@
 #
 class ceph::common::ceph_dir {
 
-  private("Sorry, ${title} is a private class.")
-
   file { '/etc/ceph':
     ensure  => directory,
     owner   => 'root',
