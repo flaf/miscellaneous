@@ -117,7 +117,7 @@
 #  }
 #
 define ceph::client (
-  String[1]                                         $cluster_name = $title,
+  String[1]                                         $cluster_name,
   Hash[String[1], Hash[String[1], Data, 1], 1]      $keyrings,
   Hash[String[1], Hash[String[1], String[1], 1], 1] $monitors,
   Hash[String[1], String[1], 1]                     $global_options,

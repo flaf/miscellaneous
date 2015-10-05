@@ -1,6 +1,6 @@
 define ceph::clusternode
 (
-  String[1]                                         $cluster_name = $title,
+  String[1]                                         $cluster_name,
   Hash[String[1], Hash[String[1], Data, 1], 1]      $keyrings,
   Hash[String[1], Hash[String[1], String[1], 1], 1] $monitors,
   Hash[String[1], String[1], 1]                     $global_options,
@@ -28,7 +28,7 @@ define ceph::clusternode
 
   $keyrings.each |$account, $params| {
 
-    ::ceph::common::keyring { "${account}@${cluster_name}":
+    ::ceph::common::keyring { "cluster.${account}@${cluster_name}":
       cluster_name => $cluster_name,
       account      => $account,
       key          => $params['key'],
