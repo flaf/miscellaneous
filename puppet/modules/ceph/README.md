@@ -65,172 +65,102 @@ ceph-mds-add --id 2
 Here is an example:
 
 ```puppet
+$ceph_global_conf = {
+  'fsid'                      => 'f875b4c1-535a-4f17-9883-2793079d410a',
+  'cluster_network'           => '192.168.22.0/24',
+  'public_network'            => '10.0.2.0/24',
+  'auth_cluster_required'     => 'cephx',
+  'auth_service_required'     => 'cephx',
+  'auth_client_required'      => 'cephx',
+  'filestore_xattr_use_omap'  => 'true',
+  'osd_pool_default_size'     => '2',
+  'osd_pool_default_min_size' => '1',
+  'osd_pool_default_pg_num'   => '64',
+  'osd_pool_default_pgp_num'  => '64',
+  'osd_crush_chooseleaf_type' => '1',
+  'osd_journal_size'          => '0',
+  'osd_max_backfills'         => '1',
+  'osd_recovery_max_active'   => '1',
+  'osd_client_op_priority'    => '63',
+  'osd_recovery_op_priority'  => '1',
+  'osd_op_threads'            => '4',
+  'mds_cache_size'            => '1000000',
+  'osd_scrub_begin_hour'      => '3',
+  'osd_scrub_end_hour'        => '5',
+  'mon_allow_pool_delete'     => 'false',
+}
+
+$ceph_keyrings = {
+  'admin' => {
+    'key'        => 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX==',
+    'properties' =>  [
+      'caps mon = "allow *"',
+      'caps osd = "allow *"',
+      'caps mds = "allow"',
+    ],
+  },
+  'cephfs' => {
+    'key'        => 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX==',
+    'properties' =>  [
+      'caps mon = "allow r"',
+      'caps osd = "allow class-read object_prefix rbd_children, allow rwx pool=data"',
+      'caps mds = "allow"',
+    ],
+  },
+  'radosgw.gw1' => {
+    'key'           => 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX==',
+    'radosgw_host'  => 'radosgw-1',
+    'rgw_dns_name'  => 'rgw.domain.tld',
+    'properties'    =>  [
+      'caps mon = "allow rwx"',
+      'caps osd = "allow rwx"',
+    ],
+  },
+  'radosgw.gw2' => {
+    'key'           => 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX==',
+    'radosgw_host'  => 'radosgw-2',
+    'rgw_dns_name'  => 'rgw.domain.tld',
+    'properties'    =>  [
+      'caps mon = "allow rwx"',
+      'caps osd = "allow rwx"',
+    ],
+  },
+  'cinder' => {
+    'key'           => 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX==',
+    'owner'         => 'cinder',
+    'group'         => 'cinder',
+    'mode'          => '0640',
+    'properties'    =>  [
+      'caps mon = "allow r"',
+      'caps osd = "allow class-read object_prefix rbd_children, allow rwx pool=volumes"',
+    ],
+  },
+}
+
 $clusters_conf = {
-  'ceph' => { 'global_options' => { 'fsid'                      => 'e865b3d0-535a-4f18-9883-2793079d400b',
-                                    'cluster_network'           => '192.168.22.0/24',
-                                    'public_network'            => '10.0.2.0/24',
-                                    'auth_cluster_required'     => 'cephx',
-                                    'auth_service_required'     => 'cephx',
-                                    'auth_client_required'      => 'cephx',
-                                    'filestore_xattr_use_omap'  => 'true',
-                                    'osd_pool_default_size'     => '2',
-                                    'osd_pool_default_min_size' => '1',
-                                    'osd_pool_default_pg_num'   => '64',
-                                    'osd_pool_default_pgp_num'  => '64',
-                                    'osd_crush_chooseleaf_type' => '1',
-                                    'osd_journal_size'          => '0',
-                                    'osd_max_backfills'         => '1',
-                                    'osd_recovery_max_active'   => '1',
-                                    'osd_client_op_priority'    => '63',
-                                    'osd_recovery_op_priority'  => '1',
-                                    'osd_op_threads'            => '4',
-                                    'mds_cache_size'            => '1000000',
-                                    'osd_scrub_begin_hour'      => '3',
-                                    'osd_scrub_end_hour'        => '5',
-                                    'mon_allow_pool_delete'     => 'false',
-                                  },
-              'monitors'       => { 'monitor-1' => { 'id' => '0', 'address' => '10.0.2.150' },
-                                    'monitor-2' => { 'id' => '1', 'address' => '10.0.2.151' },
-                                    'monitor-3' => { 'id' => '2', 'address' => '10.0.2.152' },
-                                  },
-              'keyrings'       => { 'cephfs'
-        key: '12234556'
-        properties:
-          - 'caps mon = "allow r"'
-          - 'caps osd = "allow class-read object_prefix rbd_children, allow rwx pool=data, allow rwx pool=metadata"'
+  'ceph'      => {
+    'global_options' => $ceph_global_conf,
+    'keyrings'       => $ceph_keyrings,
+    'monitors'       => { 'mon-1' => {'id' => '0', 'address' => '10.0.2.150'},
+                          'mon-2' => {'id' => '1', 'address' => '10.0.2.151'},
+                          'mon-3' => {'id' => '2', 'address' => '10.0.2.152'},
+                        },
+  },
+  'cluster-a' => {
+    # Another cluster...
+  },
+}
 
-$clients_accounts = {}
-
+$client_accounts = {
+  'ceph'      => [ 'cinder', 'cephfs', ],
+  'cluster-a' => [ ... ],
+}
 
 class { '::ceph':
-  force_clusternode => false,
   clusters_conf     => $clusters_conf,
   client_accounts   => $client_accounts,
+  force_clusternode => true,
 }
 ```
-
-
-
-
-
-## Parameters of the defined resource `ceph::clusternode`
-
-The `cluster_name` parameter is a non-empty string which
-represents the name of the cluster. This parameter is
-optional and the default value is `"ceph"`.
-
-`rgw_dns_name`:
-If the cluster has rados gateway clients in the keyrings
-parameter, this parameter allows to define the entry
-"rgw dns name" in the `[client.<radosgw-id>]` sections.
-This parameter is optional and the default value is undef,
-and in this case the parameter is not defined.
-If the cluster has no rados gateway client, this parameter
-is useless.
-
-*keyrings*:
-This parameter must be a hash which represents keyrings.
-This parameter is optional and the default value is {},
-ie no keyring file is created. This parameter must have
-this structure:
-
- { 'test1'       => { 'key'          => 'AQBWX65UeDO/NRAAXWTEWvlvq2alpD5EEmZ7DA==',
-                      'properties'   => [ 'caps mon = "allow r"',
-                                        'caps osd = " allow rwx pool=pool1"',
-                                        ],
-                    },
-   'radosgw.gw1' => { 'key'          => 'AQBVX65UsGEMIxAA/F5t/wuDtKvFD/5ZYdS0DA==',
-                      'properties'   => [ 'caps mon = "allow rwx"',
-                                        'caps osd = " allow rwx"',
-                                        ],
-                      'radosgw_host' => 'radosgw-1',
-                    },
- }
-
-The keys of this hash are the names of the accounts.
-The `radosgw_host` key means that the keyring is a specific
-radosgw keyring and the value of this key must be the hostname
-of the radosgw server.
-
-You can generate a key with this command:
-
-    apt-get install ceph-common && ceph-authtool --gen-print-key
-
-*monitors*:
-This parameter is mandatory. This parameter must be
-a hash with this form:
-
-   { 'ceph-node1' => { 'id'            => '1',
-                       'address'       => '172.31.10.1',
-                     },
-     'ceph-node2' => { 'id'            => '2',
-                       'address'       => '172.31.10.2',
-                     },
-     'ceph-node3' => { 'id'            => '3',
-                       'address'       => '172.31.10.3',
-                     },
-   }
-
-The keys are the hostnames of the monitors.
-
-*admin_key*:
-The key (for authentication) of the ceph account "admin".
-This parameter is mandatory. This parameter should not
-be present in clear text in Puppet/hiera etc.
-You can generate such key with this command:
-
-  ceph-authtool --gen-print-key
-
-*global_options*:
-This parameter is mandatory. This parameter must be
-a hash where keys/values will be the parameters in
-the `[global]` section of the of the /etc/ceph/$cluster.conf
-file. Here is an example:
-
- { 'auth_client_required'      => 'cephx',
-   'auth_cluster_required'     => 'cephx',
-   'auth_service_required'     => 'cephx',
-   'cluster network'           => '192.168.0.0/24',
-   'public network'            => '10.0.2.0/24',
-   'filestore_xattr_use_omap'  => 'true',
-   'fsid'                      => '49276091-877c-464d-9e4d-23786db82fc8',
-   'osd_crush_chooseleaf_type' => '1',
-   'osd_journal_size'          => '2048',
-   'osd_pool_default_min_size' => '1',
-   'osd_pool_default_pg_num'   => '512',
-   'osd_pool_default_pgp_num'  => '512',
-   'osd_pool_default_size'     => '2',
- }
-
-The fsid can be generated with this command:
-
-  uuidgen
-
-== Sample Usages
-
- $keyrings       = # the same hash as above.
- $monitors       = # the same hash as above.
- $global_options = # the same hash as above.
-
- ::ceph { 'my_cluster':
-    cluster_name   => 'ceph-test',
-    rgw_dns_name   => 's3store',
-    keyrings       => $keyrings,
-    monitors       => $monitors,
-    global_options => $global_options,
- }
-
-== Links
-
-[1] OSD journal size:
-http://ceph.com/docs/next/rados/configuration/osd-config-ref/#journal-settings:
-http://ceph.com/docs/master/rados/configuration/filestore-config-ref/#synchronization-intervals
-
-[2] pg_num and pgp_num (important):
-http://ceph.com/docs/master/rados/operations/placement-groups/#a-preselection-of-pg-num
-http://ceph.com/docs/master/rados/operations/placement-groups/#set-the-number-of-placement-groups
-
-
-
 
 
