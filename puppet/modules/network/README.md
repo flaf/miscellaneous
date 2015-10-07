@@ -370,6 +370,20 @@ hosts:
   tag: 'ceph-cluster'
 ```
 
+And here is a typical example of yaml file which could
+be shared by several nodes of a unique cluster to share
+its "IP eth0-address":
+
+```yaml
+# File read be each node of a cluster.
+hosts:
+  entries:
+    '@@%{::facts.networking.interfaces.eth0.bindings.0.address}':
+      - '%{::fqdn}'
+      - '%{::hostname}'
+  tag: 'ceph-cluster'
+```
+
 If the `hosts` entry doesn't exist in hiera, the default
 value of the `entries` parameter will be
 `{ '127.0.1.1' => [ $::fqdn, $::hostname ] }`
