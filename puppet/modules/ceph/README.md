@@ -169,6 +169,8 @@ $clusters_conf = {
   'ceph'      => {
     'global_options' => $ceph_global_conf,
     'keyrings'       => $ceph_keyrings,
+    # Below, 'mon-1', 'mon-2' and 'mon-3' must be the real short hostname
+    # of the monitor servers.
     'monitors'       => { 'mon-1' => {'id' => '0', 'address' => '10.0.2.150'},
                           'mon-2' => {'id' => '1', 'address' => '10.0.2.151'},
                           'mon-3' => {'id' => '2', 'address' => '10.0.2.152'},
@@ -190,6 +192,166 @@ class { '::ceph':
   is_clusternode  => true,
   is_clientnode   => true,
 }
+```
+
+The `clusters_conf` parameter is a hash where each key
+is the name of a cluster and its value is the configuration
+of this cluster (generally the hash have just one key
+for just one cluster whose name is `ceph`). Like in the
+example above, the configuration of a cluster **must** have:
+
+* the `global_options` key,
+* the `keyrings` key,
+* and the `monitors` key.
+
+In a keyring, the mandatory keys are:
+
+* `key` (use `ceph-authtool --gen-print-key` to generate a value),
+* and `properties`.
+
+`owner`, `group`  and `mode` are optional with the default
+value `root`, `root` and `0600`.
+
+Keyrings whose name begins with `radosgw` are special
+because the `radosgw_host` is mandatory too in this case
+and the value must be the short hostname of the radosgw
+server which will use this keyring. With a radosgw keyring,
+the key `rgw_dns_name` is optional (necessary when you use a
+S3 bucket with this syntax
+`<bucket-name>.<value-of-rgw_dns_name>` which should be
+avoided because the syntax `<fqdn>/<bucket-name>` is better).
+
+The `client_accounts` parameter is useful for a client
+node (it can be empty `{}` for a cluster node). This
+parameter contains the keyrings of Ceph accounts which
+will be installed in the client node in `/etc/ceph/`.
+This parameter is a has with this form:
+
+```puppet
+$client_accounts = {
+  '<cluster-X>' => [ '<a-account1-from-cluster-X>', '<a-account2-from-cluster-X>', ],
+  # etc...
+}
+```
+
+A radosgw account is a special because it triggers on the
+client node the installation of the S3 http service (via
+civetweb).
+
+The `is_clusternode` and `is_clientnode` are boolean which
+tell if the node is a cluster node, or a client node or
+both.
+
+
+
+
+# Data binding
+
+The is no default hiera lookup in this module. The
+classical mechanisms of data binding are used. Here
+is the defaults values of the parameters:
+
+* `clusters_conf => undef` so you must provide the clusters
+configuration yourself,
+* `client_accounts => {}` ie no client account by default,
+* `is_clusternode => false`,
+* `is_clientnode => false`.
+
+Here is a hiera configuration equivalent to the call in the
+`Usage` section above.
+
+First in a yaml file shared by all the nodes: the cluster
+nodes **and** the client nodes:
+
+```yaml
+# The $clusters_conf parameter.
+ceph::clusters_conf:
+
+  ceph:
+
+    global_options:
+      fsid: 'f875b4c1-535a-4f17-9883-2793079d410a'
+      cluster_network: '192.168.22.0/24'
+      public_network: '10.0.2.0/24'
+      auth_cluster_required: 'cephx'
+      auth_service_required: 'cephx'
+      auth_client_required: 'cephx'
+      filestore_xattr_use_omap: 'true'
+      osd_pool_default_size: '2'
+      osd_pool_default_min_size: '1'
+      osd_pool_default_pg_num: '64'
+      osd_pool_default_pgp_num: '64'
+      osd_crush_chooseleaf_type: '1'
+      osd_journal_size: '0'
+      osd_max_backfills: '1'
+      osd_recovery_max_active: '1'
+      osd_client_op_priority: '63'
+      osd_recovery_op_priority: '1'
+      osd_op_threads: '4'
+      mds_cache_size: '1000000'
+      osd_scrub_begin_hour: '3'
+      osd_scrub_end_hour: '5'
+      mon_allow_pool_delete: 'false'
+
+    monitors:
+      mon-1:
+        id: '0'
+        address: '10.0.2.150'
+      mon-2:
+        id: '1'
+        address: '10.0.2.151'
+      mon-3:
+        id: '2'
+        address: '10.0.2.152'
+
+    keyrings:
+      admin:
+        key: 'AQBzfhRW3FU7BRAA75c8O7ZcJRwNMHrhLtSA3Q=='
+        properties:
+        - 'caps mon = "allow *"'
+        - 'caps osd = "allow *"'
+        - 'caps mds = "allow"'
+      cephfs:
+        key: 'AQB1fhRWkM5tFxAADYKzOgTbDZw9LEMgbPw4yw=='
+        properties:
+        - 'caps mon = "allow r"'
+        - 'caps osd = "allow class-read object_prefix rbd_children, allow rwx pool=data"'
+        - 'caps mds = "allow"'
+      radosgw.gw1:
+        key: 'AQDofhRWBh/ZBBAAtaRA4J9VHl7srhYyxo5pig=='
+        radosgw_host: 'radosgw-1'
+        rgw_dns_name: 'rgw.domain.tld'
+        properties:
+        - 'caps mon = "allow rwx"'
+        - 'caps osd = "allow rwx"'
+      radosgw.gw2:
+        key: 'AQDyfhRWdN50ARAATcfy7itnU1KyUKoX+XNi8g=='
+        radosgw_host: 'radosgw-2'
+        rgw_dns_name: 'rgw.domain.tld'
+        properties:
+        - 'caps mon = "allow rwx"'
+        - 'caps osd = "allow rwx"'
+      cinder:
+        key: 'AQDzfhRWjOwnIRAA9OV8cFbwnLyQElQl2jPy6g=='
+        owner: 'cinder'
+        group: 'cinder'
+        mode: '0640'
+        properties:
+        - 'caps mon = "allow r"'
+        - 'caps osd = "allow class-read object_prefix rbd_children, allow rwx pool=volumes"'
+```
+
+And in the yaml file of the specific node (ie in `$fqdn.yaml`):
+
+```yaml
+# The node will be a client node of the cluster and will use specific
+# ceph accounts.
+ceph::is_clientnode: true
+ceph::client_accounts:
+  ceph: [ 'cinder', 'cephfs' ]
+
+# But the node will be a cluster node too.
+ceph::is_clusternode: true
 ```
 
 
