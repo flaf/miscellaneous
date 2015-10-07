@@ -1,6 +1,7 @@
 class unix_accounts (
   Hash[String[1], Hash[String[1], Data, 1], 1] $users,
   Hash[String[1], String[1], 1]                $ssh_public_keys,
+  Boolean                                      $fqdn_in_prompt,
   Array[String[1], 1]                          $supported_distributions,
   String[1]                                    $stage = 'main',
 ) {
@@ -208,7 +209,9 @@ class unix_accounts (
         group   => $user,
         mode    => '0644',
         require => User[$user],
-        source  => 'puppet:///modules/unix_accounts/bashrc.puppet',
+        content => epp('unix_accounts/bashrc.puppet.epp',
+                       { 'fqdn_in_prompt' => $fqdn_in_prompt, }
+                      ),
       }
 
       file { "${homeuser}/.vimrc":

@@ -1,3 +1,4 @@
+<%- |$fqdn_in_prompt| -%>
 ### This file is managed by Puppet, don't edit it. ###
 
 # The prompt.
@@ -13,7 +14,12 @@ else
     prompt='$'
 fi
 
-PS1="${debian_chroot:+($debian_chroot)}"'[$?]'" $red\u@\h $blue\A $white\w$reset\n${prompt} "
+<%- if $fqdn_in_prompt { -%>
+host_name="$(hostname --fqdn)"
+<%- } else { -%>
+host_name='\h'
+<%- } -%>
+PS1="${debian_chroot:+($debian_chroot)}"'[$?]'" $red\u@$host_name $blue\A $white\w$reset\n${prompt} "
 
 # To avoid to pollute the shell with useless variables.
 unset red
@@ -21,6 +27,7 @@ unset blue
 unset white
 unset reset
 unset prompt
+unset host_name
 
 # Set the GIT_SSH environment variable if it's relevant.
 if [ -e '/usr/local/bin/git_ssh_wrapper' ]
