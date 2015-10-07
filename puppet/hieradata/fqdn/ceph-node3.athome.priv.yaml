@@ -11,19 +11,22 @@ network::restart: true
 interfaces:
   eth0:
     in_networks: [ 'vbox_adm' ]
-    macaddress: '08:00:27:bc:cd:81'
+    macaddress: '08:00:27:bc:cd:83'
     inet:
       method: 'dhcp'
   eth1:
     in_networks: [ 'vbox_ceph_priv' ]
-    macaddress: '08:00:27:bc:ce:81'
+    macaddress: '08:00:27:bc:ce:83'
     inet:
       method: 'static'
       options:
-        address: '10.0.0.1'
+        address: '10.0.0.3'
         netmask: '__default__'
 
 
 ceph::is_clusternode: true
+ceph::is_clientnode: true
+ceph::client_accounts:
+  ceph: [ 'cephfs' ]
 
 

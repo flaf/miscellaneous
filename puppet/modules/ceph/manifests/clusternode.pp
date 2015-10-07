@@ -1,5 +1,4 @@
-define ceph::clusternode
-(
+define ceph::clusternode (
   String[1]                                         $cluster_name,
   Hash[String[1], Hash[String[1], Data, 1], 1]      $keyrings,
   Hash[String[1], Hash[String[1], String[1], 1], 1] $monitors,
@@ -10,20 +9,15 @@ define ceph::clusternode
   require '::ceph::cluster::packages'
   require '::ceph::cluster::scripts'
 
-  # Configuration file of the cluster.
-  file { "/etc/ceph/${cluster_name}.conf":
-    ensure  => present,
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0644',
-    content => epp('ceph/ceph.conf.epp',
-                   {
-                     'cluster_name'   => $cluster_name,
-                     'global_options' => $global_options,
-                     'monitors'       => $monitors,
-                     'keyrings'       => $keyrings,
-                   }
-                  ),
+  # Maybe the current node is a client too. In these cases,
+  # maybe the configuration is already defined.
+  if !defined(Class['::ceph::common::cephconf']) {
+    class { '::ceph::common::cephconf':
+      cluster_name   => $cluster_name,
+      keyrings       => $keyrings,
+      monitors       => $monitors,
+      global_options => $global_options,
+    }
   }
 
   $keyrings.each |$account, $params| {

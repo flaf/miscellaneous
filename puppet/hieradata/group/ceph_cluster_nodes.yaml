@@ -1,0 +1,9 @@
+---
+hosts:
+  entries:
+    '@@%{::facts.networking.interfaces.eth0.bindings.0.address}':
+      - '%{::fqdn}'
+      - '%{::hostname}'
+  tag: 'ceph-cluster'
+
+

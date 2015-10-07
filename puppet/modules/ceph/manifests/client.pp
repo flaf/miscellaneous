@@ -1,34 +1,26 @@
 define ceph::client (
   String[1]                                         $cluster_name,
   Hash[String[1], Hash[String[1], Data, 1], 1]      $keyrings,
+  Hash[String[1], Hash[String[1], Data, 1], 1]      $client_keyrings,
   Hash[String[1], Hash[String[1], String[1], 1], 1] $monitors,
   Hash[String[1], String[1], 1]                     $global_options,
 ) {
 
-  require '::ceph::client::packages'
   require '::ceph::common::ceph_dir'
+  require '::ceph::client::packages'
 
-  # Maybe the current node is server too. In these cases,
-  # the file is already defined.
-  if !defined(File["/etc/ceph/${cluster_name}.conf"]) {
-    # Configuration file of the cluster.
-    file { "/etc/ceph/${cluster_name}.conf":
-      ensure  => present,
-      owner   => 'root',
-      group   => 'root',
-      mode    => '0644',
-      content => epp('ceph/ceph.conf.epp',
-                     {
-                       'cluster_name'   => $cluster_name,
-                       'global_options' => $global_options,
-                       'monitors'       => $monitors,
-                       'keyrings'       => $keyrings,
-                     }
-                    ),
+  # Maybe the current node is a server too. In these cases,
+  # maybe the configuration is already defined.
+  if !defined(Class['::ceph::common::cephconf']) {
+    class { '::ceph::common::cephconf':
+      cluster_name   => $cluster_name,
+      keyrings       => $keyrings,
+      monitors       => $monitors,
+      global_options => $global_options,
     }
   }
 
-  $keyrings.each |$account, $params| {
+  $client_keyrings.each |$account, $params| {
 
     if $params.has_key('owner') {
       $owner = $params['owner']
@@ -69,7 +61,7 @@ define ceph::client (
 
   }
 
-  $is_radosgw = !$keyrings.keys.filter |$k| { $k =~ /^radosgw/ }.empty
+  $is_radosgw = !$client_keyrings.keys.filter |$k| { $k =~ /^radosgw/ }.empty
 
   if $is_radosgw {
 

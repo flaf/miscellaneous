@@ -1,10 +1,11 @@
 ---
 ceph::clusters_conf:
+
   ceph:
     global_options:
       fsid: 'f875b4c1-535a-4f17-9883-2793079d410a'
-      cluster_network: '192.168.22.0/24'
-      public_network: '10.0.2.0/24'
+      cluster_network: '10.0.0.0/24'
+      public_network: '172.31.0.0/16'
       auth_cluster_required: 'cephx'
       auth_service_required: 'cephx'
       auth_client_required: 'cephx'
@@ -24,16 +25,18 @@ ceph::clusters_conf:
       osd_scrub_begin_hour: '3'
       osd_scrub_end_hour: '5'
       mon_allow_pool_delete: 'false'
+
     monitors:
-      mon-1:
-        id: '0'
-        address: '10.0.2.150'
-      mon-2:
+      ceph-node1:
         id: '1'
-        address: '10.0.2.151'
-      mon-3:
+        address: '172.31.10.1'
+      ceph-node2:
         id: '2'
-        address: '10.0.2.152'
+        address: '172.31.10.2'
+      ceph-node3:
+        id: '3'
+        address: '172.31.10.3'
+
     keyrings:
       admin:
         key: 'AQBzfhRW3FU7BRAA75c8O7ZcJRwNMHrhLtSA3Q=='

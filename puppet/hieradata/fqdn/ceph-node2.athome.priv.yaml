@@ -11,16 +11,16 @@ network::restart: true
 interfaces:
   eth0:
     in_networks: [ 'vbox_adm' ]
-    macaddress: '08:00:27:bc:cd:81'
+    macaddress: '08:00:27:bc:cd:82'
     inet:
       method: 'dhcp'
   eth1:
     in_networks: [ 'vbox_ceph_priv' ]
-    macaddress: '08:00:27:bc:ce:81'
+    macaddress: '08:00:27:bc:ce:82'
     inet:
       method: 'static'
       options:
-        address: '10.0.0.1'
+        address: '10.0.0.2'
         netmask: '__default__'
 
 

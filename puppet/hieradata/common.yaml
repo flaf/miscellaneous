@@ -25,6 +25,11 @@ inventory_networks:
     vlan_name: 'vbox_priv'
     cidr_address: '172.20.0.0/16'
     gateway: '172.20.0.1'
+  vbox_ceph_priv:
+    comment: [ 'Private LAN in VBox without dhcp for Ceph cluster network.' ]
+    vlan_id: '1003'
+    vlan_name: 'vbox_ceph_priv'
+    cidr_address: '10.0.0.0/24'
 
 
 unix_accounts::fqdn_in_prompt: true
