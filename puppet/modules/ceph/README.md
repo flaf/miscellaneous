@@ -5,7 +5,7 @@ This module allows to manage Ceph clusters and Ceph clients.
 
 
 
-# Warning
+# Warning 1: you must create the cluster yourself
 
 This module manages installation and configuration of files
 but no cluster will be up after a run puppet. After a puppet
@@ -62,6 +62,24 @@ ceph osd pool create metadata $pg_num_metadata
 ceph fs new cephfs metadata data
 ceph fs ls # To check if all is OK.
 ```
+
+
+# Warning 2 : you must configure the `/etc/hosts` correctly
+
+For each node of the cluster and for each client of the
+cluster, it's recommended to configure the `/etc/hosts`
+file to have:
+
+```conf
+<IP-monitor-1>      <fqdn-mon-1>      <short-name-mon-1>
+<IP-monitor-2>      <fqdn-mon-2>      <short-name-mon-2>
+<IP-monitor-3>      <fqdn-mon-3>      <short-name-mon-3>
+# etc...
+```
+
+This module doesn't manage the `/etc/hosts` file and you
+should configure this file with another puppet class (or
+manually).
 
 
 
@@ -167,10 +185,23 @@ $client_accounts = {
 }
 
 class { '::ceph':
-  clusters_conf     => $clusters_conf,
-  client_accounts   => $client_accounts,
-  force_clusternode => true,
+  clusters_conf   => $clusters_conf,
+  client_accounts => $client_accounts,
+  is_clusternode  => true,
+  is_clientnode   => true,
 }
 ```
+
+
+
+
+# TODO
+
+* Since Ceph version Hammer, it's possible to choose
+the ID of a new OSD. Currently, the scripts embedded
+in this module don't provide this feature. Update the
+scripts to provide this feature. Check on IRC that
+there is no problem to enforce the ID of the OSDs
+(instead let Ceph choose itself the ID).
 
 
