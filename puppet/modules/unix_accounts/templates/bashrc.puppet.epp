@@ -57,6 +57,8 @@ alias gd='git diff'
 alias rp='sudo env "PATH=$PATH" puppet agent --test' # rp means "Run Puppet".
 alias dist-upgrade='sudo apt-get update && sudo apt-get dist-upgrade'
 alias upgrade='sudo apt-get update && sudo apt-get upgrade'
+alias ssu='sudo su -'
+alias ssup='sudo su -p'
 HISTSIZE='5000'
 HISTFILESIZE='5000'
 HISTCONTROL='ignoredups:ignorespace'
