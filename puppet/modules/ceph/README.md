@@ -37,10 +37,10 @@ ceph-monitor-add --device /dev/disk-by-partlabel/mon-2   \
 
 
 # 3. Installation of the ods on each node (help with ceph-osd-add --help).
-ceph-osd-add --device /dev/disk-by-partlabel/osd-0  \
+ceph-osd-add --device /dev/disk/by-partlabel/osd-0  \
              --mount-options noatime,defaults --yes \
              --journal /dev/disk/by-partlabel/osd-0-journal
-ceph-osd-add --device /dev/disk-by-partlabel/osd-1  \
+ceph-osd-add --device /dev/disk/by-partlabel/osd-1  \
              --mount-options noatime,defaults --yes \
              --journal /dev/disk/by-partlabel/osd-1-journal
 # Etc...
