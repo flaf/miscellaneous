@@ -74,7 +74,10 @@ class network::hosts (
     require     => File['/usr/local/sbin/refresh-hosts.puppet'],
   }
 
-  if $exported {
+  # Cases where the /etc/hosts file will be not managed directly,
+  # ie the host exports some host entries or the host wants to retrieve
+  # host entries from a specific tag (which is a non-empty string).
+  if $exported or $from_tag =~ String[1] {
 
     if $from_tag == '' {
       fail("${title}: you want to export some hosts entries but the tag is empty.")

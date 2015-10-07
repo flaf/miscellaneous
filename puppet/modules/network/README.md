@@ -388,8 +388,25 @@ If the `hosts` entry doesn't exist in hiera, the default
 value of the `entries` parameter will be
 `{ '127.0.1.1' => [ $::fqdn, $::hostname ] }`
 and the default value of the `from_tag` will be `''` (the
-empty string) which means that the host exports no hosts
-entry and retrieves no exported hosts entry.
+empty string) which means that the host retrieves no
+exported hosts entry.
+
+In fact, there are 2 possible kinds of configuration:
+
+* If the host exports no hosts entry (ie there is no address
+which begins with `@@`), then the host retrieves hosts
+entries from the `entries` parameter **and**, **if** the
+value of the `from_tag` parameter is a non-empty string, the
+hosts entries exported with the tag equal to the value of
+the `from_tag` parameter.
+
+* If the host exports some hosts entries (ie there are
+addresses which begin with `@@`), then the `from_tag`
+parameter **must** be a non-empty string and the host
+retrieves the hosts entries from the `entries` parameter
+(with its own exported entries included) and the hosts
+entries exported with the tag equal to the value of
+the `from_tag` parameter.
 
 
 
