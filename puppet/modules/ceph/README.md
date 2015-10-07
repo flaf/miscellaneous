@@ -90,9 +90,13 @@ $ceph_global_conf = {
   'mon_allow_pool_delete'     => 'false',
 }
 
+# To generate a key, you can use with this command:
+#
+#     apt-get install ceph-common && ceph-authtool --gen-print-key
+#
 $ceph_keyrings = {
   'admin' => {
-    'key'        => 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX==',
+    'key'        => 'AQBzfhRW3FU7BRAA75c8O7ZcJRwNMHrhLtSA3Q==',
     'properties' =>  [
       'caps mon = "allow *"',
       'caps osd = "allow *"',
@@ -100,7 +104,7 @@ $ceph_keyrings = {
     ],
   },
   'cephfs' => {
-    'key'        => 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX==',
+    'key'        => 'AQB1fhRWkM5tFxAADYKzOgTbDZw9LEMgbPw4yw==',
     'properties' =>  [
       'caps mon = "allow r"',
       'caps osd = "allow class-read object_prefix rbd_children, allow rwx pool=data"',
@@ -108,7 +112,7 @@ $ceph_keyrings = {
     ],
   },
   'radosgw.gw1' => {
-    'key'           => 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX==',
+    'key'           => 'AQDofhRWBh/ZBBAAtaRA4J9VHl7srhYyxo5pig==',
     'radosgw_host'  => 'radosgw-1',
     'rgw_dns_name'  => 'rgw.domain.tld',
     'properties'    =>  [
@@ -117,7 +121,7 @@ $ceph_keyrings = {
     ],
   },
   'radosgw.gw2' => {
-    'key'           => 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX==',
+    'key'           => 'AQDyfhRWdN50ARAATcfy7itnU1KyUKoX+XNi8g==',
     'radosgw_host'  => 'radosgw-2',
     'rgw_dns_name'  => 'rgw.domain.tld',
     'properties'    =>  [
@@ -126,7 +130,7 @@ $ceph_keyrings = {
     ],
   },
   'cinder' => {
-    'key'           => 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX==',
+    'key'           => 'AQDzfhRWjOwnIRAA9OV8cFbwnLyQElQl2jPy6g==',
     'owner'         => 'cinder',
     'group'         => 'cinder',
     'mode'          => '0640',
