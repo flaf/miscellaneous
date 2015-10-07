@@ -31,7 +31,7 @@ ceph-monitor-init --device /dev/disk-by-partlabel/mon-1   \
 # For the other monitors.
 ceph-monitor-add --device /dev/disk-by-partlabel/mon-2   \
                  --mount-options noatime,defaults --id 1 \
-                 --monitor-addr "$address_mon_1"
+                 --monitor "$address_mon_1"
 # Etc...
 
 
