@@ -23,6 +23,7 @@ class puppetserver::puppetconf {
   $memory                  = $::puppetserver::puppet_memory
   $modules_repository      = $::puppetserver::modules_repository
   $modules_versions        = $::puppetserver::modules_versions
+  $max_groups              = $::puppetserver::max_groups
 
   if $profile == 'autonomous' {
     $notify_puppetserver = undef
@@ -165,18 +166,22 @@ class puppetserver::puppetconf {
     before  => Service['puppetserver'],
     notify  => $notify_puppetserver,
     content => epp('puppetserver/hiera.yaml.epp',
-                   { 'profile' => $profile }
+                   { 'profile'    => $profile,
+                     'max_groups' => $max_groups,
+                   }
                   ),
   }
 
   # The ENC script.
   file { "${environment_path}/enc":
-    ensure => present,
-    owner  => 'root',
-    group  => 'root',
-    mode   => '0755',
-    source => 'puppet:///modules/puppetserver/enc',
-    before => Service['puppetserver'],
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0755',
+    content => epp('puppetserver/enc.epp',
+                   { 'max_groups' => $max_groups, }
+                  ),
+    before  => Service['puppetserver'],
     # No need to restart the puppetserver here.
   }
 

@@ -1,4 +1,4 @@
-<%- |$profile| -%>
+<%- |$profile, $max_groups| -%>
 ---
 ### This file is managed by Puppet, don't edit. ###
 
@@ -7,9 +7,9 @@
 
 :hierarchy:
   - '%{::environment}/hieradata/fqdn/%{::clientcert}'
-  - '%{::environment}/hieradata/group/%{::groups_0}'
-  - '%{::environment}/hieradata/group/%{::groups_1}'
-  - '%{::environment}/hieradata/group/%{::groups_2}'
+<%- range(0, $max_groups - 1).each |$index| { -%>
+  - '%{::environment}/hieradata/group/%{::groups_<%= $index %>}'
+<%- } -%>
   - '%{::environment}/hieradata/datacenter/%{::datacenter}'
   - '%{::environment}/hieradata/common'
 <%- if $profile == 'client' { -%>

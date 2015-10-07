@@ -14,6 +14,7 @@ class { '::puppetserver':
   puppet_memory      => '4g',
   puppetdb_memory    => '1g',
   profile            => 'autonomous',
+  max_groups         => 3,
   modules_repository => 'http://puppetforge.domain.tld',
   puppetdb_name      => 'puppet',
   puppetdb_user      => 'puppet',
@@ -45,6 +46,10 @@ stay the puppet CA too. Then, the puppetdb service will not
 be installed on this host (and the parameters related to
 Puppetdb will be ignored).
 
+The `max_groups` parameter is an integer greater or equal
+to 1. It's the maximum number of groups to which a node
+belongs in the data hierarchy. The default value of this
+parameter is `3`.
 
 The `modules_repository` parameter is the url address of
 a Puppet forge server requested by the puppetserver. The

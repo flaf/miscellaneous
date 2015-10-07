@@ -1,3 +1,4 @@
+<%- |$max_groups| -%>
 #!/opt/puppetlabs/puppet/bin/ruby
 
 ### This file is managed by Puppet, don't edit it.
@@ -68,6 +69,22 @@ hash.each do |key, value|
     if value.is_a?(Array)
       parameters += "\"#{key}\": #{value.to_s()},\n    "
       c = 0
+      # Specific handle if key == "groups'.
+      # To avoid a ton of warnings in logs like this:
+      #
+      #     [puppet-server] Scope(Class[main]) Could not look up
+      #     qualified variable '::groups_2'
+      #
+      # we fill the array to a size of <%= $max_groups %> with
+      # 'NOT_AVAILABLE' elements which represent a dummy group.
+      # It's just to avoid warnings above. If a groups_N variable
+      # is not defined, there are warnings in logs. If the groups_N
+      # variable is defined to a dummy file, there is no warning.
+      if key == 'groups'
+        if <%= $max_groups %> - value.size > 0
+          value = value + [ 'NOT_AVAILABLE' ]*(<%= $max_groups %> - value.size)
+        end
+      end
       for e in value
         if e.is_a?(String) or e.is_a?(Numeric)
           if e.is_a?(Numeric) then e = e.to_s() end
