@@ -244,7 +244,8 @@ The `is_clusternode` and `is_clientnode` parameters are
 boolean which tell if the node is a cluster node, or a
 client node or both. Depending on the case (cluster node
 or client node), the packages installed are a little
-different. And the main difference is:
+different. Of course, in a client node there will be no
+osd or mon daemon but another important difference is:
 
 * in a cluster node, all keyrings of the cluster are installed
 in the `/etc/ceph/` directory;
