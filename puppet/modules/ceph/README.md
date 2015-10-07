@@ -45,17 +45,20 @@ ceph-osd-add --device /dev/disk/by-partlabel/osd-1  \
              --journal /dev/disk/by-partlabel/osd-1-journal
 # Etc...
 
-
 # 4. On a specific node, we create the ceph accounts.
 ceph auth add client.foo1 -i /etc/ceph/ceph.client.foo1.keyring
 ceph auth add client.foo2 -i /etc/ceph/ceph.client.foo2.keyring
 # Etc...
 
-
-# 5. On each node, we install the mds service.
+# 5. Installation of a cephfs if it's necessary.
+# First, on each mds node (help with ceph-mds-add --help).
 ceph-mds-add --id 1
 ceph-mds-add --id 2
 # Etc...
+ceph osd pool create data $pg_num_data
+ceph osd pool create metadata $pg_num_metadata
+ceph fs new cephfs metadata data
+ceph fs ls # To check if all is OK.
 ```
 
 
