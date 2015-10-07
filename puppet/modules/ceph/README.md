@@ -196,7 +196,7 @@ class { '::ceph':
 
 The `clusters_conf` parameter is a hash where each key
 is the name of a cluster and its value is the configuration
-of this cluster (generally the hash have just one key
+of this cluster (generally the hash has just one key
 for just one cluster whose name is `ceph`). Like in the
 example above, the configuration of a cluster **must** have:
 
@@ -206,14 +206,14 @@ example above, the configuration of a cluster **must** have:
 
 In a keyring, the mandatory keys are:
 
-* `key` (use `ceph-authtool --gen-print-key` to generate a value),
+* `key` (you can use `ceph-authtool --gen-print-key` to generate a value),
 * and `properties`.
 
 `owner`, `group`  and `mode` are optional with the default
 value `root`, `root` and `0600`.
 
 Keyrings whose name begins with `radosgw` are special
-because the `radosgw_host` is mandatory too in this case
+because the `radosgw_host` key is mandatory too in this case
 and the value must be the short hostname of the radosgw
 server which will use this keyring. With a radosgw keyring,
 the key `rgw_dns_name` is optional (necessary when you use a
@@ -225,22 +225,33 @@ The `client_accounts` parameter is useful for a client
 node (it can be empty `{}` for a cluster node). This
 parameter contains the keyrings of Ceph accounts which
 will be installed in the client node in `/etc/ceph/`.
-This parameter is a has with this form:
+This parameter is a hash with this form:
 
 ```puppet
 $client_accounts = {
-  '<cluster-X>' => [ '<a-account1-from-cluster-X>', '<a-account2-from-cluster-X>', ],
+  '<cluster-X>' => [ '<a-account1-from-cluster-X>', '<a-account2-from-cluster-X>' ],
+  '<cluster-X>' => [ '<a-account1-from-cluster-Y>', '<a-account2-from-cluster-Y>' ],
   # etc...
 }
 ```
 
-A radosgw account is a special because it triggers on the
-client node the installation of the S3 http service (via
-civetweb).
+In this context too, a radosgw account (ie a account whose
+name matches the regex `/^radosgw/`) is special because it
+triggers on the client node the installation of the S3 http
+service (via civetweb).
 
-The `is_clusternode` and `is_clientnode` are boolean which
-tell if the node is a cluster node, or a client node or
-both.
+The `is_clusternode` and `is_clientnode` parameters are
+boolean which tell if the node is a cluster node, or a
+client node or both. Depending on the case (cluster node
+or client node), the packages installed are a little
+different. And the main difference is:
+
+* in a cluster node, all keyrings of the cluster are installed
+in the `/etc/ceph/` directory;
+* in a client node, only keyrings in the `client_accounts`
+parameter are installed in the `/etc/ceph/` directory. For
+instance, in a simple client node, you will never have the
+keyring of the `admin` account.
 
 
 
