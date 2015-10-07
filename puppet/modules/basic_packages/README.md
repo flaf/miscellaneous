@@ -1,7 +1,7 @@
 # Module description
 
 This module just installs some basic and essential
-packages.
+packages and purges some prohibited packages.
 
 # Usage
 
@@ -11,6 +11,6 @@ Here is an example:
 include '::basic_packages'
 ```
 
-That's all. See the code to have the installed packages.
+That's all. See the code to have the installed/purged packages.
 
 
