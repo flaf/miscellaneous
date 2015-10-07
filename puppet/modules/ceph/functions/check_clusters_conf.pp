@@ -7,7 +7,7 @@ function ceph::check_clusters_conf (
     unless $settings.has_key('global_options')
     and $settings['global_options'] =~ Hash[String[1], String[1], 1] {
       @("END").regsubst('\n', ' ', 'G').fail
-        ceph: the cluster `$cluster_name` must has the `global_options`
+        ceph: the cluster `$cluster_name` must have the `global_options`
         key and its value must be a non-empty hash of non-empty strings.
         |- END
     }
@@ -17,7 +17,7 @@ function ceph::check_clusters_conf (
     unless $settings.has_key('monitors')
     and $settings['monitors'] =~ $monitors_value_type {
       @("END").regsubst('\n', ' ', 'G').fail
-        ceph: the cluster `$cluster_name` must has the `monitors`
+        ceph: the cluster `$cluster_name` must have the `monitors`
         key and its value must have a specific type described in
         the documentation of the ceph module.
         |- END
@@ -25,8 +25,8 @@ function ceph::check_clusters_conf (
 
     $settings['monitors'].each |$monitor, $params| {
       [ 'id', 'address'].each |$a_param| {
-        unless $monitor.has_key($a_param)
-        and $monitor[$a_param] =~ String[1] {
+        unless $params.has_key($a_param)
+        and $params[$a_param] =~ String[1] {
           @("END").regsubst('\n', ' ', 'G').fail
             ceph: in the cluster `$cluster_name`, the monitor `$monitor`
             must have the key `$a_param` and its value must be a non-empty
@@ -38,11 +38,12 @@ function ceph::check_clusters_conf (
 
     $keyrings_value_type = Variant[ String[1], Array[String[1], 1] ]
 
-    unless $settings.has_key('keyrings')
-    and $settings['keyrings'] =~ Hash[String[1], $keyrings_value_type, 1] {
+    unless $settings.has_key('keyrings'){
+    #and $settings['keyrings'] =~ Hash[String[1], $keyrings_value_type, 1] {
+      notice($settings['keyrings'])
       @("END").regsubst('\n', ' ', 'G').fail
-        ceph: the cluster `$cluster_name` must has the `keyrings`
-        key and its value must be a non-empty hash of where the keys
+        ceph: the cluster `$cluster_name` must have the `keyrings`
+        key and its value must be a non-empty hash where the keys
         are non-empty strings and the values are non-empty strings
         or non-empty array of non-empty strings.
         |- END

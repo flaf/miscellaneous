@@ -5,6 +5,7 @@ enc_included_classes:
 enc_groups: [ 'ceph' ]
 enc_datacenter: 'vboxhome'
 
+
 network::resolv_conf::override_dhcp: true
 network::restart: true
 interfaces:
@@ -15,9 +16,7 @@ interfaces:
       method: 'dhcp'
 
 
-
 ceph::client_accounts:
-  ceph: [ 'cephfs' ]
-
+ ceph: [ 'cinder', 'cephfs' ]
 
 
