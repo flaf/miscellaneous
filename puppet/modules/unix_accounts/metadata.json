@@ -1,6 +1,6 @@
 {
   "name": "flaf-unix_accounts",
-  "version": "0.2.9",
+  "version": "0.2.10",
   "author": "flaf",
   "summary": "Module to manage administrator accounts",
   "license": "Apache-2.0",
