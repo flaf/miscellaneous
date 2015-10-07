@@ -14,7 +14,7 @@ function ceph::check_client_accounts (
     }
 
     $accounts.each |$account| {
-      unless $clusters_conf['keyrings'].has_key($account) {
+      unless $clusters_conf[$cluster_name]['keyrings'].has_key($account) {
         @("END").regsubst('\n', ' ', 'G').fail
           ceph: the parameter `client_accounts` refers to the account
           `$account` in the cluster `$cluster_name` but this account

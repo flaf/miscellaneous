@@ -15,12 +15,12 @@ class repository::puppet (
   $comment     = "Puppetlabs ${collec_up} ${::lsbdistcodename} Repository."
 
   apt::source { "puppetlabs-${collec_down}":
-    comment     => $comment,
-    location    => "${url}",
-    release     => $::lsbdistcodename,
-    repos       => $collec_up,
-    key         => $key,
-    include_src => $src,
+    comment  => $comment,
+    location => "${url}",
+    release  => $::lsbdistcodename,
+    repos    => $collec_up,
+    key      => $key,
+    include  => { 'src' => $src, 'deb' => true },
   }
 
   if $pinning_agent_version != 'none' {

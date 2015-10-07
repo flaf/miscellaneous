@@ -10,12 +10,12 @@ class repository::postgresql (
   $key = 'B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8'
 
   apt::source { 'postgresql':
-    comment     => 'PostgreSQL Repository.',
-    location    => "${url}",
-    release     => "${::lsbdistcodename}-pgdg",
-    repos       => 'main',
-    key         => $key,
-    include_src => $src,
+    comment  => 'PostgreSQL Repository.',
+    location => "${url}",
+    release  => "${::lsbdistcodename}-pgdg",
+    repos    => 'main',
+    key      => $key,
+    include  => { 'src' => $src, 'deb' => true },
   }
 
 }

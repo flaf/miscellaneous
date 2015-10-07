@@ -42,7 +42,7 @@ ceph::clusters_conf:
           - 'caps osd = "allow *"'
           - 'caps mds = "allow"'
       cephfs:
-        keys: 'AQB1fhRWkM5tFxAADYKzOgTbDZw9LEMgbPw4yw=='
+        key: 'AQB1fhRWkM5tFxAADYKzOgTbDZw9LEMgbPw4yw=='
         properties:
           - 'caps mon = "allow r"'
           - 'caps osd = "allow class-read object_prefix rbd_children, allow rwx pool=data"'
@@ -65,7 +65,7 @@ ceph::clusters_conf:
         key: 'AQDzfhRWjOwnIRAA9OV8cFbwnLyQElQl2jPy6g=='
         owner: 'cinder'
         group: 'cinder'
-        mode: '0640'
+        mode: '640'
         properties:
           - 'caps mon = "allow r"'
           - 'caps osd = "allow class-read object_prefix rbd_children, allow rwx pool=volumes"'

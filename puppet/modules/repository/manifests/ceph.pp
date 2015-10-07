@@ -21,12 +21,12 @@ class repository::ceph (
   $cleaned_url = $url.regsubst(/\/$/,'') # Remove the trailing slash.
 
   apt::source { 'ceph':
-    comment     => 'Ceph Repository.',
-    location    => "${cleaned_url}/debian-${version}",
-    release     => $::lsbdistcodename,
-    repos       => 'main',
-    key         => $key,
-    include_src => $src,
+    comment  => 'Ceph Repository.',
+    location => "${cleaned_url}/debian-${version}",
+    release  => $::lsbdistcodename,
+    repos    => 'main',
+    key      => $key,
+    include  => { 'src' => $src, 'deb' => true },
   }
 
 }

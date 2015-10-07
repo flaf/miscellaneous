@@ -8,7 +8,7 @@ class ceph (
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
   ::ceph::check_clusters_conf($clusters_conf)
-  ::ceph::chech_client_accounts($client_accounts, $clusters_conf)
+  ::ceph::check_client_accounts($client_accounts, $clusters_conf)
 
   if $force_clusternode {
     $is_clusternode = true

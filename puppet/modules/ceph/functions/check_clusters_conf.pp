@@ -36,16 +36,15 @@ function ceph::check_clusters_conf (
       }
     }
 
-    $keyrings_value_type = Variant[ String[1], Array[String[1], 1] ]
+    $keyrings_value_type = Hash[ String[1], Data, 1 ]
 
-    unless $settings.has_key('keyrings'){
-    #and $settings['keyrings'] =~ Hash[String[1], $keyrings_value_type, 1] {
-      notice($settings['keyrings'])
+    unless $settings.has_key('keyrings')
+    and $settings['keyrings'] =~ Hash[String[1], $keyrings_value_type, 1] {
       @("END").regsubst('\n', ' ', 'G').fail
         ceph: the cluster `$cluster_name` must have the `keyrings`
         key and its value must be a non-empty hash where the keys
-        are non-empty strings and the values are non-empty strings
-        or non-empty array of non-empty strings.
+        are non-empty strings and the values are non-empty hashes
+        (see the documentation of the ceph module to have more details).
         |- END
     }
 
@@ -56,7 +55,7 @@ function ceph::check_clusters_conf (
       unless $params.has_key('key') and $params['key'] =~ String[1] {
         @("END").regsubst('\n', ' ', 'G').fail
           ceph: in the keyring `$account` of the cluster `$cluster_name`,
-          the key `key` must exist and it value must be a non-empty string.
+          the key `key` must exist and its value must be a non-empty string.
           |- END
       }
 
@@ -64,18 +63,18 @@ function ceph::check_clusters_conf (
       and $params['properties'] =~ Array[String[1], 1] {
         @("END").regsubst('\n', ' ', 'G').fail
           ceph: in the keyring `$account` of the cluster `$cluster_name`,
-          the key `properties` must exist and it value must be a non-empty
+          the key `properties` must exist and its value must be a non-empty
           array of non-empty strings.
           |- END
       }
 
       [ 'owner', 'group', 'mode' ].each |$a_param| {
         if $params.has_key($a_param) {
-          unless $params[$a_param] {
+          unless $params[$a_param] =~ String[1] {
             @("END").regsubst('\n', ' ', 'G').fail
               ceph: in the keyring `$account` of the cluster `$cluster_name`,
-              the optional key `$a_param` must exist and it value must be a
-              non-empty strings.
+              the value of the optional key `$a_param` must be a non-empty
+              string.
               |- END
           }
         }
@@ -89,8 +88,8 @@ function ceph::check_clusters_conf (
         and $params['radosgw_host'] =~ String[1] {
           @("END").regsubst('\n', ' ', 'G').fail
             ceph: in the keyring `$account` of the cluster `$cluster_name`,
-            the key `radosgw_host` must exist and it value must be a
-            non-empty strings.
+            the key `radosgw_host` must exist and its value must be a
+            non-empty string.
             |- END
         }
 
@@ -100,7 +99,7 @@ function ceph::check_clusters_conf (
             @("END").regsubst('\n', ' ', 'G').fail
               ceph: in the keyring `$account` of the cluster `$cluster_name`,
               the value of the optional key `rgw_dns_name` must be a non-empty
-              strings.
+              string.
               |- END
           }
         }

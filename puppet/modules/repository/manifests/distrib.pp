@@ -33,30 +33,27 @@ class repository::distrib (
     'Debian': {
 
       apt::source { $::lsbdistcodename:
-        comment     => 'Official repository.',
-        location    => $url,
-        release     => $::lsbdistcodename,
-        repos       => 'main contrib non-free',
-        include_deb => true,
-        include_src => $src,
+        comment  => 'Official repository.',
+        location => $url,
+        release  => $::lsbdistcodename,
+        repos    => 'main contrib non-free',
+        include  => { 'src' => $src, 'deb' => true },
       }
 
       apt::source { "${::lsbdistcodename}-updates":
-        comment     => 'Previously known as "volatile".',
-        location    => $url,
-        release     => "${::lsbdistcodename}-updates",
-        repos       => 'main contrib non-free',
-        include_deb => true,
-        include_src => $src,
+        comment  => 'Previously known as "volatile".',
+        location => $url,
+        release  => "${::lsbdistcodename}-updates",
+        repos    => 'main contrib non-free',
+        include  => { 'src' => $src, 'deb' => true },
       }
 
       apt::source { "${::lsbdistcodename}-security":
-        comment     => 'Security updates.',
-        location    => 'http://security.debian.org/',
-        release     => "${::lsbdistcodename}/updates",
-        repos       => 'main contrib non-free',
-        include_deb => true,
-        include_src => $src,
+        comment  => 'Security updates.',
+        location => 'http://security.debian.org/',
+        release  => "${::lsbdistcodename}/updates",
+        repos    => 'main contrib non-free',
+        include  => { 'src' => $src, 'deb' => true },
       }
 
     }
@@ -64,30 +61,27 @@ class repository::distrib (
     'Ubuntu': {
 
       apt::source { $::lsbdistcodename:
-        comment     => 'Only main and restricted are maintained by the Ubuntu developers.',
-        location    => $url,
-        release     => $::lsbdistcodename,
-        repos       => 'main restricted universe',
-        include_deb => true,
-        include_src => $src,
+        comment  => 'Only main and restricted are maintained by the Ubuntu developers.',
+        location => $url,
+        release  => $::lsbdistcodename,
+        repos    => 'main restricted universe',
+        include  => { 'src' => $src, 'deb' => true },
       }
 
       apt::source { "${::lsbdistcodename}-updates":
-        comment     => 'Major bug fix updates produced after the final release of the distribution.',
-        location    => $url,
-        release     => "${::lsbdistcodename}-updates",
-        repos       => 'main restricted universe',
-        include_deb => true,
-        include_src => $src,
+        comment  => 'Major bug fix updates produced after the final release of the distribution.',
+        location => $url,
+        release  => "${::lsbdistcodename}-updates",
+        repos    => 'main restricted universe',
+        include  => { 'src' => $src, 'deb' => true },
       }
 
       apt::source { "${::lsbdistcodename}-security":
-        comment     => 'Security updates.',
-        location    => 'http://security.ubuntu.com/ubuntu',
-        release     => "${::lsbdistcodename}-security",
-        repos       => 'main restricted universe',
-        include_deb => true,
-        include_src => $src,
+        comment  => 'Security updates.',
+        location => 'http://security.ubuntu.com/ubuntu',
+        release  => "${::lsbdistcodename}-security",
+        repos    => 'main restricted universe',
+        include  => { 'src' => $src, 'deb' => true },
       }
 
     }
