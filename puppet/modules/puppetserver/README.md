@@ -106,4 +106,10 @@ to be executable for this account. If the command is run
 by root, make a chown of the directory. Probably need to
 change the Unix rights of the eyaml keys.
 
+* Add an option to the `update-modules.puppet` command to
+update only modules whose names match a regex. Before to
+update a module, with `git pull` and `git diff origin/master`
+check if the module has been changed (and don't update in
+this case).
+
 
