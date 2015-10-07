@@ -52,15 +52,15 @@ ceph::clusters_conf:
           - 'caps mds = "allow"'
       radosgw.gw1:
         key: 'AQDofhRWBh/ZBBAAtaRA4J9VHl7srhYyxo5pig=='
-        radosgw_host: 'radosgw-1'
-        rgw_dns_name: 'rgw.domain.tld'
+        radosgw_host: 'ceph-radosgw1'
+        rgw_dns_name: 'ostore.athome.priv'
         properties:
           - 'caps mon = "allow rwx"'
           - 'caps osd = "allow rwx"'
       radosgw.gw2:
         key: 'AQDyfhRWdN50ARAATcfy7itnU1KyUKoX+XNi8g=='
-        radosgw_host: 'radosgw-2'
-        rgw_dns_name: 'rgw.domain.tld'
+        radosgw_host: 'ceph-radosgw2'
+        rgw_dns_name: 'ostore.athome.priv'
         properties:
           - 'caps mon = "allow rwx"'
           - 'caps osd = "allow rwx"'
@@ -72,5 +72,9 @@ ceph::clusters_conf:
         properties:
           - 'caps mon = "allow r"'
           - 'caps osd = "allow class-read object_prefix rbd_children, allow rwx pool=volumes"'
+
+---
+hosts:
+  tag: 'ceph-cluster'
 
 

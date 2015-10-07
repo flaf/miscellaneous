@@ -59,18 +59,16 @@ define ceph::client (
       content => "${key}\n",
     }
 
-  }
+    if $account =~ /^radosgw/ {
 
-  $is_radosgw = !$client_keyrings.keys.filter |$k| { $k =~ /^radosgw/ }.empty
+      ::ceph::radosgw { "${cluster_name}-${account}":
+        cluster_name => $cluster_name,
+        account      => $account,
+      }
 
-  if $is_radosgw {
-
-    ::ceph::radosgw { "${cluster_name}-${account}":
-      cluster_name => $cluster_name,
-      account      => $account,
     }
 
-  }
+  } # End of loop on $client_keyrings.
 
 }
 
