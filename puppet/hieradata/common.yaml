@@ -26,6 +26,8 @@ inventory_networks:
     cidr_address: '172.20.0.0/16'
     gateway: '172.20.0.1'
 
+
+unix_accounts::fqdn_in_prompt: true
 unix_accounts:
   root:
     password: '%{hiera("_root_unix_pwd_")}'
