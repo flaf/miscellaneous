@@ -11,6 +11,7 @@ class basic_packages (
                 'lsb-release',
                 'tree', # Warning, in Trusty, "tree" is in "universe".
                 'tcpdump',
+                'curl',
                 'screen',
               ]
   ensure_packages( $packages, { ensure => present } )
