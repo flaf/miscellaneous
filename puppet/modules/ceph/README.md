@@ -259,7 +259,7 @@ keyring of the `admin` account.
 
 # Data binding
 
-The is no default hiera lookup in this module. The
+There is no default hiera lookup in this module. The
 classical mechanisms of data binding are used. Here
 is the defaults values of the parameters:
 
@@ -272,8 +272,8 @@ configuration yourself,
 Here is a hiera configuration equivalent to the call in the
 `Usage` section above.
 
-First in a yaml file shared by all the nodes: the cluster
-nodes **and** the client nodes:
+First in a yaml file shared by all the nodes (ie the cluster
+nodes **and** the client nodes):
 
 ```yaml
 # The $clusters_conf parameter.
