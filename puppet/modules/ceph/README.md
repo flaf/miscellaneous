@@ -55,6 +55,8 @@ ceph auth add client.foo2 -i /etc/ceph/ceph.client.foo2.keyring
 ceph-mds-add --id 1
 ceph-mds-add --id 2
 # Etc...
+#
+# Creation of the Cephfs.
 ceph osd pool create data $pg_num_data
 ceph osd pool create metadata $pg_num_metadata
 ceph fs new cephfs metadata data
