@@ -75,7 +75,7 @@ hash.each do |key, value|
       #     [puppet-server] Scope(Class[main]) Could not look up
       #     qualified variable '::groups_2'
       #
-      # we fill the array to a size of <%= $max_groups %> with
+      # we fill the array to a size of <%= $max_groups %> with consecutive
       # 'NOT_AVAILABLE' elements which represent a dummy group.
       # It's just to avoid warnings above. If a groups_N variable
       # is not defined, there are warnings in logs. If the groups_N
