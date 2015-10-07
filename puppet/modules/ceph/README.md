@@ -15,7 +15,8 @@ launch:
 ```sh
 # 1. If you have dedicated disks for monitors or osds,
 #    you must format the partitions on each node.
-#    Use gdisk and use /dev/disk/by-partlabel/ symlinks.
+#    Use gdisk and use /dev/disk/by-partlabel/ symlinks
+#    (ie use gdisk to give a name for each partition).
 mkfs.xfs -L OSD0 -f /dev/sdd2 # typically, /dev/sdd1 is used for the journal.
 mkfs.xfs -L OSD1 -f /dev/sde2 # typically, /dev/sde1 is used for the journal.
 # Etc...
