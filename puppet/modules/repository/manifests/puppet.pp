@@ -12,12 +12,13 @@ class repository::puppet (
   $key         = '47B320EB4C7C375AA9DAE1A01054B7A24BD6EC30'
   $collec_down = $collection.downcase
   $collec_up   = $collection.upcase
-  $comment     = "Puppetlabs ${collec_up} ${::lsbdistcodename} Repository."
+  $codename    = $::facts['lsbdistcodename']
+  $comment     = "Puppetlabs ${collec_up} ${codename} Repository."
 
   apt::source { "puppetlabs-${collec_down}":
     comment  => $comment,
     location => "${url}",
-    release  => $::lsbdistcodename,
+    release  => $codename,
     repos    => $collec_up,
     key      => $key,
     include  => { 'src' => $src, 'deb' => true },

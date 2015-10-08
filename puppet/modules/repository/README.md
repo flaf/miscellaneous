@@ -132,3 +132,22 @@ repository.
 
 
 
+# The `repository::docker` class
+
+## Usage
+
+Here is an example:
+
+```puppet
+class { '::repository::docker':
+  url => 'http://apt.dockerproject.org/repo/dists',
+  src => false,
+}
+```
+
+## Parameters and default values
+
+The default values of the parameters are exactly
+the values of the call above.
+
+

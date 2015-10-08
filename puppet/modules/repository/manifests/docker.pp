@@ -1,4 +1,4 @@
-class repository::postgresql (
+class repository::docker (
   String[1]           $url,
   Boolean             $src,
   Array[String[1], 1] $supported_distributions,
@@ -7,13 +7,15 @@ class repository::postgresql (
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
+  $key      = '58118E89F3A912897C070ADBF76221572C52609D'
   $codename = $::facts['lsbdistcodename']
-  $key      = 'B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8'
+  $osid     = $::facts['lsbdistid'].downcase # typically "debian" or "ubuntu"
+  $release  = "${osid}-${codename}"
 
-  apt::source { 'postgresql':
-    comment  => 'PostgreSQL Repository.',
-    location => "${url}",
-    release  => "${codename}-pgdg",
+  apt::source { 'docker':
+    comment  => 'Docker Repository.',
+    location => $url,
+    release  => $release,
     repos    => 'main',
     key      => $key,
     include  => { 'src' => $src, 'deb' => true },

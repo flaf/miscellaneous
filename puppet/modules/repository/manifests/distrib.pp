@@ -8,6 +8,8 @@ class repository::distrib (
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
+  $codename = $::facts['lsbdistcodename']
+
   # Now, the sources.list, sources.list.d/ and preferences.d
   # are only managed by Puppet.
   class { '::apt':
@@ -32,26 +34,26 @@ class repository::distrib (
 
     'Debian': {
 
-      apt::source { $::lsbdistcodename:
+      apt::source { $codename:
         comment  => 'Official repository.',
         location => $url,
-        release  => $::lsbdistcodename,
+        release  => $codename,
         repos    => 'main contrib non-free',
         include  => { 'src' => $src, 'deb' => true },
       }
 
-      apt::source { "${::lsbdistcodename}-updates":
+      apt::source { "${codename}-updates":
         comment  => 'Previously known as "volatile".',
         location => $url,
-        release  => "${::lsbdistcodename}-updates",
+        release  => "${codename}-updates",
         repos    => 'main contrib non-free',
         include  => { 'src' => $src, 'deb' => true },
       }
 
-      apt::source { "${::lsbdistcodename}-security":
+      apt::source { "${codename}-security":
         comment  => 'Security updates.',
         location => 'http://security.debian.org/',
-        release  => "${::lsbdistcodename}/updates",
+        release  => "${codename}/updates",
         repos    => 'main contrib non-free',
         include  => { 'src' => $src, 'deb' => true },
       }
@@ -60,26 +62,26 @@ class repository::distrib (
 
     'Ubuntu': {
 
-      apt::source { $::lsbdistcodename:
+      apt::source { $codename:
         comment  => 'Only main and restricted are maintained by the Ubuntu developers.',
         location => $url,
-        release  => $::lsbdistcodename,
+        release  => $codename,
         repos    => 'main restricted universe',
         include  => { 'src' => $src, 'deb' => true },
       }
 
-      apt::source { "${::lsbdistcodename}-updates":
+      apt::source { "${codename}-updates":
         comment  => 'Major bug fix updates produced after the final release of the distribution.',
         location => $url,
-        release  => "${::lsbdistcodename}-updates",
+        release  => "${codename}-updates",
         repos    => 'main restricted universe',
         include  => { 'src' => $src, 'deb' => true },
       }
 
-      apt::source { "${::lsbdistcodename}-security":
+      apt::source { "${codename}-security":
         comment  => 'Security updates.',
         location => 'http://security.ubuntu.com/ubuntu',
-        release  => "${::lsbdistcodename}-security",
+        release  => "${codename}-security",
         repos    => 'main restricted universe',
         include  => { 'src' => $src, 'deb' => true },
       }

@@ -23,7 +23,7 @@ class repository::ceph (
   apt::source { 'ceph':
     comment  => 'Ceph Repository.',
     location => "${cleaned_url}/debian-${version}",
-    release  => $::lsbdistcodename,
+    release  => $::facts['lsbdistcodename'],
     repos    => 'main',
     key      => $key,
     include  => { 'src' => $src, 'deb' => true },

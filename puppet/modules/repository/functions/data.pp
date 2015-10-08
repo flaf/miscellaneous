@@ -43,6 +43,11 @@ function repository::data {
     repository::postgresql::supported_distributions => ['trusty'],
     repository::postgresql::stage                   => $stage,
 
+    repository::docker::url                     => 'http://apt.dockerproject.org/repo/dists',
+    repository::docker::src                     => false,
+    repository::docker::supported_distributions => $distribs,
+    repository::docker::stage                   => $stage,
+
     repository::ceph::url                     => 'http://ceph.com',
     repository::ceph::version                 => $ceph_version,
     repository::ceph::src                     => false,
