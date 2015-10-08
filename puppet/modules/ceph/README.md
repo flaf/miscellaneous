@@ -210,7 +210,7 @@ In a keyring, the mandatory keys are:
 * and `properties`.
 
 `owner`, `group`  and `mode` are optional with the default
-value `root`, `root` and `0600`.
+values `root`, `root` and `0600`.
 
 Keyrings whose name begins with `radosgw` are special
 because the `radosgw_host` key is mandatory too in this case
@@ -238,10 +238,10 @@ $client_accounts = {
 In this context too, a radosgw account (ie a account whose
 name matches the regex `/^radosgw/`) is special because it
 triggers on the client node the installation of the S3 http
-service (via civetweb).
+service (ie the `radosgw` service).
 
 The `is_clusternode` and `is_clientnode` parameters are
-boolean which tell if the node is a cluster node, or a
+boolean which tell if the node is a cluster node or a
 client node or both. Depending on the case (cluster node
 or client node), the packages installed are a little
 different. Of course, in a client node there will be no
@@ -251,16 +251,16 @@ osd or mon daemon but another important difference is:
 in the `/etc/ceph/` directory;
 * in a client node, only keyrings in the `client_accounts`
 parameter are installed in the `/etc/ceph/` directory. For
-instance, in a simple client node, you will never have the
-keyring of the `admin` account.
+instance, in a simple client node, normally you should never
+have the keyring of the `admin` account.
 
 
 
 
 # Data binding
 
-There is no default hiera lookup in this module. The
-classical mechanisms of data binding are used. Here
+There is no default hiera lookup in this module. Just
+the classical mechanisms of data binding are used. Here
 is the defaults values of the parameters:
 
 * `clusters_conf => undef` so you must provide the clusters
@@ -272,8 +272,8 @@ configuration yourself,
 Here is a hiera configuration equivalent to the call in the
 `Usage` section above.
 
-First in a yaml file shared by all the nodes (ie the cluster
-nodes **and** the client nodes):
+First, in a yaml file shared by all the nodes (ie the cluster
+nodes **and** the client nodes), you can put:
 
 ```yaml
 # The $clusters_conf parameter.
@@ -353,7 +353,8 @@ ceph::clusters_conf:
         - 'caps osd = "allow class-read object_prefix rbd_children, allow rwx pool=volumes"'
 ```
 
-And in the yaml file of the specific node (ie in `$fqdn.yaml`):
+And in the yaml file of the specific node (ie in `$fqdn.yaml`)
+you can put:
 
 ```yaml
 # The node will be a client node of the cluster and will use specific
