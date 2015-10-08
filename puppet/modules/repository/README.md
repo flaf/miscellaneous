@@ -151,3 +151,10 @@ The default values of the parameters are exactly
 the values of the call above.
 
 
+
+
+# TODO
+
+* Add pinning support for the docker repository.
+
+
