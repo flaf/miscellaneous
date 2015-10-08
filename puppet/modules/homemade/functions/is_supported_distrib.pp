@@ -3,14 +3,14 @@ function homemade::is_supported_distrib (
   String[1]           $class_name,
 ) {
 
-  $lsbdistcodename = $facts['lsbdistcodename']
+  $codename = $::facts['lsbdistcodename']
 
-  if !member($supp_distribs, $lsbdistcodename) {
+  if !member($supp_distribs, $codename) {
 
     $supp_distribs_str = join($supp_distribs, ', ')
 
     fail(regsubst(@("END"), '\n', ' ', 'G'))
-      Class `${class_name}` has never been tested on ${::lsbdistcodename}.
+      Class `${class_name}` has never been tested on ${codename}.
       The supported distributions for this class are: ${supp_distribs_str}.
       |- END
 
