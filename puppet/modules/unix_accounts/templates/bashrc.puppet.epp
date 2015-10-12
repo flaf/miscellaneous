@@ -19,7 +19,9 @@ host_name="$(hostname --fqdn)"
 <%- } else { -%>
 host_name='\h'
 <%- } -%>
-PS1="${debian_chroot:+($debian_chroot)}"'[$?]'" $red\u@$host_name $blue\A $white\w$reset\n${prompt} "
+# Avoid white color because it can be invisible
+# when the foreground of the terminal is white too.
+PS1="${debian_chroot:+($debian_chroot)}"'[$?]'" $red\u@$host_name $blue\A$reset \w\n${prompt} "
 
 # To avoid to pollute the shell with useless variables.
 unset red
