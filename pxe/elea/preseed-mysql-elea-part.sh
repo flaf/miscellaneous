@@ -98,7 +98,7 @@ mdadm --create /dev/$raid1ssd --level=1 --raid-devices=2 /dev/sdc1 /dev/sdd1 --f
 
 ### Creation of the volume group LVM on the SSD RAID1 volume. ###
 
-pvcreate --ff --yes /dev/$raid1ssd
+pvcreate -ff --yes /dev/$raid1ssd
 vgcreate --force --yes vg1 /dev/$raid1ssd
 
 
