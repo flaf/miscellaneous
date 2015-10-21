@@ -28,14 +28,16 @@ for i in a b
 do
 
     # The biosgrub partitions.
-    $parted /dev/sd${i} unit MiB mkpart biosgrub${i} 1 2
+    a=1
+    b=2
+    $parted /dev/sd${i} unit MiB mkpart biosgrub${i} $a $b
     $parted /dev/sd${i} set 1 bios_grub on
 
     # The root partitions (will be a RAID1 volume).
-    a=2
+    a=$b
     b=$((30 * 1024 + a))
     $parted /dev/sd${i} unit MiB mkpart system${i} $a $b
-    $parted /dev/sd${i} set 2 raidb on
+    $parted /dev/sd${i} set 2 raid on
 
     # The swap (will be a RAID1 volume).
     a=$b
