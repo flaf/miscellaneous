@@ -5,10 +5,15 @@ set -x
 
 parted='parted --script --align=opt'
 
-### Remove the RAID volumes /dev/md0 and /dev/md1 if already created. ###
-[ -e /dev/md0 ] && mdadm --stop /dev/md0
-[ -e /dev/md1 ] && mdadm --stop /dev/md1
-[ -e /dev/md2 ] && mdadm --stop /dev/md2
+raid1system='md0'
+raid1swap='md1'
+raid1ssd='md2'
+
+
+### Remove the RAID volumes /dev/$raid1system and /dev/$raid1swap if already created. ###
+[ -e /dev/$raid1system ] && mdadm --stop /dev/$raid1system
+[ -e /dev/$raid1swap ] && mdadm --stop /dev/$raid1swap
+[ -e /dev/$raid1ssd ] && mdadm --stop /dev/$raid1ssd
 mdadm --zero-superblock /dev/sda3
 mdadm --zero-superblock /dev/sdb3
 mdadm --zero-superblock /dev/sda4
@@ -75,24 +80,25 @@ do
     a=1
     b='-1cyl' # The last cylinder
     $parted /dev/sd${i} -- unit MiB mkpart ssd${n} $a $b
+    $parted /dev/sd${i} set 1 raid on
 done
 
 
 ### Creation of the RAID volumes. ###
 
 # For the system (/) partition.
-mdadm --create /dev/md0 --level=1 --raid-devices=2 /dev/sda3 /dev/sdb3 --force --run
+mdadm --create /dev/$raid1system --level=1 --raid-devices=2 /dev/sda3 /dev/sdb3 --force --run
 
 # For the swap partition.
-mdadm --create /dev/md1 --level=1 --raid-devices=2 /dev/sda4 /dev/sdb4 --force --run
+mdadm --create /dev/$raid1swap --level=1 --raid-devices=2 /dev/sda4 /dev/sdb4 --force --run
 
 # The SSD RAID1 volume.
-mdadm --create /dev/md2 --level=1 --raid-devices=2 /dev/sdc1 /dev/sdd1 --force --run
+mdadm --create /dev/$raid1ssd --level=1 --raid-devices=2 /dev/sdc1 /dev/sdd1 --force --run
 
 
 ### Creation of the volume group LVM on the SSD RAID1 volume. ###
 
-pvcreate --ff --yes /dev/md2
-vgcreate --force --yes vg1 /dev/md2
+pvcreate --ff --yes /dev/$raid1ssd
+vgcreate --force --yes vg1 /dev/$raid1ssd
 
 
