@@ -81,13 +81,13 @@ done
 ### Creation of the RAID volumes. ###
 
 # For the system (/) partition.
-mdadm --create /dev/md0 --level=1 --raid-devices=2 /dev/sda3 /dev/sdb3
+mdadm --create /dev/md0 --level=1 --raid-devices=2 /dev/sda3 /dev/sdb3 --force --run
 
 # For the swap partition.
-mdadm --create /dev/md1 --level=1 --raid-devices=2 /dev/sda4 /dev/sdb4
+mdadm --create /dev/md1 --level=1 --raid-devices=2 /dev/sda4 /dev/sdb4 --force --run
 
 # The SSD RAID1 volume.
-mdadm --create /dev/md2 --level=1 --raid-devices=2 /dev/sdc1 /dev/sdd1
+mdadm --create /dev/md2 --level=1 --raid-devices=2 /dev/sdc1 /dev/sdd1 --force --run
 
 
 ### Creation of the volume group LVM on the SSD RAID1 volume. ###
