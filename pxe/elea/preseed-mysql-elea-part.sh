@@ -75,7 +75,7 @@ do
 
     # The swap (will be a RAID1 volume).
     a=1
-    b='-1s' # The last sector
+    b='-1cyl' # The last cylinder
     $parted /dev/sd${i} -- unit MiB mkpart ssd${n} $a $b
 done
 
