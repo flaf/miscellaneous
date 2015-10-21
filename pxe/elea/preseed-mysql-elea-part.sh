@@ -105,6 +105,6 @@ vgcreate --force --yes vg1 /dev/$raid1ssd
 ### Creation of the file systems. ###
 
 mkfs.ext4 -F -E lazy_itable_init=0 -L system /dev/$raid1system
-mkswap --force --label swap /dev/$raid1swap
+mkswap -L swap /dev/$raid1swap
 
 
