@@ -83,10 +83,10 @@ done
 ### Creation of the RAID volumes. ###
 
 # For the system (/) partition.
-mdadm --create /dev/md0 --level=1 --raid-devices=2 /dev/sda2 /dev/sdb2
+mdadm --create /dev/md0 --level=1 --raid-devices=2 /dev/sda3 /dev/sdb3
 
 # For the swap partition.
-mdadm --create /dev/md1 --level=1 --raid-devices=2 /dev/sda3 /dev/sdb3
+mdadm --create /dev/md1 --level=1 --raid-devices=2 /dev/sda4 /dev/sdb4
 
 # The SSD RAID1 volume.
 mdadm --create /dev/md2 --level=1 --raid-devices=2 /dev/sdc1 /dev/sdd1
