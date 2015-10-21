@@ -40,28 +40,35 @@ do
     # a => n = 1, b => n = 2.
     n=$((n + 1))
 
+    part_num=1
+
     # The used UEFI partitions if one day we decide
     # to enable the Bios-UEFI.
     a=1
     b=250 # Size == 250MiB
     $parted /dev/sd${i} unit MiB mkpart uefi${n}unused $a $b
+    part_num=$((part_num + 1))
 
     # The biosgrub partitions.
     a=$b
     b=$((1 + $b)) # Size == 1MiB
     $parted /dev/sd${i} unit MiB mkpart biosgrub${n} $a $b
-    $parted /dev/sd${i} set 1 bios_grub on
+    $parted /dev/sd${i} set $part_num bios_grub on
+    part_num=$((part_num + 1))
 
     # The root partitions (will be a RAID1 volume).
     a=$b
     b=$((30 * 1024 + a)) # Size == 30GiB
     $parted /dev/sd${i} unit MiB mkpart system${n} $a $b
-    $parted /dev/sd${i} set 2 raid on
+    $parted /dev/sd${i} set $part_num raid on
+    part_num=$((part_num + 1))
 
     # The swap (will be a RAID1 volume).
     a=$b
     b=$((64 * 1024 + a)) # Size == 64GiB
     $parted /dev/sd${i} unit MiB mkpart swap${n} linux-swap $a $b
+    $parted /dev/sd${i} set $part_num raid on
+    part_num=$((part_num + 1))
 
 done
 
@@ -83,18 +90,18 @@ done
 ### Creation of the RAID volumes. ###
 
 # For the system (/) partition.
-#mdadm --create /dev/md0 --force --level=1 --raid-devices=2 /dev/sda3 /dev/sdb3
+mdadm --create /dev/md0 --level=1 --raid-devices=2 /dev/sda3 /dev/sdb3
 
 # For the swap partition.
-#mdadm --create /dev/md1 --force --level=1 --raid-devices=2 /dev/sda4 /dev/sdb4
+mdadm --create /dev/md1 --level=1 --raid-devices=2 /dev/sda4 /dev/sdb4
 
 # The SSD RAID1 volume.
-#mdadm --create /dev/md2 --force --level=1 --raid-devices=2 /dev/sdc1 /dev/sdd1
+mdadm --create /dev/md2 --level=1 --raid-devices=2 /dev/sdc1 /dev/sdd1
 
 
 ### Creation of the volume group LVM on the SSD RAID1 volume. ###
 
-#pvcreate --force /dev/md2
-#vgcreate --force --yes vg1 /dev/md2
+pvcreate --force /dev/md2
+vgcreate --force --yes vg1 /dev/md2
 
 
