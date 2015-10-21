@@ -9,6 +9,11 @@
 # - https://docs.puppetlabs.com/references/latest/configuration.html
 
 [main]
+# https://docs.puppetlabs.com/puppet/latest/reference/config_file_main.html#files-or-directories
+# 0750 permission for ssldir seems better than the default
+# permission 0771. Of course, we keep the default path of
+# the ssldir.
+ssldir      = $confdir/ssl { owner = service, mode = 0750 }
 server      = <%= $server %>
 ca_server   = <%= $ca_server %>
 runinterval = <%= $runinterval %>

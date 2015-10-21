@@ -7,6 +7,11 @@
 #
 
 [main]
+# https://docs.puppetlabs.com/puppet/latest/reference/config_file_main.html#files-or-directories
+# 0750 permission for ssldir seems better than the default
+# permission 0771. Of course, we keep the default path of
+# the ssldir.
+ssldir = $confdir/ssl { owner = service, mode = 0750 }
 <%- if $profile == 'client' { -%>
 cacrl = $ssldir/ca_crl.pem
 <%- } -%>
