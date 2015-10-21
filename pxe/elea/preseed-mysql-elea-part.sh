@@ -6,24 +6,15 @@ set -x
 parted='parted --script --align=opt'
 
 ### Remove the RAID volumes /dev/md0 and /dev/md1 if already created. ###
-if [ -e /dev/md0 ]
-then
-    mdadm --stop /dev/md0
-    mdadm --zero-superblock /dev/sda2
-    mdadm --zero-superblock /dev/sdb2
-fi
-if [ -e /dev/md1 ]
-then
-    mdadm --stop /dev/md1
-    mdadm --zero-superblock /dev/sda3
-    mdadm --zero-superblock /dev/sdb3
-fi
-if [ -e /dev/md2 ]
-then
-    mdadm --stop /dev/md2
-    mdadm --zero-superblock /dev/sdc1
-    mdadm --zero-superblock /dev/sdd1
-fi
+[ -e /dev/md0 ] && mdadm --stop /dev/md0
+[ -e /dev/md1 ] && mdadm --stop /dev/md1
+[ -e /dev/md2 ] && mdadm --stop /dev/md2
+mdadm --zero-superblock /dev/sda3
+mdadm --zero-superblock /dev/sdb3
+mdadm --zero-superblock /dev/sda4
+mdadm --zero-superblock /dev/sdb4
+mdadm --zero-superblock /dev/sdc1
+mdadm --zero-superblock /dev/sdd1
 
 
 ### Create GPT partition on each disk. ###
