@@ -1,0 +1,142 @@
+# D-I config version 2.0
+
+# Usefull aliases in APPEND statement:
+# (http://www.debian.org/releases/stable/armel/apbs02.html.fr#preseed-aliases)
+#
+#     keymap    --> keyboard-configuration/xkb-keymap
+#     language  --> debian-installer/language
+#     country   --> debian-installer/country
+#     locale    --> debian-installer/locale
+#     url       --> preseed/url
+#     hostname  --> netcfg/get_hostname
+#     domain    --> netcfg/get_domain
+#     interface --> netcfg/choose_interface
+#     priority  --> debconf/priority
+
+
+# Classic header
+DEFAULT boot-screens/vesamenu.c32
+PROMPT 0
+MENU TITLE PXE Boot Menu
+
+# Timeout in centiseconds (10 cs = 1 second).
+# If you don't want timeout, just comment these lines.
+TIMEOUT 50
+ONTIMEOUT local
+MENU AUTOBOOT AUTOMATIC LOCAL BOOT in # second{,s}...
+
+# For colors, see http://www.syslinux.org/wiki/index.php/Comboot/menu.c32
+MENU COLOR tabmsg      37;40    #80ffffff #00000000 std
+MENU COLOR timeout_msg 31;41    #90ffff00 #00000000 std
+
+
+LABEL local
+    menu label Local boot (for classic computers)
+    localboot 0
+    # The default entry if the user just presses Enter before the timeout
+    MENU DEFAULT
+
+#LABEL local2
+#    menu label Local boot (for virtualbox computers)
+#    # chain.c32 is not included in netboot.tar.gz.
+#    # You must copy it in the root of the ftp directory.
+#    # apt-get install syslinux-common && cp /usr/lib/syslinux/chain.c32 /srv/tftp/
+#    KERNEL chain.c32
+#    APPEND hd0 0
+
+#LABEL jessie-amd64-preseed-minimal
+#    MENU LABEL Debian Jessie amd64: install with a minimal preseed
+#    KERNEL jessie/debian-installer/amd64/linux
+#    APPEND language=en country=FR locale=en_US.UTF-8 ipv6.disable=1 url=http://172.31.0.1/jessie-preseed-minimal-amd64.cfg initrd=jessie/debian-installer/amd64/initrd.gz --
+#    TEXT HELP
+#    Semi-automatic installation of Debian Jessie.
+#    Keyboard configuration, network configuration, partioning
+#    and Grub installation are manual.
+#    ENDTEXT
+#
+#LABEL jessie-amd64-preseed
+#    MENU LABEL Debian Jessie amd64: installation with preseed
+#    KERNEL jessie/debian-installer/amd64/linux
+#    # hostname and domain are defined here to avoid questions
+#    # during installation but the DNS entry (if exists) take precedence.
+#    APPEND language=fr keymap=fr country=FR locale=fr_FR.UTF-8 interface=eth0 hostname=jessie-vm domain=domain.tld ipv6.disable=1 url=http://172.31.0.1/jessie-preseed-amd64.cfg initrd=jessie/debian-installer/amd64/initrd.gz --
+#    TEXT HELP
+#    Fully automatic installation of Debian Jessie.
+#    hostname == name sent by the DHCP server if defined.
+#    hostname == "jessie-vm" if not.
+#    ENDTEXT
+#
+#LABEL wheezy-amd64-preseed
+#    MENU LABEL Debian Wheezy amd64: installation with preseed
+#    KERNEL wheezy/debian-installer/amd64/linux
+#    # hostname and domain are defined here to avoid questions
+#    # during installation but the DNS entry (if exists) take precedence.
+#    APPEND language=fr keymap=fr country=FR locale=fr_FR.UTF-8 interface=eth0 hostname=wheezy-vm domain=domain.tld ipv6.disable=1 url=http://172.31.0.1/wheezy-preseed-amd64.cfg initrd=wheezy/debian-installer/amd64/initrd.gz --
+#    TEXT HELP
+#    Fully automatic installation of Debian Wheezy.
+#    hostname == name sent by the DHCP server if defined.
+#    hostname == "wheezy-vm" if not.
+#    ENDTEXT
+#
+#LABEL trusty-amd64-preseed
+#    MENU LABEL Ubuntu Trusty amd64: installation with preseed
+#    KERNEL trusty/ubuntu-installer/amd64/linux
+#    # hostname and domain are defined here to avoid questions
+#    # during installation but the DNS entry (if exists) take precedence.
+#    APPEND language=fr keymap=fr country=FR locale=fr_FR.UTF-8 interface=eth0 hostname=trusty-vm domain=domain.tld ipv6.disable=1 url=http://172.31.0.1/trusty-preseed-amd64.cfg initrd=trusty/ubuntu-installer/amd64/initrd.gz --
+#    TEXT HELP
+#    Fully automatic installation of Ubuntu Trusty.
+#    hostname == name sent by the DHCP server if defined.
+#    hostname == "trusty-vm" if not.
+#    ENDTEXT
+#
+#LABEL trusty-amd64-preseed-HP-ProLiant-DL180G5-for-ceph
+#    MENU LABEL Trusty preseed for HP ProLiant DL180G5 (ceph)
+#    KERNEL trusty/ubuntu-installer/amd64/linux
+#    # hostname and domain are defined here to avoid questions
+#    # during installation but the DNS entry (if exists) take precedence.
+#    APPEND language=fr keymap=fr country=FR locale=fr_FR.UTF-8 interface=eth0 hostname=silo-3 domain=labs.ac-versailles.fr ipv6.disable=1 url=http://172.31.0.1/trusty-preseed-amd64-HPproliant-DL180G5-ceph.cfg initrd=trusty/ubuntu-installer/amd64/initrd.gz --
+#
+#LABEL trusty-preseed-amd64-CL302LXA5-ceph.cfg
+#    MENU LABEL Trusty preseed for Transtec CL302LXA5 (ceph)
+#    KERNEL trusty/ubuntu-installer/amd64/linux
+#    # hostname and domain are defined here to avoid questions
+#    # during installation but the DNS entry (if exists) take precedence.
+#    APPEND language=fr keymap=fr country=FR locale=fr_FR.UTF-8 interface=eth0 hostname=silo-3 domain=labs.ac-versailles.fr ipv6.disable=1 url=http://172.31.0.1/trusty-preseed-amd64-CL302LXA5-ceph.cfg initrd=trusty/ubuntu-installer/amd64/initrd.gz --
+#
+#LABEL trusty-preseed-amd64-simpleRAIDsoft.cfg
+#    MENU LABEL Trusty preseed for simple RAID1 soft on 2 disks
+#    KERNEL trusty/ubuntu-installer/amd64/linux
+#    # hostname and domain are defined here to avoid questions
+#    # during installation but the DNS entry (if exists) take precedence.
+#    APPEND language=fr keymap=fr country=FR locale=fr_FR.UTF-8 interface=eth0 hostname=trusty-vm domain=domain.tld ipv6.disable=1 url=http://172.31.0.1/trusty-preseed-amd64-simpleRAIDsoft.cfg initrd=trusty/ubuntu-installer/amd64/initrd.gz --
+#
+#LABEL wheezy-amd64-preseed-raidsoft2disks
+#    MENU LABEL Wheezy preseed for raidsoft 2 disks
+#    KERNEL wheezy/debian-installer/amd64/linux
+#    # hostname and domain are defined here to avoid questions
+#    # during installation but the DNS entry (if exists) take precedence.
+#    APPEND language=fr keymap=fr country=FR locale=fr_FR.UTF-8 interface=eth2 hostname=wheezy-vm domain=domain.tld ipv6.disable=1 url=http://172.31.0.1/wheezy-preseed-amd64-raidsoft2disks.cfg initrd=wheezy/debian-installer/amd64/initrd.gz --
+
+LABEL jessie-amd64
+    MENU LABEL Debian Jessie amd64: expert installation
+    KERNEL  distribs/jessie/debian-installer/amd64/linux
+    APPEND priority=low initrd=distribs/jessie/debian-installer/amd64/initrd.gz --
+    TEXT HELP
+    Classic installation of Debian Jessie.
+    ENDTEXT
+
+LABEL trusty-amd64
+    MENU LABEL Ubuntu Trusty amd64: expert installation
+    KERNEL  distribs/trusty/ubuntu-installer/amd64/linux
+    APPEND priority=low initrd=distribs/trusty/ubuntu-installer/amd64/initrd.gz --
+    TEXT HELP
+    Classic installation of Ubuntu Trusty.
+    ENDTEXT
+
+LABEL preseed-mysql-elea
+    MENU LABEL preseed for Elea MySQL server
+    KERNEL distribs/jessie/debian-installer/amd64/linux
+    APPEND language=en country=FR locale=en_US.UTF-8 ipv6.disable=1 url=http://192.168.23.72/preseed-mysql-elea.cfg initrd=distribs/jessie/debian-installer/amd64/initrd.gz --
+
+
