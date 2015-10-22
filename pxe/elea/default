@@ -142,10 +142,11 @@ LABEL preseed-mysql-elea
     Manual handling:
       1. Keyboard configuration
       2. Network configuration
-      3. Partitioning step, just select the mountpoint
-         of /dev/md0 as / (with "noatime" option)
-      4. GRUB installation, just put GRUB in the MBR
-         with the target "/dev/sda /dev/sdb"
+      3. Manual partitioning, just select the mountpoint
+         of the RAID volume /dev/md0 as / with EXT4 filesystem and
+         "noatime" mount option (don't format the partition)
+      4. GRUB installation, just set manually the devices
+         target with the value "/dev/sda /dev/sdb"
     ENDTEXT
 
 
