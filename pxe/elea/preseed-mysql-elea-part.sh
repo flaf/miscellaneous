@@ -41,13 +41,13 @@ do
     # The used UEFI partitions if one day we decide
     # to enable the Bios-UEFI.
     a=1
-    b=250 # Size == 250MiB
+    b=$((250 + a)) # Size == 250MiB
     $parted /dev/sd${i} unit MiB mkpart uefi${n}unused $a $b
     part_num=$((part_num + 1))
 
     # The biosgrub partitions.
     a=$b
-    b=$((1 + $b)) # Size == 1MiB
+    b=$((1 + a)) # Size == 1MiB
     $parted /dev/sd${i} unit MiB mkpart biosgrub${n} $a $b
     $parted /dev/sd${i} set $part_num bios_grub on
     part_num=$((part_num + 1))
