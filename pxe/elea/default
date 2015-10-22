@@ -143,8 +143,8 @@ LABEL preseed-mysql-elea
     Manual handling
       1. Keyboard configuration
       2. Network configuration
-      3. Partitioning: configuration of the RAID volume /dev/md0
-         filesytem => EXT4, mountpoint => /, mount-options => noatime
+      3. Partitioning: just set the RAID1 device #0 with
+         filesytem => EXT4, mountpoint => /, mount options => noatime
          (do not format the partition, it is already done)
       4. GRUB: set manually the devices target to "/dev/sda /dev/sdb"
     ENDTEXT
