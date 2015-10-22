@@ -61,7 +61,7 @@ do
 
     # The swap (will be a RAID1 volume).
     a=$b
-    b=$((64 * 1024 + a)) # Size == 64GiB
+    b=$((8 * 1024 + a)) # Size == 64GiB
     $parted /dev/sd${i} unit MiB mkpart swap${n} linux-swap $a $b
     $parted /dev/sd${i} set $part_num raid on
     part_num=$((part_num + 1))
