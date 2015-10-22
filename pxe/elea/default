@@ -138,15 +138,15 @@ LABEL preseed-mysql-elea
     MENU LABEL Partial preseed for Elea MySQL servers
     KERNEL distribs/jessie/debian-installer/amd64/linux
     APPEND hostname=mysql02 domain=dc2.backbone.education language=en country=FR locale=en_US.UTF-8 ipv6.disable=1 url=http://192.168.23.72/preseed-mysql-elea.cfg initrd=distribs/jessie/debian-installer/amd64/initrd.gz --
+    # Max is 7 lines.
     TEXT HELP
-    Manual handling:
+    Manual handling
       1. Keyboard configuration
       2. Network configuration
-      3. Manual partitioning, just select the mountpoint
-         of the RAID volume /dev/md0 as / with EXT4 filesystem and
-         "noatime" mount option (don't format the partition)
-      4. GRUB installation, just set manually the devices
-         target with the value "/dev/sda /dev/sdb"
+      3. Partitioning: configuration of the RAID volume /dev/md0
+         filesytem => EXT4, mountpoint => /, mount-options => noatime
+         (do not format the partition, it is already done)
+      4. GRUB: set manually the devices target to "/dev/sda /dev/sdb"
     ENDTEXT
 
 
