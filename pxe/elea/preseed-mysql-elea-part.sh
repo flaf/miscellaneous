@@ -1,5 +1,43 @@
 #!/bin/sh
 
+if [ "$1" = 'install-grub' ]
+then
+
+    for device in /dev/sda /dev/sdb
+    do
+        # The stat command is not available during the Debian installation.
+        inode_device=$(ls -i $device)
+        inode_device=$(echo $inode_device | cut -d' ' -f1)
+        for symlink in $(find -L /dev/disk/by-id/ -inum "$inode_device")
+        do
+            device_id="$symlink"
+        done
+
+        if [ -z "$device_grub_target" ]
+        then
+            device_grub_target="$symlink"
+        else
+            device_grub_target="$device_grub_target, $symlink"
+        fi
+
+    done
+
+    printf "grub-pc grub-pc/install_devices multiselect %s\n" "$device_grub_target" >/target/tmp/debconf.grub
+
+    mount --bind /dev/pts /target/dev/pts
+    mount --bind /proc    /target/proc
+    mount --bind /sys     /target/sys
+
+    chroot /target /bin/bash -c 'debconf-set-selections </tmp/debconf.grub >>/tmp/log 2>&1'
+    chroot /target /bin/bash -c 'DEBIAN_FRONTEND=noninteractive apt-get install --yes grub-pc >>/tmp/log 2>&1'
+    umount /target/dev/pts
+    umount /target/proc
+    umount /target/sys
+    exit 0
+fi
+
+
+
 exec >/tmp/part.log 2>&1
 set -x
 
