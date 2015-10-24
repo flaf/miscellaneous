@@ -104,7 +104,7 @@ done
 
 
 
-
+# To be sure that the partitions /dev/sda[1-9] are created.
 sleep 2
 
 ### Creation of the file systems. ###
