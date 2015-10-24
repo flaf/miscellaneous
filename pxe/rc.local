@@ -18,19 +18,25 @@ cd "/srv/tftp/miscellaneous/" && {
 
 printf "\nUpdate symlinks in /var/www/\n"
 printf   "============================\n"
-cd "/srv/tftp/miscellaneous/pxe" && cfg=$(\ls *.cfg)
+cd "/srv/tftp/miscellaneous/pxe" && cfg=$(\ls *.cfg) && sh=$(\ls *.sh)
 cd /var/www/ && {
-    rm -f *.cfg postinstall.sh
+    rm -f *.cfg *.sh
     for f in $cfg
     do
       ln -s "/srv/tftp/miscellaneous/pxe/$f" "$f"
     done
-    ln -s "/srv/tftp/miscellaneous/pxe/postinstall.sh" postinstall.sh
+    for s in $sh
+    do
+      ln -s "/srv/tftp/miscellaneous/pxe/$s" "$s"
+    done
 }
 cd /var/www && find . -type l -name '*.cfg'
 n=$(\ls -1 /var/www/*.cfg | wc -l)
 echo "---------------------------------------"
 echo "$n preseed file(s) in /var/www/"
+n=$(\ls -1 /var/www/*.sh | wc -l)
+echo "---------------------------------------"
+echo "$n script file(s) in /var/www/"
 
 printf "\nAddresses\n"
 printf   "=========\n"
