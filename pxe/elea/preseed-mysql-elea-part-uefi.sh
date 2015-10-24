@@ -109,7 +109,9 @@ done
 
 ### Creation of the file systems. ###
 
-mkfs.vfat -F 32 -n 'uefi' /dev/sda1
+# mkfs.vfat doesn't exist during Debian installation.
+mkfs.fat -F 32 -n 'uefi' /dev/sda1
+
 mkfs.ext4 -F -E lazy_itable_init=0 -L system /dev/sda2
 mkswap -L swap /dev/sda3
 
