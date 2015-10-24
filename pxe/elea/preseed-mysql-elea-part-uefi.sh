@@ -105,12 +105,13 @@ done
 
 
 
-
+sleep 2
 
 ### Creation of the file systems. ###
 
 # mkfs.vfat doesn't exist during Debian installation.
-mkfs.fat -F 32 -n 'uefi' /dev/sda1
+# Lowercase labels trigger a warning.
+mkfs.fat -F 32 -n 'UEFI' /dev/sda1
 
 mkfs.ext4 -F -E lazy_itable_init=0 -L system /dev/sda2
 mkswap -L swap /dev/sda3
