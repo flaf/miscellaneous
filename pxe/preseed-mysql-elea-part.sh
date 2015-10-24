@@ -5,7 +5,8 @@ then
 
     for device in /dev/sda /dev/sdb
     do
-        # The stat command is not available during the Debian installation.
+        # Unfortunately, the stat command is not available
+        # during the Debian installation.
         inode_device=$(ls -i $device)
         inode_device=$(echo $inode_device | cut -d' ' -f1)
         for symlink in $(find -L /dev/disk/by-id/ -inum "$inode_device")
@@ -28,6 +29,8 @@ then
     mount --bind /proc    /target/proc
     mount --bind /sys     /target/sys
 
+    # I don't know why but if I use `chroot /target ...` instead of
+    # `in-target`, it doesn't work.
     in-target /bin/bash -c 'debconf-set-selections </tmp/debconf.grub >>/tmp/log 2>&1'
     in-target /bin/bash -c 'DEBIAN_FRONTEND=noninteractive apt-get install --yes grub-pc >>/tmp/log 2>&1'
 
@@ -35,6 +38,7 @@ then
     umount /target/proc
     umount /target/sys
     exit 0
+
 fi
 
 
