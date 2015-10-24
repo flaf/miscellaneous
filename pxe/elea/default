@@ -146,7 +146,6 @@ LABEL preseed-mysql-elea
       3. Partitioning: just set the RAID1 device #0 with
          filesytem => EXT4, mountpoint => /, mount options => noatime
          (do not format the partition, it is already done)
-      4. GRUB: set manually the devices target to "/dev/sda /dev/sdb"
     ENDTEXT
 
 
