@@ -28,8 +28,9 @@ then
     mount --bind /proc    /target/proc
     mount --bind /sys     /target/sys
 
-    chroot /target /bin/bash -c 'debconf-set-selections </tmp/debconf.grub >>/tmp/log 2>&1'
-    chroot /target /bin/bash -c 'DEBIAN_FRONTEND=noninteractive apt-get install --yes grub-pc >>/tmp/log 2>&1'
+    in-target /bin/bash -c 'debconf-set-selections </tmp/debconf.grub >>/tmp/log 2>&1'
+    in-target /bin/bash -c 'DEBIAN_FRONTEND=noninteractive apt-get install --yes grub-pc >>/tmp/log 2>&1'
+
     umount /target/dev/pts
     umount /target/proc
     umount /target/sys
