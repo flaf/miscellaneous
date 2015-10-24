@@ -92,7 +92,7 @@ do
 
     # The root partitions (will be a RAID1 volume).
     a=$b
-    b=$((1 * 1024 + a)) # Size == 6GiB
+    b=$((6 * 1024 + a)) # Size == 6GiB
     $parted /dev/sd${i} unit MiB mkpart system${n} $a $b
     $parted /dev/sd${i} set $part_num raid on
     part_num=$((part_num + 1))
