@@ -31,7 +31,7 @@ then
     # `in-target`, it doesn't work.
     in-target /bin/bash -c 'DEBIAN_FRONTEND=noninteractive apt-get install --yes grub-efi-amd64 >>/tmp/log 2>&1'
     in-target /bin/bash -c 'update-grub >>/tmp/log 2>&1'
-    in-target /bin/bash -c 'grub-install --target=x86_64-efi -efi-directory=/boot/efi --bootloader-id=debian --recheck /dev/sda >>/tmp/log 2>&1'
+    in-target /bin/bash -c 'grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=debian --recheck /dev/sda >>/tmp/log 2>&1'
 
     umount /target/dev/pts
     umount /target/proc
