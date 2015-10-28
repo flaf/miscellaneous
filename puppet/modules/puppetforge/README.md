@@ -68,8 +68,8 @@ of a module :
 
 1. The git repository of the module has a tag `T`.
 2. On the commit linked to the tag `T`, the version of the
-module matches with the tag value (ie `tag value T == version
-of the module`),
+module matches with the tag value (ie `tag value T == current version
+of the module in the metadata.json file`),
 
 If the conditions 1. and 2. are satisfied, then the Puppet forge
 server will release the module version `T`. The Puppet forge
