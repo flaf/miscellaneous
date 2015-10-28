@@ -53,7 +53,7 @@ unix_accounts:
 puppetagent::ca_server: 'middleware.%{::domain}'
 puppet:
   collection: 'PC1'
-  pinning_agent_version: '1.2.4-*'
+  pinning_agent_version: '1.2.6-*'
 
 mcollective:
   middleware_address: 'middleware.%{::domain}'
