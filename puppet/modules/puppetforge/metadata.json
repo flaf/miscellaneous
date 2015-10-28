@@ -1,6 +1,6 @@
 {
   "name": "flaf-puppetforge",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "author": "flaf",
   "summary": "Module to make a quick install of basic puppet forge",
   "license": "Apache-2.0",
