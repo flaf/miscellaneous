@@ -83,9 +83,9 @@ The default value of the `pause` parameter is 300 (seconds).
 
 **Warning :** the daemon which retrieves modules given in the
 list of git repositories runs as the `puppetforge` UniX account.
-If some repositories needs to be authenticated with a ssh key
+If some repositories need to be authenticated with a ssh key
 (for instance), you must generate a ssh key pair **manually** for
-the `puppetforge` account (`su - puppetforge` etc...).
+the `puppetforge` account (`su - puppetforge`, `ssh-keygen ...` etc).
 
 
 TODO:
