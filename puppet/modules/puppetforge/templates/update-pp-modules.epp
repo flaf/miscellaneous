@@ -9,7 +9,7 @@
 ### This file is managed by Puppet, don't edit it ###
 
 echo $$ ><%= $update_pp_modules_pid %>
-export PATH='/usr/sbin:/usr/bin:/sbin:/bin'
+export PATH='/opt/puppetlabs/bin:/usr/sbin:/usr/bin:/sbin:/bin'
 
 user=$(id -un)
 group=$(id -gn)
@@ -69,6 +69,14 @@ do
             mkdir "$modulesdir/$full_name"
             # With find, we copy the .git/ directory too.
             find . -mindepth 1 -maxdepth 1 -exec cp -r '{}' "$modulesdir/$full_name/" \;
+
+            # The goal: generate the `checksums.json` file in the pkg/
+            # directory. This file is created by the `puppet module build`
+            # command.
+            puppet module build "$modulesdir/$full_name/"
+            mv "$modulesdir/$full_name/pkg/$full_name/checksums.json" "$modulesdir/$full_name/"
+            rm -rf --one-file-system "$modulesdir/$full_name/pkg"
+
             tar -zcvf "$modulesdir/$full_name.tar.gz" "$modulesdir/$full_name"
             rm -rf "$modulesdir/$full_name"
             git reset HEAD^
