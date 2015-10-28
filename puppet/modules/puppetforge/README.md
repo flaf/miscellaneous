@@ -18,6 +18,7 @@ $modules_git_urls = [
                       'git@github.com/flaf/foo1.git',
                       'git@github.com/flaf/foo2.git',
                       'git@github.com/flaf/foo3.git',
+                      'https://github.com/joe/bar.git',
                     ]
 
 class { '::puppetforge':
@@ -41,7 +42,7 @@ and you should probably never change this value.
 
 The `commit_id` parameter is the commit ID of the
 git repository used to installd the Puppet forge.
-Its default value is `'6f1b224a4e666c754876139f3643b22f3515f5e6'`
+Its default value is currently `'6f1b224a4e666c754876139f3643b22f3515f5e6'`
 which points to the version 1.8.0 of the software.
 
 The `remote_forge` parameter is the url of the remote forge
@@ -56,26 +57,35 @@ value.
 The `address` and the `port` parameters allow to set the
 address used by the http Puppet forge service. The default
 value of these parameters are `'0.0.0.0'` (listen to all
-interfaces) and `8080` (an integer).
+interfaces) for `address` and the integer `8080` for `port`.
 
 The `modules_git_urls` parameter is an array of non-empty strings
 which defines the git repositories of the modules retrieved
 by the Puppet forge. The Puppet forge server will apply
-these modules to the puppetserver (clients of the Puppet
-forge server). **If a git repository of a module has a tag T
-and if on the commit linked to the tag T, the version of the
-module matches with the tag value (T == tag value == version
-of the module), the Puppet forge will release the module
-version T** (the Puppet forge can host several versions of a
-module). The default value of this parameter is `[]` (an
-empty array), in this case the Puppet forge server retrieves
-no module.
+these modules to the puppetservers (clients of the Puppet
+forge server). Here is two conditions to release a new version
+of a module :
+
+1. The git repository of the module has a tag `T`.
+2. On the commit linked to the tag `T`, the version of the
+module matches with the tag value (ie `tag value T == version
+of the module`),
+
+If the conditions 1. and 2. are satisfied, then the Puppet forge
+server will release the module version `T`. The Puppet forge
+server can host several versions of a module. The default value
+of this parameter is `[]` (an empty array), in this case the
+Puppet forge server retrieves no module.
 
 The Puppet forge retrieves new commits (via a `git pull`)
 of the modules listed in `modules_git_urls` every `pause` seconds.
 The default value of the `pause` parameter is 300 (seconds).
 
-
+**Warning :** the daemon which retrieves modules given in the
+list of git repositories runs as the `puppetforge` UniX account.
+If some repositories needs to be authenticated with a ssh key
+(for instance), you must generate a ssh key pair **manually** for
+the `puppetforge` account (`su - puppetforge` etc...).
 
 
 TODO:
