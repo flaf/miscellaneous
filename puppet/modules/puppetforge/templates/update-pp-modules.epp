@@ -75,6 +75,18 @@ do
             # command.
             puppet module build "$modulesdir/$full_name/"
             mv "$modulesdir/$full_name/pkg/$full_name/checksums.json" "$modulesdir/$full_name/"
+
+            # Normally, the `metadata.json` file in pkg/ is
+            # the same as the `metadata.json` file of the
+            # current module but the form can be different.
+            # For instance the number of empty lines at the
+            # end of the file can be different so that the
+            # md5sum of this file can be different. So, it's
+            # more sure to take the version of the
+            # `metadata.json` file from the pkg/ directory.
+            cat "$modulesdir/$full_name/pkg/$full_name/metadata.json" >"$modulesdir/$full_name/metadata.json"
+
+            # Now, we can remove the pkg/ directory.
             rm -rf --one-file-system "$modulesdir/$full_name/pkg"
 
             tar -zcvf "$modulesdir/$full_name.tar.gz" "$modulesdir/$full_name"
