@@ -74,8 +74,8 @@ of the module in the metadata.json file`),
 If the conditions 1. and 2. are satisfied, then the Puppet forge
 server will release the module version `T`. The Puppet forge
 server can host several versions of a module. The default value
-of this parameter is `[]` (an empty array), in this case the
-Puppet forge server retrieves no module.
+of the parameter `modules_git_urls` is `[]` (an empty array), in
+this case the Puppet forge server retrieves no module.
 
 The Puppet forge retrieves new commits (via a `git pull`)
 of the modules listed in `modules_git_urls` every `pause` seconds.
