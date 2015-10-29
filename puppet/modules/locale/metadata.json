@@ -1,6 +1,6 @@
 {
   "name": "flaf-locale",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "flaf",
   "summary": "Module to set the default locale",
   "license": "Apache-2.0",
