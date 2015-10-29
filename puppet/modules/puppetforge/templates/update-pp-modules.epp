@@ -85,7 +85,7 @@ do
             # md5sum value of the `metadata.json` entry in
             # the `checksums.json` file.
             puppet module build "$modulesdir/$full_name/"
-            md5sum=$(md5sum "$modulesdir/$full_name/metadata.json")
+            md5sum=$(md5sum "$modulesdir/$full_name/metadata.json" | awk '{print $1}')
             jq ".[\"metadata.json\"]=\"${md5sum}\""                    \
                 "$modulesdir/$full_name/pkg/$full_name/checksums.json" \
                 >"$modulesdir/$full_name/checksums.json"
