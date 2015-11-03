@@ -58,7 +58,7 @@ LABEL jessie-amd64-preseed-minimal
 LABEL trusty-amd64-preseed-minimal
     MENU LABEL Ubuntu Trusty amd64: install with a minimal preseed
     KERNEL trusty/ubuntu-installer/amd64/linux
-    APPEND console-keymaps-at/keymap=fr language=en country=FR locale=en_US.UTF-8 ipv6.disable=1 url=http://172.31.0.1/trusty-preseed-minimal-amd64.cfg initrd=trusty/ubuntu-installer/amd64/initrd.gz --
+    APPEND locale=en_US.UTF-8 console-keymaps-at/keymap=fr country=FR ipv6.disable=1 url=http://172.31.0.1/trusty-preseed-minimal-amd64.cfg initrd=trusty/ubuntu-installer/amd64/initrd.gz --
     TEXT HELP
     Semi-automatic installation of Ubuntu Trusty.
     Keyboard configuration, network configuration, partioning
