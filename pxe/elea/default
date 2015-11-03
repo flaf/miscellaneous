@@ -157,7 +157,7 @@ LABEL preseed-cargo-elea
     Manual handling
       1. Keyboard configuration
       2. Network configuration
-      3. Partitioning: just set the /dev/sdc3 device to
+      3. Partitioning: just set the /dev/sdb3 device to
          filesytem => EXT4, mountpoint => /, mount options => noatime
          (do not format the partition, it is already done)
     ENDTEXT
