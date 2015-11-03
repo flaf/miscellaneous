@@ -80,7 +80,7 @@ do
 
     part_num=1
 
-    # The used UEFI partitions if one day we decide
+    # The unused UEFI partitions if one day we decide
     # to enable the Bios-UEFI.
     a=1
     b=$((250 + a)) # Size == 250MiB
@@ -103,7 +103,7 @@ do
 
     # The swap (will be a RAID1 volume).
     a=$b
-    b=$((8 * 1024 + a)) # Size == 64GiB
+    b=$((8 * 1024 + a)) # Size == 8GiB
     $parted /dev/sd${i} unit MiB mkpart swap${n} linux-swap $a $b
     $parted /dev/sd${i} set $part_num raid on
     part_num=$((part_num + 1))
