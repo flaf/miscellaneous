@@ -5,13 +5,12 @@ then
     # Grub just in /dev/sdb because no RAID soft.
     for device in /dev/sdb
     do
-        # Unfortunately, the stat command is not available
-        # during the Debian installation.
-        inode_device=$(ls -i $device)
-        inode_device=$(echo $inode_device | cut -d' ' -f1)
-        for symlink in $(find -L /dev/disk/by-id/ -inum "$inode_device")
+        for symlink in /dev/disk/by-id/*
         do
-            device_id="$symlink"
+            if [ "$device" = "$(readlink -f $symlink)" ]
+            then
+                device_id="$symlink"
+            fi
         done
 
         if [ -z "$device_grub_target" ]
