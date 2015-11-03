@@ -48,7 +48,7 @@ LABEL local
 LABEL jessie-amd64-preseed-minimal
     MENU LABEL Debian Jessie amd64: install with a minimal preseed
     KERNEL jessie/debian-installer/amd64/linux
-    APPEND locale=en_US.UTF-8 keyboard-configuration/xkb-keymap select fr(latin9) ipv6.disable=1 url=http://172.31.0.1/jessie-preseed-minimal-amd64.cfg initrd=jessie/debian-installer/amd64/initrd.gz --
+    APPEND locale=en_US.UTF-8 keyboard-configuration/xkb-keymap=fr(latin9) ipv6.disable=1 url=http://172.31.0.1/jessie-preseed-minimal-amd64.cfg initrd=jessie/debian-installer/amd64/initrd.gz --
     TEXT HELP
     Semi-automatic installation of Debian Jessie.
     Keyboard configuration, network configuration, partioning
@@ -58,7 +58,8 @@ LABEL jessie-amd64-preseed-minimal
 LABEL trusty-amd64-preseed-minimal
     MENU LABEL Ubuntu Trusty amd64: install with a minimal preseed
     KERNEL trusty/ubuntu-installer/amd64/linux
-    APPEND locale=en_US.UTF-8 keymap=fr ipv6.disable=1 url=http://172.31.0.1/trusty-preseed-minimal-amd64.cfg initrd=trusty/ubuntu-installer/amd64/initrd.gz --
+    #APPEND locale=en_US.UTF-8 keymap=fr ipv6.disable=1 url=http://172.31.0.1/trusty-preseed-minimal-amd64.cfg initrd=trusty/ubuntu-installer/amd64/initrd.gz --
+    APPEND locale=en_US.UTF-8 keyboard-configuration/xkb-keymap=fr(latin9) ipv6.disable=1 url=http://172.31.0.1/trusty-preseed-minimal-amd64.cfg initrd=trusty/ubuntu-installer/amd64/initrd.gz --
     TEXT HELP
     Semi-automatic installation of Ubuntu Trusty.
     Keyboard configuration, network configuration, partioning
