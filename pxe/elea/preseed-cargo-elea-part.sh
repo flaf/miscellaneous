@@ -15,9 +15,9 @@ then
 
         if [ -z "$device_grub_target" ]
         then
-            device_grub_target="$symlink"
+            device_grub_target="$device_id"
         else
-            device_grub_target="$device_grub_target, $symlink"
+            device_grub_target="$device_grub_target, $device_id"
         fi
 
     done
