@@ -53,8 +53,12 @@ part_num=1
 
 # The unused UEFI partition if one day we decide
 # to enable the Bios-UEFI.
-a=1
-b=$((250 + a)) # Size == 250MiB
+# I don't know why but, _during the Trusty installation_
+# if I set a == 1 (MiB) the partition not begins at 1 MiB
+# but at 0.25MiB (for me it's a bug in the Trusty debian-installer).
+# If I use 2048s instead, it works (???).
+a=2048s
+b=$((250 + 1)) # Size == 250MiB
 $parted /dev/sdb unit MiB mkpart uefiunused $a $b
 part_num=$((part_num + 1))
 
