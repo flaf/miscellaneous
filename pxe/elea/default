@@ -143,7 +143,21 @@ LABEL preseed-mysql-elea
     Manual handling
       1. Keyboard configuration
       2. Network configuration
-      3. Partitioning: just set the RAID1 device #0 with
+      3. Partitioning: just set the RAID1 device #0 to
+         filesytem => EXT4, mountpoint => /, mount options => noatime
+         (do not format the partition, it is already done)
+    ENDTEXT
+
+LABEL preseed-cargo-elea
+    MENU LABEL Partial preseed for Elea cargo servers
+    KERNEL distribs/trusty/debian-installer/amd64/linux
+    APPEND language=en country=FR locale=en_US.UTF-8 ipv6.disable=1 url=http://192.168.23.72/preseed-cargo-elea.cfg initrd=distribs/trusty/debian-installer/amd64/initrd.gz --
+    # Max is 7 lines.
+    TEXT HELP
+    Manual handling
+      1. Keyboard configuration
+      2. Network configuration
+      3. Partitioning: just set the /dev/sdc3 device to
          filesytem => EXT4, mountpoint => /, mount options => noatime
          (do not format the partition, it is already done)
     ENDTEXT
