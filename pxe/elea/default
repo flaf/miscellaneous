@@ -150,8 +150,8 @@ LABEL preseed-mysql-elea
 
 LABEL preseed-cargo-elea
     MENU LABEL Partial preseed for Elea cargo servers
-    KERNEL distribs/trusty/debian-installer/amd64/linux
-    APPEND language=en country=FR locale=en_US.UTF-8 ipv6.disable=1 url=http://192.168.23.72/preseed-cargo-elea.cfg initrd=distribs/trusty/debian-installer/amd64/initrd.gz --
+    KERNEL distribs/trusty/ubuntu-installer/amd64/linux
+    APPEND language=en country=FR locale=en_US.UTF-8 ipv6.disable=1 url=http://192.168.23.72/preseed-cargo-elea.cfg initrd=distribs/trusty/ubuntu-installer/amd64/initrd.gz --
     # Max is 7 lines.
     TEXT HELP
     Manual handling
