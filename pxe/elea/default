@@ -161,6 +161,20 @@ LABEL preseed-cargo-elea
          (do not format the partition, it is already done)
     ENDTEXT
 
+LABEL preseed-ceph-elea
+    MENU LABEL Partial preseed for Elea Ceph servers
+    KERNEL distribs/trusty/ubuntu-installer/amd64/linux
+    APPEND locale=en_US.UTF-8 keymap=fr ipv6.disable=1 url=http://192.168.23.72/preseed-ceph-elea.cfg initrd=distribs/trusty/ubuntu-installer/amd64/initrd.gz --
+    # Max is 7 lines.
+    TEXT HELP
+    WARNING: For the "hostname" question, put the FQDN of the host.
+    Manual handling
+      1. Network configuration
+      2. Partitioning: just set the /dev/sda3 device to
+         filesytem => EXT4, mountpoint => /, mount options => noatime
+         (do not format the partition, it is already done)
+    ENDTEXT
+
 #LABEL preseed-mysql-elea-uefi
 #    MENU LABEL Partial preseed for Elea MySQL servers with UEFI
 #    KERNEL distribs/jessie/debian-installer/amd64/linux
