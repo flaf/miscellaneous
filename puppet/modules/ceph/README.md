@@ -25,12 +25,12 @@ mkfs.xfs -L OSD1 -f /dev/sde2 # typically, /dev/sde1 is used for the journal.
 # 2. Installation of the all monitors on each node.
 #
 # For the first monitor.
-ceph-monitor-init --device /dev/disk-by-partlabel/mon-1   \
+ceph-monitor-init --device /dev/disk/by-partlabel/mon-1   \
                   --mount-options noatime,defaults --id 1 \
                   --monitor-addr "$address_mon_1"
 #
 # For the other monitors.
-ceph-monitor-add --device /dev/disk-by-partlabel/mon-2   \
+ceph-monitor-add --device /dev/disk/by-partlabel/mon-2   \
                  --mount-options noatime,defaults --id 1 \
                  --monitor "$address_mon_1"
 # Etc...
