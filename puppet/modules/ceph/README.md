@@ -64,16 +64,24 @@ ceph fs ls # To check if all is OK.
 ```
 
 
-# Warning 2 : journals have to be GPT partition with a specific partlabel
+# Warning 2 : journals have to be a GPT partition with a specific partlabel
 
 If the journal is not a standard file in the OSD working
 directory but a symlink to a raw partition, the partition
-has to be a GPT partition with this name for the partlabel :
-This name must have this form `osd-*-journal`? Indeed,
-since Infernalis, the OSD daemons use a dedicated Unix
-account. This module put a udev rule so that "ceph" is
+has to be a GPT partition with this pattern for the partlabel :
+`osd-*-journal`. Indeed, since Infernalis, the OSD daemons use
+the dedicated `ceph` Unix account and the journal must have
+this account as owner (without that the OSD daemon just can't
+start). This module put a udev rule so that `ceph` is
 automatically the owner of each GPT partition whose
-partlabel is `osd-*-journal`
+partlabel has this pattern `osd-*-journal` (typically
+`*` matches a number).
+
+We recommended this:
+- for a OSD working directories, use a dedicated GPT partition
+with `osd-$id` as part-label and `osd-$id` as fs-label.
+- for a OSD journal, use a raw (without file system) dedicated
+GPT partition with `osd-$id-journal` as partlabel.
 
 
 
