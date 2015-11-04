@@ -40,9 +40,10 @@ ceph-monitor-add --device /dev/disk/by-partlabel/mon-2   \
 ceph-osd-add --device /dev/disk/by-partlabel/osd-0  \
              --mount-options noatime,defaults --yes \
              --journal /dev/disk/by-partlabel/osd-0-journal
-ceph-osd-add --device /dev/disk/by-partlabel/osd-1  \
+ceph-osd-add --device /dev/disk/by-partlabel/osd-7  \
              --mount-options noatime,defaults --yes \
-             --journal /dev/disk/by-partlabel/osd-1-journal
+             --weight 4.0 --osd-id 7                \
+             --journal /dev/disk/by-partlabel/osd-7-journal
 # Etc...
 
 # 4. On a specific node, we create the ceph accounts.
@@ -68,20 +69,20 @@ ceph fs ls # To check if all is OK.
 
 If the journal is not a standard file in the OSD working
 directory but a symlink to a raw partition, the partition
-has to be a GPT partition with this pattern for the partlabel :
+has to be a GPT partition with this pattern for the part-label:
 `osd-*-journal`. Indeed, since Infernalis, the OSD daemons use
 the dedicated `ceph` Unix account and the journal must have
 this account as owner (without that the OSD daemon just can't
-start). This module put a udev rule so that `ceph` is
-automatically the owner of each GPT partition whose
-partlabel has this pattern `osd-*-journal` (typically
-`*` matches a number).
+start). This puppet module put a udev rule so that `ceph` is
+automatically the owner of each GPT partition whose part-label
+matches this pattern `osd-*-journal` (where typically `*`
+matches a number).
 
-We recommended this:
-- for a OSD working directories, use a dedicated GPT partition
+In fact, we recommended this:
+- for a OSD working directory, use a dedicated GPT partition
 with `osd-$id` as part-label and `osd-$id` as fs-label.
 - for a OSD journal, use a raw (without file system) dedicated
-GPT partition with `osd-$id-journal` as partlabel.
+GPT partition with `osd-$id-journal` as part-label.
 
 
 
