@@ -110,6 +110,12 @@ rm "/tmp/monmap"
 touch "/var/lib/ceph/mon/$cluster-$id/done"
 touch "/var/lib/ceph/mon/$cluster-$id/upstart"
 
+# Set the owner of the working directory is necessary.
+if getent passwd ceph >/dev/null
+then
+    chown -R ceph:ceph "/var/lib/ceph/mon/$cluster-$id/"
+fi
+
 if "$no_start"
 then
     echo "Daemon monitor not started."

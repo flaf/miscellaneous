@@ -2,9 +2,9 @@
 #!/bin/sh
 ### This is a file managed by Puppet, don't edit it. ###
 
-SPECIFIC_SHORT_OPTIONS='m:,w:,j:'
-SPECIFIC_LONG_OPTIONS='monitor:,weight:,journal:'
-SPECIFIC_SYNOPSIS='--journal <device> [--monitor <address>] [--weight <float>]'
+SPECIFIC_SHORT_OPTIONS='m:,w:,j:,i:'
+SPECIFIC_LONG_OPTIONS='monitor:,weight:,journal:,osd-id:'
+SPECIFIC_SYNOPSIS='--journal <device> [--monitor <address>] [--weight <float>] [--osd-id <int>]'
 
 # Default value of weight.
 weight='1.0'
@@ -49,6 +49,18 @@ GET_SPECIFIC_OPTIONS () {
             fi
         ;;
 
+        --osd-id|-i)
+            osd_id="$2"
+            if echo "$osd_id" | grep -Eq '^[0-9]+$'
+            then
+                return 2
+            else
+                printf "The --osd-id option must be provided with an integer value.\n"
+                printf "End of the script.\n"
+                exit 1
+            fi
+        ;;
+
     esac
     return 0
 }
@@ -74,13 +86,20 @@ fi
 # Each osd has its owned uuid.
 uuid=$(uuidgen)
 
-# Creation of an osd. The osd ID will be generated automatically.
+# Creation of an osd. The osd ID will be the output of the command
+# below if the option --osd-id is not provided.
 if ! id=$(timeout --signal=TERM --kill-after=20 10s ceph \
-    --cluster "$cluster" $mon_opt osd create "$uuid")
+    --cluster "$cluster" $mon_opt osd create "$uuid" "$osd_id")
 then
     printf "Request to monitor(s) to create OSD failed.\n"
     printf "End of the script.\n"
     exit 1
+fi
+
+# If $osd_id is not empty, then the user has forced the ID of the OSD.
+if [ -n "$osd_id" ]
+then
+    id="$osd_id"
 fi
 
 printf "The id of this OSD will be $id.\n"
@@ -156,6 +175,12 @@ touch "/var/lib/ceph/osd/$cluster-$id/upstart"
 
 # Very important, creation of the symlink for the journal.
 ln -s "$journal" "/var/lib/ceph/osd/$cluster-$id/journal"
+
+# Set the owner of the working directory is necessary.
+if getent passwd ceph >/dev/null
+then
+    chown -R ceph:ceph "/var/lib/ceph/osd/$cluster-$id/"
+fi
 
 if "$no_start"
 then

@@ -118,6 +118,12 @@ ceph auth get-or-create "mds.$mds_id"                   \
 touch "/var/lib/ceph/mds/$cluster-$mds_id/done"
 touch "/var/lib/ceph/mds/$cluster-$mds_id/upstart"
 
+# Set the owner of the working directory is necessary.
+if getent passwd ceph >/dev/null
+then
+    chown -R ceph:ceph "/var/lib/ceph/mds/$cluster-$mds_id/"
+fi
+
 if "$no_start"
 then
     echo "Daemon mds not started."
