@@ -1,5 +1,23 @@
 class ceph::cluster::scripts {
 
+
+  $udev_content = @(END)
+  # Udev rule to have "ceph" owner of each "/dev/disk/by-partlabel/osd-*-journal"
+  # partition from GPT disks. Totally inspired from this file
+  # /lib/udev/rules.d/60-persistent-storage.rules
+  ENV{ID_PART_ENTRY_SCHEME}=="gpt", ENV{ID_PART_ENTRY_NAME}=="osd-?*-journal", OWNER="ceph"
+
+  | END
+
+  file { '/etc/udev/rules.d/90-ceph.rules':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    content => $udev_content,
+  }
+
+
   file { '/usr/local/share/ceph':
     ensure  => directory,
     owner   => 'root',

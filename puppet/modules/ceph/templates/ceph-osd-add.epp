@@ -180,6 +180,9 @@ ln -s "$journal" "/var/lib/ceph/osd/$cluster-$id/journal"
 if getent passwd ceph >/dev/null
 then
     chown -R ceph:ceph "/var/lib/ceph/osd/$cluster-$id/"
+    # ceph must be the owner of the journal if it's
+    # a symlink to a raw device.
+    chown ceph $(readlink -f "/var/lib/ceph/osd/$cluster-$id/journal")
 fi
 
 if "$no_start"
