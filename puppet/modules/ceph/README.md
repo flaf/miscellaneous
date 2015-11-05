@@ -113,28 +113,30 @@ Here is an example:
 
 ```puppet
 $ceph_global_conf = {
-  'fsid'                      => 'f875b4c1-535a-4f17-9883-2793079d410a',
-  'cluster_network'           => '192.168.22.0/24',
-  'public_network'            => '10.0.2.0/24',
-  'auth_cluster_required'     => 'cephx',
-  'auth_service_required'     => 'cephx',
-  'auth_client_required'      => 'cephx',
-  'filestore_xattr_use_omap'  => 'true',
-  'osd_pool_default_size'     => '2',
-  'osd_pool_default_min_size' => '1',
-  'osd_pool_default_pg_num'   => '64',
-  'osd_pool_default_pgp_num'  => '64',
-  'osd_crush_chooseleaf_type' => '1',
-  'osd_journal_size'          => '0',
-  'osd_max_backfills'         => '1',
-  'osd_recovery_max_active'   => '1',
-  'osd_client_op_priority'    => '63',
-  'osd_recovery_op_priority'  => '1',
-  'osd_op_threads'            => '4',
-  'mds_cache_size'            => '1000000',
-  'osd_scrub_begin_hour'      => '3',
-  'osd_scrub_end_hour'        => '5',
-  'mon_allow_pool_delete'     => 'false',
+  'fsid'                           => 'f875b4c1-535a-4f17-9883-2793079d410a',
+  'cluster_network'                => '192.168.22.0/24',
+  'public_network'                 => '10.0.2.0/24',
+  'auth_cluster_required'          => 'cephx',
+  'auth_service_required'          => 'cephx',
+  'auth_client_required'           => 'cephx',
+  'filestore_xattr_use_omap'       => 'true',
+  'osd_pool_default_size'          => '2',
+  'osd_pool_default_min_size'      => '1',
+  'osd_pool_default_pg_num'        => '64',
+  'osd_pool_default_pgp_num'       => '64',
+  'osd_crush_chooseleaf_type'      => '1',
+  'osd_journal_size'               => '0',
+  'osd_max_backfills'              => '1',
+  'osd_recovery_max_active'        => '1',
+  'osd_client_op_priority'         => '63',
+  'osd_recovery_op_priority'       => '1',
+  'osd_op_threads'                 => '4',
+  'mds_cache_size'                 => '1000000',
+  'osd_scrub_begin_hour'           => '3',
+  'osd_scrub_end_hour'             => '5',
+  'mon_allow_pool_delete'          => 'false',
+  'mon_osd_down_out_subtree_limit' => 'host',
+  'mon_osd_min_down_reporters'     => '4', # set to (#OSDs per node) + 1 is a good idea
 }
 
 # To generate a key, you can use with this command:
@@ -327,6 +329,8 @@ ceph::clusters_conf:
       osd_scrub_begin_hour: '3'
       osd_scrub_end_hour: '5'
       mon_allow_pool_delete: 'false'
+      mon_osd_down_out_subtree_limit: 'host'
+      mon_osd_min_down_reporters: '4' # set to (#OSDs per node) + 1 is a good idea
 
     monitors:
       mon-1:
