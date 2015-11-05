@@ -9,7 +9,7 @@
 -%>
 ### This file is managed by Puppet, don't edit it. ###
 <%= ::homemade::ljust('127.0.0.1', $max, ' ') %>  localhost
-<%- $entries.keys.sort.each |$addr| { -%>
+<%- $entries.keys.each |$addr| { -%>
 <%= ::homemade::ljust($addr, $max, ' ') %>  <%= $entries[$addr].join(' ') %>
 <%- } -%>
 
