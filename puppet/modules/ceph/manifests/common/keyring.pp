@@ -3,6 +3,8 @@ define ceph::common::keyring (
   String[1]           $account,
   String[1]           $key,
   Array[String[1], 1] $properties,
+  Boolean             $is_clusternode,
+  Boolean             $is_clientnode,
   String[1]           $owner         = 'root',
   String[1]           $group         = 'root',
   String[1]           $mode          = '0600',
