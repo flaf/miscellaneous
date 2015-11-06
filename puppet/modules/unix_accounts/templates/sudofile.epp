@@ -1,12 +1,23 @@
 <%- |$user| -%>
 <%-
-$user_upper = $user.upcase
-$cmd_alias = "CMD_NO_PWD_FOR_${user_upper}"
+  $user_upper = $user.upcase
+  $cmd_alias  = "CMD_WITH_PWD_FOR_${user_upper}"
+
+  # Aesthetic: to align column.
+  $user_ljust = ::homemade::ljust($user, size($user) + 8, ' ')
+  $who_ljust  = ::homemade::ljust("Who", size($user_ljust) - 2, ' ')
 -%>
 ### This file is managed by Puppet, don't edit it. ###
 
 Cmnd_Alias <%= $cmd_alias %> = /bin/su
 
-<%= $user %> ALL = (root) NOPASSWD: <%= $cmd_alias %>
+# From sudoers(5)
+#
+#     Where there are multiple matches, the last match is
+#     used (which is not necessarily the most specific match).
+#
+# <%= $who_ljust %>   Host(s)   (As who)    Tag         Which command(s)
+<%= $user_ljust  %>   ALL     = (ALL)       NOPASSWD:   ALL
+<%= $user_ljust  %>   ALL     = (ALL)       PASSWD:     <%= $cmd_alias %>
 
 
