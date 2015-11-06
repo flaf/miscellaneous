@@ -3,6 +3,8 @@ define ceph::clusternode (
   Hash[String[1], Hash[String[1], Data, 1], 1]      $keyrings,
   Hash[String[1], Hash[String[1], String[1], 1], 1] $monitors,
   Hash[String[1], String[1], 1]                     $global_options,
+  Boolean                                           $is_clusternode,
+  Boolean                                           $is_clientnode,
 ) {
 
   require '::ceph::common::ceph_dir'
@@ -17,6 +19,8 @@ define ceph::clusternode (
       keyrings       => $keyrings,
       monitors       => $monitors,
       global_options => $global_options,
+      is_clusternode => $is_clusternode,
+      is_clientnode  => $is_clientnode,
     }
   }
 

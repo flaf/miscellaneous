@@ -1,9 +1,26 @@
-<%- |$cluster_name, $global_options, $monitors, $keyrings| -%>
+<%- |
+  $cluster_name,
+  $global_options,
+  $monitors, $keyrings,
+  $is_clusternode,
+  $is_clientnode,
+| -%>
+<%-
+  # Aesthetic: $max_length is the size of the biggest string
+  # among the names of the global options.
+  $max_length = $global_options.keys.map |$option_name| {
+    size($option_name)
+  }.reduce |$memo, $entry| {
+    max($memo, $entry)
+  }
+-%>
 ### This file is managed by Puppet, don't edit it. ###
+<%- if $is_clusternode { -%>
 
 [global]
-<%- $global_options.each |$option, $value| { -%>
-  <%= $option.regsubst('_', ' ', 'G') %> = <%= $value %>
+  <%- $global_options.each |$option, $value| { -%>
+    <%= $option.regsubst('_', ' ', 'G').::homemade::ljust($max_length, ' ') %> = <%= $value %>
+  <%- } -%>
 <%- } -%>
 
 <%- $monitors.each |$name, $params| { -%>
@@ -13,7 +30,7 @@
 
 <%- } -%>
 <%- $keyrings.each |$id, $params| { -%>
-  <%- if $id =~ /^radosgw/ { -%>
+  <%- if $is_clientnode and $id =~ /^radosgw/ { -%>
 [client.<%= $id %>]
   host               = <%= $params['radosgw_host'] %>
   keyring            = /etc/ceph/<%= $cluster_name %>.client.<%= $id %>.keyring

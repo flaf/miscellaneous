@@ -35,6 +35,8 @@ class ceph (
         client_keyrings => $client_keyrings,
         monitors        => $clusters_conf[$cluster_name]['monitors'],
         global_options  => $clusters_conf[$cluster_name]['global_options'],
+        is_clusternode  => $is_clusternode,
+        is_clientnode   => $is_clientnode,
         before          => $before,
       }
 
@@ -51,6 +53,8 @@ class ceph (
         keyrings       => $conf['keyrings'],
         monitors       => $conf['monitors'],
         global_options => $conf['global_options'],
+        is_clusternode => $is_clusternode,
+        is_clientnode  => $is_clientnode,
       }
 
     }
