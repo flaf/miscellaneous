@@ -19,6 +19,8 @@ class ceph::common::cephconf (
                      'keyrings'       => $keyrings,
                      'monitors'       => $monitors,
                      'global_options' => $global_options,
+                     'is_clusternode' => $is_clusternode,
+                     'is_clientnode'  => $is_clientnode,
                    }
                   ),
   }

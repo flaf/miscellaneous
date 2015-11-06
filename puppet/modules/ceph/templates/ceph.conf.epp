@@ -19,7 +19,7 @@
 
 [global]
   <%- $global_options.each |$option, $value| { -%>
-    <%= $option.regsubst('_', ' ', 'G').::homemade::ljust($max_length, ' ') %> = <%= $value %>
+  <%= $option.regsubst('_', ' ', 'G').::homemade::ljust($max_length, ' ') %> = <%= $value %>
   <%- } -%>
 <%- } -%>
 
