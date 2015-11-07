@@ -293,7 +293,7 @@ have the keyring of the `admin` account.
 
 There is no default hiera lookup in this module. Just
 the classical mechanisms of data binding are used. Here
-is the defaults values of the parameters:
+is the default values of the parameters:
 
 * `clusters_conf => undef` so you must provide the clusters
 configuration yourself,
