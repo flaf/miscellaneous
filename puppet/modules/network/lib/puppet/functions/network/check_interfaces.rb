@@ -10,8 +10,9 @@ Puppet::Functions.create_function(:'network::check_interfaces') do
 
     function_name = 'check_interfaces'
 
-    # Allowed keys for a give interface.
+    # Allowed keys for a given interface.
     allowed_keys = [ 'in_networks', # allowed for the `interfaces` key.
+                     'routes',
                      'macaddress',
                      'comment',
                      'inet',
@@ -57,8 +58,9 @@ Puppet::Functions.create_function(:'network::check_interfaces') do
       end
 
       # The "on_networks" key must be mapped to a non-empty array of
-      # non-empty strings. It's the same for the "comment" key.
-      [ 'on_networks', 'comment' ].each do |e|
+      # non-empty strings. It's the same for the "comment" key and
+      # the "routes" key.
+      [ 'on_networks', 'comment', 'routes' ].each do |e|
         if settings.has_key?(e)
           # TODO: PUP-5209
           #unless call_function('::homemade::is_clean_arrayofstr', settings[e])
