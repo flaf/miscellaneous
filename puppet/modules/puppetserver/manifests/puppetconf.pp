@@ -19,11 +19,12 @@ class puppetserver::puppetconf {
   # "autonomus" profile.. If you notice changes during the puppet
   # run, you should restart yourself the puppetserver service.
 
-  $profile                 = $::puppetserver::profile
-  $memory                  = $::puppetserver::puppet_memory
-  $modules_repository      = $::puppetserver::modules_repository
-  $modules_versions        = $::puppetserver::modules_versions
-  $max_groups              = $::puppetserver::max_groups
+  $profile            = $::puppetserver::profile
+  $memory             = $::puppetserver::puppet_memory
+  $modules_repository = $::puppetserver::modules_repository
+  $modules_versions   = $::puppetserver::modules_versions
+  $max_groups         = $::puppetserver::max_groups
+  $groups_from_master = $::puppetserver::groups_from_master
 
   if $profile == 'autonomous' {
     $notify_puppetserver = undef
@@ -131,29 +132,53 @@ class puppetserver::puppetconf {
     # No need to restart the puppetserver here.
   }
 
-  # The "common-from-master.yaml" file (ie the cfm file)
-  # from the master present only when the puppetserver
-  # has the "client" profile, not when it has the "autonomous"
-  # profile.
-  if $profile == 'autonomous' {
-    $cfm_ensure  = 'absent'
-    $cfm_content = undef
-  } else {
-    # The puppetserver has the "client" profile.
+  # The "hieradata-common-from-master.yaml" file (ie the cfm
+  # file) from the master present only when the puppetserver
+  # has the "client" profile, not when it has the
+  # "autonomous" profile.
+  # The "client" puppetserver will retrieve too some yaml
+  # group files from the master via the $groups_from_master
+  # variable.
+  if $profile == 'client' {
+
     # file() takes the content from the master puppet.
     # So the file must exist in the master.
-    $cfm_ensure  = 'present'
     $cfm_content = file("${production_path}/hieradata/common.yaml")
-  }
+    file { "${production_path}/hieradata-common-from-master.yaml":
+      ensure  => present,
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0644',
+      content => $cfm_content,
+      before  => Service['puppetserver'],
+      # No need to restart the puppetserver here.
+    }
 
-  file { "${production_path}/common-from-master.yaml":
-    ensure  => $cfm_ensure,
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0644',
-    content => $cfm_content,
-    before  => Service['puppetserver'],
-    # No need to restart the puppetserver here.
+    # The "hieradata-group-from-master" directory and its files below.
+    file { "${production_path}/hieradata-group-from-master":
+      ensure  => directory,
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0755',
+      recurse => true,
+      purge   => true,
+      force   => true,
+      before  => Service['puppetserver'],
+      # No need to restart the puppetserver here.
+    }
+
+    $groups_from_master.each |$a_group| {
+      file { "${production_path}/hieradata-group-from-master/${a_group}.yaml":
+        ensure  => present,
+        owner   => 'root',
+        group   => 'root',
+        mode    => '0644',
+        content => file("${production_path}/hieradata/group/${a_group}.yaml"),
+        before  => Service['puppetserver'],
+        # No need to restart the puppetserver here.
+      }
+    }
+
   }
 
   # The hiera.yaml file. This file must trigger a restart

@@ -15,6 +15,7 @@ class { '::puppetserver':
   puppetdb_memory    => '1g',
   profile            => 'autonomous',
   max_groups         => 3,
+  groups_from_master => [],
   modules_repository => 'http://puppetforge.domain.tld',
   puppetdb_name      => 'puppet',
   puppetdb_user      => 'puppet',
@@ -50,6 +51,19 @@ The `max_groups` parameter is an integer greater or equal
 to 1. It's the maximum number of groups to which a node
 belongs in the data hierarchy. The default value of this
 parameter is `3`.
+
+The `groups_from_master` parameter is an array of non-empty
+strings (but the array can be empty). The default value of
+this parameter is `[]` (ie an empty array). This parameter
+is only useful for a "client" puppetserver. This parameter
+will be completely ignored for a "autonomous" puppetserver.
+For a "client" puppetserver, this array can contain names of
+yaml hiera groups from the master. These groups will be
+imported in the data hierarchy of the "client" puppetserver.
+The name of a group must be provided without the `yaml`
+extension. For instance with the value `[ 'foo', 'bar' ]`
+the hiera group files `foo.yaml` and `bar.yaml` will be
+imported in the "client" puppetserver from the master.
 
 The `modules_repository` parameter is the url address of
 a Puppet forge server requested by the puppetserver. The

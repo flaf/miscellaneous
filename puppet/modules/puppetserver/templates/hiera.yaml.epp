@@ -10,10 +10,15 @@
 <%- range(0, $max_groups - 1).each |$index| { -%>
   - '%{::environment}/hieradata/group/%{::groups_<%= $index %>}'
 <%- } -%>
+<%- if $profile == 'client' { -%>
+  <%- range(0, $max_groups - 1).each |$index| { -%>
+  - '%{::environment}/hieradata-group-from-master/%{::groups_<%= $index %>}'
+  <%- } -%>
+<%- } -%>
   - '%{::environment}/hieradata/datacenter/%{::datacenter}'
   - '%{::environment}/hieradata/common'
 <%- if $profile == 'client' { -%>
-  - '%{::environment}/common-from-master.yaml'
+  - '%{::environment}/hieradata-common-from-master.yaml'
 <%- } -%>
 
 :merge_behavior: 'deeper'
