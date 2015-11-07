@@ -17,7 +17,9 @@ Puppet::Functions.create_function(:'network::check_inventory_networks') do
                      ]
 
     inventory_networks.each do |netname, params|
+
       mandatory_keys.each do |mkey|
+
         unless params.has_key?(mkey)
           msg = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
             |#{function_name}(): the `#{netname}` network in
@@ -26,6 +28,7 @@ Puppet::Functions.create_function(:'network::check_inventory_networks') do
             EOS
           raise(Puppet::ParseError, msg)
         end
+
         if mkey == 'comment'
           # TODO: PUP-5209
           #unless call_function('::homemade::is_clean_arrayofstr', params[mkey])
@@ -54,8 +57,33 @@ Puppet::Functions.create_function(:'network::check_inventory_networks') do
             call_function('::network::dump_cidr', params[mkey])
           end
         end
+
+      end # Loop in mandatory_keys.
+
+      # Now, we check the "routes" entry which is optional.
+      # Its value must have this form:
+      #
+      # routes = {
+      #   'route-name1' => { 'to' => 'a-CIDR-address', 'via' => 'an-address' },
+      #   'route-name2' => { 'to' => 'a-CIDR-address', 'via' => 'an-address' },
+      #   ...
+      # }
+      if params.has_key?('routes')
+        routes = params['routes']
+        unless routes.is_a?(Hash)
+          msg = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
+            |#{function_name}(): the `#{netname}` network in
+            |the inventory networks is not valid because the
+            |value of the `routes` key is not a hash.
+            EOS
+          raise(Puppet::ParseError, msg)
+        end
+
       end
-    end
+
+
+
+    end # Loop in inventory_networks.
 
     # If no error, return true.
     true
