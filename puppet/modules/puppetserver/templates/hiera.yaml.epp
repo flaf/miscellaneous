@@ -18,7 +18,7 @@
   - '%{::environment}/hieradata/datacenter/%{::datacenter}'
   - '%{::environment}/hieradata/common'
 <%- if $profile == 'client' { -%>
-  - '%{::environment}/hieradata-common-from-master.yaml'
+  - '%{::environment}/hieradata-common-from-master'
 <%- } -%>
 
 :merge_behavior: 'deeper'
