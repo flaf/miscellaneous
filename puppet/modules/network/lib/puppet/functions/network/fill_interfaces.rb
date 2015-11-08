@@ -128,8 +128,17 @@ Puppet::Functions.create_function(:'network::fill_interfaces') do
       # Handle of the "routes" entry, only if the interface
       # has a default network.
       if settings.has_key?('routes') and not default_network.nil?
-        settings.each do |a_route|
-          
+        settings['routes'].each do |a_route|
+          unless default_network.has_key?('routes') \
+          and default_network['routes'].has_key?(a_route)
+            msg = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
+              |#{function_name}(): the interface `#{ifname}` has a
+              |`#{default_str}` value which for the `#{param}` option
+              |this option is not provided in the default network
+              |`#{default_network}`.
+            EOS
+            raise(Puppet::ParseError, msg)
+          end
         end
       end
 
