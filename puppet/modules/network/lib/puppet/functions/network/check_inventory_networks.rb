@@ -81,19 +81,42 @@ Puppet::Functions.create_function(:'network::check_inventory_networks') do
           raise(Puppet::ParseError, msg)
         end
 
-        [ 'to', 'via' ].each do |k|
-          unless routes.has_key?(k) and routes[k].is_a?(String) \
-          and not routes[k].empty?
+        routes.each do |route_name, route_conf|
+
+          unless route_name.is_a?(String) and not route_name.empty?
             msg = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
               |#{function_name}(): the `#{netname}` network in
               |the inventory networks is not valid because the
-              |value of the `routes` entry must be a hash with the
-              |key `#{k}` mapped to a non empty string value. This
-              |is not the case currently.
+              |the `routes` hash has a key which is not a non-empty
+              |string.
               EOS
             raise(Puppet::ParseError, msg)
           end
-        end
+
+          unless route_conf.is_a?(Hash)
+            msg = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
+              |#{function_name}(): the `#{netname}` network in
+              |the inventory networks is not valid because the
+              |the value of the route #{route_name} is not a hash.
+              EOS
+            raise(Puppet::ParseError, msg)
+          end
+
+          [ 'to', 'via' ].each do |k|
+            unless route_conf.has_key?(k) and route_conf[k].is_a?(String) \
+            and not route_conf[k].empty?
+              msg = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
+                |#{function_name}(): the `#{netname}` network in
+                |the inventory networks is not valid because the
+                |the route `#{route_name}` st be a hash with the
+                |key `#{k}` mapped to a non-empty string value.
+                |This is not the case currently.
+                EOS
+              raise(Puppet::ParseError, msg)
+            end
+          end
+
+        end # Loop in routes.
 
       end # Handle of the "routes" entry.
 
