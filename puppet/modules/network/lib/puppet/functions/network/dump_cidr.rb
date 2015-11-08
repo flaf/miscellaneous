@@ -43,10 +43,14 @@ Puppet::Functions.create_function(:'network::dump_cidr') do
       # TODO: For the netmask address, I have found no way except
       # to handle 2 cases: the address is an IPv4 address or an
       # IPv6 address.
+      ipv6 = false
+      ipv4 = false
       if ip_addr.ipv4?
         zero_addr = '0.0.0.0'
+        ipv4 = true
       elsif ip_addr.ipv6?
         zero_addr = '::'
+        ipv6 = true
       else
         # Normally, you should never fall in this case.
         msg = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
@@ -82,12 +86,14 @@ Puppet::Functions.create_function(:'network::dump_cidr') do
 
     end
 
-    { 'address'        => ip_addr_str,
-      'network'        => network_addr_str,
-      'broadcast'      => network_addr.to_range.last.to_s,
-      'netmask'        => netmask_addr_str,
-      'cidr'           => cidr_str,
-      'netmask_num'    => netmask_num_str,
+    { 'address'     => ip_addr_str,
+      'network'     => network_addr_str,
+      'broadcast'   => network_addr.to_range.last.to_s,
+      'netmask'     => netmask_addr_str,
+      'cidr'        => cidr_str,
+      'netmask_num' => netmask_num_str,
+      'ipv4'        => ipv4,
+      'ipv6'        => ipv6,
     }
 
   end

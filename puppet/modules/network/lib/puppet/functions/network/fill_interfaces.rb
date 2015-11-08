@@ -125,9 +125,11 @@ Puppet::Functions.create_function(:'network::fill_interfaces') do
         end
       end # Handle of __default__ values.
 
-      # Handle of the "routes" entry.
-      if settings.has_key?('routes')
+      # Handle of the "routes" entry, only if the interface
+      # has a default network.
+      if settings.has_key?('routes') and not default_network.nil?
         settings.each do |a_route|
+          
         end
       end
 
