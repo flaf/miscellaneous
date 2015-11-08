@@ -92,6 +92,7 @@ Puppet::Functions.create_function(:'network::fill_interfaces') do
         settings['comment'] = final_comment
       end
 
+      # Handle of the __default__ value.
       [ 'inet', 'inet6' ].each do |family|
         if not settings.has_key?(family) then next end
         if not settings[family].has_key?('options') then next end
@@ -121,6 +122,12 @@ Puppet::Functions.create_function(:'network::fill_interfaces') do
             end
             settings[family]['options'][param] = inventory_networks[default_network][param]
           end
+        end
+      end # Handle of __default__ values.
+
+      # Handle of the "routes" entry.
+      if settings.has_key?('routes')
+        settings.each do |a_route|
         end
       end
 

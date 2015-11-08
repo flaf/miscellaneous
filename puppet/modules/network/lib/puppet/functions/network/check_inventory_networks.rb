@@ -69,7 +69,9 @@ Puppet::Functions.create_function(:'network::check_inventory_networks') do
       #   ...
       # }
       if params.has_key?('routes')
+
         routes = params['routes']
+
         unless routes.is_a?(Hash)
           msg = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
             |#{function_name}(): the `#{netname}` network in
@@ -79,9 +81,21 @@ Puppet::Functions.create_function(:'network::check_inventory_networks') do
           raise(Puppet::ParseError, msg)
         end
 
-      end
+        [ 'to', 'via' ].each do |k|
+          unless routes.has_keys?(k) and routes[k].is_a?(String)
+          and not routes[k].empty?
+            msg = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
+              |#{function_name}(): the `#{netname}` network in
+              |the inventory networks is not valid because the
+              |value of the `routes` entry must be a hash with the
+              |key `#{k}` mapped to a non empty string value. This
+              |is not the case currently.
+              EOS
+            raise(Puppet::ParseError, msg)
+          end
+        end
 
-
+      end # Handle of the "routes" entry.
 
     end # Loop in inventory_networks.
 
