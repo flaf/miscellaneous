@@ -82,7 +82,7 @@ Puppet::Functions.create_function(:'network::check_inventory_networks') do
         end
 
         [ 'to', 'via' ].each do |k|
-          unless routes.has_keys?(k) and routes[k].is_a?(String) \
+          unless routes.has_key?(k) and routes[k].is_a?(String) \
           and not routes[k].empty?
             msg = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
               |#{function_name}(): the `#{netname}` network in
