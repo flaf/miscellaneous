@@ -76,7 +76,7 @@ Puppet::Functions.create_function(:'network::check_inventory_networks') do
           msg = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
             |#{function_name}(): the `#{netname}` network in
             |the inventory networks is not valid because the
-            |value of the `routes` key is not a hash.
+            |value of the `routes` entry is not a hash.
             EOS
           raise(Puppet::ParseError, msg)
         end
@@ -87,7 +87,7 @@ Puppet::Functions.create_function(:'network::check_inventory_networks') do
             msg = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
               |#{function_name}(): the `#{netname}` network in
               |the inventory networks is not valid because the
-              |the `routes` hash has a key which is not a non-empty
+              |`routes` hash has a key which is not a non-empty
               |string.
               EOS
             raise(Puppet::ParseError, msg)
@@ -97,7 +97,7 @@ Puppet::Functions.create_function(:'network::check_inventory_networks') do
             msg = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
               |#{function_name}(): the `#{netname}` network in
               |the inventory networks is not valid because the
-              |the value of the route #{route_name} is not a hash.
+              |value of the route `#{route_name}` is not a hash.
               EOS
             raise(Puppet::ParseError, msg)
           end
@@ -108,7 +108,7 @@ Puppet::Functions.create_function(:'network::check_inventory_networks') do
               msg = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
                 |#{function_name}(): the `#{netname}` network in
                 |the inventory networks is not valid because the
-                |the route `#{route_name}` st be a hash with the
+                |route `#{route_name}` must be a hash with the
                 |key `#{k}` mapped to a non-empty string value.
                 |This is not the case currently.
                 EOS
