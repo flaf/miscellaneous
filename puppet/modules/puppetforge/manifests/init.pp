@@ -103,7 +103,7 @@ class puppetforge (
                   ),
   }
 
-  file { '/lib/systemd/system/puppetforge.service':
+  file { '/etc/systemd/system/puppetforge.service':
     ensure  => present,
     owner   => 'root',
     group   => 'root',
@@ -156,7 +156,7 @@ class puppetforge (
                   ),
     }
 
-  file { '/lib/systemd/system/update-pp-modules.service':
+  file { '/etc/systemd/system/update-pp-modules.service':
     ensure  => present,
     owner   => 'root',
     group   => 'root',
