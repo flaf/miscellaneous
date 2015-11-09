@@ -68,9 +68,9 @@ ceph-mds-add --id ceph02
 # Etc...
 #
 # Creation of the Cephfs.
-ceph osd pool create data $pg_num_data
-ceph osd pool create metadata $pg_num_metadata
-ceph fs new cephfs metadata data
+ceph osd pool create cephfsdata     $pg_num_data
+ceph osd pool create cephfsmetadata $pg_num_metadata
+ceph fs new cephfs cephfsmetadata cephfsdata
 ceph fs ls # To check if all is OK.
 ```
 
@@ -166,7 +166,7 @@ $ceph_keyrings = {
     'key'        => 'AQB1fhRWkM5tFxAADYKzOgTbDZw9LEMgbPw4yw==',
     'properties' =>  [
       'caps mon = "allow r"',
-      'caps osd = "allow class-read object_prefix rbd_children, allow rwx pool=data"',
+      'caps osd = "allow class-read object_prefix rbd_children, allow rwx pool=cephfsdata"',
       'caps mds = "allow"',
     ],
   },
@@ -364,7 +364,7 @@ ceph::clusters_conf:
         key: 'AQB1fhRWkM5tFxAADYKzOgTbDZw9LEMgbPw4yw=='
         properties:
         - 'caps mon = "allow r"'
-        - 'caps osd = "allow class-read object_prefix rbd_children, allow rwx pool=data"'
+        - 'caps osd = "allow class-read object_prefix rbd_children, allow rwx pool=cephfsdata"'
         - 'caps mds = "allow"'
       radosgw.gw1:
         key: 'AQDofhRWBh/ZBBAAtaRA4J9VHl7srhYyxo5pig=='
