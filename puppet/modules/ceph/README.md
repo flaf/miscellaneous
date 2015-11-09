@@ -31,14 +31,17 @@ mkfs.xfs -L osd-1 -f /dev/sde2
 
 # 2. Installation of the all monitors on each node.
 #
+# For the ID of monitors and mds, don't use a numeric IDs
+# but systematically _alphanumeric_ IDs.
+#
 # For the first monitor.
-ceph-monitor-init --device /dev/disk/by-partlabel/mon-1   \
-                  --mount-options noatime,defaults --id 1 \
+ceph-monitor-init --device /dev/disk/by-partlabel/mon-ceph01   \
+                  --mount-options noatime,defaults --id ceph01 \
                   --monitor-addr "$address_mon_1"
 #
 # For the other monitors.
-ceph-monitor-add --device /dev/disk/by-partlabel/mon-2   \
-                 --mount-options noatime,defaults --id 1 \
+ceph-monitor-add --device /dev/disk/by-partlabel/mon-ceph01   \
+                 --mount-options noatime,defaults --id ceph02 \
                  --monitor "$address_mon_1"
 # Etc...
 
@@ -60,8 +63,8 @@ ceph auth add client.foo2 -i /etc/ceph/ceph.client.foo2.keyring
 
 # 5. Installation of a cephfs if it's necessary.
 # First, on each mds node (help with ceph-mds-add --help).
-ceph-mds-add --id 1
-ceph-mds-add --id 2
+ceph-mds-add --id ceph01
+ceph-mds-add --id ceph02
 # Etc...
 #
 # Creation of the Cephfs.
@@ -203,9 +206,9 @@ $clusters_conf = {
     'keyrings'       => $ceph_keyrings,
     # Below, 'mon-1', 'mon-2' and 'mon-3' must be the real short hostname
     # of the monitor servers.
-    'monitors'       => { 'mon-1' => {'id' => '0', 'address' => '10.0.2.150'},
-                          'mon-2' => {'id' => '1', 'address' => '10.0.2.151'},
-                          'mon-3' => {'id' => '2', 'address' => '10.0.2.152'},
+    'monitors'       => { 'mon-1' => {'id' => 'ceph01', 'address' => '10.0.2.150'},
+                          'mon-2' => {'id' => 'ceph02', 'address' => '10.0.2.151'},
+                          'mon-3' => {'id' => 'ceph03', 'address' => '10.0.2.152'},
                         },
   },
   'cluster-a' => {
@@ -341,13 +344,13 @@ ceph::clusters_conf:
 
     monitors:
       mon-1:
-        id: '0'
+        id: 'ceph01'
         address: '10.0.2.150'
       mon-2:
-        id: '1'
+        id: 'ceph02'
         address: '10.0.2.151'
       mon-3:
-        id: '2'
+        id: 'ceph03'
         address: '10.0.2.152'
 
     keyrings:
@@ -402,15 +405,5 @@ ceph::is_clusternode: true
 ```
 
 
-
-
-# TODO
-
-* Since Ceph version Hammer, it's possible to choose
-the ID of a new OSD. Currently, the scripts embedded
-in this module don't provide this feature. Update the
-scripts to provide this feature. Check on IRC that
-there is no problem to enforce the ID of the OSDs
-(instead let Ceph choose itself the ID).
 
 
