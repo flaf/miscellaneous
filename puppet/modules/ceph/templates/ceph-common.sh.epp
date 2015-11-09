@@ -146,17 +146,38 @@ then
     fi
 fi
 
-# Check if the id is a number string.
+# Check the id. Here
+#
+#     http://docs.ceph.com/docs/master/rados/configuration/ceph-conf/#config-sections
+#
+#
+# we can see:
+#
+#    The instance ID for a Ceph OSD Daemon is always numeric, but it may be
+#    alphanumeric for Ceph Monitors and Ceph Metadata Servers.
+#
 check_id () {
 
     local id
     id="$1"
 
-    if echo "$id" | grep -Eq '^[0-9]+$'
+    local regex
+    local msg
+    if [ "$service" = "mon" ]
+    then
+        regex='^[0-9a-z]+$' # alphanumeric.
+        msg='alphanumeric'
+    else
+        # Normally "$serivce" = "osd"
+        regex='^[0-9]+$' # just numeric.
+        msg='an integer'
+    fi
+
+    if printf '%s\n' "$id" | grep -Eq "$regex"
     then
         return 0
     else
-        printf "The value of the option --id must be a integer.\n"
+        printf "The value of the option --id must be %s.\n" "$msg"
         return 1
     fi
 

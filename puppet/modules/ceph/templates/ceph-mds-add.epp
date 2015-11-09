@@ -83,9 +83,19 @@ do
     esac
 done
 
-if ! echo "$mds_id" | grep -qE '^[1-9][0-9]*$'
+# Check the id. Here
+#
+#     http://docs.ceph.com/docs/master/rados/configuration/ceph-conf/#config-sections
+#
+#
+# we can see:
+#
+#    The instance ID for a Ceph OSD Daemon is always numeric, but it may be
+#    alphanumeric for Ceph Monitors and Ceph Metadata Servers.
+#
+if ! echo "$mds_id" | grep -qE '^[0-9a-z]+$'
 then
-    printf "The --id option is mandatory and its value must be an integer.\n"
+    printf "The --id option is mandatory and its value must be alphanumeric.\n"
     printf "End of the script.\n"
     exit 1
 fi
