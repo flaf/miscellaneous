@@ -19,7 +19,7 @@ function repository::data {
   }
 
   $distribs     = [ 'trusty', 'jessie' ]
-  $ceph_version = 'hammer'
+  $ceph_version = 'infernalis' # Not LTS, but Jewel will be.
 
   # Dedicated stage for this module.
   $stage = 'repository';
