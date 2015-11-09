@@ -546,3 +546,13 @@ interface in a only one network N, the function will return
 the value of the `'dns_servers'` key in the network N if
 this key exists, else the function will return `$default`.
 
+
+
+
+# TODO
+
+* Finish to add the "routes" feature.
+
+
+
+
