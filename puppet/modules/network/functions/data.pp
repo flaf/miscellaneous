@@ -66,7 +66,7 @@ function network::data {
   }
 
   if $ht_must_be_filled {
-    $hosts_entries_filled = $hosts_entries + $default_hosts_entries
+    $hosts_entries_filled = $default_hosts_entries + $hosts_entries
   } else {
     $hosts_entries_filled = $hosts_entries
   }

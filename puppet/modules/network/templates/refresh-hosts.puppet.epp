@@ -56,7 +56,7 @@ column_width = hosts_entries.keys.map(&:length).max + 2
 
 # The lines of hosts entries.
 str = ''
-hosts_entries.keys.sort.each do |addr|
+hosts_entries.keys.each do |addr|
   str += addr.ljust(column_width) + hosts_entries[addr].join(" ") + "\n"
 end
 str = str.strip
