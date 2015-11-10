@@ -31,7 +31,7 @@ function network::data {
 
   # Default is no tag and the one basic hosts entry.
   $default_hosts_tag = ''
-  $default_hosts_entries = { '127.0.1.1' => [$::fqdn, $::hostname ] }
+  $default_hosts_entries = { '127.0.1.1' => [ $::fqdn, $::hostname ] }
 
   if $hosts_conf.empty {
     $hosts_tag     = $default_hosts_tag
@@ -47,6 +47,28 @@ function network::data {
     } else {
       $hosts_entries = $default_hosts_entries
     }
+  }
+
+  # If '127.0.1.1' is not present in hosts entries and if
+  # $::fqdn _and_ $::hostname are not present at all in any
+  # hosts entries, we add the automatically $default_hosts_entries.
+  if ! $hosts_entries.has_key('127.0.1.1') {
+
+    $tmp_entries = $hosts_entries.values.filter |$addresses| {
+      $addresses.member($::fqdn) or $addresses.member($::hostname)
+    }
+
+    if $tmp_entries.empty {
+      # No entry with $::fqdn or $::hostname.
+      $ht_must_be_filled = true
+    }
+
+  }
+
+  if $ht_must_be_filled {
+    $hosts_entries_filled = $hosts_entries + $default_hosts_entries
+  } else {
+    $hosts_entries_filled = $hosts_entries
   }
 
   $supported_distribs = [ 'trusty', 'jessie' ];
@@ -66,7 +88,7 @@ function network::data {
     network::resolv_conf::supported_distributions => $supported_distribs,
     network::resolv_conf::stage                   => $default_stage,
 
-    network::hosts::entries                 => $hosts_entries,
+    network::hosts::entries                 => $hosts_entries_filled,
     network::hosts::from_tag                => $hosts_tag,
     network::hosts::supported_distributions => $supported_distribs,
     network::hosts::stage                   => $default_stage,

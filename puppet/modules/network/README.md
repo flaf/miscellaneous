@@ -384,6 +384,14 @@ hosts:
   tag: 'ceph-cluster'
 ```
 
+**Warning :** if :
+1. the address `127.0.1.1` is not present in the hosts entries,
+2. **and** if `$::fqdn` is not present at all in any hosts entries,
+3. **and** if `$::hostnme` is not present at all in any hosts entries,
+then the entry `{'127.0.1.1' => [$::fqdn, $::hostname]}` is
+automatically added in the hosts entries.
+
+
 If the `hosts` entry doesn't exist in hiera, the default
 value of the `entries` parameter will be
 `{ '127.0.1.1' => [ $::fqdn, $::hostname ] }`
