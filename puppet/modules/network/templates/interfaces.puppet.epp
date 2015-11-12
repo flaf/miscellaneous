@@ -6,7 +6,14 @@ auto lo
 iface lo inet loopback
 <%- $interfaces.keys.each |$interface| { -%>
 
-  <%- $settings = $interfaces[$interface] -%>
+  <%-
+    $settings = $interfaces[$interface]
+    if [ 'inet', 'inet6' ].filter |$family| { $settings.has_key($family) }.empty {
+      $auto_stanza = "# ${interface}: no configuration for this interface."
+    } else {
+      $auto_stanza = "auto ${interface}"
+    }
+  -%>
   <%- if $settings.has_key('comment') { -%>
 <%= $settings['comment'].map |$line| { "# ${line}" }.join("\n") %>
 #
@@ -14,7 +21,7 @@ iface lo inet loopback
   <%- if $settings.has_key('macaddress') { -%>
 # macaddress => <%= $settings['macaddress'] %>
   <%- } -%>
-auto <%= $interface %>
+<%= $auto_stanza %>
   <%- [ 'inet', 'inet6' ].each |$family| { -%>
     <%- if $settings.has_key($family) { -%>
 iface <%= $interface %> <%= $family %> <%= $settings[$family]['method'] %>

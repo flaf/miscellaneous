@@ -82,9 +82,17 @@ you can put:
 * a `comment` key mapped to a non-empty array of
 non-empty strings (optional),
 
-In each interface, at least a `inet` key or a `inet6`
-key must exist and the mapped value must be a hash.
-In each `inet` and `inet6` hash, you can put:
+The `inet` and `inet6` keys are optional. If neither
+`inet` nor `inet6` are present, there will be no
+configuration at all for the interface, but:
+* comments concerning this interface will be put in
+`/etc/network/interfaces` if the `comment` key is provided
+* and  If a udev rule concerning the name of this interface
+will be applied if the `macaddress` key is provided.
+
+In each interface, if at least a `inet` key or a `inet6`
+exist, the mapped value must be a hash. In each `inet` and
+`inet6` hash, you can put:
 
 * a `method` key which is mandatory,
 * and a `options` key which is syntactically optional

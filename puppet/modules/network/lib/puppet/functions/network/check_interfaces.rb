@@ -35,15 +35,22 @@ Puppet::Functions.create_function(:'network::check_interfaces') do
         raise(Puppet::ParseError, msg_options_error)
       end
 
+      # Deprecated: now, we allow an interface to have neither inet
+      #             nor inet6 configuration in case 1) the interface
+      #             must not be configured but 2) in other side we want
+      #             to have comments in /etc/network/interfaces and we
+      #             want to have a udev rule enabled for this interface.
+      #
+      #
       # In settings, there is at least the key `inet` and/or `inet6`.
-      unless settings.has_key?('inet') or settings.has_key?('inet6')
-        msg_options_error = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
-          |#{function_name}(): the `#{ifname}` interface is not valid
-          |because its hash value has neither the `inet` key nor the
-          |`inet6` key (at least one of them is required).
-          EOS
-        raise(Puppet::ParseError, msg_options_error)
-      end
+      #unless settings.has_key?('inet') or settings.has_key?('inet6')
+      #  msg_options_error = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
+      #    |#{function_name}(): the `#{ifname}` interface is not valid
+      #    |because its hash value has neither the `inet` key nor the
+      #    |`inet6` key (at least one of them is required).
+      #    EOS
+      #  raise(Puppet::ParseError, msg_options_error)
+      #end
 
       # Each param in settings must be an allowed key.
       settings.each do |param, value|
