@@ -62,6 +62,12 @@ class { '::network':
 verbatim because of the choice concerning the data binding
 for this module. See below for more details.
 
+**Warning:** the file `/etc/network/interfaces` is not
+managed at all by this class, unless the `restart`
+parameter is set to `true` (not recommended, see below).
+If set to `false` (the default), the file managed by
+the class is just `/etc/network/interfaces.puppet` and
+you should restart the network manually.
 
 The `restart` parameter is a boolean. If the value
 is `true`, then the network will be restarted after
@@ -82,16 +88,18 @@ you can put:
 * a `comment` key mapped to a non-empty array of
 non-empty strings (optional),
 
-The `inet` and `inet6` keys are optional. If neither
-`inet` nor `inet6` are present, there will be no
-configuration at all for the interface, but:
+The `inet` and `inet6` keys are optional. If neither `inet`
+nor `inet6` are present, there will be no configuration at
+all in `/etc/network/interfaces.puppet` concerning the
+interface, but:
+
 * comments concerning this interface will be put in
-`/etc/network/interfaces` if the `comment` key is provided
-* and  If a udev rule concerning the name of this interface
+`/etc/network/interfaces.puppet` if the `comment` key is provided
+* and a udev rule concerning the name of this interface
 will be applied if the `macaddress` key is provided.
 
 In each interface, if at least a `inet` key or a `inet6`
-exist, the mapped value must be a hash. In each `inet` and
+exists, the mapped value must be a hash. In each `inet` and
 `inet6` hash, you can put:
 
 * a `method` key which is mandatory,
