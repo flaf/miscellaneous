@@ -3,6 +3,7 @@ class repository::puppet (
   Boolean             $src,
   String[1]           $collection,
   String[1]           $pinning_agent_version,
+  String[1]           $pinning_server_version,
   Array[String[1], 1] $supported_distributions,
   String[1]           $stage = 'main',
 ) {
@@ -31,6 +32,18 @@ class repository::puppet (
       explanation => 'To ensure the version of the puppet-agent package.',
       packages    => 'puppet-agent',
       version     => $pinning_agent_version,
+      priority    => 990,
+    }
+
+  }
+
+  if $pinning_server_version != 'none' {
+
+    # About pinning => `man apt_preferences`.
+    apt::pin { 'puppetserver':
+      explanation => 'To ensure the version of the puppetserver package.',
+      packages    => 'puppetserver',
+      version     => $pinning_server_version,
       priority    => 990,
     }
 

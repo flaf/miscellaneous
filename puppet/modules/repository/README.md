@@ -51,10 +51,11 @@ Here is an example:
 ```puppet
 
 class { '::repository::puppet':
-  url                   => 'http://apt.puppetlabs.com',
-  src                   => false,
-  collection            => 'PC1',
-  pinning_agent_version => '1.2.*', # Don't forget the joker.
+  url                    => 'http://apt.puppetlabs.com',
+  src                    => false,
+  collection             => 'PC1',
+  pinning_agent_version  => '1.3.0-*', # Don't forget the joker.
+  pinning_server_version => '2.2.0-*', # Don't forget the joker.
 }
 ```
 
@@ -67,20 +68,22 @@ The `src` parameter is a boolean to tell if you
 want to include the `deb-src` line or not in the
 `sources.list.d/`.
 
-The `collection` and `pinning_agent_version`
-parameters give the name of the collection and
-the version of the `puppet-agent` package which
-will be installed. For the `pinning_agent_version`
-parameter, the special string value `none` means
-"no pinning". To find the default values of these
-2 parameters, there is a lookup of the `puppet`
-entry in hiera (or in the environment). This entry
-must have this form below:
+The `collection` gives the name of the collection which will
+be used. The `pinning_agent_version` and
+`pinning_server_version` parameters give the version of the
+`puppet-agent` package and the `puppetserver` package which
+will be pinned via APT. For the `pinning_agent_version` and
+`pinning_server_version` parameters, the special string
+value `none` means "no pinning". To find the default values
+of these 3 parameters, there is a lookup of the `puppet`
+entry in hiera (or in the environment). This entry **must**
+exist and must have this form below:
 
 ```yaml
 puppet:
   collection: 'PC1'
-  pinning_agent_version: '1.2.*'
+  pinning_agent_version: '1.3.0-*'
+  pinning_server_version: '2.2.0-*'
 ```
 
 
