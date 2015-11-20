@@ -7,23 +7,23 @@ function repository::data {
 
   }
 
-  $conf = lookup('puppet', Hash[String[1], String[1], 1], 'hash')
+  #$conf = lookup('puppet', Hash[String[1], String[1], 1], 'hash')
 
-  # Pinning of the version of "puppet-agent" package
-  # must be found in hiera or in the environment.
-  if ! $conf.has_key('pinning_agent_version') {
-    fail("The `puppet` entry must have a `pinning_agent_version` key.")
-  }
+  ## Pinning of the version of "puppet-agent" package
+  ## must be found in hiera or in the environment.
+  #if ! $conf.has_key('pinning_agent_version') {
+  #  fail("The `puppet` entry must have a `pinning_agent_version` key.")
+  #}
 
-  # Pinning of the version of "puppetserver" package
-  # must be found in hiera or in the environment.
-  if ! $conf.has_key('pinning_server_version') {
-    fail("The `puppet` entry must have a `pinning_server_version` key.")
-  }
+  ## Pinning of the version of "puppetserver" package
+  ## must be found in hiera or in the environment.
+  #if ! $conf.has_key('pinning_server_version') {
+  #  fail("The `puppet` entry must have a `pinning_server_version` key.")
+  #}
 
-  if ! $conf.has_key('collection') {
-    fail("The `puppet` entry must have a `collection` key.")
-  }
+  #if ! $conf.has_key('collection') {
+  #  fail("The `puppet` entry must have a `collection` key.")
+  #}
 
   $distribs     = [ 'trusty', 'jessie' ]
   $ceph_version = 'infernalis' # Not LTS, but Jewel will be.
@@ -40,9 +40,9 @@ function repository::data {
 
     repository::puppet::url                     => 'http://apt.puppetlabs.com',
     repository::puppet::src                     => false,
-    repository::puppet::collection              => $conf['collection'],
-    repository::puppet::pinning_agent_version   => $conf['pinning_agent_version'],
-    repository::puppet::pinning_server_version  => $conf['pinning_server_version'],
+    #repository::puppet::collection              => $conf['collection'],
+    #repository::puppet::pinning_agent_version   => $conf['pinning_agent_version'],
+    #repository::puppet::pinning_server_version  => $conf['pinning_server_version'],
     repository::puppet::supported_distributions => $distribs,
     repository::puppet::stage                   => $stage,
 

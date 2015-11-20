@@ -66,24 +66,23 @@ Its default value is `http://apt.puppetlabs.com`.
 
 The `src` parameter is a boolean to tell if you
 want to include the `deb-src` line or not in the
-`sources.list.d/`.
+`sources.list.d/`. Its default value is `false`.
 
 The `collection` gives the name of the collection which will
 be used. The `pinning_agent_version` and
 `pinning_server_version` parameters give the version of the
 `puppet-agent` package and the `puppetserver` package which
-will be pinned via APT. For the `pinning_agent_version` and
-`pinning_server_version` parameters, the special string
-value `none` means "no pinning". To find the default values
-of these 3 parameters, there is a lookup of the `puppet`
-entry in hiera (or in the environment). This entry **must**
-exist and must have this form below:
+will be pinned in the APT configuration. For the
+`pinning_agent_version` and `pinning_server_version`
+parameters, the special string value `none` means "no
+pinning". These 3 parameters have no default value and you
+must provide values yourself. For instance in hiera with
+something like that:
 
 ```yaml
-puppet:
-  collection: 'PC1'
-  pinning_agent_version: '1.3.0-*'
-  pinning_server_version: '2.2.0-*'
+repository::puppet::collection: 'PC1'
+repository::puppet::pinning_agent_version: '1.3.0-*'
+repository::puppet::pinning_server_version: '2.2.0-*'
 ```
 
 
