@@ -155,8 +155,11 @@ inventory_networks:
     vlan_name: 'admin_mgt'
     cidr_address: '172.31.0.0/16'
     gateway: '172.31.0.1'
-    dns: [ '172.31.10.1', '172.31.10.2' ]
-    ntp: [ '172.31.11.1', '172.31.11.2', '172.31.11.3' ]
+    dns_servers: [ '172.31.10.1', '172.31.10.2' ]
+    ntp_servers: [ '172.31.11.1', '172.31.11.2', '172.31.11.3' ]
+    routes:
+      mgt2mysql: { 'to': '192.168.1.0/24', 'via': '172.31.0.2' }
+      mgt2puppet: { 'to': '195.221.97.17/32', 'via': '172.31.0.50' }
   mysql:
     comment: [ 'Network dedicated to MySQL.' ]
     vlan_id: '1001'
@@ -179,6 +182,11 @@ represents the name of the IP network (ie `admin_mgt` and
 as the `vlan_name` value but not always (for instance in the
 same VLAN you can have a IPv4 and IPv6 networks).
 
+The `routes` entry above is optional but, if present, it must
+have the same structure as in the example above. This entry
+can be used to add easily routes in the `/etc/network/interfaces`
+file (see below).
+
 The value of the `interfaces` key must be a hash with
 the same structure as the `interfaces` parameter of the
 `::network` class described above except you can add the
@@ -200,6 +208,7 @@ interfaces:
         broadcast: '__default__'
   eth1:
     in_networks: [ 'admin_mgt' ]
+    routes: [ 'mgt2mysql' ]
     macaddress: '00:1c:cf:50:0b:52'
     comment: [ 'This is the management interface.' ]
     inet:
@@ -237,6 +246,13 @@ in a interface, just the comment in the `inventory_networks`
 key will be used (if this interface has the `on_networks`
 key of course). If the interface has no `on_networks` key,
 just the comment of the interface will be inserted.
+
+**The `routes` entry above is special**. It allows to add
+automatically routes in the `/etc/network/interfaces`
+with `pre-down` and `post-up` instructions. This entry
+must be an array of non-empty strings which *must* be the
+names of routes defined in the networks mentioned in the
+`in_networks` array.
 
 In addition of the 2 yaml examples above, if you add too
 this entry in hiera:
@@ -491,22 +507,24 @@ use the IPv4 protocol.
 
 ## Data binding
 
-The module is linked to the `network` module because it
-uses the `::network::get_ntp_servers()` function to
-get a default value for the `ntp_servers` parameter
-(see below).
-
 The default value of the `interfaces` parameter is `"all"`.
 
-For the `ntp_servers` parameter, the module uses the
-`::network::get_ntp_servers()` function and searches the
-interfaces of the `interfaces` hiera entry which have the
-`in_networks` key. For each of these interfaces, the
-function takes its primary network and if the `ntp_servers`
-key is present in the `inventory_networks` entry for
-this primary network, the function will take its value.
-If no ntp servers are found during the research, then the
-function returns an array of Debian ntp servers.
+For the `ntp_servers` parameter, it's default value is
+the value of `$ntp_servers` below:
+
+```puppet
+$default_ntp = [
+                '0.debian.pool.ntp.org',
+                '1.debian.pool.ntp.org',
+                '2.debian.pool.ntp.org',
+                '3.debian.pool.ntp.org',
+               ]
+
+$ntp_servers = ::network::get_param( $interfaces,
+                                     $inventory_networks,
+                                     'ntp_servers',
+                                     $default_ntp )
+```
 
 The default value of `subnets_authorized` parameter is `"all"`.
 
@@ -590,13 +608,6 @@ present in the hash `$interfaces`. If present, the function
 returns `true` if the interface `eth1` has an IP address
 (ie has a `static` or `dhcp` method in its inet or inet6
 configuration), else the function returns `false`.
-
-
-
-
-# TODO
-
-* Finish to add the "routes" feature.
 
 
 
