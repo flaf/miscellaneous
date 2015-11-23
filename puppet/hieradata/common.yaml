@@ -51,9 +51,9 @@ unix_accounts:
       - 'francois@flpc.athome.priv'
 
 puppetagent::ca_server: 'middleware.%{::domain}'
-puppet:
-  collection: 'PC1'
-  pinning_agent_version: '1.3.0-*'
+repository::puppet::collection: 'PC1'
+repository::puppet::pinning_agent_version: '1.3.0-*'
+repository::puppet::pinning_server_version: '2.2.0-*'
 
 mcollective:
   middleware_address: 'middleware.%{::domain}'
