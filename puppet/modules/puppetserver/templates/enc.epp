@@ -52,6 +52,12 @@ if not hash.is_a?(Hash)
   exit(1)
 end
 
+# If 'enc_groups' key is not present we add it with the
+# empty array value. See the remark about groups below.
+if not hash.has_key?('enc_groups')
+  hash['enc_groups'] = []
+end
+
 hash.each do |key, value|
 
   if key =~ /^enc_/
@@ -69,6 +75,8 @@ hash.each do |key, value|
     if value.is_a?(Array)
       parameters += "\"#{key}\": #{value.to_s()},\n    "
       c = 0
+      # == Remark about groups ==
+      #
       # Specific handle if key == "groups'.
       # To avoid a ton of warnings in logs like this:
       #
@@ -80,6 +88,7 @@ hash.each do |key, value|
       # It's just to avoid warnings above. If a groups_N variable
       # is not defined, there are warnings in logs. If the groups_N
       # variable is defined to a dummy file, there is no warning.
+      #
       if key == 'groups'
         if <%= $max_groups %> - value.size > 0
           value = value + [ 'NOT_AVAILABLE' ]*(<%= $max_groups %> - value.size)

@@ -30,8 +30,8 @@ function network::get_param (
     # Several choices.
     # We take the value of $param in the primary network of the first
     # candidate interface. If possible, we want to choose the first
-    # interface which has an address.
-    $ifaces_candidates_with_addr = $ifaces_candidates.keys.filter |$iface| {
+    # interface which has an IP address.
+    $ifaces_candidates_with_addr = $ifaces_candidates.filter |$iface| {
       ::network::has_address($interfaces, $iface)
     }
     if $ifaces_candidates_with_addr.empty {
