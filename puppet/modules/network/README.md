@@ -563,12 +563,33 @@ each interface has a primary network and where the
 `'dns_servers'` key is defined in this primary network. If
 the array A is empty, the function returns `$default`, else
 the function returns the value of the `'dns_servers'` key in
-the primary network of the first interface of the array A.
+the primary network of:
+- the first interface of the array A which has an IP address,
+- or just the first interface of the array A if there is no
+interface with an address.
 
 **Simple and usual case :** if the host has just only one
 interface in a only one network N, the function will return
 the value of the `'dns_servers'` key in the network N if
 this key exists, else the function will return `$default`.
+
+
+
+
+# The `::network::has_address()` function
+
+Here is an example:
+
+```puppet
+$boolean = ::network::has_address($interfaces, 'eth1')
+```
+
+The `$interfaces` arguments is a hash with the structure
+described above. The function fails if `eth1` is not
+present in the hash `$interfaces`. If present, the function
+returns `true` if the interface `eth1` has an IP address
+(ie has a `static` or `dhcp` method in its inet or inet6
+configuration), else the function returns `false`.
 
 
 
