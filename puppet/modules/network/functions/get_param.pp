@@ -8,7 +8,9 @@ function network::get_param (
   # Create an array of interface names among $interfaces
   # where each interface has a primary network and where
   # $param key is defined in this primary network.
-  $ifaces_candidates  = $interfaces.keys.sort.filter |$iface| {
+  #
+  # Sort is a bad idea. We keep the order provided by the user.
+  $ifaces_candidates  = $interfaces.keys.filter |$iface| {
     if $interfaces[$iface].has_key('in_networks') {
       $primary_network = $interfaces[$iface]['in_networks'][0];
       $inventory_networks[$primary_network].has_key($param)
