@@ -43,6 +43,8 @@ class puppetforge (
     { git clone '$puppetforge_git_url' puppetforge-server && cd '${workdir}'; } || exit 1
     git reset --hard '${commit_id}'
     bundle install || exit 1
+    # We must use the gem command from the distribution environment.
+    /usr/bin/gem install redcarpet
     echo "Puppet forge server installed."
     | END
 
@@ -52,6 +54,7 @@ class puppetforge (
     command => $script_install,
     unless  => "test -d '${workdir}'",
     before  => User['puppetforge'],
+    notify  => Service['puppetforge'],
   }
 
   # We absolutely don't care about the password of this account
@@ -70,6 +73,7 @@ class puppetforge (
     password   => $pwd,
     shell      => '/bin/bash',
     system     => false,
+    notify     => Service['puppetforge'],
   }
 
   file { [ $homedir, $modulesdir, $cachedir, $logdir, $gitdir ]:
@@ -79,6 +83,7 @@ class puppetforge (
     mode    => '0750',
     require => User['puppetforge'],
     before  => File[$puppetforge_bin],
+    notify  => Service['puppetforge'],
   }
 
   file { $puppetforge_bin:

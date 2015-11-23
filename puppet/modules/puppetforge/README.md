@@ -42,8 +42,8 @@ and you should probably never change this value.
 
 The `commit_id` parameter is the commit ID of the
 git repository used to installd the Puppet forge.
-Its default value is currently `'6f1b224a4e666c754876139f3643b22f3515f5e6'`
-which points to the version 1.8.0 of the software.
+Its default value should be, as much as possible,
+linked to a stable version of the software.
 
 The `remote_forge` parameter is the url of the remote forge
 used by the server. Like a DNS server, if the Puppet forge
