@@ -182,7 +182,7 @@ Puppet::Functions.create_function(:'network::fill_interfaces') do
           # and we need uniq keys in a hash.
           pre_down  = "pre-down_puppet_suffix_#{a_route}"
           post_up   = "post-up_puppet_suffix_#{a_route}"
-          settings[route_family]['options'][pre_down] = "#{ip_cmd} delete #{route_to}"
+          settings[route_family]['options'][pre_down] = "#{ip_cmd} del #{route_to}"
           settings[route_family]['options'][post_up]  = "#{ip_cmd} add #{route_to} via #{route_via}"
 
         end # Loop on each route.
