@@ -509,7 +509,7 @@ use the IPv4 protocol.
 
 The default value of the `interfaces` parameter is `"all"`.
 
-For the `ntp_servers` parameter, it's default value is
+For the `ntp_servers` parameter, its default value is
 the value of `$ntp_servers` below:
 
 ```puppet
