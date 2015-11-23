@@ -16,6 +16,8 @@ Puppet::Functions.create_function(:'network::check_inventory_networks') do
                        'cidr_address',
                      ]
 
+    array_of_routes = []
+
     inventory_networks.each do |netname, params|
 
       mandatory_keys.each do |mkey|
@@ -60,14 +62,15 @@ Puppet::Functions.create_function(:'network::check_inventory_networks') do
 
       end # Loop in mandatory_keys.
 
-      # Now, we check the "routes" entry which is optional.
-      # Its value must have this form:
+      # Now, we check the "routes" entry which
+      # is optional. The value must have this form:
       #
       # routes = {
       #   'route-name1' => { 'to' => 'a-CIDR-address', 'via' => 'an-address' },
       #   'route-name2' => { 'to' => 'a-CIDR-address', 'via' => 'an-address' },
       #   ...
       # }
+      #
       if params.has_key?('routes')
 
         routes = params['routes']
@@ -82,6 +85,18 @@ Puppet::Functions.create_function(:'network::check_inventory_networks') do
         end
 
         routes.each do |route_name, route_conf|
+
+          if array_of_routes.include?(route_name)
+            # There are 2 different routes with the same name.
+            msg = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
+              |#{function_name}(): there is a duplicated route name.
+              |The same route name `#{route_name}` is present at least
+              |in two different inventory networks and it is forbibben.
+              EOS
+            raise(Puppet::ParseError, msg)
+          else
+            array_of_routes.push(route_name)
+          end
 
           unless route_name.is_a?(String) and not route_name.empty?
             msg = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')

@@ -65,7 +65,7 @@ Puppet::Functions.create_function(:'network::check_interfaces') do
       end
 
       # The "on_networks" key must be mapped to a non-empty array of
-      # non-empty strings. It's the same for the "comment" key and
+      # non-empty strings. It's the same for the "comment" key and the
       # the "routes" key.
       [ 'on_networks', 'comment', 'routes' ].each do |e|
         if settings.has_key?(e)

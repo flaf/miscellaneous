@@ -128,19 +128,66 @@ Puppet::Functions.create_function(:'network::fill_interfaces') do
       # Handle of the "routes" entry, only if the interface
       # has a default network.
       if settings.has_key?('routes') and not default_network.nil?
+
         settings['routes'].each do |a_route|
-          unless default_network.has_key?('routes') \
-          and default_network['routes'].has_key?(a_route)
+
+          route_conf = nil
+          network_cidr = nil
+          iface_networks.each do |netname|
+            network = inventory_networks[netname]
+            if network.has_key?('routes') and network['routes'].has_key?(a_route)
+              route_conf = network['routes'][a_route]
+              network_cidr = network['cidr_address']
+            else
+              next
+            end
+          end
+
+          if route_conf.nil?
             msg = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
               |#{function_name}(): the interface `#{ifname}` has a
-              |`#{default_str}` value which for the `#{param}` option
-              |this option is not provided in the default network
-              |`#{default_network}`.
+              |route `#{a_route}` which is not defined in the networks
+              |whose the interface belongs to, ie the following
+              |networks: #{iface_networks.join(', ')}.
             EOS
             raise(Puppet::ParseError, msg)
           end
-        end
-      end
+
+          if call_function('::network::dump_cidr', network_cidr)['ipv4']
+            route_family = 'inet'
+            ip_cmd       = 'ip -family inet route'
+          else
+            route_family = 'inet6'
+            ip_cmd       = 'ip -family inet6 route'
+          end
+
+          unless settings.has_key?(route_family)
+            # A route is defined for the interface but there is no
+            # configuration for the net family of this route.
+            msg = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
+              |#{function_name}(): the interface `#{ifname}` has a
+              |#{route_family} route `#{a_route}` but the interface
+              |has no #{route_family} configuration.
+            EOS
+            raise(Puppet::ParseError, msg)
+          end
+
+          if not settings[route_family].has_key?('options')
+            settings[route_family]['options'] = {}
+          end
+
+          route_to  = route_conf['to']
+          route_via = route_conf['via']
+          # We add suffix because "post-up" and "pre-down" can be repeated
+          # and we need uniq keys in a hash.
+          pre_down  = "pre-down_puppet_suffix_#{a_route}"
+          post_up   = "post-up_puppet_suffix_#{a_route}"
+          settings[route_family]['options'][pre_down] = "#{ip_cmd} delete #{route_to} via #{route_via}"
+          settings[route_family]['options'][post_up]  = "#{ip_cmd} add #{route_to} via #{route_via}"
+
+        end # Loop on each route.
+
+      end # Handling of "routes" entry.
 
     end # Loop on each interface.
 

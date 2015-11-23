@@ -31,13 +31,16 @@ iface <%= $interface %> <%= $family %> <%= $settings[$family]['method'] %>
             # among the options of the interface.
             $options_list = $settings[$family]['options'].keys
             $max_opt = $options_list.map |$opt_name| {
-              size($opt_name)
+              $opt_name.regsubst(/_puppet_suffix_.*$/, '').size
             }.reduce |$memo, $entry| {
               max($memo, $entry)
             }
         -%>
         <%- $settings[$family]['options'].keys.each |$option| { -%>
-        <%- $option_justified = ::homemade::ljust($option, $max_opt, ' ') -%>
+        <%-
+            $option_without_suffix = $option.regsubst(/_puppet_suffix_.*$/, '')
+            $option_justified = ::homemade::ljust($option_without_suffix, $max_opt, ' ')
+        -%>
     <%= $option_justified %> <%= $settings[$family]['options'][$option] %>
         <%- } -%>
       <%- } -%>
