@@ -13,7 +13,7 @@ service ntp start
 printf "\ngit pull\n"
 printf   "========\n"
 cd "/srv/tftp/miscellaneous/" && {
-    timeout 5s git pull || echo '`git pull` has failed.'
+    timeout 35s git pull || echo '`git pull` has failed.'
 }
 
 printf "\nUpdate symlinks in /var/www/\n"
