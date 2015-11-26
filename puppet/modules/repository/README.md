@@ -74,7 +74,7 @@ be used. The `pinning_agent_version` and
 `puppet-agent` package and the `puppetserver` package which
 will be pinned in the APT configuration. For the
 `pinning_agent_version` and `pinning_server_version`
-parameters, the special string value `none` means "no
+parameters, the special string value `'none'` means "no
 pinning". These 3 parameters have no default value and you
 must provide values yourself. For instance in hiera with
 something like that:
@@ -117,19 +117,24 @@ Here is an example:
 
 ```puppet
 class { '::repository::ceph':
-  url     => 'http://ceph.com',
-  version => 'hammer'
-  src     => false,
+  url             => 'http://ceph.com',
+  codename        => 'infernalis',
+  pinning_version => '9.2.0-*',
+  src             => false,
 }
 ```
 
 ## Parameters and default values
 
-The default values of the parameters are exactly
-the values of the call above. The complete url
-used by APT is `"${url}/debian-${version}"` which
-is the nomenclature used by the official Ceph
-repository.
+Only `url` and `src` parameters have a default value which
+are respectively `http://ceph.com` and `false`. The
+`codename` and `pinning_version` have no default value and
+are mandatory. For the `pinning_version` parameter, the
+string value `'none'` is special and means "no pinning".
+
+Remark: The complete url used by APT is
+`"${url}/debian-${codename}"` which is the nomenclature used
+by the official Ceph repository.
 
 
 

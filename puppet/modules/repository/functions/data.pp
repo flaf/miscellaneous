@@ -26,7 +26,6 @@ function repository::data {
   #}
 
   $distribs     = [ 'trusty', 'jessie' ]
-  $ceph_version = 'infernalis' # Not LTS, but Jewel will be.
 
   # Dedicated stage for this module.
   $stage = 'repository';
@@ -57,7 +56,6 @@ function repository::data {
     repository::docker::stage                   => $stage,
 
     repository::ceph::url                     => 'http://ceph.com',
-    repository::ceph::version                 => $ceph_version,
     repository::ceph::src                     => false,
     repository::ceph::supported_distributions => $distribs,
     repository::ceph::stage                   => $stage,

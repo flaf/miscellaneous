@@ -1,7 +1,8 @@
 class repository::ceph (
   String[1]           $url,
-  String[1]           $version,
+  String[1]           $codename,
   Boolean             $src,
+  String[1]           $pinning_version,
   Array[String[1], 1] $supported_distributions,
   String[1]           $stage = 'main',
 ) {
@@ -22,11 +23,28 @@ class repository::ceph (
 
   apt::source { 'ceph':
     comment  => 'Ceph Repository.',
-    location => "${cleaned_url}/debian-${version}",
+    location => "${cleaned_url}/debian-${codename}",
     release  => $::facts['lsbdistcodename'],
     repos    => 'main',
     key      => $key,
     include  => { 'src' => $src, 'deb' => true },
+  }
+
+  if $pinning_version != 'none' {
+
+    # About pinning => `man apt_preferences`.
+    #
+    # To see the patterns of all ceph package, you can run:
+    #
+    #   apt-cache search '.*' | grep ceph | awk '{print $1}' | sort | uniq
+    #
+    apt::pin { 'ceph':
+      explanation => 'To ensure the version of the ceph packages.',
+      packages    => '/^(ceph|ceph-.*|libceph.*|python-ceph.*)$/',
+      version     => $pinning_version,
+      priority    => 990,
+    }
+
   }
 
 }
