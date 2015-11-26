@@ -12,6 +12,7 @@ class basic_packages (
     'lsb-release',
     'tree', # Warning, in Trusty, "tree" is in "universe".
     'tcpdump',
+    'ethtool',
     'curl',
     'screen',
   ]
