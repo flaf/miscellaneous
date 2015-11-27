@@ -56,6 +56,7 @@ alias grep='grep --color'
 alias rgrep='rgrep --color'
 alias gs='git status'
 alias gd='git diff'
+alias sudo='sudo ' # to allow alias after sudo.
 alias rp='sudo env "PATH=$PATH" puppet agent --test' # rp means "Run Puppet".
 alias dist-upgrade='sudo apt-get update && sudo apt-get dist-upgrade'
 alias upgrade='sudo apt-get update && sudo apt-get upgrade'
