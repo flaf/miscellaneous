@@ -1,9 +1,9 @@
 class unix_accounts (
-  Hash[String[1], Hash[String[1], Data, 1], 1] $users,
-  Hash[String[1], String[1], 1]                $ssh_public_keys,
-  Boolean                                      $fqdn_in_prompt,
-  Array[String[1], 1]                          $supported_distributions,
-  String[1]                                    $stage = 'main',
+  Hash[String[1], Hash[String[1], Data, 1], 1]         $users,
+  Hash[String[1], Hash[String[1], String[1], 2, 2], 1] $ssh_public_keys,
+  Boolean                                              $fqdn_in_prompt,
+  Array[String[1], 1]                                  $supported_distributions,
+  String[1]                                            $stage = 'main',
 ) {
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
@@ -86,11 +86,22 @@ class unix_accounts (
             |- END
         }
 
+        # We check that the keys 'type' and 'keyvalue' are present
+        # in $ssh_public_keys[$keyname].
+        [ 'type', 'keyvalue' ].each |$k| {
+          unless $ssh_public_keys[$keyname].has_key($k) {
+            @("END").regsubst('\n', ' ', 'G').fail
+              ${title}: the ssh public key `$keyname` must be a hash
+              with the key `$k` and this is not the case currently.
+              |- END
+          }
+        }
+
         ssh_authorized_key { "${user}~${keyname}":
           user => $user,
-          type => 'ssh-rsa',
+          type => $ssh_public_keys[$keyname]['type'],
           # To allow ssh_public_keys in hiera in multilines with ">".
-          key  => $ssh_public_keys[$keyname].regsubst(' ', '', 'G').strip,
+          key  => $ssh_public_keys[$keyname]['keyvalue'].regsubst(' ', '', 'G').strip,
         }
 
       }

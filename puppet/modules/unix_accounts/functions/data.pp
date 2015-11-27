@@ -2,7 +2,9 @@ function unix_accounts::data {
 
   # Data lookup in hiera or in the environment.conf.
   $users           = lookup('unix_accounts', Hash[String[1], Data, 1], 'hash')
-  $ssh_public_keys = lookup('ssh_public_keys', Hash[String[1], String[1], 1], 'hash')
+  $ssh_public_keys = lookup('ssh_public_keys',
+                            Hash[String[1], Hash[String[1], String[1], 2, 2], 1],
+                            'hash')
   $fqdn_in_prompt  = false
 
   $default_stage      = 'basis'

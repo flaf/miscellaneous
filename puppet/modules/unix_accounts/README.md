@@ -19,14 +19,20 @@ $users = { 'root' => { 'password'            => 'xxx',
                        'password'            => 'yyy',
                        'is_sudo'             => true,
                        'ssh_authorized_keys' => [ 'bob@foo',
-                                                  'boo@home',
+                                                  'bob@home',
                                                 ],
                      }
          }
 
-$ssh_public_keys = { 'bob@foo'  => 'XXXXXXXXX...',
-                     'joe@bar'  => 'XXXXXXXXX...',
-                     'boo@home' => 'XXXXXXXXX...',
+$ssh_public_keys = { 'bob@foo'  => { 'type'     => 'ssh-rsa',
+                                     'keyvalue' => 'XXXXXXXXX...',
+                                   },
+                     'joe@bar'  => { 'type'     => 'ssh-rsa',
+                                     'keyvalue' => 'XXXXXXXXX...',
+                                   },
+                     'bob@home' => { 'type'     => 'ssh-rsa',
+                                     'keyvalue' => 'XXXXXXXXX...',
+                                   },
                    }
 
 class { '::unix_account':
