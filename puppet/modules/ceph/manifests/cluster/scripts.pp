@@ -2,6 +2,8 @@ class ceph::cluster::scripts {
 
 
   $udev_content = @(END)
+  ### This file is managed by Puppet, don't edit it. ###
+
   # Udev rule to have "ceph" owner of each "/dev/disk/by-partlabel/osd-*-journal"
   # partition from GPT disks. Totally inspired from this file
   # /lib/udev/rules.d/60-persistent-storage.rules
