@@ -46,7 +46,7 @@ then
     set -x
 
     # Puppet, puppet, puppet...
-    apt-get update && apt-get install lsb-release
+    apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --yes lsb-release
     KEY='47B320EB4C7C375AA9DAE1A01054B7A24BD6EC30'
     apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys "$KEY"
     COLLECTION='PC1'
