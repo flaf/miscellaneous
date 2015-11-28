@@ -140,7 +140,6 @@ LABEL preseed-mysql-elea
     APPEND locale=en_US.UTF-8 keyboard-configuration/xkb-keymap=fr(latin9) ipv6.disable=1 url=http://192.168.23.72/preseed-mysql-elea.cfg initrd=distribs/jessie/debian-installer/amd64/initrd.gz --
     # Max is 7 lines.
     TEXT HELP
-    Manual handling
     1. Network configuration (interface, hostname)
     2. Partitioning (do not format the partitions, it is already done)
      RAID1 dev#0:    fs => EXT4, mntpt => /,              mntopt => noatime
