@@ -58,7 +58,7 @@ deb http://apt.puppetlabs.com $distrib $COLLECTION
 #deb-src http://apt.puppetlabs.com $distrib $COLLECTION
 EOF
     # Force the version number as below.
-    apt-get update && apt-get install puppet-agent=1.2.7-*
+    apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --yes puppet-agent=1.2.7-*
 
     # Allow ssh with root.
     sed -i 's/^PermitRootLogin[[:space:]].*/PermitRootLogin yes/' /etc/ssh/sshd_config
