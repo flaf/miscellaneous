@@ -93,34 +93,34 @@ do
     # to enable the Bios-UEFI.
     a=1
     b=$((250 + a)) # Size == 250MiB
-    $parted /dev/sd${i} unit MiB mkpart uefi${n}unused $a $b
+    $parted /dev/sd${i} -- unit MiB mkpart uefi${n}unused $a $b
     part_num=$((part_num + 1))
 
     # The biosgrub partitions.
     a=$b
     b=$((1 + a)) # Size == 1MiB
-    $parted /dev/sd${i} unit MiB mkpart biosgrub${n} $a $b
+    $parted /dev/sd${i} -- unit MiB mkpart biosgrub${n} $a $b
     $parted /dev/sd${i} set $part_num bios_grub on
     part_num=$((part_num + 1))
 
     # The root partitions (will be a RAID1 volume).
     a=$b
     b=$((30 * 1024 + a)) # Size == 30GiB
-    $parted /dev/sd${i} unit MiB mkpart system${n} $a $b
+    $parted /dev/sd${i} -- unit MiB mkpart system${n} $a $b
     $parted /dev/sd${i} set $part_num raid on
     part_num=$((part_num + 1))
 
     # The swap (will be a RAID1 volume).
     a=$b
     b=$((8 * 1024 + a)) # Size == 8GiB
-    $parted /dev/sd${i} unit MiB mkpart swap${n} linux-swap $a $b
+    $parted /dev/sd${i} -- unit MiB mkpart swap${n} linux-swap $a $b
     $parted /dev/sd${i} set $part_num raid on
     part_num=$((part_num + 1))
 
     # The remaining of the disk is a LVM partition in a RAID1 volume.
     a=$b
     b='-1cyl' # The last cylinder
-    $parted /dev/sd${i} unit MiB mkpart lvm-hd${n} $a $b
+    $parted /dev/sd${i} -- unit MiB mkpart lvm-hd${n} $a $b
     $parted /dev/sd${i} set $part_num raid on
     part_num=$((part_num + 1))
 
