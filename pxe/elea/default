@@ -141,10 +141,13 @@ LABEL preseed-mysql-elea
     # Max is 7 lines.
     TEXT HELP
     Manual handling
-      1. Network configuration
-      2. Partitioning: just set the RAID1 device #0 to
-         filesytem => EXT4, mountpoint => /, mount options => noatime
-         (do not format the partition, it is already done)
+      1. Network configuration (interface, hostname)
+      2. Partitioning (do not format the partitions, it is already done)
+           RAID1 dev#0:    fs => EXT4, mntpoint => /,              mnt options => noatime
+           LV tmp:         fs => EXT4, mntpoint => /tmp,           mnt options => noatime
+           LV backups:     fs => XFS,  mntpoint => /backups,       mnt options => noatime
+           LV varlogmysql: fs => XFS,  mntpoint => /var/log/mysql, mnt options => noatime
+           LV varlibmysql: fs => EXT4, mntpoint => /var/lib/mysql, mnt options => noatime
     ENDTEXT
 
 LABEL preseed-cargo-elea
