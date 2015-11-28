@@ -47,8 +47,14 @@ then
 
     # Puppet, puppet, puppet...
     apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --yes lsb-release
-    KEY='47B320EB4C7C375AA9DAE1A01054B7A24BD6EC30'
-    apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys "$KEY"
+
+    # I don't why but this doesn't work in the /taget chroot.
+    # But it's works well in a classical command line.
+    #KEY='47B320EB4C7C375AA9DAE1A01054B7A24BD6EC30'
+    #apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys "$KEY"
+
+    wget http://apt.puppetlabs.com/pubkey.gpg -O - | apt-key add -
+
     COLLECTION='PC1'
     distrib=$(lsb_release -sc)
     collection=$(echo $COLLECTION | tr '[:upper:]' '[:lower:]')
