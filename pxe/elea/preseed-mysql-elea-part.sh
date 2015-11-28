@@ -40,6 +40,33 @@ then
 fi
 
 
+if [ "$1" = 'post-install' ]
+then
+    exec >/root/post-install.log 2>&1
+    set -x
+
+    # Puppet, puppet, puppet...
+    apt-get update && apt-get install lsb-release
+    KEY='47B320EB4C7C375AA9DAE1A01054B7A24BD6EC30'
+    apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys "$KEY"
+    COLLECTION='PC1'
+    distrib=$(lsb_release -sc)
+    collection=$(echo $COLLECTION | tr '[:upper:]' '[:lower:]')
+    cat >/etc/apt/sources.list.d/puppetlabs-$collection.list <<EOF
+# Puppetlabs $COLLECTION $distrib Repository.
+deb http://apt.puppetlabs.com $distrib $COLLECTION
+#deb-src http://apt.puppetlabs.com $distrib $COLLECTION
+EOF
+    # Force the version number as below.
+    apt-get update && apt-get install puppet-agent=1.2.7-*
+
+    # Allow ssh with root.
+    sed -i 's/^PermitRootLogin[[:space:]].*/PermitRootLogin yes/' /etc/ssh/sshd_config
+
+    exit 0
+fi
+
+
 
 exec >/tmp/part.log 2>&1
 set -x
@@ -178,4 +205,10 @@ mkfs.xfs -f -L backups     /dev/mapper/vg1-backups
 mkfs.ext4 -F -E lazy_itable_init=0 -L tmp         /dev/mapper/vg2-tmp
 mkfs.ext4 -F -E lazy_itable_init=0 -L varlibmysql /dev/mapper/vg2-varlibmysql
 
+# mkfs.vfat doesn't exist during Debian installation.
+# Lowercase labels trigger a warning.
+mkfs.fat -F 32 -n 'UEFI1' /dev/sda1 # partition unused but hey...
+mkfs.fat -F 32 -n 'UEFI2' /dev/sdb1 # partition unused but hey...
+
+exit 0
 
