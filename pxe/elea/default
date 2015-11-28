@@ -162,7 +162,7 @@ LABEL preseed-cargo-elea
     ENDTEXT
 
 LABEL preseed-ceph-elea
-    MENU LABEL Partial preseed for Elea Ceph servers
+    MENU LABEL Partial preseed for Ceph servers
     KERNEL distribs/trusty/ubuntu-installer/amd64/linux
     APPEND locale=en_US.UTF-8 keymap=fr ipv6.disable=1 url=http://192.168.23.72/preseed-ceph-elea.cfg initrd=distribs/trusty/ubuntu-installer/amd64/initrd.gz --
     # Max is 7 lines.
