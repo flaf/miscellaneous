@@ -46,21 +46,31 @@ set -x
 
 parted='parted --script --align=opt'
 
+### Remove the RAID volumes if already created. ###
+
+i='3' # on /dev/sda3 and /dev/sdb3
 raid1system='md0'
-raid1swap='md1'
-raid1ssd='md2'
-
-
-### Remove the RAID volumes /dev/$raid1system and /dev/$raid1swap if already created. ###
 [ -e /dev/$raid1system ] && mdadm --stop /dev/$raid1system
+[ -e /dev/sda$i ]        && mdadm --zero-superblock /dev/sda$i
+[ -e /dev/sdb$i ]        && mdadm --zero-superblock /dev/sdb$i
+
+i='4' # on /dev/sda4 and /dev/sdb4
+raid1swap='md1'
 [ -e /dev/$raid1swap ] && mdadm --stop /dev/$raid1swap
+[ -e /dev/sda$i ]      && mdadm --zero-superblock /dev/sda$i
+[ -e /dev/sdb$i ]      && mdadm --zero-superblock /dev/sdb$i
+
+i='5' # on /dev/sda5 and /dev/sdb5
+raid1hd='md2'
+[ -e /dev/$raid1hd ] && mdadm --stop /dev/$raid1hd
+[ -e /dev/sda$i ]    && mdadm --zero-superblock /dev/sda$i
+[ -e /dev/sdb$i ]    && mdadm --zero-superblock /dev/sdb$i
+
+i='1' # on /dev/sdc1 and /dev/sdd1
+raid1ssd='md3'
 [ -e /dev/$raid1ssd ] && mdadm --stop /dev/$raid1ssd
-mdadm --zero-superblock /dev/sda3
-mdadm --zero-superblock /dev/sdb3
-mdadm --zero-superblock /dev/sda4
-mdadm --zero-superblock /dev/sdb4
-mdadm --zero-superblock /dev/sdc1
-mdadm --zero-superblock /dev/sdd1
+[ -e /dev/sdc$i ]     && mdadm --zero-superblock /dev/sdc$i
+[ -e /dev/sdd$i ]     && mdadm --zero-superblock /dev/sdd$i
 
 
 ### Create GPT partition on each disk. ###
@@ -107,6 +117,13 @@ do
     $parted /dev/sd${i} set $part_num raid on
     part_num=$((part_num + 1))
 
+    # The remaining of the disk is a LVM partition in a RAID1 volume.
+    a=$b
+    b='-1cyl' # The last cylinder
+    $parted /dev/sd${i} unit MiB mkpart lvm-hd${n} $a $b
+    $parted /dev/sd${i} set $part_num raid on
+    part_num=$((part_num + 1))
+
 done
 
 
@@ -117,35 +134,48 @@ do
     # c => n = 1, d => n = 2.
     n=$((n + 1))
 
-    # The swap (will be a RAID1 volume).
+    # The LVM partition on the RAID1 volume in the two SSD.
     a=1
     b='-1cyl' # The last cylinder
-    $parted /dev/sd${i} -- unit MiB mkpart ssd${n} $a $b
+    $parted /dev/sd${i} -- unit MiB mkpart lvm-ssd${n} $a $b
     $parted /dev/sd${i} set 1 raid on
 done
 
 
 ### Creation of the RAID volumes. ###
 
-# For the system (/) partition.
+# The system (/) partition.
 mdadm --create /dev/$raid1system --level=1 --raid-devices=2 /dev/sda3 /dev/sdb3 --force --run
 
-# For the swap partition.
+# The swap partition.
 mdadm --create /dev/$raid1swap --level=1 --raid-devices=2 /dev/sda4 /dev/sdb4 --force --run
+
+# The LVM partition in the harddrive.
+mdadm --create /dev/$raid1hd --level=1 --raid-devices=2 /dev/sda5 /dev/sdb5 --force --run
 
 # The SSD RAID1 volume.
 mdadm --create /dev/$raid1ssd --level=1 --raid-devices=2 /dev/sdc1 /dev/sdd1 --force --run
 
 
-### Creation of the volume group LVM on the SSD RAID1 volume. ###
+### Creation of the volume group LVM on the HD RAID1 volume etc. ###
+pvcreate -ff --yes /dev/$raid1hd
+vgcreate --force --yes vg1 /dev/$raid1hd
+lvcreate --name varlogmysql --size 200g vg1
+lvcreate --name backups     --size 500g vg1
 
+### Creation of the volume group LVM on the SSD RAID1 volume etc. ###
 pvcreate -ff --yes /dev/$raid1ssd
-vgcreate --force --yes vg1 /dev/$raid1ssd
+vgcreate --force --yes vg2 /dev/$raid1ssd
+lvcreate --name tmp         --size 30g  vg2
+lvcreate --name varlibmysql --size 120g vg2
 
 
 ### Creation of the file systems. ###
-
 mkfs.ext4 -F -E lazy_itable_init=0 -L system /dev/$raid1system
 mkswap -L swap /dev/$raid1swap
+mkfs.xfs -f -L varlogmysql /dev/mapper/vg1-varlogmysql
+mkfs.xfs -f -L backups     /dev/mapper/vg1-backups
+mkfs.ext4 -F -E lazy_itable_init=0 -L tmp         /dev/mapper/vg2-tmp
+mkfs.ext4 -F -E lazy_itable_init=0 -L varlibmysql /dev/mapper/vg2-varlibmysql
 
 
