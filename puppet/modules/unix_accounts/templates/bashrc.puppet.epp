@@ -37,14 +37,22 @@ then
     export GIT_SSH='/usr/local/bin/git_ssh_wrapper'
 fi
 
-# Add the Puppet PATH if it's relevant.
-if [ -e '/opt/puppetlabs' ]
-then
-    if echo "$PATH" | grep -vq '^/opt/puppetlabs/bin'
+# Add the Puppet paths in PATH if it's relevant.
+# In a puppet client, /opt/puppetlabs/bin/ just contains
+# symlinks to files in /opt/puppetlabs/puppet/bin/. But, for
+# a puppetserver, /opt/puppetlabs/bin/ contains too symlinks
+# to files which are not in /opt/puppetlabs/puppet/bin/
+# (like the files "puppetdb", "puppetserver").
+for bindir in /opt/puppetlabs/puppet/bin /opt/puppetlabs/bin
+do
+    if [ -e "$bindir" ]
     then
-        export PATH="/opt/puppetlabs/bin:/opt/puppetlabs/puppet/bin:$PATH"
+        if printf '%s\n' "$PATH" | grep -vq "$bindir"
+        then
+            export PATH="$bindir:$PATH"
+        fi
     fi
-fi
+done
 
 # Misc.
 export EDITOR='vim'
