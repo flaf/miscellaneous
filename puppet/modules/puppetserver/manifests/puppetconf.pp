@@ -116,15 +116,15 @@ class puppetserver::puppetconf {
     # No need to restart the puppetserver here.
   }
 
-  file { "/usr/local/sbin/remove-node-crl-not-changed.puppet":
+  file { "/usr/local/sbin/clean-node-crl-not-changed.puppet":
     ensure  => present,
     owner   => 'root',
     group   => 'root',
     mode    => '0750',
     before  => Service['puppetserver'],
-    content => epp('puppetserver/remove-node-crl-not-changed.puppet.epp',
+    content => epp('puppetserver/clean-node-crl-not-changed.puppet.epp',
                    {
-                     'ssl_dir'        => $ssl_dir,
+                     'ssldir'         => $ssldir,
                      'puppet_bin_dir' => $puppet_bin_dir,
                    }
                   ),

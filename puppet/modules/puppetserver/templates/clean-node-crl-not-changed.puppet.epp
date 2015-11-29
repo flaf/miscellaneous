@@ -1,11 +1,11 @@
-<%- |$ssl_dir, $puppet_bin_dir| -%>
+<%- |$ssldir, $puppet_bin_dir| -%>
 #!/bin/sh
 
 ### This file is managed by Puppet, don't edit it. ###
 
 # Variables from Puppet.
 puppet_bin_dir='<%= $puppet_bin_dir %>'
-ssl_dir='<%= $ssl_dir %>'
+ssl_dir='<%= $ssldir %>'
 
 export LC_ALL='C'
 export PATH="$puppet_bin_dir:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
