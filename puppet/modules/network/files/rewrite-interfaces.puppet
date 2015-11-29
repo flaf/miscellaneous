@@ -5,9 +5,6 @@
 export LC_ALL='C'
 export PATH='/usr/sbin:/usr/bin:/sbin:/bin'
 
-timeout --signal=TERM --kill-after=5s 20s ifdown --all
-sleep 0.5
-
 if [ -f '/etc/network/interfaces.puppet' ]
 then
     cat '/etc/network/interfaces.puppet' >'/etc/network/interfaces'
@@ -16,15 +13,5 @@ else
     echo "Action aborted." >&2
     exit 1
 fi
-
-# Refresh the names of interfaces.
-udevadm control --reload-rules
-sleep 0.25
-udevadm trigger --subsystem-match='net' --action='add'
-sleep 0.25
-
-# Configure all interfaces marked 'auto'.
-timeout --signal=TERM --kill-after=5s 20s  ifup --all
-sleep 0.25
 
 

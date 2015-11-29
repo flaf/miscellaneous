@@ -65,6 +65,15 @@ class network (
     before => File['/etc/network/interfaces.puppet'],
   }
 
+  file { '/usr/local/sbin/rewrite-interfaces.puppet':
+    ensure => present,
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0750',
+    source => 'puppet:///modules/network/rewrite-interfaces.puppet',
+    before => File['/etc/network/interfaces.puppet'],
+  }
+
   file { '/etc/network/interfaces.puppet':
     ensure  => present,
     owner   => 'root',
