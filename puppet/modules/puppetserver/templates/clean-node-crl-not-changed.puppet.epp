@@ -9,6 +9,7 @@ ssl_dir='<%= $ssldir %>'
 
 export LC_ALL='C'
 export PATH="$puppet_bin_dir:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+script_name=${0##*/}
 
 # This file is the CRL file of Puppet CA. This file is updated
 # after each node cleaning.
@@ -18,12 +19,14 @@ crl_file="$ssl_dir/ca/ca_crl.pem"
 crl_file_tmp="$ssl_dir/ca/ca_crl.pem.tmp"
 
 # Save the crl file in the tmp file
+printf '%s: CRL is being saved before update.\n' "$script_name"
 cat "$crl_file" >"$crl_file_tmp"
 
 # Remove the node from puppet.
 puppet node clean "$@"
 
 # Restore the crl file before the cleaning.
+printf '%s: CRL has been updated and now is being restored in its previous version.\n' "$script_name"
 cat "$crl_file_tmp" >"$crl_file"
 
 # Remove the tmp file.
