@@ -5,11 +5,21 @@
 export LC_ALL='C'
 export PATH='/usr/sbin:/usr/bin:/sbin:/bin'
 
-if [ -f '/etc/network/interfaces.puppet' ]
+i='/etc/network/interfaces'
+ip='/etc/network/interfaces.puppet'
+
+if [ -f "$ip" ]
 then
-    cat '/etc/network/interfaces.puppet' >'/etc/network/interfaces'
+    if diff -q "$ip" "$i" >/dev/null
+    then
+        echo "$ip and $i are already identical."
+        exit 0
+    else
+        echo "$ip and $i are NOT identical. Update..."
+        cat "$ip" >"$i"
+    fi
 else
-    echo "Sorry the file /etc/network/interfaces.puppet doesn't exist." >&2
+    echo "Sorry the file $ip doesn't exist." >&2
     echo "Action aborted." >&2
     exit 1
 fi
