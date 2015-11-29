@@ -17,8 +17,8 @@ crl_file="$ssl_dir/ca/ca_crl.pem"
 
 if [ ! -e "$crl_file" ]
 then
-    printf "The file %s doesn't exist. Are you sure you are in the Puppet CA?\n" "$crl_file"
-    printf "End of the script.\n"
+    printf "The file %s doesn't exist. Are you sure you are in the Puppet CA?\n" "$crl_file" >&2
+    printf "End of the script.\n" >&2
     exit 1
 fi
 
