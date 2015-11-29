@@ -66,6 +66,12 @@ EOF
     # Force the version number as below.
     apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --yes puppet-agent=1.2.7-*
 
+    server='moopuppet.dc2.backbone.education.pem'
+    ca_server='puppet.lss1.backbone.education.pem'
+    echo "#/opt/puppetlabs/bin/puppet agent --test --server=$server --ca_server=$ca_server" >> /root/.bash_history
+    chown root:root /root/.bash_history
+    chmod 600 /root/.bash_history
+
     # Allow ssh with root.
     sed -i 's/^PermitRootLogin[[:space:]].*/PermitRootLogin yes/' /etc/ssh/sshd_config
 
