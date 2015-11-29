@@ -15,6 +15,13 @@ script_name=${0##*/}
 # after each node cleaning.
 crl_file="$ssl_dir/ca/ca_crl.pem"
 
+if [ ! -e "$crl_file" ]
+then
+    printf "The file %s doesn't exist. Are you sure you are in the Puppet CA?\n" "$crl_file"
+    printf "End of the script.\n"
+    exit 1
+fi
+
 # A temporary file to save the CRL before the node cleaning.
 crl_file_tmp="$ssl_dir/ca/ca_crl.pem.tmp"
 
