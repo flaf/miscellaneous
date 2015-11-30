@@ -1,16 +1,20 @@
 # Module description
 
-This module just installs some basic and essential
-packages and purges some prohibited packages.
+This module installs memcached and allows to set the
+memory dedicated to this daemon.
 
 # Usage
 
 Here is an example:
 
 ```puppet
-include '::basic_packages'
+class { '::memcached':
+  memory => 512,
+}
 ```
 
-That's all. See the code to have the installed/purged packages.
+The only parameter is `memory` which gives the memory
+dedicated to the memcached daemon in MiB. Its default
+value is 64 (ie 64 MiB).
 
 

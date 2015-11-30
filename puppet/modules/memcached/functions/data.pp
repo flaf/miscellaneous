@@ -1,7 +1,11 @@
 function memcached::data {
 
+  # The unit is MiB.
+  $default_memory = 64;
+
   {
-    basic_packages::supported_distributions => ['trusty', 'jessie'],
+    memcached::memory                  => $default_memory,
+    memcached::supported_distributions => [ 'trusty' ],
   }
 
 }
