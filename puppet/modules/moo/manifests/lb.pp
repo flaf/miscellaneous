@@ -20,7 +20,7 @@ class moo::lb (
 
   require '::moo::common::packages'
 
-  ensure_packages( [ 'haproxy' ], { ensure => present } )
+  ensure_packages( [ 'haproxy', 'python-jinja2' ], { ensure => present } )
 
   $content_default_haproxy = @(END)
     ### File managed by Puppet, don't edit it. ###
