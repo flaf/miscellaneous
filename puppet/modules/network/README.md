@@ -208,7 +208,7 @@ interfaces:
         broadcast: '__default__'
   eth1:
     in_networks: [ 'admin_mgt' ]
-    routes: [ 'mgt2mysql' ]
+    routes: [ 'mgt2mysql', 'mgt2puppet' ]
     macaddress: '00:1c:cf:50:0b:52'
     comment: [ 'This is the management interface.' ]
     inet:
@@ -219,6 +219,9 @@ interfaces:
         netmask: '__default__'
         broadcast: '__default__'
         gateway: '__default__'
+        post-up_puppet_suffix_a: 'echo 1 > /proc/sys/net/ipv4/ip_forward'
+        post-up_puppet_suffix_b: 'iptables -t nat -A POSTROUTING -s 192.168.0.0/24 -o vmbr0 -j MASQUERADE'
+        post-down: 'iptables -t nat -D POSTROUTING -s 192.168.0.0/24 -o vmbr0 -j MASQUERADE'
 ```
 
 The `in_networks` key is optional for a given interface
@@ -253,6 +256,16 @@ with `pre-down` and `post-up` instructions. This entry
 must be an array of non-empty strings which *must* be the
 names of routes defined in the networks mentioned in the
 `in_networks` array.
+
+**In the options, the keys with this form
+`foo_puppet_suffix_bar` are special**. In this case, all the
+part `/_puppet_suffix_.*$/` is removed and only the
+remaining text is put in the `interfaces` file. For instance
+`post-up_puppet_suffix_a: 'cmd1'` in the yaml file will just
+become `post-up cmd1` in the `interfaces` file. The goal is
+to be able to put several times the same option (the typical
+example is the `post-up` option) which is normally
+impossible in a yaml file where each key must be unique.
 
 In addition of the 2 yaml examples above, if you add too
 this entry in hiera:
