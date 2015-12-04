@@ -212,10 +212,8 @@ mcollective:
 
 The `server_private_key` and `server_public_key` parameters
 are non-empty strings to provide mcollective private and
-public keys shared by all the servers. The default values of
-these parameters are set in the hiera entries above.
-
-To generate these keys, you can execute these commands:
+public keys shared by all the servers. To generate these
+keys, you can execute these commands:
 
 ```sh
 # Generate the private key.
