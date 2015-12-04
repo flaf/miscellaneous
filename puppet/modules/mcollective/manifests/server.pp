@@ -3,6 +3,7 @@
 class mcollective::server (
   String[1]                    $server_private_key,
   String[1]                    $server_public_key,
+  Boolean                      $server_enabled,
   Enum['rabbitmq', 'activemq'] $connector,
   String[1]                    $middleware_address,
   Integer[1]                   $middleware_port,
@@ -122,11 +123,16 @@ class mcollective::server (
     }
   }
 
+  $ensure_mco = $server_enabled ? {
+    true  => 'running',
+    false => 'stopped',
+  }
+
   service { 'mcollective':
-    ensure     => running,
+    ensure     => $ensure_mco,
     hasstatus  => true,
     hasrestart => true,
-    enable     => true,
+    enable     => $server_enabled,
   }
 
 }

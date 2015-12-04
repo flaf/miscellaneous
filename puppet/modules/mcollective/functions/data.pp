@@ -30,6 +30,12 @@ function mcollective::data {
     $server_public_key = undef
   }
 
+  if $conf.has_key('server_enabled') {
+    $server_enabled = $conf['server_enabled']
+  } else {
+    $server_enabled = true
+  }
+
   if $conf.has_key('middleware_address') {
     $middleware_address = $conf['middleware_address']
   } else {
@@ -72,6 +78,7 @@ function mcollective::data {
 
     mcollective::server::server_private_key      => $server_private_key,
     mcollective::server::server_public_key       => $server_public_key,
+    mcollective::server::server_enabled          => $server_enabled,
     mcollective::server::connector               => $connector,
     mcollective::server::middleware_address      => $middleware_address,
     mcollective::server::middleware_port         => $middleware_port,
