@@ -624,4 +624,15 @@ configuration), else the function returns `false`.
 
 
 
+# TODO
+
+* Allow and support the case where the value of an option key
+is an array of non empty-strings. For instance, it could be
+cool to allow in hiera something like:
+```yaml
+options:
+  post-up: [ 'cmd1...', 'cmd2...' ]
+```
+
+
 
