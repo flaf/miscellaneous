@@ -110,8 +110,8 @@ should be the same as the file `$ssldir/ca/ca_crl.pem` in
 the puppet CA. We could imagine the CA which exports this
 file `$ssldir/ca/ca_crl.pem` and puppet-agents retrieve this
 file... Currently, if a "client" puppetserver P is revoked
-by its "autonomous" puppetserver, the clients of puppet P
-will always be able to do a puppet run (with a request to
+by its "autonomous" puppetserver, the clients of puppetserver P
+will always be able to do a puppet run (ie with a request to
 puppet P) without any error.
 
 * Create and use a specific account as owner of the puppet
@@ -124,6 +124,34 @@ change the Unix rights of the eyaml keys.
 update only modules whose names match a regex. Before to
 update a module, with `git pull` and `git diff origin/master`
 check if the module has been changed (and don't update in
-this case).
+this case). It will be very to have this:
+```sh
+# * With --regex, we can filter the module name (without
+#   --regex no filter).
+# * If --list is present, then there is no update and we just
+#   print the list of installed modules (with the filter if
+#   present) with, for each module, the version installed and
+#   the last version available on puppetforge.
+update-modules.puppet [--list] [--regex='xxxx']
+update-modules.puppet [-l] [-r 'xxxx']
+```
+To implement options in Ruby see
+[here](http://ruby-doc.org/stdlib-1.9.3/libdoc/getoptlong/rdoc/GetoptLong.html).
+To make a http request to puppetforge:
+```ruby
+require 'net/http'
+require 'json'
+
+# To have info concerning the module "puppetlabs-apt"
+# The answer is a json file.
+uri = URI.parse('https://forgeapi.puppetlabs.com/v3/modules/puppetlabs-apt')
+response = Net::HTTP.get_response(uri)
+
+json = JSON.parse(response.body)
+
+puts json['current_release']['version']
+```
+
+
 
 
