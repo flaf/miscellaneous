@@ -220,8 +220,8 @@ interfaces:
         broadcast: '__default__'
         gateway: '__default__'
         post-up_puppet_suffix_a: 'echo 1 > /proc/sys/net/ipv4/ip_forward'
-        post-up_puppet_suffix_b: 'iptables -t nat -A POSTROUTING -s 192.168.0.0/24 -o vmbr0 -j MASQUERADE'
-        post-down: 'iptables -t nat -D POSTROUTING -s 192.168.0.0/24 -o vmbr0 -j MASQUERADE'
+        post-up_puppet_suffix_b: '/usr/local/sbin/iptables.sh up'
+        post-down: '/usr/local/sbin/iptables.sh down'
 ```
 
 The `in_networks` key is optional for a given interface
