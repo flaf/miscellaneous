@@ -186,6 +186,7 @@ $privkey = '<content-of-the-private-key>'
 class { '::mcollective::server':
   server_private_key => $privkey,
   server_public_key  => $pubkey,
+  server_enabled     => true,
   connector          => 'rabbitmq',
   middleware_address => '172.31.10.12',
   middleware_port    => 61614,
@@ -207,6 +208,7 @@ mcollective:
   middleware_address: '<value of the $middleware_address parameter>'
   server_private_key: '<value of the $server_private_key parameter>'
   server_public_key: '<value of the $server_public_key parameter>'
+  server_enabled: '<value of the $server_enabled parameter>' # optional entry (see below)
   tag: '<value of the $mco_tag parameter>' # optional entry (see below)
 ```
 
@@ -250,6 +252,11 @@ this parameter can be set by the `tag` entry in the hiera
 entries above but it's optional. If the `tag` entry is not
 present, the value `'mcollective_client_public_key'` will be
 used.
+
+The `server_enabled` parameter is a boolean and its default
+value is `true`. If it is set to `false` the mcollective
+service will be stopped and disabled (no automatic start
+during the boot). This parameter is completely optional.
 
 The `puppet_ssl_dir` parameter has exactly the same meaning
 of the `puppet_ssl_dir` parameter in the
@@ -318,6 +325,8 @@ are not currently packaged in the PC1 APT repository. But it's expected
 to add these packages in PC1
 (see [here](https://groups.google.com/forum/#!topic/puppet-users/XSSXGY_rmy0)).
 
-
+* Need to split this module in 3 different modules: `mcollective_middileware`,
+`mcollective_server` and `mcollective_client`. It will be better as
+regard the data handle.
 
 
