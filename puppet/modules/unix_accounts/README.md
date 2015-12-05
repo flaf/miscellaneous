@@ -66,11 +66,13 @@ the short hostname will be used.
 
 If the class is called without parameter, the module makes a
 lookup of the `unix_accounts` entry in hiera or in
-`environment.conf` to set the value of the `users` parameters
-and makes a lookup of the `ssh_public_keys` entry to set the
-value of the `ssh_public_keys` parameter. If the class is
-called without any parameter, you must provide these two
-entries. The default value of the `fqdn_in_prompt` parameter
-is `false`.
+`environment.conf` to set the value of the `users`
+parameters and makes a lookup of the `ssh_public_keys` entry
+to set the value of the `ssh_public_keys` parameter. If the
+class is called without any parameter, you must provide the
+`unix_accounts` hiera entry but the `ssh_public_keys` hiera
+entry is optional. Its value will be `{}` (an empty hash) if
+not present. The default value of the `fqdn_in_prompt`
+parameter is `false`.
 
 

@@ -1,9 +1,9 @@
 class unix_accounts (
-  Hash[String[1], Hash[String[1], Data, 1], 1]         $users,
-  Hash[String[1], Hash[String[1], String[1], 2, 2], 1] $ssh_public_keys,
-  Boolean                                              $fqdn_in_prompt,
-  Array[String[1], 1]                                  $supported_distributions,
-  String[1]                                            $stage = 'main',
+  Hash[String[1], Hash[String[1], Data, 1], 1]      $users,
+  Hash[String[1], Hash[String[1], String[1], 2, 2]] $ssh_public_keys,
+  Boolean                                           $fqdn_in_prompt,
+  Array[String[1], 1]                               $supported_distributions,
+  String[1]                                         $stage = 'main',
 ) {
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
