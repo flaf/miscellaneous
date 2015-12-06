@@ -1,0 +1,7 @@
+<%- |$ip_reservations| -%>
+### This file is managed by Puppet, don't edit it. ###
+
+<%- $ip_reservations.each |$mac, $settings| { -%>
+dhcp-host=<%= $mac %>,<%= $settings[0] %>,<%= $settings[1] %>
+<%- } -%>
+

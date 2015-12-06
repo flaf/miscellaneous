@@ -1,0 +1,87 @@
+<%- |$distribs_provided, $my_family, $my_ip| -%>
+### This file is managed by Puppet, don't edit it. ###
+
+# Usefull aliases in APPEND statement:
+# (http://www.debian.org/releases/stable/armel/apbs02.html.fr#preseed-aliases)
+#
+#     keymap    --> keyboard-configuration/xkb-keymap
+#     language  --> debian-installer/language
+#     country   --> debian-installer/country
+#     locale    --> debian-installer/locale
+#     url       --> preseed/url
+#     hostname  --> netcfg/get_hostname
+#     domain    --> netcfg/get_domain
+#     interface --> netcfg/choose_interface
+#     priority  --> debconf/priority
+
+# Classic header
+DEFAULT <%= $my_family %>-installer/amd64/boot-screens/vesamenu.c32
+PROMPT 0
+MENU TITLE PXE Boot Menu
+
+# Timeout in centiseconds (10 cs = 1 second).
+# If you don't want timeout, just comment these lines.
+TIMEOUT 50
+ONTIMEOUT local
+MENU AUTOBOOT AUTOMATIC LOCAL BOOT in # second{,s}...
+
+# For colors, see http://www.syslinux.org/wiki/index.php/Comboot/menu.c32
+MENU COLOR tabmsg      37;40    #80ffffff #00000000 std
+MENU COLOR timeout_msg 31;41    #90ffff00 #00000000 std
+
+
+LABEL local
+    menu label Local boot
+    localboot 0
+    # The default entry if the user just presses Enter before the timeout
+    MENU DEFAULT
+
+#######################################
+### Expert and manual installations ###
+#######################################
+
+<%- $distribs_provided.each |$distrib, $settings| { -%>
+<%- $family = $settings['family'] -%>
+LABEL <%= $distrib %>-manual
+    MENU LABEL [<%= $distrib %>] expert manual install
+    KERNEL <%= $distrib %>/<%= $family %>-installer/amd64/linux
+    APPEND priority=low initrd=<%= $distrib %>/<%= $family %>-installer/amd64/initrd.gz --
+    TEXT HELP
+    Expert and manual installation of <%= $family %> <%= $distrib %>.
+    ENDTEXT
+
+<%- } -%>
+
+#################################
+### Semi manual installations ###
+#################################
+
+<%- [ 'without-puppet', 'with-puppet' ].each |$with_puppet| { -%>
+  <%- $distribs_provided.each |$distrib, $settings| { -%>
+  <%-
+    $family       = $settings['family']
+    $boot_options = $settings['boot_options']
+    $label_add    = $with_puppet ? {
+      'with-puppet'    => '(puppet installed)',
+      'without-puppet' => '(without puppet)',
+    }
+  -%>
+LABEL <%= $distrib %>-preseed-partial-<%= $with_puppet %>
+    MENU LABEL [<%= $distrib %>] partial preseed <%= $label_add %>
+    KERNEL <%= $distrib %>/<%= $family %>-installer/amd64/linux
+    APPEND <%= $boot_options %> url=http://<%= $my_ip %>/preseed-<%= $distrib %>-partial-<%= $with_puppet -%>.cfg initrd=<%= $distrib %>/<%= $family %>-installer/amd64/initrd.gz --
+    TEXT HELP
+    Semi manual installation of <%= $family %> <%= $distrib %>.
+    Manual handling for:
+      - network configuration,
+      - disk partioning,
+      - Grub installation.
+    <%- if $distrib == 'trusty' { -%>
+    During the choice of the hostname, put the fqdn directly
+    (or just a short hostname if the DHCP sends already a correct domain).
+    <%- } -%>
+    ENDTEXT
+
+  <%- } -%>
+<%- } -%>
+

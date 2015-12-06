@@ -15,6 +15,14 @@ class memcached (
     notify  => Service['memcached'],
   }
 
+  file_line { 'edit-memcached-listening':
+    path    => '/etc/memcached.conf',
+    line    => "#-l 127.0.0.1 # Edited by Puppet.",
+    match   => '^#?-l[[:space:]]+.*$',
+    require => Package['memcached'],
+    notify  => Service['memcached'],
+  }
+
   service { 'memcached':
     ensure     => running,
     hasrestart => true,

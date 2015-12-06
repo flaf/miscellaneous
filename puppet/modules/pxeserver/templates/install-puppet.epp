@@ -1,0 +1,44 @@
+<%- |$puppet_collection, $pinning_puppet_version,
+     $puppet_server, $puppet_ca_server| -%>
+#!/bin/sh
+
+### This file is managed by Puppet, don't edit it. ###
+
+exec >/root/post-install.log 2>&1
+set -x
+
+# Puppet, puppet, puppet...
+apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --yes lsb-release
+
+# I don't why but this doesn't work in the /taget chroot.
+# But it's works well in a classical command line.
+#KEY='47B320EB4C7C375AA9DAE1A01054B7A24BD6EC30'
+#apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys "$KEY"
+
+wget http://apt.puppetlabs.com/pubkey.gpg -O - | apt-key add -
+
+COLLECTION='<%= $puppet_collection %>'
+distrib=$(lsb_release -sc)
+collection=$(echo $COLLECTION | tr '[:upper:]' '[:lower:]')
+cat >/etc/apt/sources.list.d/puppetlabs-$collection.list <<EOF
+# Puppetlabs $COLLECTION $distrib Repository.
+deb http://apt.puppetlabs.com $distrib $COLLECTION
+#deb-src http://apt.puppetlabs.com $distrib $COLLECTION
+EOF
+
+# Force the version number as below.
+apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --yes puppet-agent='<%= $pinning_puppet_version %>'
+
+server='<%= $puppet_server %>'
+ca_server='<%= $puppet_ca_server %>'
+echo "#/opt/puppetlabs/bin/puppet agent --test --server=$server --ca_server=$ca_server" >>/root/.bash_history
+chown root:root /root/.bash_history
+chmod 600 /root/.bash_history
+
+# Allow ssh with root.
+sed -i 's/^PermitRootLogin[[:space:]].*/PermitRootLogin yes/' /etc/ssh/sshd_config
+
+exit 0
+
+
+

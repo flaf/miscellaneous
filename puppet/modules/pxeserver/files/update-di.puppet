@@ -1,0 +1,80 @@
+#!/bin/sh
+
+set -e
+
+arg="$1"
+temp_dir=$(mktemp -d)
+cd "$temp_dir"
+
+clean () {
+    rv="$?"
+    rm -rf "$temp_dir"
+    chown -R dnsmasq "/srv/tftp"
+    [ "$rv" != 0 ] && printf '%s\n' "Something went wrong. Script aborted..." 2>&1
+    exit "$rv"
+}
+
+trap clean EXIT INT TERM
+
+print_title () {
+    local title n line
+    title="$1"
+    n=$(printf '%s' "$title" | wc --chars)
+    line=$(printf "%${n}s" | tr ' ' '#')
+    printf '%s\n' "$line"
+    printf '%s\n' "$title"
+    printf '%s\n' "$line"
+}
+
+if [ -n "$arg" ]
+then
+  distrib="$arg"
+else
+  # If no argument provided, the target is the current OS.
+  distrib=$(lsb_release -sc)
+fi
+
+# Get the family and the url.
+if wget --spider --quiet "http://ftp.debian.org/debian/dists/$distrib"
+then
+    family="debian"
+    url="http://ftp.debian.org/debian/dists/$distrib/main/installer-amd64/current/images/netboot/netboot.tar.gz"
+elif wget --spider --quiet "http://archive.ubuntu.com/ubuntu/dists/$distrib"
+then
+    family="ubuntu"
+    url="http://archive.ubuntu.com/ubuntu/dists/$distrib/main/installer-amd64/current/images/netboot/netboot.tar.gz"
+else
+    printf '%s\n' "The distribution [$distrib] doesn't seems to available." >&2
+    exit 1
+fi
+
+if [ -n "$arg" ]
+then
+    # If a distribution is given as argument, then we just
+    # update the kernel and the initrd.gz of this distribution.
+    print_title "# Update only linux kernel and initrd.gz of /srv/tftp/$distrib #"
+    printf '\n'
+    wget "$url"
+    tar -xf netboot.tar.gz
+    rm -rf "/srv/tftp/$distrib"
+    mkdir -p "/srv/tftp/$distrib/$family-installer/amd64"
+    mv "$temp_dir/$family-installer/amd64/initrd.gz" "/srv/tftp/$distrib/$family-installer/amd64/"
+    mv "$temp_dir/$family-installer/amd64/linux" "/srv/tftp/$distrib/$family-installer/amd64/"
+else
+    print_title "# Update of /srv/tftp/$family-installer #"
+    printf "\n"
+    wget "$url"
+    tar -xf netboot.tar.gz
+    rm -fr "/srv/tftp/$family-installer"
+    rm -f "/srv/tftp/pxelinux.0"
+    cd "/srv/tftp"
+    ln -s "$family-installer/amd64/pxelinux.0" "pxelinux.0"
+    # No, this directory and the only file in this directory (ie "default")
+    # will be managed by Puppet.
+    #ln -s "$family-installer/amd64/pxelinux.cfg" "pxelinux.cfg"
+    mv "$temp_dir/$family-installer" /srv/tftp/
+fi
+
+printf "All is Ok.\n"
+
+
