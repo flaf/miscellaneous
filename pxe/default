@@ -1,3 +1,9 @@
+## Warning!!! ##
+#
+# Attention c'était pour une Debian Jessie, ie
+# le netboot.tar.gz téléchargé était celui d'une Jessie.
+
+
 # D-I config version 2.0
 
 # Usefull aliases in APPEND statement:
