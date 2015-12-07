@@ -1,6 +1,6 @@
 {
   "name": "flaf-ceph",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "author": "flaf",
   "summary": "Module to manage Ceph clusters and Ceph clients.",
   "license": "Apache-2.0",

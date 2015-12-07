@@ -12,7 +12,7 @@ class pxeserver (
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
-  if $dhcp_range[0] == 'NOT-DEFINED' {
+  if $dhcp_range[0] == 'NOT-DEFINED' and $dhcp_range[1] == 'NOT-DEFINED' {
     regsubst(@("END"), '\n', ' ', 'G').fail
       $title: sorry you must provide a value to the
       `dhcp_range` parameter.
@@ -26,11 +26,17 @@ class pxeserver (
       |- END
   }
 
-  if $dhcp_gateway == 'NOT-DEFINED' {
-    regsubst(@("END"), '\n', ' ', 'G').fail
-      $title: sorry the parameter `dhcp_gateway` is not defined.
-      You must provide a gateway in the DHCP configuration.
-      |- END
+  [ 'dhcp_gateway',
+    'puppet_collection',
+    'pinning_puppet_version',
+    'puppet_server',
+    'puppet_ca_server',
+  ].each |$var| {
+    if getvar($var) == 'NOT-DEFINED' {
+      regsubst(@("END"), '\n', ' ', 'G').fail
+        $title: sorry the mandatory parameter `$var` is not defined.
+        |- END
+    }
   }
 
   $distribs_provided = {

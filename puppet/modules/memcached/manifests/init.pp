@@ -15,6 +15,8 @@ class memcached (
     notify  => Service['memcached'],
   }
 
+  # We need to comment the line /-l 127.0.0.1/, else
+  # memcached listens only to localhost.
   file_line { 'edit-memcached-listening':
     path    => '/etc/memcached.conf',
     line    => "#-l 127.0.0.1 # Edited by Puppet.",

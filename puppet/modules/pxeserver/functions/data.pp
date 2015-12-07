@@ -6,7 +6,8 @@ function pxeserver::data {
                                    String[1], 'first', 'NOT-DEFINED')
   $puppet_server          = lookup('puppetagent::server',
                                    String[1], 'first', 'NOT-DEFINED')
-  $puppet_ca_server       = $puppet_server
+  $puppet_ca_server       = lookup('puppetagent::ca_server',
+                                   String[1], 'first', 'NOT-DEFINED')
 
   $dhcp_dns_servers  = lookup('network::resolv_conf::nameservers',
                              Array, 'first', [])
