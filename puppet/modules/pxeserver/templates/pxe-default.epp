@@ -1,4 +1,4 @@
-<%- |$distribs_provided, $my_family, $my_ip| -%>
+<%- |$distribs_provided, $my_family, $my_ip, $pxe_entries| -%>
 ### This file is managed by Puppet, don't edit it. ###
 
 # Usefull aliases in APPEND statement:
@@ -56,32 +56,22 @@ LABEL <%= $distrib %>-manual
 ### Semi manual installations ###
 #################################
 
-<%- [ 'without-puppet', 'with-puppet' ].each |$with_puppet| { -%>
-  <%- $distribs_provided.each |$distrib, $settings| { -%>
-  <%-
-    $family       = $settings['family']
-    $boot_options = $settings['boot_options']
-    $label_add    = $with_puppet ? {
-      'with-puppet'    => '(puppet installed)',
-      'without-puppet' => '(without puppet)',
-    }
-  -%>
-LABEL <%= $distrib %>-preseed-partial-<%= $with_puppet %>
-    MENU LABEL [<%= $distrib %>] partial preseed <%= $label_add %>
-    KERNEL <%= $distrib %>/<%= $family %>-installer/amd64/linux
-    APPEND <%= $boot_options %> url=http://<%= $my_ip %>/preseed-<%= $distrib %>-partial-<%= $with_puppet -%>.cfg initrd=<%= $distrib %>/<%= $family %>-installer/amd64/initrd.gz --
-    TEXT HELP
-    Semi manual installation of <%= $family %> <%= $distrib %>.
-    Manual handling for:
-      - network configuration,
-      - disk partioning,
-      - Grub installation.
-    <%- if $distrib == 'trusty' { -%>
-    During the choice of the hostname, put the fqdn directly
-    (or just a short hostname if the DHCP sends already a correct domain).
-    <%- } -%>
-    ENDTEXT
 
-  <%- } -%>
-<%- } -%>
+<%- $pxe_entries.each |$id, $settings| { %>
+<%-
+  $menu_label   = $settings['menu_label']
+  $distrib      = $settings['distrib']
+  $text_help    = $settings['text_help']
+  $family       = $distribs_provided[$distrib]['family']
+  $boot_options = $distribs_provided[$distrib]['boot_options']
+-%>
+LABEL <%= $id %>
+MENU LABEL <%= $menu_label %>
+KERNEL <%= $distrib %>/<%= $family %>-installer/amd64/linux
+APPEND <%= $boot_options %> url=http://<%= $my_ip %>/<%= $id %>/preseed.cfg initrd=<%= $distrib %>/<%= $family %>-installer/amd64/initrd.gz --
+TEXT HELP
+<%= $text_help %>
+ENDTEXT
+
+<%- } %>
 

@@ -60,3 +60,9 @@ are retrieved from the data binding mechanism of the
 See the code of `./function/data.pp` for more details.
 
 
+# TODO
+
+* Update the README and explain how to add
+a new PXE entry.
+
+

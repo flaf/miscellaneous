@@ -4,7 +4,7 @@
 
 ### This file is managed by Puppet, don't edit it. ###
 
-exec >/root/post-install.log 2>&1
+exec >/tmp/install-puppet.log 2>&1
 set -x
 
 # Puppet, puppet, puppet...
@@ -36,10 +36,6 @@ echo "#/opt/puppetlabs/bin/puppet agent --test --server=$server --ca_server=$ca_
 chown root:root /root/.bash_history
 chmod 600 /root/.bash_history
 
-# Allow ssh with root.
-sed -i 's/^PermitRootLogin[[:space:]].*/PermitRootLogin yes/' /etc/ssh/sshd_config
-
 exit 0
-
 
 

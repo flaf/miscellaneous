@@ -39,23 +39,12 @@ class pxeserver (
     }
   }
 
-  $distribs_provided = {
-    'trusty' => {
-      'family'       => 'ubuntu',
-      'boot_options' => 'locale=en_US.UTF-8 keymap=fr',
-    },
-    'jessie' => {
-      'family'       => 'debian',
-      'boot_options' => 'locale=en_US.UTF-8 keyboard-configuration/xkb-keymap=fr(latin9)',
-    },
-  }
+  require '::pxeserver::conf'
 
-  $my_family      = $facts['os']['distro']['id'].downcase
-  $my_ip          = $facts['networking']['ip']
-
-  $install_puppet = [ "wget http://${my_ip}/install-puppet -O /target/tmp/install-puppet",
-                      'chmod a+x /target/tmp/install-puppet',
-                      'in-target /bin/bash -c /tmp/install-puppet', ]
+  $my_family         = $facts['os']['distro']['id'].downcase
+  $my_ip             = $facts['networking']['ip']
+  $distribs_provided = $::pxeserver::conf::distribs_provided
+  $pxe_entries       = $::pxeserver::conf::pxe_entries
 
   ensure_packages( [ 'dnsmasq',
                      'lsb-release',
@@ -92,6 +81,7 @@ class pxeserver (
                     'distribs_provided' => $distribs_provided,
                     'my_family'         => $my_family,
                     'my_ip'             => $my_ip,
+                    'pxe_entries'       => $pxe_entries,
                    },
                   ),
   }
@@ -176,44 +166,18 @@ class pxeserver (
     require    => Package['apache2'],
   }
 
-
-  # Partial preseeds with and without puppet agent.
-  [ 'with-puppet', 'without-puppet' ].each |$with_puppet| {
-
-    $distribs_provided.each |$distrib, $settings| {
-
-      $late_command = $with_puppet ? {
-        'with-puppet'    => $install_puppet.join("; \\\n    "),
-        'without-puppet' => '',
-      }
-
-      file { "/var/www/html/preseed-${distrib}-partial-${with_puppet}.cfg":
-        ensure  => present,
-        owner   => 'root',
-        group   => 'root',
-        mode    => '0644',
-        require => Package['apache2'],
-        content => epp("pxeserver/preseed-${distrib}.cfg.epp",
-                       {
-                        'apt_proxy'             => '',
-                        'partman_early_command' => '',
-                        'skip_boot_loader'      => false,
-                        'late_command'          => $late_command,
-                       },
-                      ),
-      }
-
-    }
-
+  file { '/var/www/html/index.html':
+    ensure  => absent,
+    require => Package['apache2'],
   }
 
-  file { '/var/www/html/install-puppet':
+  file { '/var/www/html/late-command-install-puppet':
     ensure  => present,
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
     require => Package['apache2'],
-    content => epp('pxeserver/install-puppet',
+    content => epp('pxeserver/late-command-install-puppet',
                    {
                     'puppet_collection'      => $puppet_collection,
                     'pinning_puppet_version' => $pinning_puppet_version,
@@ -221,6 +185,20 @@ class pxeserver (
                     'puppet_ca_server'       => $puppet_ca_server,
                    },
                   ),
+  }
+
+  $pxe_entries.each |$id, $settings| {
+
+    ::pxeserver::pxe_entry { "$id":
+      distrib                    => $settings['distrib'],
+      apt_proxy                  => $settings['apt_proxy'],
+      partman_early_command_file => $settings['partman_early_command_file'],
+      late_command_file          => $settings['late_command_file'],
+      install_puppet             => $settings['install_puppet'],
+      permitrootlogin_ssh        => $settings['permitrootlogin_ssh'],
+      require                    => Package['apache2'],
+    }
+
   }
 
 }
