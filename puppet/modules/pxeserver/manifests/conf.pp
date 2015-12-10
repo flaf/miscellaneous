@@ -1,16 +1,5 @@
 class pxeserver::conf {
 
-  $distribs_provided = {
-    'trusty' => {
-      'family'       => 'ubuntu',
-      'boot_options' => 'locale=en_US.UTF-8 keymap=fr',
-    },
-    'jessie' => {
-      'family'       => 'debian',
-      'boot_options' => 'locale=en_US.UTF-8 keyboard-configuration/xkb-keymap=fr(latin9)',
-    },
-  }
-
   $pxe_entries = {
 
     'trusty-partial-preseed-with-puppet' => {
@@ -25,10 +14,9 @@ class pxeserver::conf {
         During the choice of the hostname, put the fqdn directly
         (or just a short hostname if the DHCP sends already a correct domain).
         |- END
+      'skip_boot_loader'           => false,
       'partman_early_command_file' => 'nothing',
       'late_command_file'          => 'nothing',
-      'install_puppet'             => true,
-      'permitrootlogin_ssh'        => true,
     },
 
     'jessie-partial-preseed-with-puppet' => {
@@ -41,10 +29,37 @@ class pxeserver::conf {
           - disk partioning,
           - Grub installation.
         |- END
+      'skip_boot_loader'           => false,
       'partman_early_command_file' => 'nothing',
       'late_command_file'          => 'nothing',
-      'install_puppet'             => true,
-      'permitrootlogin_ssh'        => true,
+    },
+
+    'trusty-full-preseed-with-puppet' => {
+      'distrib'    => 'trusty',
+      'menu_label' => '[trusty] All in /dev/sda with puppet installed',
+      'text_help'  => @(END),
+        Semi manual installation of Ubuntu Trusty.
+        Manual handling for network configuration.
+        During the choice of the hostname, put the fqdn directly
+        (or just a short hostname if the DHCP sends already a correct domain).
+        |- END
+      'partman_auto_disk'          => '/dev/sda',
+      'skip_boot_loader'           => false,
+      'partman_early_command_file' => 'nothing',
+      'late_command_file'          => 'nothing',
+    },
+
+    'jessie-fully-preseed-with-puppet' => {
+      'distrib'    => 'jessie',
+      'menu_label' => '[jessie] All in /dev/sda with puppet installed',
+      'text_help'  => @(END),
+        Semi manual installation of Debian Jessie.
+        Manual handling for network configuration.
+        |- END
+      'partman_auto_disk'          => '/dev/sda',
+      'skip_boot_loader'           => false,
+      'partman_early_command_file' => 'nothing',
+      'late_command_file'          => 'nothing',
     },
 
     'jessie-elea-moosql' => {
@@ -59,8 +74,34 @@ class pxeserver::conf {
          LV varlogmysql: fs => XFS,  mntpt => /var/log/mysql, mntopt => noatime
          LV varlibmysql: fs => EXT4, mntpt => /var/lib/mysql, mntopt => noatime
         |- END
-      'install_puppet'      => true,
-      'permitrootlogin_ssh' => true,
+    },
+
+    'trusty-elea-cargo' => {
+      'distrib'    => 'trusty',
+      'menu_label' => '[trusty] install Elea cargo servers',
+      'text_help'  => @(END),
+        WARNING: For the hostname question, put the FQDN of the host
+        unless the DHCP server already sends the good domain name.
+        Manual handling
+          1. Network configuration
+          2. Partitioning: just set the /dev/sdb3 device to
+             filesytem => EXT4, mountpoint => /, mount options => noatime
+             (do not format the partition, it is already done)
+        |- END
+    },
+
+    'trusty-ceph-dc2' => {
+      'distrib'    => 'trusty',
+      'menu_label' => '[trusty] install Ceph servers at dc2',
+      'text_help'  => @(END),
+        WARNING: For the hostname question, put the FQDN of the host
+        unless the DHCP server already sends the good domain name.
+        Manual handling
+          1. Network configuration
+          2. Partitioning: just set the /dev/sda3 device to
+             filesytem => EXT4, mountpoint => /, mount options => noatime
+             (do not format the partition, it is already done)
+        |- END
     },
 
   }

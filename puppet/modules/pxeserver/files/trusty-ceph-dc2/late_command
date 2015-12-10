@@ -2,7 +2,8 @@
 
 ### This file is managed by Puppet, don't edit it. ###
 
-for device in /dev/sda /dev/sdb
+# Grub just in /dev/sda because no RAID soft.
+for device in /dev/sda
 do
     for symlink in /dev/disk/by-id/*
     do
@@ -35,5 +36,5 @@ in-target /bin/bash -c 'DEBIAN_FRONTEND=noninteractive apt-get install --yes gru
 umount /target/dev/pts
 umount /target/proc
 umount /target/sys
-exit 0
+
 

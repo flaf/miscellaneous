@@ -41,10 +41,37 @@ class pxeserver (
 
   require '::pxeserver::conf'
 
-  $my_family         = $facts['os']['distro']['id'].downcase
-  $my_ip             = $facts['networking']['ip']
-  $distribs_provided = $::pxeserver::conf::distribs_provided
-  $pxe_entries       = $::pxeserver::conf::pxe_entries
+  $distribs_provided = {
+    'trusty' => {
+      'family'       => 'ubuntu',
+      'boot_options' => 'locale=en_US.UTF-8 keymap=fr',
+    },
+    'jessie' => {
+      'family'       => 'debian',
+      'boot_options' => 'locale=en_US.UTF-8 keyboard-configuration/xkb-keymap=fr(latin9)',
+    },
+  }
+
+  $distribs_provided_array = $distribs_provided.keys
+  $distribs_provided_str   = $distribs_provided_array.join(', ')
+  $my_family               = $facts['os']['distro']['id'].downcase
+  $my_ip                   = $facts['networking']['ip']
+  $pxe_entries             = $::pxeserver::conf::pxe_entries
+
+  # Check that distribs are in provided distribs.
+  $pxe_entries.each |$id, $settings| {
+
+    $distrib = $settings['distrib']
+
+    if ! $distribs_provided_array.member($distrib) {
+      regsubst(@("END"), '\n', ' ', 'G').fail
+        $title: sorry the distribution `$distrib` is not
+        provided by the module $module_name. Currently, the
+        allowed distributions are $distribs_provided_str.
+        |- END
+    }
+
+  }
 
   ensure_packages( [ 'dnsmasq',
                      'lsb-release',
@@ -193,6 +220,8 @@ class pxeserver (
       distrib                    => $settings['distrib'],
       apt_proxy                  => $settings['apt_proxy'],
       partman_early_command_file => $settings['partman_early_command_file'],
+      partman_auto_disk          => $settings['partman_auto_disk'],
+      skip_boot_loader           => $settings['skip_boot_loader'],
       late_command_file          => $settings['late_command_file'],
       install_puppet             => $settings['install_puppet'],
       permitrootlogin_ssh        => $settings['permitrootlogin_ssh'],

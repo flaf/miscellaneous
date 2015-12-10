@@ -2,7 +2,8 @@
 
 ### This file is managed by Puppet, don't edit it. ###
 
-for device in /dev/sda /dev/sdb
+# Grub just in /dev/sdb because no RAID soft.
+for device in /dev/sdb
 do
     for symlink in /dev/disk/by-id/*
     do
@@ -36,4 +37,5 @@ umount /target/dev/pts
 umount /target/proc
 umount /target/sys
 exit 0
+
 
