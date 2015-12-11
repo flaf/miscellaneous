@@ -37,30 +37,29 @@ Puppet::Functions.create_function(:'network::dump_cidr') do
     # Now, we are sure that the cidr_str variable
     # is a valid CIDR address.
 
+    ipv6 = false
+    ipv4 = false
+    if ip_addr.ipv4?
+      zero_addr = '0.0.0.0'
+      ipv4 = true
+    elsif ip_addr.ipv6?
+      zero_addr = '::'
+      ipv6 = true
+    else
+      # Normally, you should never fall in this case.
+      msg = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
+        |#{function_name}(): the `#{cidr_str}` string is not a
+        |valid CIDR address. It seems to not be a IPv4/IPv6 address.
+        EOS
+      raise(Puppet::ParseError, msg)
+    end
+
     if netmask_str =~ Regexp.new('^\d+$')
       # The netmask is just a number.
 
       # TODO: For the netmask address, I have found no way except
       # to handle 2 cases: the address is an IPv4 address or an
       # IPv6 address.
-      ipv6 = false
-      ipv4 = false
-      if ip_addr.ipv4?
-        zero_addr = '0.0.0.0'
-        ipv4 = true
-      elsif ip_addr.ipv6?
-        zero_addr = '::'
-        ipv6 = true
-      else
-        # Normally, you should never fall in this case.
-        msg = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
-          |#{function_name}(): the `#{cidr_str}` string is not a
-          |valid CIDR address. It seems to not be a IPv4/IPv6 address.
-          EOS
-        raise(Puppet::ParseError, msg)
-
-      end
-
       netmask_num_str  = netmask_str
       netmask_addr_str = IPAddr.new(zero_addr).~().mask(netmask_num_str).to_s
       cidr_str         = ip_addr_str + '/' + netmask_num_str
