@@ -1,18 +1,20 @@
-<%- |$dhcp_range, $domain, $dhcp_gateway, $dhcp_dns_servers| -%>
+<%- |$dhcp_conf, $domain| -%>
 ### This file is managed by Puppet, don't edit it. ###
 
 # To disable DNS completely. We just want to have a DHCP/PXE server.
 port=0
 
-# Domain sent by the DHCP server.
+# Domain sent by the DHCP server (if enabled).
 domain=<%= $domain %>
 
-# DHCP configuration.
-dhcp-range=<%= $dhcp_range.join(',') %>,12h
-dhcp-boot=pxelinux.0
-dhcp-option=option:router,<%= $dhcp_gateway %>
-dhcp-option=option:dns-server,<%= $dhcp_dns_servers.join(',') %>
+<%- $dhcp_conf.each |$tag, $settings| { -%>
+# <%= $tag %>
+dhcp-range=set:<%= $tag %>,<%= $settings['range'].join(',') %>,12h
+dhcp-option=tag:<%= $tag %>,option:router,<%= $settings['router'] %>
+dhcp-option=tag:<%= $tag %>,option:dns-server,<%= $settings['dns-server'].join(',') %>
+dhcp-boot=tag:<%= $tag %>,pxelinux.0
 
+<%- } -%>
 # tftp is enabled. With the option "tftp-secure", the owner
 # of the content in tftp-root must be "dnsmasq" (warning: the
 # grop "dnsmasq" doesn't exist).

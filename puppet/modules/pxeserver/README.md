@@ -167,3 +167,10 @@ keep just 2 template files for the preseeds:
 - and one for the Ubuntu family.
 
 
+# TODO
+
+* `tags_excluded` and `tags_included` not yet token into account.
+* Update the README.
+* Some variables needs to be ckecked.
+
+

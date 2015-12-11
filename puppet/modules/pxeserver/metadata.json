@@ -10,7 +10,7 @@
   "dependencies": [
     {"name":"puppetlabs-stdlib","version_requirement":">= 4.9.0"},
     {"name":"flaf-homemade","version_requirement":">= 0.1.2"},
-    {"name":"flaf-network","version_requirement":">= 0.3.4"},
+    {"name":"flaf-network","version_requirement":">= 0.3.5"},
     {"name":"flaf-repository","version_requirement":">= 0.1.9"},
     {"name":"flaf-puppetagent","version_requirement":">= 0.1.2"}
   ]

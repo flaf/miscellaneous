@@ -1,7 +1,7 @@
 class pxeserver (
-  Array[String[1], 2, 2]                  $dhcp_range,
-  Array[String[1]]                        $dhcp_dns_servers,
-  String[1]                               $dhcp_gateway,
+  Hash[String[1], Hash[String[1], Data]]  $dhcp_conf,
+  Array[String[1]]                        $tags_excluded,
+  Variant[Array[String[1]], Enum['all']]  $tags_included,
   Hash[String[1], Array[String[1], 2, 2]] $ip_reservations,
   String[1]                               $puppet_collection,
   String[1]                               $pinning_puppet_version,
@@ -12,22 +12,21 @@ class pxeserver (
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
-  if $dhcp_range[0] == 'NOT-DEFINED' and $dhcp_range[1] == 'NOT-DEFINED' {
-    regsubst(@("END"), '\n', ' ', 'G').fail
-      $title: sorry you must provide a value to the
-      `dhcp_range` parameter.
-      |- END
-  }
+  #if $dhcp_range[0] == 'NOT-DEFINED' and $dhcp_range[1] == 'NOT-DEFINED' {
+  #  regsubst(@("END"), '\n', ' ', 'G').fail
+  #    $title: sorry you must provide a value to the
+  #    `dhcp_range` parameter.
+  #    |- END
+  #}
 
-  if $dhcp_dns_servers.empty {
-    regsubst(@("END"), '\n', ' ', 'G').fail
-      $title: sorry the parameter `dhcp_dns_servers` is empty.
-      You must provide DNS servers in the DHCP configuration.
-      |- END
-  }
+  #if $dhcp_dns_servers.empty {
+  #  regsubst(@("END"), '\n', ' ', 'G').fail
+  #    $title: sorry the parameter `dhcp_dns_servers` is empty.
+  #    You must provide DNS servers in the DHCP configuration.
+  #    |- END
+  #}
 
-  [ 'dhcp_gateway',
-    'puppet_collection',
+  [ 'puppet_collection',
     'pinning_puppet_version',
     'puppet_server',
     'puppet_ca_server',
@@ -70,6 +69,18 @@ class pxeserver (
         allowed distributions are $distribs_provided_str.
         |- END
     }
+
+  }
+
+  $dhcp_conf_updated = $dhcp_conf.reduce({}) |$memo, $entry| {
+    $tag         = $entry[0]
+    $settings    = $entry[1]
+    $range_ip1   = $settings['range'][0]
+    $range_ip2   = $settings['range'][1]
+    $netmask_tmp = $settings['range'][2]
+    $netmask     = ::network::dump_cidr("${range_ip1}/${netmask_tmp}")['netmask']
+
+    $memo + { $tag => $settings + { 'range' => [$range_ip1, $range_ip2, $netmask] } }
 
   }
 
@@ -157,10 +168,8 @@ class pxeserver (
     require => Package['dnsmasq'],
     content => epp('pxeserver/dnsmasq-main.conf.epp',
                    {
-                    'dhcp_range'       => $dhcp_range,
+                    'dhcp_conf'        => $dhcp_conf_updated,
                     'domain'           => $::domain,
-                    'dhcp_dns_servers' => $dhcp_dns_servers,
-                    'dhcp_gateway'     => $dhcp_gateway,
                    }
                   ),
   }
