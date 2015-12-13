@@ -15,6 +15,7 @@ class basic_packages (
     'ethtool',
     'curl',
     'screen',
+    'iperf',
   ]
   ensure_packages( $wanted_packages, { ensure => present } )
 
