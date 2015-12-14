@@ -160,6 +160,27 @@ the values of the call above.
 
 
 
+# The `repository::moobot` class
+
+## Usage
+
+Here is an example:
+
+```puppet
+class { '::repository::moobot':
+  url     => 'http://repository.crdp.ac-versailles.fr',
+  key_url => 'http://repository.crdp.ac-versailles.fr/crdp.gpg',
+}
+```
+
+## Parameters and default values
+
+The default values of the parameters are exactly
+the values of the call above.
+
+
+
+
 # TODO
 
 * Add pinning support for the docker repository.

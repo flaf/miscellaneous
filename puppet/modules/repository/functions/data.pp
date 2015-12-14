@@ -59,6 +59,12 @@ function repository::data {
     repository::ceph::src                     => false,
     repository::ceph::supported_distributions => $distribs,
     repository::ceph::stage                   => $stage,
+
+    repository::moobot::url                     => 'http://repository.crdp.ac-versailles.fr/debian',
+    repository::moobot::key_url                 => 'http://repository.crdp.ac-versailles.fr/crdp.gpg',
+    repository::moobot::supported_distributions => $distribs,
+    repository::moobot::stage                   => $stage,
+
   }
 
 }
