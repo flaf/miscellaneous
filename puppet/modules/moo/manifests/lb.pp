@@ -6,6 +6,7 @@ class moo::lb (
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
   require '::moo::common'
+  include '::moo::dockerapi'
 
   ensure_packages( [ 'haproxy' ], { ensure => present } )
 
