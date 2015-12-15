@@ -7,6 +7,8 @@ class moo::lb (
   ::homemade::is_supported_distrib($supported_distributions, $title)
   require '::moo::common'
 
+  ensure_packages( [ 'haproxy' ], { ensure => present } )
+
   $content_default_haproxy = @(END)
     ### File managed by Puppet, don't edit it. ###
     ENABLED=1
