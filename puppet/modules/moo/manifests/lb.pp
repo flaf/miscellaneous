@@ -1,26 +1,11 @@
-# TODO:
-#
 # * The stats page of haproxy => http://${IP_LB}:8080/haproxy?stats
-#
-# * In /etc/haproxy/haproxy.cfg, move:
-#
-#            stats refresh 5
-#            stats auth admin:wawa
-#
-#   From the defaults section to the "listen admin" section.
-#
-# * Use the fqdn for the backend stanza to have a stats page
-#   more readable.
 #
 class moo::lb (
   Array[String[1], 1] $supported_distributions,
 ) {
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
-
-  require '::moo::common::packages'
-
-  ensure_packages( [ 'haproxy', 'python-jinja2' ], { ensure => present } )
+  require '::moo::common'
 
   $content_default_haproxy = @(END)
     ### File managed by Puppet, don't edit it. ###

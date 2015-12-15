@@ -10,12 +10,11 @@ class moo::cargo (
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
   require '::repository::docker'
-  require '::moo::common::packages'
+  require '::moo::common'
 
   ensure_packages( [
                      'docker-engine',
                      'aufs-tools',
-                     'python-pip',
                    ],
                    {
                      ensure => present,
