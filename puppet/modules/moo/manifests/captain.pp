@@ -46,6 +46,32 @@ class moo::captain (
                   )
   }
 
+  $address = $::facts['networking']['ip']
+
+  $content = @("END")
+    [mysqld]
+
+    bind-address = ${address}
+
+    |- END
+
+  file { '/etc/mysql/conf.d/listen_addr.cnf':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    require => File['/root/.my.cnf'],
+    content => $content,
+    notify  => Service['mysql'],
+  }
+
+  service { 'mysql':
+    ensure     => running,
+    hasstatus  => true,
+    hasrestart => true,
+    require    => File['/etc/mysql/conf.d/listen_addr.cnf'],
+  }
+
 }
 
 
