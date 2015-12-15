@@ -46,8 +46,8 @@ CREATE TABLE IF NOT EXISTS `moobot`.`cargos` (
   `ip_address` CHAR(46) NULL,
   `zone` INT NULL,
   -- `max_dockers_num` VARCHAR(45) NULL,
-  -- Je tente un truc car je ne vois pas pourquoi
-  -- max_dockers_num serait une chaîne de caractères.
+  -- Flaf: I try to change this because I don't see why
+  -- max_dockers_num could be a string.
   `max_dockers_num` INT NULL,
   PRIMARY KEY (`id`),
   INDEX `zone_idx` (`zone` ASC))
