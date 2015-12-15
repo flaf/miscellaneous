@@ -6,7 +6,6 @@ class moo::lb (
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
   require '::moo::common'
-  include '::moo::dockerapi'
 
   ensure_packages( [ 'haproxy' ], { ensure => present } )
 
@@ -24,9 +23,14 @@ class moo::lb (
     notify  => Service['haproxy']
   }
 
+  # On Trusty, haproxy has a "status" command but the exit
+  # code is 0 even if haproxy is not running. The custom
+  # command uses pgrep in the "procps" package.
+  ensure_packages( [ 'procps' ], { ensure => present } )
   service { 'haproxy':
     ensure     => running,
-    hasstatus  => true,
+    hasstatus  => false,
+    status     => 'test "$(pgrep -c haproxy)" != 0',
     hasrestart => true,
     enable     => true,
   }
