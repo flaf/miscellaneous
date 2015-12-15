@@ -1,0 +1,53 @@
+<%- |
+  $shared_root_path,
+  $first_guid,
+  $default_version_tag,
+  $lb,
+  $moodle_db_host,
+  $moodle_adm_user,
+  $moodle_adm_pwd,
+  $moodle_db_pfx,
+  $docker_repository,
+  $default_desired_num,
+  $moobot_db_host,
+  $moobot_db_pwd,
+  $memcached_servers,
+  $ha_template,
+  $ha_reload_cmd,
+  $ha_stats_login,
+  $ha_stats_pwd,
+| -%>
+### This file is managed by Puppet, don't edit It. ###
+
+[main]
+shared_root_path = <%= $shared_root_path %>
+first_guid = <%= $first_guid %>
+default_version_tag = <%= $default_version_tag %>
+
+[jobs]
+update_lb = <%= $lb.join(',') %>
+
+[docker]
+db_host =  <%= $moodle_db_host %>
+db_adm_user = <%= $moodle_adm_user %>
+db_adm_password = <%= $moodle_adm_pwd %>
+db_pfx = <%= $moodle_db_pfx %>
+repository = <%= $docker_repository %>
+default_desired_num = <%= $default_desired_num %>
+
+[database]
+host = <%= $moobot_db_host %>
+name = moobot
+user = moobot
+password = <%= $moobot_db_pwd %>
+
+[memcached]
+servers = <%= $memcached_servers.join(',') %>
+
+[haproxy]
+template = <%= $ha_template %>
+reload_cmd = <%= $ha_reload_cmd %>
+stats_login = <%= $ha_stats_login %>
+stats_password = <%= $ha_stats_pwd %>
+
+
