@@ -4,6 +4,6 @@
 [mysql]
   user     = root
   host     = localhost
-  database = moobot
+  #database = moobot
   password = <%= $mysql_rootpwd %>
 
