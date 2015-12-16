@@ -24,7 +24,10 @@ function moo::data {
     moo::captain::mysql_rootpwd           => sha1("$r-mysql_rootpwd_moobot")[0,15],
     moo::captain::supported_distributions => [ 'trusty' ],
 
+    moo::cargo::ceph_account            => 'cephfs',
+    moo::cargo::ceph_client_mountpoint  => '/moodle',
     moo::cargo::supported_distributions => [ 'trusty' ],
+
     moo::lb::supported_distributions => [ 'trusty' ],
   }
 
