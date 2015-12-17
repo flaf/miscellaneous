@@ -22,7 +22,7 @@ class moo::cargo (
   file { '/mnt/shared':
     ensured => 'directory',
     owner   => 'root',
-    group   => 'root'
+    group   => 'root',
     mode    => '0755',
   }
 
