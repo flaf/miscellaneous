@@ -21,13 +21,19 @@ class repository::ceph (
   $key         = '08B73419AC32B4E966C1A330E84AC2C0460F3994'
   $cleaned_url = $url.regsubst(/\/$/,'') # Remove the trailing slash.
 
+  # Use http to avoid problem with firewalls etc.
+  apt::key { 'ceph':
+    id     => $key,
+    server => 'http://keyserver.ubuntu.com',
+  }
+
   apt::source { 'ceph':
     comment  => 'Ceph Repository.',
     location => "${cleaned_url}/debian-${codename}",
     release  => $::facts['lsbdistcodename'],
     repos    => 'main',
-    key      => $key,
     include  => { 'src' => $src, 'deb' => true },
+    require  => Apt::Key['ceph']
   }
 
   if $pinning_version != 'none' {
