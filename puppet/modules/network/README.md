@@ -296,12 +296,17 @@ Here is an example:
 
 ```puppet
 class { '::network::resolv_conf':
-  domain         => $::domain,
-  search         => $::domain,
-  nameservers    => [ '8.8.8.8', '8.8.4.4' ],
-  local_resolver => true,
-  timeout        => 5,
-  override_dhcp  => false,
+  domain            => $::domain,
+  search            => [ $::domain, ]
+  nameservers       => [ '8.8.8.8', '8.8.4.4' ],
+  local_resolver    => true,
+  lr_interface      => [ '127.0.0.1', '172.31.0.5' ],
+  lr_access_control => [
+                         [ '172.17.0.0/24', 'allow' ],
+                         [ '172.18.0.0/24', 'deny' ],
+                       ],
+  timeout           => 5,
+  override_dhcp     => false,
 }
 ```
 
@@ -337,16 +342,32 @@ $dns_servers = ::network::get_param( $interfaces,
                                      $default_dns )
 ```
 
-The `local_resolver` parameter is a boolean. If true, the
-class will install the unbound service which listens on
-localhost. unbound will be a DNS forwarder which will forward
-all DNS queries to the DNS servers of the `$nameservers`
-parameter. In this case, the file `/etc/resolv.conf` will be
-updated and the stanza below will be inserted:
+The `local_resolver` parameter is a boolean. If true (its
+default value), the class will install the unbound service
+which listens on localhost. unbound will be a DNS forwarder
+which will forward all DNS queries to the DNS servers of the
+`$nameservers` parameter. In this case, the file
+`/etc/resolv.conf` will be updated and the stanza below will
+be inserted:
 
 ```
 nameserver 127.0.0.1
 ```
+
+The parameters `lr_interface` and `lr_access_control`
+represent the options `interface` and `access-control` of
+the local resolver unbound (see the manual unbound.conf(5)
+for more details). If `local_resolver` is set to `false`,
+these parameters are completely ignored. The default value
+of these parameters is `[]` (ie an empty array). In this
+case, no option `interface` is present in the unbound
+configuration (ie unbound just listens to 127.0.0.1) and no
+option `access-control` is present too.
+
+**Remark :** if `'127.0.0.1'` is not present in the
+parameter `lr_interface`, it will be automatically appended
+(so that the host is always able to use the unbound service
+via locahost).
 
 The `timeout` parameter is an integer which sets the
 `timeout:` stanza in the file `/etc/resolv.conf`. Its

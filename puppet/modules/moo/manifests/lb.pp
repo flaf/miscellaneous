@@ -33,6 +33,7 @@ class moo::lb (
     status     => 'test "$(pgrep -c haproxy)" != 0',
     hasrestart => true,
     enable     => true,
+    require    => [ File['/etc/default/haproxy'], Package['procps'] ],
   }
 
   file_line { 'rsyslog.conf-load-imudp':

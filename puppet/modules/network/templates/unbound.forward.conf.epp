@@ -1,3 +1,4 @@
+<%- |$nameservers| -%>
 ### This file is managed by Puppet, don't edit it. ###
 
 forward-zone:

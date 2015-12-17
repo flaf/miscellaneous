@@ -1,0 +1,33 @@
+<%-|$docker_iface, $docker_bridge_network|-%>
+#!/bin/sh
+
+### This file is managed by Puppet, don't edit it. ###
+
+# Normally this script is just relevant during the boot.
+# All scripts in /etc/network/if-up.d/ are called with
+# IFACE = '--all' (see interfaces(5) manual).
+if [ "$IFACE" != '--all' ]
+then
+    exit 0
+fi
+
+# The "docker" interface. The only interface which a docker
+# container can use to contact the "outside".
+docker_iface='<%= $docker_iface %>'
+
+# The CIDR address of the "docker" network.
+docker_network='<%= $docker_bridge_network %>'
+
+# Remark: -D (delete) and -A (append) are just to have a
+# idempotent script.
+
+# No ip-forwarding from docker to ifaceXXX unless ifaceXXX
+# is the "docker" interface.
+iptables -t filter -D FORWARD -i docker0 ! -o "$docker_iface" -j DROP || true
+iptables -t filter -A FORWARD -i docker0 ! -o "$docker_iface" -j DROP
+
+# Masquerading only for the dedicated "docker" interface.
+iptables -t nat -D POSTROUTING -s "$docker_network" -o "$docker_iface" -j MASQUERADE || true
+iptables -t nat -A POSTROUTING -s "$docker_network" -o "$docker_iface" -j MASQUERADE
+
+

@@ -1,12 +1,14 @@
 class network::resolv_conf (
-  String[1]           $domain,
-  Array[String[1], 1] $search,
-  Array[String[1], 1] $nameservers,
-  Integer[1]          $timeout,
-  Boolean             $local_resolver,
-  Boolean             $override_dhcp,
-  Array[String[1], 1] $supported_distributions,
-  String[1]           $stage = 'main',
+  String[1]                       $domain,
+  Array[String[1], 1]             $search,
+  Array[String[1], 1]             $nameservers,
+  Integer[1]                      $timeout,
+  Boolean                         $local_resolver,
+  Array[String[1]]                $lr_interface,
+  Array[ Array[String[1], 2, 2] ] $lr_access_control,
+  Boolean                         $override_dhcp,
+  Array[String[1], 1]             $supported_distributions,
+  String[1]                       $stage = 'main',
 ) {
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
@@ -29,8 +31,37 @@ class network::resolv_conf (
       require => Package['unbound'],
       before  => Service['unbound'],
       notify  => Service['unbound'],
-      content => epp('network/unbound.conf.epp',
+      content => epp('network/unbound.forward.conf.epp',
                      { 'nameservers' => $nameservers, }
+                    ),
+    }
+
+    if $lr_interface.empty and $lr_access_control.empty {
+      $ensure_server_conf = 'absent'
+    } else {
+      $ensure_server_conf = 'present'
+    }
+
+    # If 127.0.0.1 not present in the interfaces, we add it.
+    if $lr_interface.member('127.0.0.1') {
+      $lr_ifaces = $lr_interface
+    } else {
+      $lr_ifaces = $lr_interface.concat('127.0.0.1')
+    }
+
+    file { '/etc/unbound/unbound.conf.d/server.conf':
+      ensure  => $ensure_server_conf,
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0644',
+      require => Package['unbound'],
+      before  => Service['unbound'],
+      notify  => Service['unbound'],
+      content => epp('network/unbound.server.conf.epp',
+                     {
+                      'interface'      => $lr_ifaces,
+                      'access_control' => $lr_access_control,
+                     }
                     ),
     }
 

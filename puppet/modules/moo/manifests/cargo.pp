@@ -1,6 +1,10 @@
 class moo::cargo (
+  String[1]           $docker_iface,
+  String[1]           $docker_bridge_network,
+  Array[String[1]]    $docker_dns,
   String[1]           $ceph_account,
   String[1]           $ceph_client_mountpoint,
+  Boolean             $ceph_mount_on_the_fly,
   Array[String[1], 1] $supported_distributions,
 ) {
 
@@ -9,6 +13,48 @@ class moo::cargo (
   require '::repository::docker'
   require '::moo::common'
   include '::moo::dockerapi'
+
+  $shared_root_path = $::moo::common::shared_root_path
+
+  file { '/etc/default/docker':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    before  => Package['docker-engine'],
+    notify  => Service['docker'],
+    content => epp('moo/default_docker.epp',
+                   {
+                    'docker_bridge_network' => $docker_bridge_network,
+                    'docker_dns'            => $docker_dns,
+                   }
+                  )
+  }
+
+  file { '/etc/network/if-up.d/docker0-up':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0755',
+    before  => Package['docker-engine'],
+    notify  => Exec['set-iptables-rules'],
+    content => epp('moo/docker0-up.epp',
+                   {
+                    'docker_bridge_network' => $docker_bridge_network,
+                    'docker_iface'          => $docker_iface,
+                   }
+                  )
+  }
+
+  exec { 'set-iptables-rules':
+    user        => 'root',
+    group       => 'root',
+    environment => [ 'IFACE=--all' ],
+    command     => '/etc/network/if-up.d/docker0-up',
+    path        => '/usr/sbin:/usr/bin:/sbin:/bin',
+    refreshonly => true,
+    require     => File['/etc/network/if-up.d/docker0-up'],
+  }
 
   ensure_packages( [
                      'docker-engine',
@@ -19,11 +65,24 @@ class moo::cargo (
                    }
                  )
 
-  file { '/mnt/shared':
-    ensured => 'directory',
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0755',
+  # On Trusty, docker has a "status" command but the exit
+  # code is 0 even if docker is not running. The custom
+  # command uses pgrep in the "procps" package.
+  ensure_packages( [ 'procps' ], { ensure => present } )
+  service { 'docker':
+    ensure     => running,
+    hasstatus  => false,
+    status     => 'test "$(pgrep -c docker)" != 0',
+    hasrestart => true,
+    enable     => true,
+    require    => [ File['/etc/default/docker'], Package['procps'] ],
+  }
+
+  file { $shared_root_path:
+    ensure => directory,
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0755',
   }
 
   # Just shortcuts.
@@ -34,14 +93,32 @@ class moo::cargo (
   # With "mounted", the entry is added in /etc/fstab and the
   # device is mounted immediately. But at this time, we can't
   # know if the ceph packages are already installed.
-  mount { '/mnt/shared':
+  mount { $shared_root_path:
     #ensure   => mounted,
     ensure   => present,
     device   => "id=$c,keyring=/etc/ceph/ceph.client.$c.keyring,client_mountpoint=${climnt}",
     fstype   => 'fuse.ceph',
     remounts => false,
     options  => 'noatime,defaults,_netdev',
-    require  => File['/mnt/shared'],
+    require  => File[$shared_root_path],
+  }
+
+  if $ceph_mount_on_the_fly {
+
+    $remount_cmd = @("END")
+      mountpoint '$shared_root_path' && umount '$shared_root_path'
+      mount '$shared_root_path'
+      |- END
+
+    exec { 'mount-cephfs':
+      user        => 'root',
+      group       => 'root',
+      command     => $remount_cmd,
+      path        => '/usr/sbin:/usr/bin:/sbin:/bin',
+      refreshonly => true,
+      subscribe   => Mount[$shared_root_path],
+    }
+
   }
 
 }

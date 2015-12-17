@@ -1,6 +1,6 @@
 {
   "name": "flaf-network",
-  "version": "0.3.5",
+  "version": "0.3.8",
   "author": "flaf",
   "summary": "Module to set the network configuration",
   "license": "Apache-2.0",

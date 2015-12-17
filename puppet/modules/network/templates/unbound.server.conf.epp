@@ -1,0 +1,12 @@
+<%- |$interface, $access_control| -%>
+### This file is managed by Puppet, don't edit it. ###
+
+server:
+<%- $interface.sort.each |$a_addr| { -%>
+  interface: <%= $a_addr %>
+<%- } -%>
+<%- $access_control.each |$a_access| { -%>
+  access-control: <%= $a_access[0] %> <%= $a_access[1] %>
+<%- } -%>
+
+

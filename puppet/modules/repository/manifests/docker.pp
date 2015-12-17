@@ -1,6 +1,7 @@
 class repository::docker (
   String[1]           $url,
   Boolean             $src,
+  String[1]           $pinning_version,
   Array[String[1], 1] $supported_distributions,
   String[1]           $stage = 'main',
 ) {
@@ -19,6 +20,18 @@ class repository::docker (
     repos    => 'main',
     key      => $key,
     include  => { 'src' => $src, 'deb' => true },
+  }
+
+  if $pinning_version != 'none' {
+
+    # About pinning => `man apt_preferences`.
+    apt::pin { 'docker-engine':
+      explanation => 'To ensure the version of the docker-engine package.',
+      packages    => 'docker-engine',
+      version     => $pinning_agent_version,
+      priority    => 990,
+    }
+
   }
 
 }

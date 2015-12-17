@@ -9,6 +9,8 @@ function network::data {
   # Data handle.
   $interfaces         = ::network::fill_interfaces($ifaces, $inventory_networks)
   $local_resolver     = true
+  $lr_interface       = []
+  $lr_access_control  = []
   $override_dhcp      = false
   $default_dns        = [
                          '8.8.8.8',
@@ -84,6 +86,8 @@ function network::data {
     network::resolv_conf::nameservers             => $dns_servers,
     network::resolv_conf::timeout                 => $default_timeout,
     network::resolv_conf::local_resolver          => $local_resolver,
+    network::resolv_conf::lr_interface            => $lr_interface,
+    network::resolv_conf::lr_access_control       => $lr_access_control,
     network::resolv_conf::override_dhcp           => $override_dhcp,
     network::resolv_conf::supported_distributions => $supported_distribs,
     network::resolv_conf::stage                   => $default_stage,
