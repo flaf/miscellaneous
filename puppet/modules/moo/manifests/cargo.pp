@@ -10,7 +10,11 @@ class moo::cargo (
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
-  require '::repository::docker'
+  # WARNING: finally, it's probably better to use the
+  # package from Ubuntu repositories.
+  #
+  #require '::repository::docker'
+
   require '::moo::common'
   include '::moo::dockerapi'
 
@@ -21,7 +25,8 @@ class moo::cargo (
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    before  => Package['docker-engine'],
+    #before  => Package['docker-engine'],
+    before  => Package['docker.io'],
     notify  => Service['docker'],
     content => epp('moo/default_docker.epp',
                    {
@@ -36,7 +41,8 @@ class moo::cargo (
     owner   => 'root',
     group   => 'root',
     mode    => '0755',
-    before  => Package['docker-engine'],
+    #before  => Package['docker-engine'],
+    before  => Package['docker.io'],
     notify  => Exec['set-iptables-rules'],
     content => epp('moo/docker0-up.epp',
                    {
@@ -56,9 +62,21 @@ class moo::cargo (
     require     => File['/etc/network/if-up.d/docker0-up'],
   }
 
+  # From Ubuntu repositories, the name of the package
+  # is different.
+  #
+  #ensure_packages( [
+  #                   'docker-engine',
+  #                   'aufs-tools',
+  #                 ],
+  #                 {
+  #                   ensure => present,
+  #                 }
+  #               )
   ensure_packages( [
-                     'docker-engine',
+                     'docker.io',
                      'aufs-tools',
+                     'cgroup-lite', # without this package, it doesn't work.
                    ],
                    {
                      ensure => present,
