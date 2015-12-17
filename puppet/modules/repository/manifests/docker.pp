@@ -13,13 +13,19 @@ class repository::docker (
   $osid     = $::facts['lsbdistid'].downcase # typically "debian" or "ubuntu"
   $release  = "${osid}-${codename}"
 
+  # Use hkp on port 80 to avoid problem with firewalls etc.
+  apt::key { 'docker':
+    id     => $key,
+    server => 'hkp://keyserver.ubuntu.com:80',
+  }
+
   apt::source { 'docker':
     comment  => 'Docker Repository.',
     location => $url,
     release  => $release,
     repos    => 'main',
-    key      => $key,
     include  => { 'src' => $src, 'deb' => true },
+    require  => Apt::Key['docker'],
   }
 
   if $pinning_version != 'none' {

@@ -16,13 +16,19 @@ class repository::puppet (
   $codename    = $::facts['lsbdistcodename']
   $comment     = "Puppetlabs ${collec_up} ${codename} Repository."
 
+  # Use hkp on port 80 to avoid problem with firewalls etc.
+  apt::key { 'puppetlabs':
+    id     => $key,
+    server => 'hkp://keyserver.ubuntu.com:80',
+  }
+
   apt::source { "puppetlabs-${collec_down}":
     comment  => $comment,
     location => "${url}",
     release  => $codename,
     repos    => $collec_up,
-    key      => $key,
     include  => { 'src' => $src, 'deb' => true },
+    require  => Apt::Key['puppetlabs'],
   }
 
   if $pinning_agent_version != 'none' {

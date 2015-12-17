@@ -33,7 +33,7 @@ class repository::ceph (
     release  => $::facts['lsbdistcodename'],
     repos    => 'main',
     include  => { 'src' => $src, 'deb' => true },
-    require  => Apt::Key['ceph']
+    require  => Apt::Key['ceph'],
   }
 
   if $pinning_version != 'none' {
