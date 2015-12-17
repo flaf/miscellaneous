@@ -21,10 +21,10 @@ class repository::ceph (
   $key         = '08B73419AC32B4E966C1A330E84AC2C0460F3994'
   $cleaned_url = $url.regsubst(/\/$/,'') # Remove the trailing slash.
 
-  # Use http to avoid problem with firewalls etc.
+  # Use hkp on port 80 to avoid problem with firewalls etc.
   apt::key { 'ceph':
     id     => $key,
-    server => 'http://keyserver.ubuntu.com',
+    server => 'hkp://keyserver.ubuntu.com:80',
   }
 
   apt::source { 'ceph':
