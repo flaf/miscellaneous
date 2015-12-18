@@ -30,7 +30,7 @@ while true
 do
 
     # Get modules.
-    while read # See the input of this read at the end of the loop.
+    while read # See the input of this read at the end of this loop below.
     do
 
         # /!\ Yes, this is only bash compatible.
@@ -55,20 +55,50 @@ do
         timeout --kill-after=20s 40s git pull
 
         tags=$(git tag | sort -V | tail)
+        name=$(cat metadata.json | jq --raw-output '.name')
 
         for tag in $tags
         do
+            full_name="$name-$tag"
+            [ -f "$modulesdir/$full_name.tar.gz" ] && continue
+
             git reset --hard "$tag"
             version=$(cat metadata.json | jq --raw-output '.version')
             # The tag must match with the version number.
             [ "$version" != "$tag"  ] && continue
-            name=$(cat metadata.json | jq --raw-output '.name')
-            full_name="$name-$version"
-            [ -f "$modulesdir/$full_name.tar.gz" ] && continue
 
             mkdir "$modulesdir/$full_name"
             # With find, we copy the .git/ directory too.
             find . -mindepth 1 -maxdepth 1 -exec cp -r '{}' "$modulesdir/$full_name/" \;
+
+            # We add a simple file to identify where the module come from.
+            flag_file=".from-$(hostname -f)"
+            touch "$modulesdir/$full_name/$flag_file"
+
+            # If a .gitignore doesn't exist, we create it.
+            gitignore="$modulesdir/$full_name/.gitignore"
+            [ -f "$gitignore" ] || touch "$gitignore"
+
+            # The goal is that "git status" reports no
+            # change when the module is just installed via
+            # the puppetforge. There are 2 cases: 1. the
+            # .gitignore file already existed (and it will
+            # be modified below) or 2. it has just been
+            # created (above). In these 2 cases, "git
+            # status" will report changes concerning the
+            # gitignore file (changed in the case 1 or
+            # untracked in the case 2). So we need to edit
+            # this file so that git ignores the .gitignore
+            # file and the files added by puppetforge (ie
+            # the flag file and the checksum file).
+            #
+            # It's not a problem if a line is duplicated in
+            # the .gitignore file.
+            cat >>"$gitignore" <<EOF
+.gitignore
+checksums.json
+$flag_file
+EOF
 
             # The goal: generate the `checksums.json` file
             # in the pkg/ directory. This file is created by

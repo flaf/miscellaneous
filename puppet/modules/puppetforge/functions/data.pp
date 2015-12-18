@@ -13,7 +13,7 @@ function puppetforge::data {
   $remote_forge        = 'https://forgeapi.puppetlabs.com'
   $address             = '0.0.0.0'
   $port                = 8080
-  $pause               = 300
+  $pause               = 180
   $modules_git_urls    = []
   $supported_distribs  = [ 'jessie' ];
 
