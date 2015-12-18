@@ -75,27 +75,28 @@ do
             flag_file=".from-$(hostname -f)"
             touch "$modulesdir/$full_name/$flag_file"
 
-            # If a .gitignore doesn't exist, we create it.
-            gitignore="$modulesdir/$full_name/.gitignore"
-            [ -f "$gitignore" ] || touch "$gitignore"
+            # The goal is that "git status" reports no change when the
+            # module is just installed via the puppetforge. But we add
+            # new files in this repo. A fist way is to add or edit a
+            # .gitignore file, but this file can be versioned so it's
+            # not a good idea. The right way is to use the file
+            # .git/info/exclude.
 
-            # The goal is that "git status" reports no
-            # change when the module is just installed via
-            # the puppetforge. There are 2 cases: 1. the
-            # .gitignore file already existed (and it will
-            # be modified below) or 2. it has just been
-            # created (above). In these 2 cases, "git
-            # status" will report changes concerning the
-            # gitignore file (changed in the case 1 or
-            # untracked in the case 2). So we need to edit
-            # this file so that git ignores the .gitignore
-            # file and the files added by puppetforge (ie
-            # the flag file and the checksum file).
+            # This file is a list of files that are not in .gitignore
+            # (which can be versioned), but which you want to exclude on
+            # your machine's copy of the repository. From the docs:
             #
-            # It's not a problem if a line is duplicated in
-            # the .gitignore file.
-            cat >>"$gitignore" <<EOF
-.gitignore
+            #       Patterns which are specific to a particular
+            #       repository but which do not need to be shared with
+            #       other related repositories (e.g., auxiliary files
+            #       that live inside the repository but are specific to
+            #       one user's workflow) should go into the
+            #       $GIT_DIR/info/exclude file.
+            #
+            # That file .git/info/exclude can not be versioned because
+            # it's in the .git directory.
+            #
+            cat >>"$modulesdir/$full_name/.git/info/exclude" <<EOF
 checksums.json
 $flag_file
 EOF
