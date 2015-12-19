@@ -9,9 +9,8 @@
 #
 # We can read:
 #
-#   "Puppet requires the use of PuppetDB’s
-#   secure, HTTPS port. You cannot use the unencrypted, plain
-#   HTTP port".
+#   "Puppet requires the use of PuppetDB's secure, HTTPS
+#   port. You cannot use the unencrypted, plain HTTP port".
 #
 # With `server_urls`, it's possible to put several urls separated
 # by comma.
@@ -30,7 +29,7 @@ server_urls = https://<%= $puppetdb_fqdn %>:8081
 # This setting can let the Puppet master stay partially
 # available during a PuppetDB outage. If set to true, Puppet
 # can keep compiling and serving catalogs even if PuppetDB
-# isn’t accessible for command submission. (However, any
+# isn't accessible for command submission. (However, any
 # catalogs that need to query exported resources from
 # PuppetDB will still fail.) The default value is false.
 #
