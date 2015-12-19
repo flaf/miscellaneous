@@ -1,7 +1,39 @@
 <%- |$puppetdb_fqdn| -%>
 ### This file is managed by Puppet, don't edit it. ###
+
 [main]
-server = <%= $puppetdb_fqdn %>
-port   = 8081
+
+# Now "server" and "port" are deprecated:
+#
+#     https://docs.puppetlabs.com/puppetdb/latest/puppetdb_connection.html
+#
+# We can read:
+#
+#   "Puppet requires the use of PuppetDB’s
+#   secure, HTTPS port. You cannot use the unencrypted, plain
+#   HTTP port".
+#
+# With `server_urls`, it's possible to put several urls separated
+# by comma.
+server_urls = https://<%= $puppetdb_fqdn %>:8081
+
+# The server_url_timeout setting sets the maximum amount of
+# time (in seconds) the PuppetDB termini will wait for
+# PuppetDB to respond to HTTP requests. If the user has
+# specified multiple PuppetDB URLs and a timeout has
+# occurred, it will attempt the same request on the next
+# server in the list. The default value is 30 seconds.
+#
+#server_url_timeout = 30
+
+
+# This setting can let the Puppet master stay partially
+# available during a PuppetDB outage. If set to true, Puppet
+# can keep compiling and serving catalogs even if PuppetDB
+# isn’t accessible for command submission. (However, any
+# catalogs that need to query exported resources from
+# PuppetDB will still fail.) The default value is false.
+#
+#soft_write_failure = false
 
 
