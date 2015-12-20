@@ -135,6 +135,7 @@ $ceph_global_conf = {
   'osd_pool_default_pg_num'        => '64',
   'osd_pool_default_pgp_num'       => '64',
   'osd_crush_chooseleaf_type'      => '1',
+  'osd_crush_update_on_start'      => 'false',
   'osd_journal_size'               => '0',
   'osd_max_backfills'              => '1',
   'osd_recovery_max_active'        => '1',
@@ -329,6 +330,7 @@ ceph::clusters_conf:
       osd_pool_default_pg_num: '64'
       osd_pool_default_pgp_num: '64'
       osd_crush_chooseleaf_type: '1'
+      osd_crush_update_on_start: 'false',
       osd_journal_size: '0'
       osd_max_backfills: '1'
       osd_recovery_max_active: '1'
