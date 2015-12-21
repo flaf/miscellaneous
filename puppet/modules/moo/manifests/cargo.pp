@@ -36,14 +36,20 @@ class moo::cargo (
                                              $inventory_networks,
                                              $gateway, '')
 
-  unless $docker_gateway {
+  unless $docker_gateway.empty {
     regsubst(@("END"), '\n', ' ', 'G').fail
       $title: sorry, problem with the parameter docker_iface. No
       gateway has been found for the interface docker_iface=`$docker_iface`.
       |- END
   }
 
-  
+  file_line { 'set-dockertable-name':
+    path   => '/etc/iproute2/rt_tables',
+    line   => "10    dockertable",
+    before  => [ Package['docker.io'],
+                 File['/etc/network/if-up.d/docker0-up']
+               ],
+  }
 
   file { '/etc/default/docker':
     ensure  => present,
@@ -73,6 +79,7 @@ class moo::cargo (
                    {
                     'docker_bridge_network' => $docker_bridge_network,
                     'docker_iface'          => $docker_iface,
+                    'docker_gateway'        => $docker_gateway,
                    }
                   )
   }

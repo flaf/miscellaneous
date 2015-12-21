@@ -1,4 +1,4 @@
-<%-|$docker_iface, $docker_bridge_network|-%>
+<%-|$docker_iface, $docker_bridge_network, $docker_gateway|-%>
 #!/bin/sh
 
 ### This file is managed by Puppet, don't edit it. ###
@@ -41,7 +41,7 @@ iptables -t nat -A POSTROUTING -s "$docker_network" -o "$docker_iface" -j MASQUE
 # To have a idempotent script, we flush the "dockertable".
 # and after, in this table, we add a default route.
 ip route flush table "$docker_table"
-ip route add default via 192.168.24.254 dev "$docker_iface" table "$docker_table"
+ip route add default via '<%= $docker_gateway %>' dev "$docker_iface" table "$docker_table"
 
 # If the incoming interface is "docker0", the paquet uses the docker table.
 ip rule del iif docker0 lookup "$docker_table" 2>/dev/null || true
