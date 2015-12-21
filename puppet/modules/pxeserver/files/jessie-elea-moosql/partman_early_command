@@ -15,10 +15,10 @@ do
     if [ "$size" = '200GB' ]
     then
         eval l_ssd$c_ssd=$i
-        $c_ssd=$((c_ssd + 1)
+        c_ssd=$((c_ssd + 1))
     else
         eval l_sata$c_sata=$i
-        $c_sata=$((c_sata + 1)
+        c_sata=$((c_sata + 1))
     fi
 done
 

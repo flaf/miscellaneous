@@ -45,16 +45,16 @@ $parted /dev/sdb unit MiB mkpart swap linux-swap $a $b
 part_num=$((part_num + 1))
 
 
-# The remaining of the disk is a /backup partition.
+# The remaining of the disk is a /backups partition.
 a=$b
 b='-1cyl' # The last cylinder
-$parted /dev/sdb -- unit MiB mkpart backup $a $b
+$parted /dev/sdb -- unit MiB mkpart backups $a $b
 part_num=$((part_num + 1))
 
 ### Creation of the file systems. ###
 
 mkfs.ext4 -F -E lazy_itable_init=0 -L system /dev/sdb3
 mkswap -L swap /dev/sdb4
-mkfs.xfs -f -L backup /dev/sdb5
+mkfs.xfs -f -L backups /dev/sdb5
 
 

@@ -85,7 +85,7 @@ class pxeserver::conf {
         Manual handling
           1. Network configuration
           2. Partitioning: just set a) /dev/sdb3 => EXT4 / noatime
-             and b) /dev/sdb5 => XFS  /backup noatime.
+             and b) /dev/sdb5 => XFS  /backups noatime.
              (do not format the partition, it is already done)
         |- END
     },
