@@ -9,6 +9,7 @@ class network (
   Boolean                                      $restart,
   Hash[String[1], Hash[String[1], Data, 1], 1] $interfaces,
   Array[String[1], 1]                          $supported_distributions,
+  Hash[String[1], Data, 1]                     $inventory_networks,
   String[1]                                    $stage = 'main',
 ) {
 

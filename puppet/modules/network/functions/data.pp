@@ -78,6 +78,7 @@ function network::data {
   {
     network::restart                 => false,
     network::interfaces              => $interfaces,
+    network::inventory_networks      => $inventory_networks,
     network::supported_distributions => $supported_distribs,
     network::stage                   => $default_stage,
 
