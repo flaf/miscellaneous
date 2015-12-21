@@ -84,8 +84,8 @@ class pxeserver::conf {
         unless the DHCP server already sends the good domain name.
         Manual handling
           1. Network configuration
-          2. Partitioning: just set the /dev/sdb3 device to
-             filesytem => EXT4, mountpoint => /, mount options => noatime
+          2. Partitioning: just set a) /dev/sdb3 => EXT4 / noatime
+             and b) /dev/sdb5 => XFS  /backup noatime.
              (do not format the partition, it is already done)
         |- END
     },

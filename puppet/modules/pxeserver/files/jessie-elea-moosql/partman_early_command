@@ -7,31 +7,52 @@ set -x
 
 parted='parted --script --align=opt'
 
+c_ssd=1
+c_sata=1
+for i in a b c d
+do
+    size=$(parted -m /dev/sd$i unit GB print | grep "^/dev/sd$i" | cut -d':' -f2)
+    if [ "$size" = '200GB' ]
+    then
+        eval l_ssd$c_ssd=$i
+        $c_ssd=$((c_ssd + 1)
+    else
+        eval l_sata$c_sata=$i
+        $c_sata=$((c_sata + 1)
+    fi
+done
+
+# Now, we have:
+#
+#   - $l_ssd1 and $l_ssd2 the letters of SSD.
+#   - $l_sata1 and $l_sata2 the letters of SATA.
+
+
 ### Remove the RAID volumes if already created. ###
 
-i='3' # on /dev/sda3 and /dev/sdb3
+i='3' # on /dev/sd${l_sata1}3 and /dev/sd${l_sata2}3
 raid1system='md0'
-[ -e /dev/$raid1system ] && mdadm --stop /dev/$raid1system
-[ -e /dev/sda$i ]        && mdadm --zero-superblock /dev/sda$i
-[ -e /dev/sdb$i ]        && mdadm --zero-superblock /dev/sdb$i
+[ -e /dev/$raid1system ]   && mdadm --stop /dev/$raid1system
+[ -e /dev/sd${l_sata1}$i ] && mdadm --zero-superblock /dev/sd${l_sata1}$i
+[ -e /dev/sd${l_sata2}$i ] && mdadm --zero-superblock /dev/sd${l_sata2}$i
 
-i='4' # on /dev/sda4 and /dev/sdb4
+i='4' # on /dev/sd${l_sata1}4 and /dev/sd${l_sata2}4
 raid1swap='md1'
-[ -e /dev/$raid1swap ] && mdadm --stop /dev/$raid1swap
-[ -e /dev/sda$i ]      && mdadm --zero-superblock /dev/sda$i
-[ -e /dev/sdb$i ]      && mdadm --zero-superblock /dev/sdb$i
+[ -e /dev/$raid1swap ]     && mdadm --stop /dev/$raid1swap
+[ -e /dev/sd${l_sata1}$i ] && mdadm --zero-superblock /dev/sd${l_sata1}$i
+[ -e /dev/sd${l_sata2}$i ] && mdadm --zero-superblock /dev/sd${l_sata2}$i
 
-i='5' # on /dev/sda5 and /dev/sdb5
+i='5' # on /dev/sd${l_sata1}5 and /dev/sd${l_sata2}5
 raid1hd='md2'
-[ -e /dev/$raid1hd ] && mdadm --stop /dev/$raid1hd
-[ -e /dev/sda$i ]    && mdadm --zero-superblock /dev/sda$i
-[ -e /dev/sdb$i ]    && mdadm --zero-superblock /dev/sdb$i
+[ -e /dev/$raid1hd ]       && mdadm --stop /dev/$raid1hd
+[ -e /dev/sd${l_sata1}$i ] && mdadm --zero-superblock /dev/sd${l_sata1}$i
+[ -e /dev/sd${l_sata2}$i ] && mdadm --zero-superblock /dev/sd${l_sata2}$i
 
-i='1' # on /dev/sdc1 and /dev/sdd1
+i='1' # on /dev/sd${l_ssd1}1 and /dev/sd${l_ssd2}1
 raid1ssd='md3'
-[ -e /dev/$raid1ssd ] && mdadm --stop /dev/$raid1ssd
-[ -e /dev/sdc$i ]     && mdadm --zero-superblock /dev/sdc$i
-[ -e /dev/sdd$i ]     && mdadm --zero-superblock /dev/sdd$i
+[ -e /dev/$raid1ssd ]     && mdadm --stop /dev/$raid1ssd
+[ -e /dev/sd${l_ssd1}$i ] && mdadm --zero-superblock /dev/sd${l_ssd1}$i
+[ -e /dev/sd${l_ssd2}$i ] && mdadm --zero-superblock /dev/sd${l_ssd2}$i
 
 
 ### Create GPT partition on each disk. ###
@@ -43,7 +64,7 @@ done
 
 ### Partitioning on the non-SSD drives. ###
 n=0
-for i in a b
+for i in ${l_sata1} ${l_sata2}
 do
     # a => n = 1, b => n = 2.
     n=$((n + 1))
@@ -90,7 +111,7 @@ done
 
 ### Partitioning on the SSD drives. ###
 n=0
-for i in c d
+for i in ${l_ssd1} ${l_ssd2}
 do
     # c => n = 1, d => n = 2.
     n=$((n + 1))
@@ -106,16 +127,16 @@ done
 ### Creation of the RAID volumes. ###
 
 # The system (/) partition.
-mdadm --create /dev/$raid1system --level=1 --raid-devices=2 /dev/sda3 /dev/sdb3 --force --run
+mdadm --create /dev/$raid1system --level=1 --raid-devices=2 /dev/sd${l_sata1}3 /dev/sd${l_sata2}3 --force --run
 
 # The swap partition.
-mdadm --create /dev/$raid1swap --level=1 --raid-devices=2 /dev/sda4 /dev/sdb4 --force --run
+mdadm --create /dev/$raid1swap --level=1 --raid-devices=2 /dev/sd${l_sata1}4 /dev/sd${l_sata2}4 --force --run
 
 # The LVM partition in the harddrive.
-mdadm --create /dev/$raid1hd --level=1 --raid-devices=2 /dev/sda5 /dev/sdb5 --force --run
+mdadm --create /dev/$raid1hd --level=1 --raid-devices=2 /dev/sd${l_sata1}5 /dev/sd${l_sata2}5 --force --run
 
 # The SSD RAID1 volume.
-mdadm --create /dev/$raid1ssd --level=1 --raid-devices=2 /dev/sdc1 /dev/sdd1 --force --run
+mdadm --create /dev/$raid1ssd --level=1 --raid-devices=2 /dev/sd${l_ssd1}1 /dev/sd${l_ssd2}1 --force --run
 
 
 ### Creation of the volume group LVM on the HD RAID1 volume etc. ###
@@ -141,8 +162,8 @@ mkfs.ext4 -F -E lazy_itable_init=0 -L varlibmysql /dev/mapper/vg2-varlibmysql
 
 # mkfs.vfat doesn't exist during Debian installation.
 # Lowercase labels trigger a warning.
-mkfs.fat -F 32 -n 'UEFI1' /dev/sda1 # partition unused but hey...
-mkfs.fat -F 32 -n 'UEFI2' /dev/sdb1 # partition unused but hey...
+mkfs.fat -F 32 -n 'UEFI1' /dev/sd${l_sata1}1 # partition unused but hey...
+mkfs.fat -F 32 -n 'UEFI2' /dev/sd${l_sata2}1 # partition unused but hey...
 
 exit 0
 
