@@ -34,9 +34,9 @@ class moo::cargo (
   $only_docker_ifcace = { $docker_iface => $interfaces[$docker_iface] }
   $docker_gateway     = ::network::get_param($only_docker_ifcace,
                                              $inventory_networks,
-                                             $gateway, '')
+                                             'gateway', '')
 
-  unless $docker_gateway.empty {
+  if $docker_gateway.empty {
     regsubst(@("END"), '\n', ' ', 'G').fail
       $title: sorry, problem with the parameter docker_iface. No
       gateway has been found for the interface docker_iface=`$docker_iface`.
