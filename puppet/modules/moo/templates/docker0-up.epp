@@ -11,23 +11,43 @@ then
     exit 0
 fi
 
-# The "docker" interface. The only interface which a docker
+# The "docker" interface. The only interface a docker
 # container can use to contact the "outside".
 docker_iface='<%= $docker_iface %>'
 
-# The CIDR address of the "docker" network.
+# The CIDR address of the internal "docker" network.
 docker_network='<%= $docker_bridge_network %>'
+
+# The routing table fo dockers.
+docker_table='dockertable'
 
 # Remark: -D (delete) and -A (append) are just to have a
 # idempotent script.
 
-# No ip-forwarding from docker to ifaceXXX unless ifaceXXX
-# is the "docker" interface.
+# No ip-forwarding from docker0 to ifaceXXX unless ifaceXXX
+# is the "docker" interface defined above.
 iptables -t filter -D FORWARD -i docker0 ! -o "$docker_iface" -j DROP || true
 iptables -t filter -A FORWARD -i docker0 ! -o "$docker_iface" -j DROP
 
 # Masquerading only for the dedicated "docker" interface.
 iptables -t nat -D POSTROUTING -s "$docker_network" -o "$docker_iface" -j MASQUERADE || true
 iptables -t nat -A POSTROUTING -s "$docker_network" -o "$docker_iface" -j MASQUERADE
+
+# A docker can just contact hosts via the "docker" interface.
+# Now, we need to define a specific default route for the dockers
+# (which use only the "docker" interface).
+
+# We use a specific table, not the "main" table.
+# To have a idempotent script, we flush the "dockertable".
+# and after, in this table, we add a default route.
+ip route flush table "$docker_table"
+ip route add default via 192.168.24.254 dev "$docker_iface" table "$docker_table"
+
+# If the incoming interface is "docker0", the paquet uses the docker table.
+ip rule del iif docker0 lookup "$docker_table" 2>/dev/null || true
+ip rule add iif docker0 lookup "$docker_table"
+
+# We flush the cache just in case...
+ip route flush cache
 
 
