@@ -1,6 +1,7 @@
 function moo::data {
 
   require '::network::resolv_conf'
+
   $has_local_resolver = $::network::resolv_conf::local_resolver
 
   # We want to have $docker_dns and $docker_bridge_network

@@ -15,10 +15,35 @@ class moo::cargo (
   #
   #require '::repository::docker'
 
+  require '::network'
   require '::moo::common'
   include '::moo::dockerapi'
 
-  $shared_root_path = $::moo::common::shared_root_path
+  $interfaces         = $::network::interfaces
+  $inventory_networks = $::network::inventory_networks
+  $shared_root_path   = $::moo::common::shared_root_path
+
+  unless $interfaces.has_key($docker_iface) {
+    regsubst(@("END"), '\n', ' ', 'G').fail
+      $title: sorry, problem with the parameter docker_iface. The
+      interface `$docker_iface` is not defined among the interfaces
+      of the host.
+      |- END
+  }
+
+  $only_docker_ifcace = { $docker_iface => $interfaces[$docker_iface] }
+  $docker_gateway     = ::network::get_param($only_docker_ifcace,
+                                             $inventory_networks,
+                                             $gateway, '')
+
+  unless $docker_gateway {
+    regsubst(@("END"), '\n', ' ', 'G').fail
+      $title: sorry, problem with the parameter docker_iface. No
+      gateway has been found for the interface docker_iface=`$docker_iface`.
+      |- END
+  }
+
+  
 
   file { '/etc/default/docker':
     ensure  => present,
