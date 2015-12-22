@@ -82,6 +82,14 @@ class ceph::cluster::scripts {
                   ),
   }
 
+  file { '/usr/local/sbin/mount-cephfs':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0700',
+    content => epp('ceph/mount-cephfs.epp'),
+  }
+
 }
 
 

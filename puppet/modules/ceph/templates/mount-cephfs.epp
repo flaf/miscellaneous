@@ -1,0 +1,92 @@
+#!/bin/sh
+### This file is managed by Puppet, don't edit it ###
+
+SCRIPT_NAME="${0##*/}"
+export LC_ALL='C'
+export PATH='/usr/sbin:/usr/bin:/sbin:/bin'
+
+SYNOPSIS="[--cluster <cluster>] [--ceph-account <account>] [--mount-point <dir> [--mount-options <options>] --remote-cephfs-dir <dir>"
+SHORT_OPTIONS='h,c:,a:,m:,o:,r:'
+LONG_OPTIONS='help,cluster:,ceph-account:,mount-point:,mount-options:,remote-cephfs-dir:'
+
+print_help () {
+    cat <<EOF
+The syntax is:
+    $SCRIPT_NAME --help
+    $SCRIPT_NAME $SYNOPSIS
+EOF
+}
+
+if ! TEMP=$(getopt -o "$SHORT_OPTIONS" -l "$LONG_OPTIONS" -n "$SCRIPT_NAME" -- "$@")
+then
+    echo "Syntax error with $SCRIPT_NAME command." >&2
+    print_help
+    exit '1'
+fi
+
+eval set -- "$TEMP"
+unset TEMP
+
+# Default values.
+CLUSTER='ceph'
+CEPH_ACCOUNT='cephfs'
+MOUNT_POINT='/mnt'
+MOUNT_OPTIONS='noatime'
+REMOTE_CEPHFS_DIR='/'
+
+while true
+do
+    case "$1" in
+
+        --cluster|-c)
+            CLUSTER="$2"
+            shift 2
+        ;;
+
+        --ceph-account|-a)
+            CEPH_ACCOUNT="$2"
+            shift 2
+        ;;
+
+        --mount-point|-m)
+            MOUNT_POINT="$2"
+            shift 2
+        ;;
+
+        --mount-options|-o)
+            MOUNT_OPTIONS="$2"
+            shift 2
+        ;;
+
+        --cluster|-c)
+            CLUSTER="$2"
+            shift 2
+        ;;
+
+        --remote-cepfs-dir|-r)
+            REMOTE_CEPHFS_DIR="$2"
+            shift 2
+        ;;
+
+        --)
+            shift 1
+            break
+        ;;
+
+    esac
+
+done
+
+if ceph-fuse "$MOUNT_POINT" --id="$CEPH_ACCOUNT"                 \
+     --keyring="/etc/ceph/$CLUSTER.client.$CEPH_ACCOUNT.keyring" \
+     -o "$MOUNT_OPTIONS" -r "$REMOTE_CEPHFS_DIR"
+then
+  printf "OK, ceph-fuse mounted in %s.\n" "$MOUNT_POINT"
+  printf "To unmount it, just launch this => fusermount -u '%s'\n" "$MOUNT_POINT"
+else
+  printf "Error during the ceph-fuse mount...\n" >&2
+fi
+
+
+
+
