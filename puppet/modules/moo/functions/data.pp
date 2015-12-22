@@ -45,7 +45,7 @@ function moo::data {
 
   }
 
-  $r          = 'salt';
+  $r = 'salt';
 
   {
     moo::common::shared_root_path    => '/mnt/moodle',

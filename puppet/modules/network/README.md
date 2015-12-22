@@ -286,6 +286,32 @@ include '::network'
 
 
 
+## The variable `::network::inventory_networks`
+
+In fact, the class `::network` has too the parameter
+`inventory_networks` and its default value is the
+`inventory_networks` from hiera. You should never use this
+parameter and you should never change its value. The goal of
+this parameter is to make `inventory_networks` data
+available from others classes (if you are sure that the
+`::network` class has already been applied in the catalog).
+For instance, in a class from another module, you can do:
+
+```puppet
+# Now, we are sure that the ::network class is applied.
+require '::network'
+
+$inventory_networks = $::network::inventory_networks
+
+# and now you can use this variable in the present class...
+```
+
+Of course, in this case, you **must** declare the
+`::network` module as dependency of the current module.
+
+
+
+
 # The `network::resolv_conf` class
 
 This class manages the file `/etc/resolv.conf`.
@@ -602,16 +628,17 @@ address, the function will raise a `ParseError` exception.
 Here is an example:
 
 ```puppet
-$dns_servers = ::network::get_param( $interfaces,
-                                     $inventory_networks,
+$dns_servers = ::network::get_param( $::network::interfaces,
+                                     $::network::inventory_networks,
                                      'dns_servers',
                                      $default )
 ```
 
-The `$interfaces` and `$inventory_networks` arguments are
-hashes with the structure described above. The function
-creates an array A of interfaces among `$interfaces` where
-each interface has a primary network and where the
+The `$::network::interfaces` and
+`$::network::inventory_networks` arguments are hashes with
+the structure described above. The function creates an array
+A of interfaces among `$::network::interfaces` where each
+interface has a primary network and where the
 `'dns_servers'` key is defined in this primary network. If
 the array A is empty, the function returns `$default`, else
 the function returns the value of the `'dns_servers'` key in
@@ -633,15 +660,36 @@ this key exists, else the function will return `$default`.
 Here is an example:
 
 ```puppet
-$boolean = ::network::has_address($interfaces, 'eth1')
+$boolean = ::network::has_address($::network::interfaces, 'eth1')
 ```
 
-The `$interfaces` arguments is a hash with the structure
-described above. The function fails if `eth1` is not
-present in the hash `$interfaces`. If present, the function
-returns `true` if the interface `eth1` has an IP address
-(ie has a `static` or `dhcp` method in its inet or inet6
-configuration), else the function returns `false`.
+The `$::network::interfaces` argument is a hash with the
+structure described above. The function fails if `eth1` is
+not present in the hash `$interfaces`. If present, the
+function returns `true` if the interface `eth1` has an IP
+address (ie has a `static` or `dhcp` method in its inet or
+inet6 configuration), else the function returns `false`.
+
+
+
+
+# The `::network::get_addresses()` function
+
+Here is an example:
+
+```puppet
+$my_addresses = ::network::get_addresses($::network::interfaces)
+```
+
+The `$::network::interfaces` argument is a hash with the
+structure described above. The function returns an array
+with all the addresses explicitly defined in the variable
+`$::network::interfaces`, ie when an interface has a
+`static` method with the `address` options. For instance, if
+`$::network::interfaces` has just one interface `eth0`
+defined with the `dhcp` method, the function will just
+return an empty array.
+
 
 
 

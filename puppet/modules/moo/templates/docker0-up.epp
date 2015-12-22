@@ -1,4 +1,9 @@
-<%-|$docker_iface, $docker_bridge_network, $docker_gateway|-%>
+<%-|
+  String[1] $docker_iface,
+  String[1] $docker_bridge_network,
+  String[1] $docker_gateway,
+  Boolean   $iptables_allow_dns,
+|-%>
 #!/bin/sh
 
 ### This file is managed by Puppet, don't edit it. ###
@@ -23,6 +28,20 @@ docker_table='dockertable'
 
 # Remark: -D (delete) and -A (append) are just to have a
 # idempotent script.
+
+# Dockers are allowed to ping any cargo interfaces.
+iptables -t filter -D INPUT -i docker0 -p icmp --icmp-type any -j ACCEPT
+iptables -t filter -A INPUT -i docker0 -p icmp --icmp-type any -j ACCEPT
+
+<%- if $iptables_allow_dns { -%>
+# Dockers will be able to contact the DNS server of cargo.
+iptables -t filter -D INPUT -i docker0 -p udp --dport 53 -j ACCEPT
+iptables -t filter -A INPUT -i docker0 -p udp --dport 53 -j ACCEPT
+
+<%- } -%>
+# But by default any packet from docker0 to cargo local process will be dropped.
+iptables -t filter -D INPUT -i docker0 -j DROP
+iptables -t filter -A INPUT -i docker0 -j DROP
 
 # No ip-forwarding from docker0 to ifaceXXX unless ifaceXXX
 # is the "docker" interface defined above.

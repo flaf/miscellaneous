@@ -43,6 +43,13 @@ class moo::cargo (
       |- END
   }
 
+  $host_addr = ::network::get_addresses($interfaces)
+  if $docker_dns.filter |$a_dns_addr| { $host_addr.member($a_dns_addr) }.empty {
+    $iptables_allow_dns = false
+  } else {
+    $iptables_allow_dns = true
+  }
+
   file_line { 'set-dockertable-name':
     path   => '/etc/iproute2/rt_tables',
     line   => "10    dockertable",
@@ -80,6 +87,7 @@ class moo::cargo (
                     'docker_bridge_network' => $docker_bridge_network,
                     'docker_iface'          => $docker_iface,
                     'docker_gateway'        => $docker_gateway,
+                    'iptables_allow_dns'    => $iptables_allow_dns,
                    }
                   )
   }
