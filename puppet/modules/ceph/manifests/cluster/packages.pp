@@ -22,6 +22,8 @@ class ceph::cluster::packages {
                 'ceph-fuse', # To be able (sometime) to mount the cephfs in a cluster node.
                 'xfsprogs',  # For xfs filesystem
                 'procps',    # Used in the ceph_* scripts
+                'jq',        # To parse json, could be useful => ceph cmd --format json | jq '.'
+                'bc',        # used in the script ceph-osd-remove
               ]
 
   ensure_packages($packages, { ensure => present, })

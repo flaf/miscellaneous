@@ -1,0 +1,162 @@
+#!/bin/sh
+### This file is managed by Puppet, don't edit it ###
+
+set -e
+
+SCRIPT_NAME="${0##*/}"
+export LC_ALL='C'
+export PATH='/usr/sbin:/usr/bin:/sbin:/bin'
+
+if ! which gdisk >/dev/null
+then
+    printf "Sorry the gdisk command is not available.\n" >&2
+    printf "Script aborted...\n" >&2
+    exit 1
+fi
+
+SYNOPSIS="--device <path> --size <size> --partlabel <label> [--xfslabel <label>]"
+SHORT_OPTIONS='h,d:,s:,p:,l:'
+LONG_OPTIONS='help,device:,size:,partlabel:,xfslabel:'
+
+print_help () {
+    cat <<EOF
+The syntax is:
+    $SCRIPT_NAME --help
+    $SCRIPT_NAME $SYNOPSIS
+
+The size is exactly the string used with the "gdisk" tool.
+For instance, to have a partition of 50GiB, use the option
+"--size +50GiB" (don't forget the plus character).
+EOF
+}
+
+if ! TEMP=$(getopt -o "$SHORT_OPTIONS" -l "$LONG_OPTIONS" -n "$SCRIPT_NAME" -- "$@")
+then
+    echo "Syntax error with $SCRIPT_NAME command." >&2
+    print_help
+    exit 1
+fi
+
+eval set -- "$TEMP"
+unset TEMP
+
+# Default values.
+DEVICE=''
+SIZE=''
+PARTLABEL=''
+XFSLABEL=''
+
+while true
+do
+    case "$1" in
+
+        --device|-d)
+            DEVICE="$2"
+            shift 2
+        ;;
+
+        --size|-s)
+            SIZE="$2"
+            shift 2
+        ;;
+
+        --partlabel|-p)
+            PARTLABEL="$2"
+            shift 2
+        ;;
+
+        --xfslabel|-l)
+            XFSLABEL="$2"
+            shift 2
+        ;;
+
+        --help|-h)
+            print_help
+            exit 0
+        ;;
+
+        --)
+            shift 1
+            break
+        ;;
+
+    esac
+
+done
+
+if [ ! -b "$DEVICE" ]
+then
+    printf "The device %s is not a block device.\n" "$DEVICE" >&2
+    printf "Script aborted...\n" >&2
+    exit 1
+fi
+
+if ! printf "%s\n" "$DEVICE" | grep -q '[a-z]$'
+then
+    printf "The name of the device %s must finish by a letter.\n" "$DEVICE" >&2
+    printf "Script aborted...\n" >&2
+    exit 1
+
+fi
+
+if [ -z "$SIZE" ]
+then
+    printf "The size is not defined or empty.\n" >&2
+    printf "Script aborted...\n" >&2
+    exit 1
+fi
+
+if [ -z "$PARTLABEL" ]
+then
+    printf "The partlabel is not defined or empty.\n" >&2
+    printf "Script aborted...\n" >&2
+    exit 1
+fi
+
+# Retrieve the number of the last partition.
+part_num=$(gdisk -l "$DEVICE" | sed -n '$p' | awk '{ print $1 }')
+
+if [ "$part_num" = 'Number' ]
+then
+    # The device has 0 partition.
+    part_num=1
+elif printf '%s\n' "$part_num" | grep -Eq '[0-9]+'
+then
+    part_num=$((part_num + 1))
+else
+    printf "Impossible to retrieve the number of the next partition in %s.\n" "$DEVICE" >&2
+    printf "Script aborted...\n" >&2
+    exit 1
+fi
+
+printf "Creation of the partiton %s...\n" "${DEVICE}${part_num}"
+sleep '0.2'
+# The first empty ";" is for the beginning of the partition.
+# The second for the type of partition (Linux partition).
+printf 'n; %s; ; %s; ; c; %s; %s; w; Y;' "$part_num" "$SIZE" "$part_num" "$PARTLABEL" \
+    | sed 's/;[[:space:]]*/\n/g' | gdisk "$DEVICE" >/dev/null
+sleep '0.2'
+printf "OK, partition %s created.\n" "${DEVICE}${part_num}"
+
+printf "Inform the OS of partition table changes with partprobe...\n"
+sleep '0.2'
+partprobe "$DEVICE"
+sleep '0.2'
+printf "OK, OS informed.\n"
+
+
+if [ -n "$XFSLABEL" ]
+then
+    printf "You have set a XFS label so the partition will be formated.\n"
+    sleep '0.2'
+    mkfs.xfs -f -L "$XFSLABEL" "${DEVICE}${part_num}"
+    sleep '0.2'
+fi
+
+printf "\n"
+printf "End of the script.\n"
+exit 0
+
+
+
+

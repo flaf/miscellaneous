@@ -268,7 +268,7 @@ check_working_dir () {
             return 1
         fi
 
-        if grep -Eq "/var/lib/ceph/$service/$cluster-$id/?[[:space:]]+" '/etc/fstab'
+        if grep -Eq "[[:space:]]+/var/lib/ceph/$service/$cluster-$id/?[[:space:]]+" '/etc/fstab'
         then
             printf "The mountpoint /var/lib/ceph/$service/$cluster-$id/ "
             printf "already exists in /etc/fstab.\n"
@@ -339,7 +339,7 @@ create_new_working_dir () {
         TYPE=''
         eval $(blkid -o export "$device")
 
-        printf "\n$device /var/lib/ceph/$service/$cluster-$id/ " >> '/etc/fstab'
+        printf "$device /var/lib/ceph/$service/$cluster-$id/ " >> '/etc/fstab'
         printf "$TYPE $mount_options 0 2\n"  >> '/etc/fstab'
 
         if ! mount "/var/lib/ceph/$service/$cluster-$id/"

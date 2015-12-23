@@ -2,12 +2,13 @@
 #!/bin/sh
 ### This is a file managed by Puppet, don't edit it. ###
 
-SPECIFIC_SHORT_OPTIONS='m:,w:,j:,i:'
-SPECIFIC_LONG_OPTIONS='monitor:,weight:,journal:,osd-id:'
-SPECIFIC_SYNOPSIS='--journal <device> [--monitor <address>] [--weight <float>] [--osd-id <int>]'
+SPECIFIC_SHORT_OPTIONS='m:,w:,j:,i:,b:'
+SPECIFIC_LONG_OPTIONS='monitor:,weight:,journal:,osd-id:,bucket:'
+SPECIFIC_SYNOPSIS='--journal <device> [--monitor <address>] [--weight <float>] [--osd-id <int>] [--bucket <bucket-type>=<bucket-name>]'
 
 # Default value of weight.
-weight='1.0'
+weight='0.0'
+
 
 GET_SPECIFIC_OPTIONS () {
     case "$1" in
@@ -59,6 +60,11 @@ GET_SPECIFIC_OPTIONS () {
                 printf "End of the script.\n"
                 exit 1
             fi
+        ;;
+
+        --bucket|-b)
+            bucket="$2"
+            return 2
         ;;
 
     esac
@@ -155,18 +161,25 @@ ceph auth add "osd.$id" osd 'allow *' mon 'allow profile osd' \
     -i "/var/lib/ceph/osd/$cluster-$id/keyring" $mon_opt      \
     --cluster "$cluster" --conf "/etc/ceph/$cluster.conf"
 
-# Add the the current host in the CRUSH map.
-# If the host is already in the CRUSH map, the command
-# prints a message and returns 0.
-ceph osd crush add-bucket $(hostname) host --cluster "$cluster" $mon_opt
 
-# Put the current host in the "default" root of the CRUSH
-# map. If the host is already in the "default" root, the
-# command prints a message and returns 0.
-ceph osd crush move $(hostname) root=default --cluster "$cluster" $mon_opt
+if [ -z "$bucket" ]
+then
+    # Add the the current host in the CRUSH map.
+    # If the host is already in the CRUSH map, the command
+    # prints a message and returns 0.
+    ceph osd crush add-bucket $(hostname) host --cluster "$cluster" $mon_opt
+
+    # Put the current host in the "default" root of the CRUSH
+    # map. If the host is already in the "default" root, the
+    # command prints a message and returns 0.
+    ceph osd crush move $(hostname) root=default --cluster "$cluster" $mon_opt
+
+    # In this case, we set $bucket to:
+    bucket="host=$(hostname)"
+fi
 
 # Declare in the cluster the osd with the weight equal to $weight.
-ceph osd crush add "osd.$id" "$weight" host=$(hostname) \
+ceph osd crush add "osd.$id" "$weight" "$bucket" \
     --cluster "$cluster" $mon_opt
 
 # Without these files, the osd daemon doesn't start.

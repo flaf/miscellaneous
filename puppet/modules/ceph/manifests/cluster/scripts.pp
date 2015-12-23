@@ -90,6 +90,22 @@ class ceph::cluster::scripts {
     content => epp('ceph/mount-cephfs.epp'),
   }
 
+  file { '/usr/local/sbin/create-gpt-partition':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0700',
+    content => epp('ceph/create-gpt-partition.epp'),
+  }
+
+  file { '/usr/local/sbin/ceph-osd-remove':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0700',
+    content => epp('ceph/ceph-osd-remove.epp'),
+  }
+
 }
 
 
