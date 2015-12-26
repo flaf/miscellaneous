@@ -60,6 +60,12 @@ function mcollective::data {
     $client_public_key = undef
   }
 
+  if $conf.has_key('mcollectives') {
+    $mcollectives = $conf['mcollectives']
+  } else {
+    $mcollectives = [ 'mcollective' ]
+  }
+
   $puppet_ssl_dir     = '/etc/puppetlabs/puppet/ssl'
   $connector          = 'rabbitmq'
   $middleware_port    = 61614
@@ -76,6 +82,7 @@ function mcollective::data {
     mcollective::middleware::supported_distributions => $supported_distribs,
 
 
+    mcollective::server::collectives             => $mcollectives,
     mcollective::server::server_private_key      => $server_private_key,
     mcollective::server::server_public_key       => $server_public_key,
     mcollective::server::server_enabled          => $server_enabled,

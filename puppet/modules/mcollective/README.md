@@ -184,6 +184,7 @@ $pubkey  = '<content-of-the-public-key>'
 $privkey = '<content-of-the-private-key>'
 
 class { '::mcollective::server':
+  collectives        => [ 'mysql', 'foo' ],
   server_private_key => $privkey,
   server_public_key  => $pubkey,
   server_enabled     => true,
@@ -210,6 +211,7 @@ mcollective:
   server_public_key: '<value of the $server_public_key parameter>'
   server_enabled: '<value of the $server_enabled parameter>' # optional entry (see below)
   tag: '<value of the $mco_tag parameter>' # optional entry (see below)
+  mcollectives: [ 'mcollective', 'mysql' ] # optional entry (see below)
 ```
 
 The `server_private_key` and `server_public_key` parameters
@@ -224,6 +226,18 @@ openssl genrsa -out 'private_key.pem' 4096
 # Generate the public key matching the previous private key.
 openssl rsa -in 'private_key.pem' -out 'public_key.pem' -outform PEM -pubout
 ```
+
+The `collectives` parameter sets the `collectives` parameter
+in the `server.cfg` file (see
+[here](https://docs.puppetlabs.com/mcollective/configure/server.html#collectives)
+for more details). The type of this parameter is an array of
+strings (the array can be empty). The default value of this
+parameter is `[ 'mcollective' ]` but this parameter is handled
+in the class:
+- if not already present, the string `'mcollective'` is automatically
+appended in the `collectives` parameter,
+- if not already present and if not undefined the value of
+`$::datacenter` is automatically appended in the `collectives` parameter.
 
 The `connector` parameter is the connector used by mcollective
 to connect to the middleware server. The authorized values are

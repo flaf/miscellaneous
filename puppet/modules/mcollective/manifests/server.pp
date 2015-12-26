@@ -1,6 +1,5 @@
-# TODO: add feature to manage subcollectives.
-#       https://docs.puppetlabs.com/mcollective/configure/server.html#collectives
 class mcollective::server (
+  Array[String[1]]             $collectives,
   String[1]                    $server_private_key,
   String[1]                    $server_public_key,
   Boolean                      $server_enabled,
@@ -25,6 +24,12 @@ class mcollective::server (
   # Paths of important files.
   $server_priv_key_path = "${server_keys_dir}/server.priv-key.pem"
   $server_pub_key_path  = "${server_keys_dir}/server.pub-key.pem"
+
+  $default_collectives = $::datacenter ? {
+    undef   => [ 'mcollective' ],
+    default => [ 'mcollective', $::datacenter ],
+  }
+  $collectives_final_value = $default_collectives.concat($collectives).unique()
 
   # mcollective::client and mcollective::server will manage this
   # directory because the client keys are very sensitive. If a
@@ -86,7 +91,9 @@ class mcollective::server (
     group   => 'root',
     mode    => '0600',
     content => epp( 'mcollective/server.cfg.epp',
-                    { 'server_priv_key_path'=> $server_priv_key_path,
+                    {
+                      'collectives'         => $collectives_final_value,
+                      'server_priv_key_path'=> $server_priv_key_path,
                       'server_pub_key_path' => $server_pub_key_path,
                       'allowed_clients_dir' => $allowed_clients_dir,
                       'puppet_ssl_dir'      => $puppet_ssl_dir,
