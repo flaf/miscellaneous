@@ -7,6 +7,7 @@ class mcollective::middleware (
   String[1]           $puppet_ssl_dir,
   String[1]           $admin_pwd,
   String[1]           $mcollective_pwd,
+  Array[String[1]]    $exchanges,
   Array[String[1], 1] $supported_distributions,
 ) {
 
@@ -272,18 +273,30 @@ user=admin configure='.*' write='.*' read='.*'"
     require => Exec['declare-vhost-mcollective'],
   }
 
-  $cmd_exchange = "${rbmqadm} declare exchange --vhost=/mcollective \
-    name=mcollective_broadcast type=topic
-${rbmqadm} declare exchange --vhost=/mcollective \
-    name=mcollective_directed type=direct"
+  # Creation of exchanges.
 
-  exec { 'declare-exchanges':
-    command => $cmd_exchange,
-    path    => '/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin',
-    user    => 'root',
-    group   => 'root',
-    unless  => "${rbmqadm} list exchanges | grep -q ' mcollective_'",
-    require => Exec['declare-permissions'],
+  # If not present, we add the 'mcollective' exchange.
+  $exchanges_final_value = $exchanges.concat('mcollective').unique()
+
+  $cmd_exchange = @("END")
+    ${rbmqadm} declare exchange --vhost=/mcollective name=EXCHANGE_broadcast type=topic
+    ${rbmqadm} declare exchange --vhost=/mcollective name=EXCHANGE_directed type=direct
+    |- END
+
+  $sp    = '[[:space:]]+' # regex for spaces.
+  $regex = "\|${sp}/mcollective${sp}\|${sp}EXCHANGE_(broadcast|directed)${sp}\|"
+
+  $unless_cmd_exchange = "test $(${rbmqadm} list exchanges | grep -Ec '${regex}') = 2"
+
+  $exchanges_final_value.each |$an_exchange| {
+    exec { "declare-exchanges-${an_exchange}":
+      command => $cmd_exchange.regsubst('EXCHANGE', $an_exchange, 'G'),
+      path    => '/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin',
+      user    => 'root',
+      group   => 'root',
+      unless  => $unless_cmd_exchange.regsubst('EXCHANGE', $an_exchange, 'G'),
+      require => Exec['declare-permissions'],
+    }
   }
 
 }

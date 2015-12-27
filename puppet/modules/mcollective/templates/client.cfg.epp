@@ -1,17 +1,18 @@
 <%- |
-$server_pub_key_path,
-$client_pub_key_path,
-$client_priv_key_path,
-$connector,
-$middleware_address,
-$middleware_port,
-$mcollective_pwd,
-$puppet_ssl_dir,
+Array[String[1], 1]          $collectives,
+String[1]                    $server_pub_key_path,
+String[1]                    $client_pub_key_path,
+String[1]                    $client_priv_key_path,
+Enum['rabbitmq', 'activemq'] $connector,
+String[1]                    $middleware_address,
+Integer[1]                   $middleware_port,
+String[1]                    $mcollective_pwd,
+String[1]                    $puppet_ssl_dir,
 | -%>
 ### This file is managed by Puppet, don't edit it. ###
 
 main_collective  = mcollective
-collectives      = mcollective
+collectives      = <%= $collectives.join(',') %>
 libdir           = /opt/puppetlabs/mcollective/plugins
 logger_type      = console
 loglevel         = warn

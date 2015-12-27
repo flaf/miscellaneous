@@ -42,6 +42,12 @@ function mcollective::data {
     $middleware_address = undef
   }
 
+  if $conf.has_key('middleware_exchanges') {
+    $exchanges = $conf['middleware_exchanges']
+  } else {
+    $exchanges = [ 'mcollective' ]
+  }
+
   if $conf.has_key('tag') {
     $mco_tag = $conf['tag']
   } else {
@@ -60,10 +66,10 @@ function mcollective::data {
     $client_public_key = undef
   }
 
-  if $conf.has_key('mcollectives') {
-    $mcollectives = $conf['mcollectives']
+  if $conf.has_key('collectives') {
+    $collectives = $conf['collectives']
   } else {
-    $mcollectives = [ 'mcollective' ]
+    $collectives = [ 'mcollective' ]
   }
 
   $puppet_ssl_dir     = '/etc/puppetlabs/puppet/ssl'
@@ -79,10 +85,11 @@ function mcollective::data {
     mcollective::middleware::puppet_ssl_dir          => $puppet_ssl_dir,
     mcollective::middleware::admin_pwd               => sha1($::fqdn),
     mcollective::middleware::mcollective_pwd         => $conf['middleware_mcollective_pwd'],
+    mcollective::middleware::exchanges               => $exchanges,
     mcollective::middleware::supported_distributions => $supported_distribs,
 
 
-    mcollective::server::collectives             => $mcollectives,
+    mcollective::server::collectives             => $collectives,
     mcollective::server::server_private_key      => $server_private_key,
     mcollective::server::server_public_key       => $server_public_key,
     mcollective::server::server_enabled          => $server_enabled,
@@ -95,6 +102,7 @@ function mcollective::data {
     mcollective::server::supported_distributions => $supported_distribs,
 
 
+    mcollective::client::collectives             => $exchanges,
     mcollective::client::client_private_key      => $conf['client_private_key'],
     mcollective::client::client_public_key       => $conf['client_public_key'],
     mcollective::client::server_public_key       => $conf['server_public_key'],

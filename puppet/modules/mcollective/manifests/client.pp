@@ -1,4 +1,5 @@
 class mcollective::client (
+  Array[String[1]]             $collectives,
   String[1]                    $client_private_key,
   String[1]                    $client_public_key,
   String[1]                    $server_public_key,
@@ -22,6 +23,12 @@ class mcollective::client (
   $client_pub_key_path     = "${client_keys_dir}/${::fqdn}.pub-key.pem"
   $client_pub_key_path_exp = "${allowed_clients_dir}/${::fqdn}.pub-key.pem"
   $server_pub_key_path     = "${client_keys_dir}/servers-pub-key.pem"
+
+  $default_collectives = $::datacenter ? {
+    undef   => [ 'mcollective' ],
+    default => [ 'mcollective', $::datacenter ],
+  }
+  $collectives_final_value = $default_collectives.concat($collectives).unique()
 
   # mcollective::client and mcollective::server will manage this
   # directory because the client keys are very sensitive. If a
@@ -83,6 +90,7 @@ class mcollective::client (
     mode    => '0640',
     content => epp( 'mcollective/client.cfg.epp',
                     {
+                      'collectives'          => $collectives_final_value,
                       'server_pub_key_path'  => $server_pub_key_path,
                       'client_pub_key_path'  => $client_pub_key_path,
                       'client_priv_key_path' => $client_priv_key_path,

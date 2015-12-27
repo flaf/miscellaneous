@@ -122,6 +122,7 @@ class { '::mcollective::middleware':
   puppet_ssl_dir  => '/etc/puppetlabs/puppet/ssl',
   admin_pwd       => 'xEd67+er',
   mcollective_pwd => '@mC0+45mpLSs',
+  exchanges       => [ 'mcollective' ],
 }
 ```
 
@@ -163,6 +164,7 @@ there is a lookup in hiera or in the `environment.conf`.
 ```yaml
 mcollective:
   middleware_mcollective_pwd: '<value-of-mcollective-pwd>'
+  middleware_exchanges: [ 'mcollective', 'dc2' ] # optional (see below).
 ```
 
 As you can see in the schema above, the mcollective password
@@ -170,7 +172,12 @@ is shared by the middleware, the clients and the servers. So
 you will probably put this entry in a `common.yaml` file in
 hiera or something like that.
 
-
+The `exchanges` parameter is an array of strings which
+contains the created exchanges. This parameter can be empty
+and its default value is `[ 'mcollective' ]` or, if present,
+the value of the sub-entry `middleware_exchanges` of the
+hiera entry `mcollective`. The class handles this parameter
+and appends the `'mcollective'` string if not present.
 
 
 # The `mcollective::server` class
@@ -211,7 +218,7 @@ mcollective:
   server_public_key: '<value of the $server_public_key parameter>'
   server_enabled: '<value of the $server_enabled parameter>' # optional entry (see below)
   tag: '<value of the $mco_tag parameter>' # optional entry (see below)
-  mcollectives: [ 'mcollective', 'mysql' ] # optional entry (see below)
+  collectives: [ 'mcollective', 'mysql' ]  # optional entry (see below)
 ```
 
 The `server_private_key` and `server_public_key` parameters
@@ -232,12 +239,16 @@ in the `server.cfg` file (see
 [here](https://docs.puppetlabs.com/mcollective/configure/server.html#collectives)
 for more details). The type of this parameter is an array of
 strings (the array can be empty). The default value of this
-parameter is `[ 'mcollective' ]` but this parameter is handled
-in the class:
+parameter is `[ 'mcollective' ]` or, if present, the value
+of the `collectives` sub-entry of the hiera entry
+`mcollective`. This parameter is handled in the class:
 - if not already present, the string `'mcollective'` is automatically
 appended in the `collectives` parameter,
 - if not already present and if not undefined the value of
 `$::datacenter` is automatically appended in the `collectives` parameter.
+
+**warning :** be careful, the collectives used by the mcollective
+server must exist as exchanges in the middleware server.
 
 The `connector` parameter is the connector used by mcollective
 to connect to the middleware server. The authorized values are
@@ -291,6 +302,7 @@ $client_privkey = '<content-of-the-private-key>'
 $server_pubkey  = '<content-of-the-public-servers-public-key>'
 
 class { '::mcollective::client':
+  collectives        => [ 'mysql', 'foo' ],
   client_private_key => $server_pubkey,
   client_public_key  => $client_pubkey,
   server_public_key  => $server_pubkey,
@@ -304,6 +316,17 @@ class { '::mcollective::client':
 ```
 
 ## Data binding
+
+The `collectives` parameter sets the `collectives` parameter
+in the `client.cfg` file. The type of this parameter is an
+array of strings (the array can be empty). The default value
+of this parameter is `[ 'mcollective' ]` or, if present, the
+value of the `middleware_exchanges` sub-entry of the hiera
+entry `mcollective`. This parameter is handled in the class:
+- if not already present, the string `'mcollective'` is automatically
+appended in the `collectives` parameter,
+- if not already present and if not undefined the value of
+`$::datacenter` is automatically appended in the `collectives` parameter.
 
 Except the `client_private_key` and `client_public_key`
 parameters, the remaining parameters have exactly the same
