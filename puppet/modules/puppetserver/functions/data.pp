@@ -9,7 +9,7 @@ function puppetserver::data {
   $puppetdb_user           = 'puppet'
   $puppetdb_pwd            = sha1($::fqdn)
   $modules_versions        = {} # no pinning by default
-  $max_groups              = 3
+  $max_groups              = 5
   $groups_from_master      = []
   $supported_distributions = [ 'trusty' ];
 

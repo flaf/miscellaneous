@@ -50,7 +50,7 @@ Puppetdb will be ignored).
 The `max_groups` parameter is an integer greater or equal
 to 1. It's the maximum number of groups to which a node
 belongs in the data hierarchy. The default value of this
-parameter is `3`.
+parameter is `5`.
 
 The `groups_from_master` parameter is an array of non-empty
 strings (but the array can be empty). The default value of
