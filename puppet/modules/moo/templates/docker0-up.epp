@@ -29,27 +29,38 @@ docker_table='dockertable'
 # Remark: -D (delete) and -A (append) are just to have a
 # idempotent script.
 
+iptables -t filter -F
+iptables -t filter -X
+iptables -t filter -P INPUT   ACCEPT
+iptables -t filter -P FORWARD ACCEPT
+iptables -t filter -P OUTPUT  ACCEPT
+
+iptables -t nat -F
+iptables -t nat -X
+iptables -t nat -P PREROUTING  ACCEPT
+iptables -t nat -P OUTPUT      ACCEPT
+iptables -t nat -P POSTROUTING ACCEPT
+
 # Dockers are allowed to ping any cargo interfaces.
-iptables -t filter -D INPUT -i docker0 -p icmp --icmp-type any -j ACCEPT || true
 iptables -t filter -A INPUT -i docker0 -p icmp --icmp-type any -j ACCEPT
 
 <%- if $iptables_allow_dns { -%>
 # Dockers will be able to contact the DNS server of cargo.
-iptables -t filter -D INPUT -i docker0 -p udp --dport 53 -j ACCEPT || true
 iptables -t filter -A INPUT -i docker0 -p udp --dport 53 -j ACCEPT
 
 <%- } -%>
 # But by default any packet from docker0 to cargo local process will be dropped.
-iptables -t filter -D INPUT -i docker0 -j DROP || true
-iptables -t filter -A INPUT -i docker0 -j DROP
+#
+# TODO: problem: with this restriction, the moodle work no longer.
+#
+#iptables -t filter -A INPUT -i docker0 -j DROP
 
-# No ip-forwarding from docker0 to ifaceXXX unless ifaceXXX
-# is the "docker" interface defined above.
-iptables -t filter -D FORWARD -i docker0 ! -o "$docker_iface" -j DROP || true
-iptables -t filter -A FORWARD -i docker0 ! -o "$docker_iface" -j DROP
+# No ip-forwarding except between docker0 <==> "$docker_ifcace".
+iptables -t filter -P FORWARD DROP
+iptables -t filter -A FORWARD -i docker0 -o "$docker_iface" -j ACCEPT
+iptables -t filter -A FORWARD -i "$docker_iface" -o docker0 -j ACCEPT
 
 # Masquerading only for the dedicated "docker" interface.
-iptables -t nat -D POSTROUTING -s "$docker_network" -o "$docker_iface" -j MASQUERADE || true
 iptables -t nat -A POSTROUTING -s "$docker_network" -o "$docker_iface" -j MASQUERADE
 
 # A docker can just contact hosts via the "docker" interface.
@@ -60,6 +71,7 @@ iptables -t nat -A POSTROUTING -s "$docker_network" -o "$docker_iface" -j MASQUE
 # To have a idempotent script, we flush the "dockertable".
 # and after, in this table, we add a default route.
 ip route flush table "$docker_table"
+ip route add '192.168.24.0/24' dev "$docker_iface" table "$docker_table"
 ip route add default via '<%= $docker_gateway %>' dev "$docker_iface" table "$docker_table"
 
 # If the incoming interface is "docker0", the paquet uses the docker table.
