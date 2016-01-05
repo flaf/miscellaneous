@@ -51,7 +51,7 @@ class moo::captain (
   $content = @("END")
     [mysqld]
 
-    bind-address = ${address}
+    bind-address = 0.0.0.0
 
     |- END
 
