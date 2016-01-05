@@ -1,4 +1,4 @@
-<%-| $mysql_rootpwd, $mysql_moobotpwd |-%>
+<%-| String[1] $mysql_rootpwd, String[1] $mysql_moobotpwd |-%>
 -- This file is managed by Puppet, don't edit it. --
 
 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
@@ -101,9 +101,12 @@ SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 
 
+-- The user 'moobot'@'127.0.0.1' is needed because captain itself will use it.
 CREATE USER 'moobot'@'localhost' IDENTIFIED BY '<%= $mysql_moobotpwd %>';
+CREATE USER 'moobot'@'127.0.0.1' IDENTIFIED BY '<%= $mysql_moobotpwd %>';
 CREATE USER 'moobot'@'%' IDENTIFIED BY '<%= $mysql_moobotpwd %>';
 GRANT ALL ON moobot.* TO 'moobot'@'localhost';
+GRANT ALL ON moobot.* TO 'moobot'@'127.0.0.1';
 GRANT ALL ON moobot.* TO 'moobot'@'%';
 
 -- Set the root password.
@@ -111,11 +114,16 @@ SET PASSWORD FOR 'root'@'localhost' = PASSWORD('<%= $mysql_rootpwd %>');
 SET PASSWORD FOR 'root'@'127.0.0.1' = PASSWORD('<%= $mysql_rootpwd %>');
 
 
+-- We remove all the remaining MySQL accounts which have an empty password.
+DELETE FROM mysql.user where password = '';
+-- We update the grant tables in memory.
+FLUSH PRIVILEGES;
+
 -- Just an example of "cargos" insertions...
 USE moobot;
 
-INSERT INTO cargos (hostname, ip_address, zone, max_dockers_num) VALUES ('cargo01', '192.168.24.11', 1, 10);
-INSERT INTO cargos (hostname, ip_address, zone, max_dockers_num) VALUES ('cargo02', '192.168.24.12', 2, 10);
+INSERT INTO cargos (hostname, ip_address, zone, max_dockers_num) VALUES ('cargo01', '192.168.24.11', 1, 30);
+INSERT INTO cargos (hostname, ip_address, zone, max_dockers_num) VALUES ('cargo02', '192.168.24.12', 2, 30);
 
 
 

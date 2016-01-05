@@ -29,7 +29,7 @@ class moo::captain (
     cwd     => '/root',
     user    => 'root',
     group   => 'root',
-    unless  => 'test -e /root/.my.cnf',
+    unless  => 'true', # In fact this exec will be never launched. Too dangerous.
     require => File['/root/init-moobot-database.sql'],
   }
 
@@ -41,7 +41,7 @@ class moo::captain (
     require => Exec['init-moobot-database'],
     content => epp('moo/my.cnf.epp',
                    {
-                     'mysql_rootpwd'    => $mysql_rootpwd,
+                     'mysql_rootpwd' => $mysql_rootpwd,
                    }
                   )
   }
@@ -50,12 +50,15 @@ class moo::captain (
 
   $content = @("END")
     [mysqld]
-
+    # It's better that MySQL uses any address of the system
+    # (which includes the loopback address).
     bind-address = 0.0.0.0
+    # Turn off MySQL reverse DNS lookup.
+    skip-name-resolve = 1
 
-    |- END
+    | END
 
-  file { '/etc/mysql/conf.d/listen_addr.cnf':
+  file { '/etc/mysql/conf.d/99-custom.cnf':
     ensure  => present,
     owner   => 'root',
     group   => 'root',
@@ -69,7 +72,7 @@ class moo::captain (
     ensure     => running,
     hasstatus  => true,
     hasrestart => true,
-    require    => File['/etc/mysql/conf.d/listen_addr.cnf'],
+    require    => File['/etc/mysql/conf.d/99-custom.cnf'],
   }
 
 }
