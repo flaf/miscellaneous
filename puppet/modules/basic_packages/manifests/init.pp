@@ -16,6 +16,7 @@ class basic_packages (
     'curl',
     'screen',
     'iperf',
+    'atop',
   ]
   ensure_packages( $wanted_packages, { ensure => present } )
 
