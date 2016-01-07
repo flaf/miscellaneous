@@ -1,11 +1,13 @@
 class network::hosts (
-  Hash[ String[1], Array[String[1],1] ] $entries,
-  String                                $from_tag,
-  Array[String[1], 1]                   $supported_distributions,
-  String[1]                             $stage = 'main',
+  Array[String[1], 1] $supported_distributions,
+  String[1]           $stage = 'main',
 ) {
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
+
+  include '::network::params'
+  $entries  = $::network::params::hosts_entries
+  $from_tag = $::network::params::hosts_from_tag
 
   # We check the addresses in $entries.
   $entries.each |$addr_x, $names| {

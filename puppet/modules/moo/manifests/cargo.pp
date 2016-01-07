@@ -15,12 +15,12 @@ class moo::cargo (
   #
   #require '::repository::docker'
 
-  require '::network'
+  include '::network::params'
   require '::moo::common'
   include '::moo::dockerapi'
 
-  $interfaces         = $::network::interfaces
-  $inventory_networks = $::network::inventory_networks
+  $interfaces         = $::network::params::interfaces
+  $inventory_networks = $::network::params::inventory_networks
   $shared_root_path   = $::moo::common::shared_root_path
 
   unless $interfaces.has_key($docker_iface) {

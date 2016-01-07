@@ -172,5 +172,8 @@ keep just 2 template files for the preseeds:
 * `tags_excluded` and `tags_included` not yet token into account.
 * Update the README.
 * Some variables needs to be ckecked.
+* Some data which belong to other modules are retrieved via a
+  lookup function but should be retrieved via the params classes
+  of these modules, when they will be implemented.
 
 

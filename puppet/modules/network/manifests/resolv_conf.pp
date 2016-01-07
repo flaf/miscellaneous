@@ -1,17 +1,22 @@
 class network::resolv_conf (
-  String[1]                       $domain,
-  Array[String[1], 1]             $search,
-  Array[String[1], 1]             $nameservers,
-  Integer[1]                      $timeout,
-  Boolean                         $local_resolver,
-  Array[String[1]]                $lr_interface,
-  Array[ Array[String[1], 2, 2] ] $lr_access_control,
-  Boolean                         $override_dhcp,
-  Array[String[1], 1]             $supported_distributions,
-  String[1]                       $stage = 'main',
+  Array[String[1], 1] $supported_distributions,
+  String[1]           $stage = 'main',
 ) {
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
+
+  include '::network::params'
+  # TODO: $nameservers is a bad name because is not systematically
+  #       the nameservers in resolv.conf.
+  $domain            = $::network::params::resolvconf_domain
+  $search            = $::network::params::resolvconf_search
+  $timeout           = $::network::params::resolvconf_timeout
+  $override_dhcp     = $::network::params::resolvconf_override_dhcp
+  $nameservers       = $::network::params::dns_servers
+  $local_resolver    = $::network::params::local_resolver
+  $lr_interface      = $::network::params::local_resolver_interface
+  $lr_access_control = $::network::params::local_resolver_access_control
+  $interfaces        = $::network::params::interfaces
 
   if $local_resolver {
 
@@ -107,8 +112,6 @@ class network::resolv_conf (
     }
 
   } # Enf of if $local_resolver.
-
-  $interfaces = ::network::data()['network::interfaces']
 
   # Get the interfaces configured via DHCP.
   $dhcp_ifaces = $interfaces.filter |$ifname, $settings| {

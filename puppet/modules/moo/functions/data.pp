@@ -1,16 +1,16 @@
 function moo::data {
 
-  require '::network::resolv_conf'
+  include '::network::params'
 
-  $has_local_resolver = $::network::resolv_conf::local_resolver
+  $has_local_resolver = $::network::params::local_resolver
 
   # We want to have $docker_dns and $docker_bridge_network
-  # related with the parameters of ::network::resolv_conf.
+  # related with the parameters of ::network::params.
   if $has_local_resolver {
 
     # The host has a local resolver installed. It could be smart
     # that docker containers use it's possible.
-    $listening_addr_resolver = $::network::resolv_conf::lr_interface
+    $listening_addr_resolver = $::network::params::local_resolver_interface
 
     # We remove the "localhost" addresses in the array.
     $remaining_addr = $listening_addr_resolver.filter |$a_addr| {
@@ -24,7 +24,7 @@ function moo::data {
     # For the "docker" network, if it exist we choose the first
     # network in access-control == 'allow' in the conf of the
     # local resolver.
-    $access_control = $::network::resolv_conf::lr_access_control
+    $access_control = $::network::params::local_resolver_access_control
     $remaining_net  = $access_control.filter |$a_access| {
       $a_access[1] == 'allow'
     }
@@ -44,6 +44,9 @@ function moo::data {
     $docker_bridge_network = '172.17.0.1/16'
 
   }
+
+  $smtp_relay = $::network::params::smtp_relay
+  $smtp_port  = $::network::params::smtp_port
 
   $r = 'salt';
 
@@ -65,6 +68,8 @@ function moo::data {
     moo::common::ha_reload_cmd       => '/opt/moobot/bin/haproxy_graceful_reload',
     moo::common::ha_stats_login      => 'admin',
     moo::common::ha_stats_pwd        => sha1("$r-ha_stats_pwd")[0,15],
+    moo::common::smtp_relay          => $smtp_relay,
+    moo::common::smtp_port           => $smtp_port,
 
     moo::captain::mysql_rootpwd           => sha1("$r-mysql_rootpwd_moobot")[0,15],
     moo::captain::supported_distributions => [ 'trusty' ],

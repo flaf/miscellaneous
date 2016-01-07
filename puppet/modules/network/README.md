@@ -703,5 +703,7 @@ options:
   post-up: [ 'cmd1...', 'cmd2...' ]
 ```
 
+* README not updated: now, the "params" design is implemented.
+
 
 

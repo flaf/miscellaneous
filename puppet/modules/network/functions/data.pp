@@ -73,35 +73,44 @@ function network::data {
     $hosts_entries_filled = $hosts_entries
   }
 
+  $smtp_relay = ::network::get_param($interfaces, $inventory_networks,
+                                     'smtp_relay', "smtp.${::domain}")
+  $smtp_port  = ::network::get_param($interfaces, $inventory_networks,
+                                     'smtp_port', 25)
+
+
   $supported_distribs = [ 'trusty', 'jessie' ];
 
   {
-    network::restart                 => false,
-    network::interfaces              => $interfaces,
-    network::inventory_networks      => $inventory_networks,
+    network::params::inventory_networks            => $inventory_networks,
+    network::params::interfaces                    => $interfaces,
+    network::params::restart                       => false,
+    network::params::resolvconf_domain             => $::domain,
+    network::params::resolvconf_search             => $dns_search,
+    network::params::resolvconf_timeout            => $default_timeout,
+    network::params::resolvconf_override_dhcp      => $override_dhcp,
+    network::params::dns_servers                   => $dns_servers,
+    network::params::local_resolver                => $local_resolver,
+    network::params::local_resolver_interface      => $lr_interface,
+    network::params::local_resolver_access_control => $lr_access_control,
+    network::params::hosts_entries                 => $hosts_entries_filled,
+    network::params::hosts_from_tag                => $hosts_tag,
+    network::params::ntp_interfaces                => 'all',
+    network::params::ntp_servers                   => $ntp_servers,
+    network::params::ntp_subnets_authorized        => 'all',
+    network::params::ntp_ipv6                      => false,
+    network::params::smtp_relay                    => $smtp_relay,
+    network::params::smtp_port                     => $smtp_port,
+
     network::supported_distributions => $supported_distribs,
     network::stage                   => $default_stage,
 
-    network::resolv_conf::domain                  => $::domain,
-    network::resolv_conf::search                  => $dns_search,
-    network::resolv_conf::nameservers             => $dns_servers,
-    network::resolv_conf::timeout                 => $default_timeout,
-    network::resolv_conf::local_resolver          => $local_resolver,
-    network::resolv_conf::lr_interface            => $lr_interface,
-    network::resolv_conf::lr_access_control       => $lr_access_control,
-    network::resolv_conf::override_dhcp           => $override_dhcp,
     network::resolv_conf::supported_distributions => $supported_distribs,
     network::resolv_conf::stage                   => $default_stage,
 
-    network::hosts::entries                 => $hosts_entries_filled,
-    network::hosts::from_tag                => $hosts_tag,
     network::hosts::supported_distributions => $supported_distribs,
     network::hosts::stage                   => $default_stage,
 
-    network::ntp::interfaces              => 'all',
-    network::ntp::ntp_servers             => $ntp_servers,
-    network::ntp::subnets_authorized      => 'all',
-    network::ntp::ipv6                    => false,
     network::ntp::supported_distributions => $supported_distribs,
   }
 

@@ -6,14 +6,16 @@
 #         parameter name in the network definition at ... etc.
 #
 class network (
-  Boolean                                      $restart,
-  Hash[String[1], Hash[String[1], Data, 1], 1] $interfaces,
-  Array[String[1], 1]                          $supported_distributions,
-  Hash[String[1], Data, 1]                     $inventory_networks,
-  String[1]                                    $stage = 'main',
+  Array[String[1], 1] $supported_distributions,
+  String[1]           $stage = 'main',
 ) {
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
+
+  include '::network::params'
+  $interfaces = $::network::params::interfaces
+  $restart    = $::network::params::restart
+
   ::network::check_interfaces($interfaces)
 
   $packages = [ 'vlan',         # To have the vlan feature.

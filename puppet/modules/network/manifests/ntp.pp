@@ -1,12 +1,14 @@
 class network::ntp (
-  Variant[ Array[String[1], 1], Enum['all'] ] $interfaces,
-  Array[String[1], 1]                         $ntp_servers,
-  Variant[ Array[String[1], 1], Enum['all'] ] $subnets_authorized,
-  Boolean                                     $ipv6,
-  Array[String[1], 1]                         $supported_distributions,
+  Array[String[1], 1] $supported_distributions,
 ) {
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
+
+  include '::network::params'
+  $interfaces         = $::network::params::ntp_interfaces
+  $ntp_servers        = $::network::params::ntp_servers
+  $subnets_authorized = $::network::params::ntp_subnets_authorized
+  $ipv6               = $::network::params::ntp_ipv6
 
   ensure_packages(['ntp', ], { ensure => present, })
 

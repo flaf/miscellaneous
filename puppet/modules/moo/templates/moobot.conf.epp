@@ -16,6 +16,8 @@
   $ha_reload_cmd,
   $ha_stats_login,
   $ha_stats_pwd,
+  $smtp_relay,
+  $smtp_port,
 | -%>
 ### This file is managed by Puppet, don't edit It. ###
 
@@ -34,6 +36,8 @@ db_adm_password = <%= $moodle_adm_pwd %>
 db_pfx = <%= $moodle_db_pfx %>
 repository = <%= $docker_repository %>
 default_desired_num = <%= $default_desired_num %>
+smtp_relay = <%= $smtp_relay %>
+smtp_port = <%= $smtp_port %>
 
 [database]
 host = <%= $moobot_db_host %>

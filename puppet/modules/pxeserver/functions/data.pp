@@ -1,7 +1,7 @@
 function pxeserver::data {
 
-  $inventory_networks = lookup('inventory_networks', Hash[String[1], Data],
-                               'hash', {})
+  include '::network::params'
+  $inventory_networks = $::network::params::inventory_networks
 
   $dhcp_conf = $inventory_networks.reduce({}) |$memo, $entry| {
 

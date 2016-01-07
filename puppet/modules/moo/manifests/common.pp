@@ -16,6 +16,8 @@ class moo::common (
   String[1]           $ha_reload_cmd,
   String[1]           $ha_stats_login,
   String[1]           $ha_stats_pwd,
+  String[1]           $smtp_relay,
+  Integer[1]          $smtp_port,
 ) {
 
   if $lb[0] == 'NOT-DEFINED' {
@@ -43,7 +45,7 @@ class moo::common (
     ensure  => present,
     owner   => 'root',
     group   => 'root',
-    mode    => '0400',
+    mode    => '0600',
     require => Package['moobot'],
     content => epp('moo/moobot.conf.epp',
                    {
@@ -64,6 +66,8 @@ class moo::common (
                     'ha_reload_cmd'       => $ha_reload_cmd,
                     'ha_stats_login'      => $ha_stats_login,
                     'ha_stats_pwd'        => $ha_stats_pwd,
+                    'smtp_relay'          => $smtp_relay,
+                    'smtp_port'           => $smtp_port,
                    },
                   ),
   }
