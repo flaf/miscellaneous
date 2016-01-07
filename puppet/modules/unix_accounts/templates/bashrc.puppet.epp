@@ -66,12 +66,12 @@ alias gs='git status'
 alias gd='git diff'
 # To keep PATH during a sudo command.
 # The trailing space allows aliases after the alias "sudo" itself.
-alias sudo='sudo env "PATH=$PATH" '
-alias rp='sudo puppet agent --test' # rp means "Run Puppet".
-alias dist-upgrade='\sudo apt-get update && \sudo apt-get dist-upgrade'
-alias upgrade='\sudo apt-get update && \sudo apt-get upgrade'
-alias ssu='\sudo su -'
-alias ssup='\sudo su -p'
+alias psudo='sudo env "PATH=$PATH" '
+alias rp='psudo puppet agent --test' # rp means "Run Puppet".
+alias dist-upgrade='sudo apt-get update && sudo apt-get dist-upgrade'
+alias upgrade='sudo apt-get update && sudo apt-get upgrade'
+alias ssu='sudo su -'
+alias ssup='sudo su -p'
 HISTSIZE='5000'
 HISTFILESIZE='5000'
 HISTCONTROL='ignoredups:ignorespace'
