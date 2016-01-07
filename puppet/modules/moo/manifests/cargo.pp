@@ -74,13 +74,15 @@ class moo::cargo (
                   )
   }
 
+  # Packages needed in the script /etc/network/if-up.d/docker0-up.
+  ensure_packages( [ 'ipcalc', 'gawk' ], { ensure => present } )
   file { '/etc/network/if-up.d/docker0-up':
     ensure  => present,
     owner   => 'root',
     group   => 'root',
     mode    => '0755',
     #before  => Package['docker-engine'],
-    before  => Package['docker.io'],
+    before  => [ Package['docker.io'], Package['ipcalc'], Package['gawk'] ],
     notify  => Exec['set-iptables-rules'],
     content => epp('moo/docker0-up.epp',
                    {
@@ -95,7 +97,7 @@ class moo::cargo (
   exec { 'set-iptables-rules':
     user        => 'root',
     group       => 'root',
-    environment => [ 'IFACE=--all' ],
+    environment => [ "IFACE='${docker_iface}'" ],
     command     => '/etc/network/if-up.d/docker0-up',
     path        => '/usr/sbin:/usr/bin:/sbin:/bin',
     refreshonly => true,
@@ -177,6 +179,22 @@ class moo::cargo (
       subscribe   => Mount[$shared_root_path],
     }
 
+  }
+
+  file { '/usr/local/sbin/restart-all-dockers.puppet':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0755',
+    content => epp('moo/restart-all-dockers.puppet.epp', {}),
+  }
+
+  cron { 'cron-restart-all-dockers-at-boot':
+    ensure  => $ensure_cron,
+    user    => 'root',
+    command => '/usr/local/sbin/restart-all-dockers.puppet',
+    require => File['/usr/local/sbin/restart-all-dockers.puppet'],
+    special => 'reboot',
   }
 
 }

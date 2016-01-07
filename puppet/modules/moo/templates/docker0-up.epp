@@ -8,17 +8,23 @@
 
 ### This file is managed by Puppet, don't edit it. ###
 
-# Normally this script is just relevant during the boot.
-# All scripts in /etc/network/if-up.d/ are called with
-# IFACE = '--all' (see interfaces(5) manual).
-if [ "$IFACE" != '--all' ]
+# The "docker" interface. The only interface a docker
+# container can use to contact the "outside".
+docker_iface='<%= $docker_iface %>'
+
+# Normally this script is just relevant during the boot. All
+# scripts in /etc/network/if-up.d/ are called with the IFACE
+# environment variable set to IFACE='--all', then set to the
+# name of each interface (see interfaces(5) manual).
+if [ "$IFACE" != "$docker_iface" ]
 then
     exit 0
 fi
 
-# The "docker" interface. The only interface a docker
-# container can use to contact the "outside".
-docker_iface='<%= $docker_iface %>'
+# Here, we just want to retrieve the network CIDR address of
+# the docker_iface interface.
+docker_iface_addrmask=$(ip addr show dev "$docker_iface" | grep 'inet ' | awk '{print $2}')
+docker_iface_cidr=$(ipcalc -nb "$docker_iface_addrmask" | grep '^Network:' | awk '{print $2}')
 
 # The CIDR address of the internal "docker" network.
 docker_network='<%= $docker_bridge_network %>'
@@ -44,16 +50,21 @@ iptables -t nat -P POSTROUTING ACCEPT
 # Dockers are allowed to ping any cargo interfaces.
 iptables -t filter -A INPUT -i docker0 -p icmp --icmp-type any -j ACCEPT
 
+# Dockers host a apache server which listens to the port 80.
+# So the answers packets from the docker apache servers will
+# have the source port equal to 80 and will be handled by
+# the local process "docker-proxy". These packets must be
+# accepted of course.
+iptables -t filter -A INPUT -i docker0 -p tcp --sport 80 -j ACCEPT
+
 <%- if $iptables_allow_dns { -%>
 # Dockers will be able to contact the DNS server of cargo.
 iptables -t filter -A INPUT -i docker0 -p udp --dport 53 -j ACCEPT
 
 <%- } -%>
-# But by default any packet from docker0 to cargo local process will be dropped.
-#
-# TODO: problem: with this restriction, the moodle work no longer.
-#
-#iptables -t filter -A INPUT -i docker0 -j DROP
+# But by default any others packet from docker0 to cargo
+# local process will be dropped.
+iptables -t filter -A INPUT -i docker0 -j DROP
 
 # No ip-forwarding except between docker0 <==> "$docker_ifcace".
 iptables -t filter -P FORWARD DROP
@@ -71,7 +82,7 @@ iptables -t nat -A POSTROUTING -s "$docker_network" -o "$docker_iface" -j MASQUE
 # To have a idempotent script, we flush the "dockertable".
 # and after, in this table, we add a default route.
 ip route flush table "$docker_table"
-ip route add '192.168.24.0/24' dev "$docker_iface" table "$docker_table"
+ip route add "$docker_iface_cidr" dev "$docker_iface" table "$docker_table"
 ip route add default via '<%= $docker_gateway %>' dev "$docker_iface" table "$docker_table"
 
 # If the incoming interface is "docker0", the paquet uses the docker table.

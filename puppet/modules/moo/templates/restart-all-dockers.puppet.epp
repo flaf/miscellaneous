@@ -1,0 +1,33 @@
+#!/bin/sh
+
+### This file is managed by Puppet, don't edit it. ###
+
+LC_ALL='C'
+export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+
+c=0
+while [ "$(pgrep -c docker)" = 0 ]
+do
+    sleep 1
+    c=$((c+1))
+
+    if [ "$c" = "100" ]
+    then
+        printf '%s\n' "Sorry, docker daemon never started. Script aborted." >&2
+        exit 1
+    fi
+done
+
+sleep 10
+
+# Remove all containers.
+docker stop $(docker ps --all --quiet)
+sleep 1
+docker rm $(docker ps --all --quiet)
+
+sleep 1
+
+# Restart all.
+python /opt/moobot/bin/cargo.py --force --verbose --debug
+
+
