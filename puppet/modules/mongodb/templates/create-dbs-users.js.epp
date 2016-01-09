@@ -1,0 +1,19 @@
+<%-| Hash[String[1], Array[Data, 1]] $databases |-%>
+// This file is managed by Puppet, don't edit it.
+<%- $databases.each |$a_database, $users| { -%>
+
+use <%= $a_database %>
+
+  <%- $users.each |$a_user| { -%>
+  <%- $roles = $a_user['roles'].map |$a_role| { "\"$a_role\"" }.join(', ') -%>
+db.addUser(
+    {
+        user:  "<%= $a_user['user'] %>",
+        pwd:   "<%= $a_user['password'] %>",
+        roles: [ <%= $roles  %>  ]
+    }
+)
+  <%- } -%>
+<%- } -%>
+
+

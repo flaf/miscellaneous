@@ -1,0 +1,16 @@
+{
+  "name": "flaf-mongodb",
+  "version": "0.1.0",
+  "author": "flaf",
+  "summary": "A basic module to install and configure mongodb",
+  "license": "Apache-2.0",
+  "source": "",
+  "project_page": null,
+  "issues_url": null,
+  "dependencies": [
+    {"name":"puppetlabs-stdlib","version_requirement":">= 4.10.0"},
+    {"name":"flaf-homemade","version_requirement":">= 0.1.2"}
+  ]
+}
+
+

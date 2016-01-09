@@ -1,0 +1,34 @@
+<%-|
+Array[String[1], 1] $bind_ip,
+Integer[1]          $port,
+Boolean             $noauth,
+String[1]           $replset,
+Boolean             $smallfiles,
+|-%>
+### This file is managed by Puppet, don't edit it. ###
+
+# Where to log.
+logpath = /var/log/mongodb/mongodb.log
+logappend = true
+
+# Set this option to configure the mongod or mongos process
+# to bind to and listen for connections from applications on
+# this address. You may concatenate a list of comma
+# separated values to bind mongod to multiple IP addresses.
+bind_ip = <%= $bind_ip.join(',')  %>
+port = <%= $port %>
+
+dbpath = /var/lib/mongodb
+
+# Turn on/off security. Off is currently the default.
+noauth = <%= $noauth %>
+
+# Configure ReplicaSet membership.
+replSet = <%= $replset %>
+
+# Use a smaller default data file size.
+smallfiles = <%= $smallfiles %>
+
+
+
+
