@@ -30,7 +30,7 @@ default_version_tag = <%= $default_version_tag %>
 update_lb = <%= $lb.join(',') %>
 
 [docker]
-db_host =  <%= $moodle_db_host %>
+db_host = <%= $moodle_db_host %>
 db_adm_user = <%= $moodle_adm_user %>
 db_adm_password = <%= $moodle_adm_pwd %>
 db_pfx = <%= $moodle_db_pfx %>

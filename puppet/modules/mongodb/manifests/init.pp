@@ -5,10 +5,21 @@ class mongodb (
   include '::mongodb::params'
   $bind_ip    = $::mongodb::params::bind_ip
   $port       = $::mongodb::params::port
-  $noauth     = $::mongodb::params::noauth
+  $auth       = $::mongodb::params::auth
   $replset    = $::mongodb::params::replset
   $smallfiles = $::mongodb::params::smallfiles
+  $keyfile    = $::mongodb::params::keyfile
   $databases  = $::mongodb::params::databases
+
+  $has_keyfile = $keyfile ? {
+    ''      => false,
+    default => true,
+  }
+
+  $ensure_keyfile = $keyfile ? {
+    ''      => 'absent',
+    default => 'present',
+  }
 
   ensure_packages( [ 'mongodb-server',
                      'mongodb-clients' ], { ensure => present } )
@@ -22,13 +33,24 @@ class mongodb (
     notify  => Service['mongodb'],
     content => epp('mongodb/mongodb.conf.epp',
                    {
-                    'bind_ip'    => $bind_ip,
-                    'port'       => $port,
-                    'noauth'     => $noauth,
-                    'replset'    => $replset,
-                    'smallfiles' => $smallfiles,
+                    'bind_ip'     => $bind_ip,
+                    'port'        => $port,
+                    'auth'        => $auth,
+                    'replset'     => $replset,
+                    'smallfiles'  => $smallfiles,
+                    'has_keyfile' => $has_keyfile,
                    }
                   )
+  }
+
+  file { '/etc/mongodb.keyfile':
+    ensure  => $ensure_keyfile,
+    owner   => 'mongodb',
+    group   => 'root',
+    mode    => '0400',
+    require => [ Package['mongodb-server'], Package['mongodb-clients'] ],
+    notify  => Service['mongodb'],
+    content => $keyfile,
   }
 
   # On Trusty, mongod has a "status" command but the exit
@@ -41,7 +63,7 @@ class mongodb (
     status     => 'test "$(pgrep -c mongod)" != 0',
     hasrestart => true,
     enable     => true,
-    require    => File['/etc/mongodb.conf'],
+    require    => [ File['/etc/mongodb.conf'], File['/etc/mongodb.keyfile'] ],
   }
 
   file { '/root/create-dbs-users.js':

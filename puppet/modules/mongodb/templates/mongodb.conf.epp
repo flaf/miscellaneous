@@ -1,9 +1,10 @@
 <%-|
 Array[String[1], 1] $bind_ip,
 Integer[1]          $port,
-Boolean             $noauth,
+Boolean             $auth,
 String[1]           $replset,
 Boolean             $smallfiles,
+Boolean             $has_keyfile,
 |-%>
 ### This file is managed by Puppet, don't edit it. ###
 
@@ -21,14 +22,16 @@ port = <%= $port %>
 dbpath = /var/lib/mongodb
 
 # Turn on/off security. Off is currently the default.
-noauth = <%= $noauth %>
+auth = <%= $auth %>
 
 # Configure ReplicaSet membership.
 replSet = <%= $replset %>
 
 # Use a smaller default data file size.
 smallfiles = <%= $smallfiles %>
+<%- if $has_keyfile { -%>
 
-
+keyFile = /etc/mongodb.keyfile
+<%- } -%>
 
 
