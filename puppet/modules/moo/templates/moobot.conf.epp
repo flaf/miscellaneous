@@ -18,6 +18,8 @@
   $ha_stats_pwd,
   $smtp_relay,
   $smtp_port,
+  $mongodb_servers,
+  $replicaset,
 | -%>
 ### This file is managed by Puppet, don't edit It. ###
 
@@ -47,6 +49,10 @@ password = <%= $moobot_db_pwd %>
 
 [memcached]
 servers = <%= $memcached_servers.join(',') %>
+
+[mongodb]
+servers = mongodb://<%= $mongodb_servers.join(',') %>
+replicaset = <%= $replicaset %>
 
 [haproxy]
 template = <%= $ha_template %>

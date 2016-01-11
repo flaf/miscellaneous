@@ -28,6 +28,9 @@ CREATE TABLE IF NOT EXISTS `moobot`.`moodles` (
   `db_password` CHAR(41) NULL,
   `desired_dockers_num` INT NULL,
   `ts` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `mongodb_name` CHAR(64) NULL,
+  `mongodb_user` CHAR(64) NULL,
+  `mongodb_password` CHAR(41) NULL,
   PRIMARY KEY (`id`),
   KEY `ts_idx` (`ts`),
   KEY `uuid_idx` (`uuid`)
@@ -100,14 +103,15 @@ SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 
+-- Useless with the GRANT statements below (tips from casimir).
+-- CREATE USER 'moobot'@'localhost' IDENTIFIED BY '<%= $mysql_moobotpwd %>';
+-- CREATE USER 'moobot'@'127.0.0.1' IDENTIFIED BY '<%= $mysql_moobotpwd %>';
+-- CREATE USER 'moobot'@'%' IDENTIFIED BY '<%= $mysql_moobotpwd %>';
 
 -- The user 'moobot'@'127.0.0.1' is needed because captain itself will use it.
-CREATE USER 'moobot'@'localhost' IDENTIFIED BY '<%= $mysql_moobotpwd %>';
-CREATE USER 'moobot'@'127.0.0.1' IDENTIFIED BY '<%= $mysql_moobotpwd %>';
-CREATE USER 'moobot'@'%' IDENTIFIED BY '<%= $mysql_moobotpwd %>';
-GRANT ALL ON moobot.* TO 'moobot'@'localhost';
-GRANT ALL ON moobot.* TO 'moobot'@'127.0.0.1';
-GRANT ALL ON moobot.* TO 'moobot'@'%';
+GRANT ALL ON moobot.* TO 'moobot'@'localhost' IDENTIFIED BY '<%= $mysql_moobotpwd %>';
+GRANT ALL ON moobot.* TO 'moobot'@'127.0.0.1' IDENTIFIED BY '<%= $mysql_moobotpwd %>';
+GRANT ALL ON moobot.* TO 'moobot'@'%'         IDENTIFIED BY '<%= $mysql_moobotpwd %>';
 
 -- Set the root password.
 SET PASSWORD FOR 'root'@'localhost' = PASSWORD('<%= $mysql_rootpwd %>');

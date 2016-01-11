@@ -1,16 +1,25 @@
 <%-|
-Array[String[1], 1] $bind_ip,
-Integer[1]          $port,
-Boolean             $auth,
-String[1]           $replset,
-Boolean             $smallfiles,
-Boolean             $has_keyfile,
+Array[String[1], 1]                                 $bind_ip,
+Variant[Integer[1], String[1]]                      $port,
+Boolean                                             $auth,
+String[1]                                           $replset,
+Boolean                                             $smallfiles,
+Boolean                                             $has_keyfile,
+Boolean                                             $quiet,
+Integer                                             $log_level,
+Enum[ '/var/log/mongodb/mongodb.log', '/dev/null' ] $logpath,
 |-%>
 ### This file is managed by Puppet, don't edit it. ###
 
 # Where to log.
-logpath = /var/log/mongodb/mongodb.log
+logpath = <%= $logpath %>
 logappend = true
+<%- if $quiet { -%>
+setParameter = quiet=true
+<%- } else { -%>
+setParameter = quiet=false
+<%- } -%>
+setParameter = logLevel=<%= $log_level %>
 
 # Set this option to configure the mongod or mongos process
 # to bind to and listen for connections from applications on

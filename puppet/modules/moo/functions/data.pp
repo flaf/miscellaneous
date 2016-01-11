@@ -45,6 +45,9 @@ function moo::data {
 
   }
 
+  $mongodb_servers = [ 'localhost:27017' ]
+  $replicaset      = 'mongo'
+
   $smtp_relay = $::network::params::smtp_relay
   $smtp_port  = $::network::params::smtp_port
 
@@ -70,6 +73,8 @@ function moo::data {
     moo::common::ha_stats_pwd        => sha1("$r-ha_stats_pwd")[0,15],
     moo::common::smtp_relay          => $smtp_relay,
     moo::common::smtp_port           => $smtp_port,
+    moo::common::mongodb_servers     => $mongodb_servers,
+    moo::common::replicaset          => $replicaset,
 
     moo::captain::mysql_rootpwd           => sha1("$r-mysql_rootpwd_moobot")[0,15],
     moo::captain::supported_distributions => [ 'trusty' ],

@@ -30,7 +30,11 @@ time on the (expected to be) PRIMARY server (and ONLY on ONE
 server):
 
 ```sh
-~# mongo
+# The option --norc is present to ignore the file
+# /root/.mongorc.js which allows to be connected directly
+# with the admin user in the admin base (like a .my.cnf
+# file). But, at this moment, the user doesn't exist.
+~# mongo --norc
 MongoDB shell version: 2.4.9
 connecting to: test
 > rs.initiate()
@@ -44,7 +48,7 @@ connecting to: test
 Then wait 1 minute until you have this prompt:
 
 ```sh
-~# mongo
+~# mongo --norc
 MongoDB shell version: 2.4.9
 connecting to: test
 moogo:PRIMARY> 
@@ -54,7 +58,7 @@ Now, always in the primary server, you can create databases
 and users with this:
 
 ```sh
-mongo <create-dbs-users.js
+mongo --norc <create-dbs-users.js
 ```
 
 **Warning:** you have to define at least a user with the roles
@@ -65,7 +69,10 @@ Now, you have to authenticate in mongo before to create the
 replica set. So manually add the replicatset members like this:
 
 ```sh
-~# mongo
+# But, normally, with the .mongorc.js file, you don't need
+# to input the admin password etc. and you should be admin
+# directly after the simple `mongo` command.
+~# mongo MongoDB shell version: 2.4.9 connecting to: test
 MongoDB shell version: 2.4.9
 connecting to: test
 
@@ -107,6 +114,15 @@ switched to db admin
 moogo:SECONDARY> 
 ```
 
+It's possible to connect to mongo directly with a specific
+user on a specific base on a specific host. For instance:
+
+```sh
+mongo $base -u admin -p 'xxxxxxxxxxxxx' --host moogo02
+```
+
+
+
 To have the status of the mongodb replica set, you can launch:
 
 ```sh
@@ -117,4 +133,7 @@ echo $'use admin\ndb.runCommand( { replSetGetStatus : 1 } )' | mongo
 # TODO
 
 * Write this readme file.
+* How to remove line `[connxxx] authenticate db: foo` from
+logs with mongo 2.4.
+
 

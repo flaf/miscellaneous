@@ -1,0 +1,58 @@
+<%-|
+String                                                        $interface,
+Variant[Integer[1], String[1]]                                $port,
+String[1]                                                     $syslocation,
+String[1]                                                     $syscontact,
+Hash[String[1], Hash[String[1], String[1], 5, 5]]             $snmpv3_accounts,
+Hash[String[1], Array[ Hash[ String[1], String[2], 2, 2], 1]] $communities,
+Hash[String[1], Array[String[1]]]                             $views
+|-%>
+### This file is managed by Puppet, don't edit it. ###
+
+# Listening interface.
+<%- if $interface.empty { -%>
+agentAddress udp:<%= $port %>
+<%- } else { -%>
+agentAddress udp:<%= $interface-%>:<%= $port %>
+<%- } -%>
+
+# System Information.
+syslocation <%= $syslocation %>
+syscontact <%= $syscontact %>
+
+# SNMPv3 accounts.
+<%- $snmpv3_accounts.each |$secname, $settings| { -%>
+<%-
+  $authproto = $settings['authproto'].upcase
+  $authpass  = $settings['authpass']
+  $privproto = $settings['privproto'].upcase
+  $privpass  = $settings['privpass']
+-%>
+agentSecName <%= $secname %>
+createUser <%= $secname %> <%= $authproto %> '<%= $authpass %>' <%= $privproto %> <%= $privpass %>
+<%- } -%>
+
+# Views.
+<%- $views.each |$name, $oids| { -%>
+  <%- $oids.each |$oid| { -%>
+view <%= $name %> included <%= $oid %>
+  <%- } -%>
+<%- } -%>
+
+# Access control.
+<%- $snmpv3_accounts.each |$secname, $settings| { -%>
+rouser <%= $secname %> priv -V <%= $settings['view'] %>
+<%- } -%>
+<%- $communities.each |$community, $settings| { -%>
+  <%- $settings.each |$a_setting| { -%>
+rocommunity <%= $community %> <%= $a_setting['source'] %> -V <%= $a_setting['view'] %>
+  <%- } -%>
+<%- } -%>
+
+# Misc.
+dontLogTCPWrappersConnects yes
+disablePerl true
+skipNFSInHostResources true
+storageUseNFS 1
+
+

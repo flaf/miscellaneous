@@ -4,9 +4,6 @@ function mongodb::data {
   # key is not found.
   $conf = lookup('mongo', Hash[String[1], Data, 1], 'hash');
 
-  if $conf.has_key('bind_ip') {
-  }
-
   $replset_tmp = "mongo-${domain}"
 
   $bind_ip = $conf['bind_ip'] ? {
@@ -39,6 +36,24 @@ function mongodb::data {
     default => $conf['keyfile'],
   }
 
+  $quiet = $conf['quiet'] ? {
+    undef   => true,
+    default => $conf['quiet'],
+  }
+
+  # loglevel is a bad name for a class because it's
+  # the name of metaparameter so loglevel becomes
+  # log_lev.
+  $log_level = $conf['log_level'] ? {
+    undef   => 0,
+    default => $conf['log_level'],
+  }
+
+  $logpath = $conf['logpath'] ? {
+    undef   => '/var/log/mongodb/mongodb.log',
+    default => $conf['logpath'],
+  }
+
   $databases = $conf['databases'] ? {
     undef   => {},
     default => $conf['databases'],
@@ -51,8 +66,10 @@ function mongodb::data {
     mongodb::params::replset         => $replset,
     mongodb::params::smallfiles      => $smallfiles,
     mongodb::params::keyfile         => $keyfile,
+    mongodb::params::quiet           => $quiet,
+    mongodb::params::log_level       => $log_level,
+    mongodb::params::logpath         => $logpath,
     mongodb::params::databases       => $databases,
-    mongodb::params::bind_ip         => $bind_ip,
     mongodb::supported_distributions => ['trusty'],
   }
 

@@ -18,6 +18,8 @@ class moo::common (
   String[1]           $ha_stats_pwd,
   String[1]           $smtp_relay,
   Integer[1]          $smtp_port,
+  Array[String[1], 1] $mongodb_servers,
+  String[1]           $replicaset,
 ) {
 
   if $lb[0] == 'NOT-DEFINED' {
@@ -68,6 +70,8 @@ class moo::common (
                     'ha_stats_pwd'        => $ha_stats_pwd,
                     'smtp_relay'          => $smtp_relay,
                     'smtp_port'           => $smtp_port,
+                    'mongodb_servers'     => $mongodb_servers,
+                    'replicaset'          => $replicaset,
                    },
                   ),
   }

@@ -9,6 +9,9 @@ class mongodb (
   $replset    = $::mongodb::params::replset
   $smallfiles = $::mongodb::params::smallfiles
   $keyfile    = $::mongodb::params::keyfile
+  $quiet      = $::mongodb::params::quiet
+  $log_level  = $::mongodb::params::log_level
+  $logpath    = $::mongodb::params::logpath
   $databases  = $::mongodb::params::databases
 
   $has_keyfile = $keyfile ? {
@@ -39,6 +42,9 @@ class mongodb (
                     'replset'     => $replset,
                     'smallfiles'  => $smallfiles,
                     'has_keyfile' => $has_keyfile,
+                    'quiet'       => $quiet,
+                    'log_level'   => $log_level,
+                    'logpath'     => $logpath,
                    }
                   )
   }
@@ -72,6 +78,14 @@ class mongodb (
     group   => 'root',
     mode    => '0400',
     content => epp('mongodb/create-dbs-users.js.epp', { 'databases' => $databases })
+  }
+
+  file { '/root/.mongorc.js':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0400',
+    content => epp('mongodb/mongorc.js.epp', { 'databases' => $databases })
   }
 
 }

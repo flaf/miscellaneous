@@ -1,0 +1,14 @@
+<%-| Hash[String[1], Array[Data, 1]] $databases |-%>
+// This file is managed by Puppet, don't edit it.
+<%- if ! $databases.empty { -%>
+<%-
+  $db   = $databases.keys[0]
+  $user = $databases[$db][0]['user']
+  $pwd  = $databases[$db][0]['password']
+-%>
+db = db.getSiblingDB("<%= $db %>")
+db.auth("<%= $user %>", "<%= $pwd %>")
+<%- } else { -%>
+// No users and databases provided by Puppet.
+<%- } -%>
+
