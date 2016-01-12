@@ -18,6 +18,7 @@ class role_generic (
     '::timezone',
     '::puppetagent',
     '::mcollective::server',
+    '::snmp',
   ]
 
   # All classes in $excluded_classes must belong to the

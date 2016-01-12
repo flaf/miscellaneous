@@ -45,14 +45,18 @@ do
         [ -z "$url" ] && continue
 
         repo_name=$(echo "$url" | sed -r 's|^.*/([-a-z0-9_]+)\.git$|\1|')
+        printf "Handle of [%s]\n" "$repo_name"
 
         if [ ! -d "$gitdir/$repo_name" ]
         then
-            timeout --kill-after=20s 40s git clone $url "$gitdir/$repo_name" || continue
+            printf "[%s] The repository doesn't exist => git clone...\n" "$repo_name"
+            timeout --kill-after=20s 40s git clone $url "$gitdir/$repo_name" >/dev/null || continue
         fi
 
         cd "$gitdir/$repo_name"
-        timeout --kill-after=20s 40s git pull
+
+        printf "[%s] git pull...\n" "$repo_name"
+        timeout --kill-after=20s 40s git pull >/dev/null
 
         tags=$(git tag | sort -V | tail)
         name=$(cat metadata.json | jq --raw-output '.name')
@@ -60,16 +64,35 @@ do
         for tag in $tags
         do
             full_name="$name-$tag"
-            [ -f "$modulesdir/$full_name.tar.gz" ] && continue
 
-            git reset --hard "$tag"
-            version=$(cat metadata.json | jq --raw-output '.version')
+            if [ -f "$modulesdir/$full_name.tar.gz" ]
+            then
+              printf "[%s] already stored. Next...\n" "$full_name"
+              continue
+            fi
+
+            # The principle here is: we don't touch to the repository "$gitdir/$repo_name"
+            # except to make "git pull" and that's all. So commands like "git reset..."
+            # will be made in temporary copy. It's more sure.
+            rm -fr "/tmp/$repo_name"
+            cp -r "$gitdir/$repo_name" /tmp
+            (cd "/tmp/$repo_name" && git reset --hard "$tag" >/dev/null)
+
+            version=$(cat "/tmp/$repo_name/metadata.json" | jq --raw-output '.version')
+
             # The tag must match with the version number.
-            [ "$version" != "$tag"  ] && continue
+            if [ "$version" != "$tag"  ]
+            then
+                printf "[%s] tag=%s and version==%s don't match. Next...\n" "$full_name" "$tag" "$version"
+                rm -rf "/tmp/$repo_name"
+                continue
+            else
+                printf "[%s] tag=%s and version==%s match. This version will be stored...\n" "$full_name" "$tag" "$version"
+            fi
 
             mkdir "$modulesdir/$full_name"
             # With find, we copy the .git/ directory too.
-            find . -mindepth 1 -maxdepth 1 -exec cp -r '{}' "$modulesdir/$full_name/" \;
+            (cd "/tmp/$repo_name" && find . -mindepth 1 -maxdepth 1 -exec cp -r '{}' "$modulesdir/$full_name/" \;)
 
             # We add a simple file to identify where the module come from.
             flag_file=".from-$(hostname -f)"
@@ -124,9 +147,10 @@ EOF
             # Now, we can remove the pkg/ directory.
             rm -rf --one-file-system "$modulesdir/$full_name/pkg"
 
-            tar -zcvf "$modulesdir/$full_name.tar.gz" "$modulesdir/$full_name"
+            tar -zcf "$modulesdir/$full_name.tar.gz" "$modulesdir/$full_name"
             rm -rf "$modulesdir/$full_name"
-            git reset HEAD^
+            rm -rf "/tmp/$repo_name"
+            printf "[%s] Module stored. Next if it exists...\n" "$full_name"
         done
 
     done <<%= $giturlsfile %>

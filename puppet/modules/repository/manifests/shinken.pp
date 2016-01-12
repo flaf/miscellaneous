@@ -1,4 +1,4 @@
-class repository::moobot (
+class repository::shinken (
   String[1]           $url,
   String[1]           $key_url,
   String[1]           $fingerprint,
@@ -8,18 +8,18 @@ class repository::moobot (
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
-  apt::key { 'moobot':
+  apt::key { 'shinken':
     id     => $fingerprint,
     source => $key_url,
   }
 
-  apt::source { 'moobot':
-    comment  => 'Moobot Repository.',
+  apt::source { 'shinken':
+    comment  => 'Homemade Shinken Repository.',
     location => $url,
-    release  => 'moobot',
+    release  => 'shinken',
     repos    => 'main',
     include  => { 'src' => false, 'deb' => true },
-    require  => Apt::Key['moobot'],
+    require  => Apt::Key['shinken'],
   }
 
 }

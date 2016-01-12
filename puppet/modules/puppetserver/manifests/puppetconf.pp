@@ -151,6 +151,8 @@ class puppetserver::puppetconf {
   # file) from the master present only when the puppetserver
   # has the "client" profile, not when it has the
   # "autonomous" profile.
+  # We have exactly the same thing with the file
+  # "hieradata-datacenter-from-master.yaml".
   # The "client" puppetserver will retrieve too some yaml
   # group files from the master via the $groups_from_master
   # variable.
@@ -168,6 +170,21 @@ class puppetserver::puppetconf {
       before  => Service['puppetserver'],
       # No need to restart the puppetserver here.
     }
+
+    # Only if $::datacenter is defined for this server.
+    if $::datacenter {
+      $dfm_content = file("${production_path}/hieradata/datacenter/${::datacenter}.yaml")
+      file { "${production_path}/hieradata-datacenter-${::datacenter}-from-master.yaml":
+        ensure  => present,
+        owner   => 'root',
+        group   => 'root',
+        mode    => '0644',
+        content => $dfm_content,
+        before  => Service['puppetserver'],
+        # No need to restart the puppetserver here.
+      }
+    }
+
 
     # The "hieradata-group-from-master" directory and its files below.
     file { "${production_path}/hieradata-group-from-master":

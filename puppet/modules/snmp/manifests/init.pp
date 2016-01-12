@@ -2,6 +2,8 @@ class snmp (
   Array[String[1], 1] $supported_distributions,
 ) {
 
+  require '::repository::shinken'
+
   include '::snmp::params'
   $interface       = $::snmp::params::interface
   $port            = $::snmp::params::port
@@ -11,7 +13,9 @@ class snmp (
   $communities     = $::snmp::params::communities
   $views           = $::snmp::params::views
 
-  ensure_packages( [ 'snmpd' ], { ensure => present } )
+  # In fact, snmpd is useless here, because it's a dependency
+  # of the the package snmpd-extend.
+  ensure_packages( [ 'snmpd', 'snmpd-extend' ], { ensure => present } )
 
   file { '/etc/snmp/snmpd.conf':
     ensure  => present,

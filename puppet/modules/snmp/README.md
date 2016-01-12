@@ -7,21 +7,21 @@ Basic module to just install and configure snmpd.
 
 ```yaml
 snmp:
-  views:
+  views: # optional with this default value.
     monitoring: [ '.1.3.6.1.2.1', '.1.3.6.1.4.1' ]
   snmpv3_accounts:
     shinkendc2:
-      authproto: 'sha'
+      authproto: 'sha' # optional and default is 'sha'
       authpass: 'xxxxxxxxxxxxxxxxxxxxx'
-      privproto: 'aes'
+      privproto: 'aes' # optional and default is 'aes'
       privpass: 'YYYYYYYYYYYYYYYYYYYYYY'
-      view: 'monitoring'
+      view: 'monitoring' # optional and default is 'monitorng'
   communities:
     toto45:
       - source: 'localhost'
-        view: 'monitoring'
+        view: 'monitoring' # optional and default is 'monitorng'
       - source: '172.31.0.182'
-        view: 'monitoring'
+        view: 'monitoring' # optional and default is 'monitorng'
 ```
 
 

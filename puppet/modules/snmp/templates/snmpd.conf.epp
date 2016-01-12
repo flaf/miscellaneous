@@ -1,11 +1,11 @@
 <%-|
-String                                                        $interface,
-Variant[Integer[1], String[1]]                                $port,
-String[1]                                                     $syslocation,
-String[1]                                                     $syscontact,
-Hash[String[1], Hash[String[1], String[1], 5, 5]]             $snmpv3_accounts,
-Hash[String[1], Array[ Hash[ String[1], String[2], 2, 2], 1]] $communities,
-Hash[String[1], Array[String[1]]]                             $views
+String                                                       $interface,
+Variant[Integer[1], String[1]]                               $port,
+String[1]                                                    $syslocation,
+String[1]                                                    $syscontact,
+Hash[String[1], Hash[String[1], String[1], 2, 5]]            $snmpv3_accounts,
+Hash[String[1], Array[ Hash[String[1], String[2], 1, 2], 1]] $communities,
+Hash[String[1], Array[String[1]]]                            $views
 |-%>
 ### This file is managed by Puppet, don't edit it. ###
 
@@ -23,9 +23,18 @@ syscontact <%= $syscontact %>
 # SNMPv3 accounts.
 <%- $snmpv3_accounts.each |$secname, $settings| { -%>
 <%-
-  $authproto = $settings['authproto'].upcase
+  $authproto = $settings['authproto'] ? {
+    undef   => 'SHA',
+    default => $settings['authproto'].upcase,
+  }
+
   $authpass  = $settings['authpass']
-  $privproto = $settings['privproto'].upcase
+
+  $privproto = $settings['privproto'] ? {
+    undef   => 'AES',
+    default => $settings['privproto'].upcase,
+  }
+
   $privpass  = $settings['privpass']
 -%>
 agentSecName <%= $secname %>
@@ -41,11 +50,13 @@ view <%= $name %> included <%= $oid %>
 
 # Access control.
 <%- $snmpv3_accounts.each |$secname, $settings| { -%>
-rouser <%= $secname %> priv -V <%= $settings['view'] %>
+  <%- $view = $settings['view'] ? { undef => 'monitoring', default => $settings['view'] } -%>
+rouser <%= $secname %> priv -V <%= $view %>
 <%- } -%>
 <%- $communities.each |$community, $settings| { -%>
   <%- $settings.each |$a_setting| { -%>
-rocommunity <%= $community %> <%= $a_setting['source'] %> -V <%= $a_setting['view'] %>
+    <%- $view = $a_setting['view'] ? { undef => 'monitoring', default => $a_setting['view'] } -%>
+rocommunity <%= $community %> <%= $a_setting['source'] %> -V <%= $view %>
   <%- } -%>
 <%- } -%>
 

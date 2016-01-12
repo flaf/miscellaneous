@@ -18,6 +18,9 @@
   - '%{::environment}/hieradata/datacenter/%{::datacenter}'
   - '%{::environment}/hieradata/common'
 <%- if $profile == 'client' { -%>
+  <%- if $::datacenter { -%>
+  - '%{::environment}/hieradata-datacenter-<%= $::datacenter %>-from-master'
+  <%- } -%>
   - '%{::environment}/hieradata-common-from-master'
 <%- } -%>
 

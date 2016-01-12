@@ -27,6 +27,10 @@ function repository::data {
 
   $distribs     = [ 'trusty', 'jessie' ]
 
+  $repository_crdp_url                = 'http://repository.crdp.ac-versailles.fr/debian'
+  $repositroy_crdp_gpgkey             = 'http://repository.crdp.ac-versailles.fr/crdp.gpg'
+  $repositroy_crdp_gpgkey_fingerprint = '741FA112F3B2D515A88593F83DE39DE978BB3659'
+
   # Dedicated stage for this module.
   $stage = 'repository';
 
@@ -60,10 +64,17 @@ function repository::data {
     repository::ceph::supported_distributions => $distribs,
     repository::ceph::stage                   => $stage,
 
-    repository::moobot::url                     => 'http://repository.crdp.ac-versailles.fr/debian',
-    repository::moobot::key_url                 => 'http://repository.crdp.ac-versailles.fr/crdp.gpg',
+    repository::moobot::url                     => $repository_crdp_url,
+    repository::moobot::key_url                 => $repositroy_crdp_gpgkey,
+    repository::moobot::fingerprint             => $repositroy_crdp_gpgkey_fingerprint,
     repository::moobot::supported_distributions => $distribs,
     repository::moobot::stage                   => $stage,
+
+    repository::shinken::url                     => $repository_crdp_url,
+    repository::shinken::key_url                 => $repositroy_crdp_gpgkey,
+    repository::shinken::fingerprint             => $repositroy_crdp_gpgkey_fingerprint,
+    repository::shinken::supported_distributions => $distribs,
+    repository::shinken::stage                   => $stage,
 
   }
 

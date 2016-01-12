@@ -168,8 +168,31 @@ Here is an example:
 
 ```puppet
 class { '::repository::moobot':
-  url     => 'http://repository.crdp.ac-versailles.fr',
-  key_url => 'http://repository.crdp.ac-versailles.fr/crdp.gpg',
+  url         => 'http://repository.crdp.ac-versailles.fr',
+  key_url     => 'http://repository.crdp.ac-versailles.fr/crdp.gpg',
+  fingerprint => '741FA112F3B2D515A88593F83DE39DE978BB3659',
+}
+```
+
+## Parameters and default values
+
+The default values of the parameters are exactly
+the values of the call above.
+
+
+
+
+# The `repository::shinken` class
+
+## Usage
+
+Here is an example:
+
+```puppet
+class { '::repository::shinken':
+  url         => 'http://repository.crdp.ac-versailles.fr',
+  key_url     => 'http://repository.crdp.ac-versailles.fr/crdp.gpg',
+  fingerprint => '741FA112F3B2D515A88593F83DE39DE978BB3659',
 }
 ```
 
