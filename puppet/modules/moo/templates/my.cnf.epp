@@ -1,7 +1,7 @@
 <%-| $mysql_rootpwd |-%>
 # This file is managed by Puppet, don't edit it.
 
-[mysql]
+[client]
   user     = root
   host     = localhost
   #database = moobot
