@@ -114,6 +114,34 @@ switched to db admin
 moogo:SECONDARY> 
 ```
 
+It's possible to set the priority for each node. It's a
+simple weight (from 0 to 1000), so the absolute value is not
+relevant at all... except when equal to 0: in this specific
+case, a node will be **never** the PRIMARY. You must run
+these commands on the PRIMARY node:
+
+```sh
+# Assign the replica set configuration in a variable.
+moogo:PRIMARY> cfg = rs.conf()
+
+# Set the priority as you want. Be careful, in
+# "cfg.members[0]" 0 is the index of a element in the
+# cfg.members array and this is not automatically to the
+# value of the "_id" entry.
+moogo:PRIMARY> cfg.members[0].priority = 1
+moogo:PRIMARY> cfg.members[1].priority = 1
+moogo:PRIMARY> cfg.members[2].priority = 0.5
+
+# To see the new configuration, not yet pushed. In a member,
+# if the priority is equal to 1, it will not be displayed
+# because 1 is the default value of the priority.
+moogo:PRIMARY> cfg
+
+# Now, we apply the new configuration. Maybe it can
+# trigger a new election of the PRIMARY node.
+moogo:PRIMARY> rs.reconfig(cfg)
+```
+
 It's possible to connect to mongo directly with a specific
 user on a specific base on a specific host. For instance:
 

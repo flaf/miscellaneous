@@ -26,12 +26,12 @@ function snmp::data {
   $syscontact = "admin@${::domain}"
 
   $snmpv3_accounts = $conf['snmpv3_accounts'] ? {
-    undef   => {},
+    undef   => [],
     default => $conf['snmpv3_accounts'],
   }
 
   $communities = $conf['communities'] ? {
-    undef   => {},
+    undef   => [],
     default => $conf['communities'],
   }
 

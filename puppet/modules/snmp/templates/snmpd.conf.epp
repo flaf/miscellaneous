@@ -1,11 +1,11 @@
 <%-|
-String                                                       $interface,
-Variant[Integer[1], String[1]]                               $port,
-String[1]                                                    $syslocation,
-String[1]                                                    $syscontact,
-Hash[String[1], Hash[String[1], String[1], 2, 5]]            $snmpv3_accounts,
-Hash[String[1], Array[ Hash[String[1], String[2], 1, 2], 1]] $communities,
-Hash[String[1], Array[String[1]]]                            $views
+String                               $interface,
+Variant[Integer[1], String[1]]       $port,
+String[1]                            $syslocation,
+String[1]                            $syscontact,
+Array[Hash[String[1], String[1], 3]] $snmpv3_accounts,
+Array[Hash[String[1], Data, 2, 2]]   $communities,
+Hash[String[1], Array[String[1]]]    $views,
 |-%>
 ### This file is managed by Puppet, don't edit it. ###
 
@@ -21,24 +21,25 @@ syslocation <%= $syslocation %>
 syscontact <%= $syscontact %>
 
 # SNMPv3 accounts.
-<%- $snmpv3_accounts.each |$secname, $settings| { -%>
+<%- $snmpv3_accounts.each |$an_account| { -%>
 <%-
-  $authproto = $settings['authproto'] ? {
+  $authproto = $an_account['authproto'] ? {
     undef   => 'SHA',
-    default => $settings['authproto'].upcase,
+    default => $an_account['authproto'].upcase,
   }
 
-  $authpass  = $settings['authpass']
+  $authpass  = $an_account['authpass']
 
-  $privproto = $settings['privproto'] ? {
+  $privproto = $an_account['privproto'] ? {
     undef   => 'AES',
-    default => $settings['privproto'].upcase,
+    default => $an_account['privproto'].upcase,
   }
 
-  $privpass  = $settings['privpass']
+  $privpass  = $an_account['privpass']
+  $name      = $an_account['name']
 -%>
-agentSecName <%= $secname %>
-createUser <%= $secname %> <%= $authproto %> '<%= $authpass %>' <%= $privproto %> <%= $privpass %>
+agentSecName <%= $name %>
+createUser <%= $name %> <%= $authproto %> '<%= $authpass %>' <%= $privproto %> <%= $privpass %>
 <%- } -%>
 
 # Views.
@@ -49,14 +50,23 @@ view <%= $name %> included <%= $oid %>
 <%- } -%>
 
 # Access control.
-<%- $snmpv3_accounts.each |$secname, $settings| { -%>
-  <%- $view = $settings['view'] ? { undef => 'monitoring', default => $settings['view'] } -%>
-rouser <%= $secname %> priv -V <%= $view %>
+<%- $snmpv3_accounts.each |$an_account| { -%>
+  <%-
+    $view = $an_account['view'] ? { undef => 'monitoring', default => $an_account['view'] }
+    $name = $an_account['name']
+  -%>
+rouser <%= $name %> priv -V <%= $view %>
 <%- } -%>
-<%- $communities.each |$community, $settings| { -%>
-  <%- $settings.each |$a_setting| { -%>
-    <%- $view = $a_setting['view'] ? { undef => 'monitoring', default => $a_setting['view'] } -%>
-rocommunity <%= $community %> <%= $a_setting['source'] %> -V <%= $view %>
+<%- $communities.each |$community| { -%>
+  <%-
+    $name   = $community['name']
+    $access = $community['access']
+  -%>
+  <%- $access.each |$an_access| { -%>
+    <%-
+      $view = $an_access['view'] ? { undef => 'monitoring', default => $an_access['view'] }
+    -%>
+rocommunity <%= $name %> <%= $an_access['source'] %> -V <%= $view %>
   <%- } -%>
 <%- } -%>
 
