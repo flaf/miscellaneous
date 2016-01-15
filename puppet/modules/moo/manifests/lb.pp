@@ -57,6 +57,40 @@ class moo::lb (
     refreshonly => true,
   }
 
+  # Now, we need to redirect http to https with a basic
+  # Nginx server.
+  ensure_packages( [ 'nginx-light' ], { ensure => present } )
+
+  $content_nginx = @(END)
+    ### File managed by Puppet, don't edit it. ###
+
+    server {
+        # Normally, haproxy uses already the ports 80 and 8080.
+        listen 8000;
+        # Redirect to the same url with https
+        # (301 <=> Moved Permanently).
+        return 301 https://$http_host$request_uri;
+    }
+
+    | END
+
+  file { '/etc/nginx/sites-available/default':
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    content => $content_nginx,
+    require => Package['nginx-light'],
+    notify  => Service['nginx']
+  }
+
+  service { 'nginx':
+    ensure     => running,
+    hasstatus  => true,
+    hasrestart => true,
+    enable     => true,
+    require    => File['/etc/nginx/sites-available/default'],
+  }
+
 }
 
 
