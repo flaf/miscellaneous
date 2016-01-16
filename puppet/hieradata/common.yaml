@@ -56,6 +56,7 @@ repository::puppet::pinning_agent_version: '1.3.2-*'
 repository::puppet::pinning_server_version: '2.2.1-*'
 
 mcollective:
+  middleware_exchanges: [ 'vboxhome' ]
   middleware_address: 'middleware.%{::domain}'
   middleware_mcollective_pwd: "%{hiera('_middleware_mcollective_pwd_')}"
   server_private_key: "%{hiera('_mcollective_server_private_key_')}"
