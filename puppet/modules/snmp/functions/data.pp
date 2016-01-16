@@ -3,7 +3,7 @@ function snmp::data {
   include '::network::params'
   $inventory_networks = $::network::params::inventory_networks
   $interfaces         = $::network::params::interfaces
-  $conf               = lookup('snmp', Hash[String[1], Data, 1], 'hash', {})
+  $conf               = lookup('snmp', Hash[String[1], Data], 'hash', {})
 
   $interface = $conf['interface'] ? {
     undef   => '',

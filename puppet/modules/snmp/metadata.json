@@ -1,6 +1,6 @@
 {
   "name": "flaf-snmp",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "author": "flaf",
   "summary": "Module to install and configure snmpd",
   "license": "Apache-2.0",
