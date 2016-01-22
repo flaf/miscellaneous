@@ -31,8 +31,10 @@ unset reset
 unset prompt
 unset host_name
 
-# Set the GIT_SSH environment variable if it's relevant.
-if [ -e '/usr/local/bin/git_ssh_wrapper' ]
+# Set the GIT_SSH environment variable if it's relevant, ie
+# if /usr/local/bin/git_ssh_wrapper exists and if
+# SSH_AUTH_SOCK is not already defined.
+if [ -e '/usr/local/bin/git_ssh_wrapper' ] && [ -z "$SSH_AUTH_SOCK" ]
 then
     export GIT_SSH='/usr/local/bin/git_ssh_wrapper'
 fi
