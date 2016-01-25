@@ -147,7 +147,9 @@ EOF
             # Now, we can remove the pkg/ directory.
             rm -rf --one-file-system "$modulesdir/$full_name/pkg"
 
-            tar -zcf "$modulesdir/$full_name.tar.gz" "$modulesdir/$full_name"
+            # The archive must be prefixed by the $full_name.
+            (cd "$modulesdir" && tar -zcf "$modulesdir/$full_name.tar.gz" "$full_name")
+
             rm -rf "$modulesdir/$full_name"
             rm -rf "/tmp/$repo_name"
             printf "[%s] Module stored. Next if it exists...\n" "$full_name"
