@@ -1,9 +1,15 @@
-#!/bin/sh
+<%- |String[1] $shared_root_path| -%>
+#!/bin/bash
 
 ### This file is managed by Puppet, don't edit it. ###
 
 LC_ALL='C'
 export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+script_name="${0##*/}"
+pid="$$"
+tag="$script_name[$pid]"
+shared_root_path="<%= $shared_root_path %>"
+
 
 c=0
 while [ "$(pgrep -c docker)" = 0 ]
@@ -13,12 +19,27 @@ do
 
     if [ "$c" = "100" ]
     then
-        printf '%s\n' "Sorry, docker daemon never started. Script aborted." >&2
+        logger -t "$tag" "Sorry, docker daemon never started. Script aborted."
         exit 1
     fi
 done
 
-sleep 10
+c=0
+while [ ! mountpoint -q "$shared_root_path" ]
+do
+    sleep 1
+    c=$((c+1))
+
+    if [ "$c" = "30" ]
+    then
+        logger -t "$tag" "Sorry, $shared_root_path never mounted. Script aborted."
+        exit 1
+    fi
+done
+
+logger -t "$tag" "docker daemon is started and $shared_root_path is mounted."
+
+sleep $((RANDOM % 20 + 10))
 
 # Remove all containers.
 docker stop $(docker ps --all --quiet)
@@ -28,6 +49,11 @@ docker rm $(docker ps --all --quiet)
 sleep 1
 
 # Restart all.
-python /opt/moobot/bin/cargo.py --force --verbose --debug
+if python /opt/moobot/bin/cargo.py --force --verbose --debug
+then
+    logger -t "$tag" "All dockers containers has been successfully restarted."
+else
+    logger -t "$tag" "Error during the execution of cargo.py."
+fi
 
 

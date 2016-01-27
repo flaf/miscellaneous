@@ -1,0 +1,213 @@
+<%-|
+  String[1]  $backups_dir,
+  Integer[1] $backups_retention,
+  String[1]  $shared_root_path,
+|-%>
+#!/bin/sh
+### This file is managed by Puppet, don't edit it. ###
+
+# Usage:
+#
+#       When a backup is done, a "done" file is put in the backup directory
+#       of the moodle. If all backup directories have the "done" file, the
+#       "done" file is remove on each directory to begin a new cycle of backups.
+#
+#       moobackup.puppet     => backup of one moodle chosen automatically
+#                               (a moodle which has no "done" file in its backup
+#                               directory)
+#       moobackup.puppet foo => backup of the moodle "foo"
+#       moobackup.puppet ALL => backups of all moodles
+#
+
+export LC_ALL='C'
+export PATH='/usr/sbin:/usr/bin:/sbin:/bin'
+script_name="${0##*/}"
+pid="$$"
+tag="$script_name[$pid]"
+backupsdir='<%= $backups_dir %>'
+maintenance_cmd='cd /moodle/www && sudo -u moouser /usr/bin/php admin/cli/maintenance.php'
+shared_root_path='<%= $shared_root_path %>'
+this_docker="$1"
+retention='<%= $backups_retention %>'
+set -e
+
+end () {
+    exit_code="$?"
+    if [ "$exit_code" != "0" ]
+    then
+        logger -t "$tag" "Script arborted after an error during the execution."
+        exit "$exit_code"
+    fi
+}
+
+trap end EXIT
+
+
+if ! printf '%s\n' "$this_docker" | grep -iEq '^([-a-z0-9]+|)$'
+then
+    logger -t "$tag" "The hostname $this_docker is not valid."
+    exit 1
+fi
+
+if [ ! -d "$backupsdir" ]
+then
+    logger -t "$tag" "Sorry, the $backupsdir directory doesn't exist. Script aborted."
+    exit 1
+fi
+
+get_env () {
+    local docker_id="$1"
+    local prg_py='
+import ast
+i = raw_input()
+print( "\n".join(ast.literal_eval(i)) )
+'
+    env_vars=$(docker inspect "$docker_id" | jq -r '.[0]["Config"]["Env"] | tostring' | python -c "$prg_py")
+    eval "$env_vars"
+}
+
+get_date () {
+  date "+%Y-%m-%d-%Hh%M"
+}
+
+my_logger () {
+    logger -t "$tag" "moodle [$HOSTNAME] $1"
+}
+
+
+# Creation of all backup directories.
+for docker_id in $(docker ps --quiet)
+do
+    get_env "$docker_id"
+    [ ! -d "$backupsdir/$HOSTNAME" ] && mkdir -p "$backupsdir/$HOSTNAME"
+done
+
+# Number of dockers.
+n=$(find "$backupsdir" -maxdepth 1 -mindepth 1 -type d -printf '%p\n' | wc -l)
+
+# Number of backups already done.
+n_done=$(find "$backupsdir" -maxdepth 2 -mindepth 2 -type f -name done -printf '%p\n' | wc -l)
+
+# If all moodle have its backup directory with the "done"
+# file, all "done" files are removed and a cycle of backups
+# begins.
+if [ "$n" = "$n_done" ]
+then
+    find "$backupsdir" -maxdepth 2 -mindepth 2 -type f -name 'done' -delete
+fi
+
+# If the script is run without argument (ie $this_docker is
+# empty), then a specific moodle is chosen among moodles
+# which have not the "done" file in its backup directory.
+if [ -z "$this_docker" ]
+then
+    for m in $(find "$backupsdir" -maxdepth 1 -mindepth 1 -type d -printf '%p\n')
+    do
+        [ -e "$m/done" ] && continue
+        [ ! -e "$m/done" ] && this_docker="${m##*/}" && break
+    done
+fi
+
+for docker_id in $(docker ps --quiet)
+do
+    get_env "$docker_id"
+
+    if [ "$this_docker" = "$HOSTNAME" ] || [ "$this_docker" = 'ALL' ]
+    then
+        my_logger "will be handled."
+    else
+        continue
+    fi
+
+    docker exec -t "$docker_id" bash -c "$maintenance_cmd --enable" >/dev/null
+    my_logger "is offline now."
+    sleep 10
+
+    sqldumpdir="$backupsdir/$HOSTNAME/sqldump"
+    sqldumpfile="$sqldumpdir/${HOSTNAME}_$(get_date).sql.gz"
+    filedirbackup="$backupsdir/$HOSTNAME/filedir"
+    filedirtargz="$backupsdir/$HOSTNAME/${HOSTNAME}_$(get_date).tar.gz"
+
+    ### MySQL ###
+
+    [ ! -d "$sqldumpdir" ] && mkdir -p "$sqldumpdir"
+
+    my_logger "mysqldump of the database."
+    if ! mysqldump -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASSWORD" "$DB_NAME" | gzip --force >"$sqldumpfile"
+    then
+        my_logger "problem during the mysqldump command."
+        exit 1
+    fi
+    my_logger "mysqldump of the database finished."
+
+    # Retention.
+    # find gives a list where the oldest files are below.
+    # We want to remove all these files except the $retention
+    # most recent files.
+    files_to_be_deleted=$(find "$sqldumpdir" -maxdepth 1 -mindepth 1 -type f \
+                          -name '*.sql.gz' -printf '%T+ %p\n' | sort -r |    \
+                          awk '{ print $2 }' | tail -n+$((retention +1 )) )
+    for f in $files_to_be_deleted
+    do
+        rm "$f"
+    done
+
+    docker exec -t "$docker_id" bash -c "$maintenance_cmd --disable" >/dev/null
+    my_logger "is online now."
+
+    ### filedir ###
+
+    filedir=$(docker inspect "$docker_id" | jq -r '.[0]["Volumes"]["/moodle/data/filedir"]')
+    my_logger "rsync of the filedir."
+
+    if ! mountpoint -q "$shared_root_path"
+    then
+        my_logger "The directory $shared_root_path is not mounted."
+        exit 1
+    fi
+
+    if [ ! -d "$filedir" ]
+    then
+        my_logger "Problem, the directory $filedir doesn't exist."
+        exit 1
+    fi
+
+    # /!\ Warning /!\
+    #
+    #   --ignore-existing
+    #        This tells rsync to skip updating files that
+    #        already exist on the  destnation
+    #
+    # With this option, we use a specificity of the moodle
+    # filedir where the name of each file is it sha1sum.
+    if ! nice -n 10 ionice -c2 -n7 rsync -xr --ignore-existing --delete "$filedir" "$filedirbackup"
+    then
+        my_logger "problem during the rsync command."
+        exit 1
+    fi
+
+    my_logger "rsync of the filedir is finished."
+
+
+    my_logger "creation of the tar.gz filedir."
+    (cd "$filedirbackup" && nice -n 10 ionice -c2 -n7 tar -zcf "$filedirtargz" .)
+    my_logger "creation of the tar.gz filedir finished."
+
+    # Retention.
+    # find gives a list where the oldest files are below.
+    # We want to remove all these files except the $retention
+    # most recent files.
+    files_to_be_deleted=$(find "$backupsdir/$HOSTNAME" -maxdepth 1 -mindepth 1 \
+                          -type f -name '*.tar.gz' -printf '%T+ %p\n' |        \
+                          sort -r | awk '{ print $2 }' |                       \
+                          tail -n+$((retention +1 )) )
+    for f in $files_to_be_deleted
+    do
+        rm "$f"
+    done
+
+    touch "$backupsdir/$HOSTNAME/done"
+    my_logger "handle is finished."
+done
+
+

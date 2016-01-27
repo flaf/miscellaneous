@@ -4,6 +4,9 @@ class moo::cargo (
   Array[String[1]]    $docker_dns,
   String[1]           $ceph_account,
   String[1]           $ceph_client_mountpoint,
+  String[1]           $backups_dir,
+  Integer[1]          $backups_retention,
+  Boolean             $make_backups,
   Boolean             $ceph_mount_on_the_fly,
   Array[String[1], 1] $supported_distributions,
 ) {
@@ -158,8 +161,23 @@ class moo::cargo (
     ensure   => present,
     device   => "id=$c,keyring=/etc/ceph/ceph.client.$c.keyring,client_mountpoint=${climnt}",
     fstype   => 'fuse.ceph',
+    #
+    # ceph-fuse doesn't support the remount option.
     remounts => false,
-    options  => 'noatime,defaults,_netdev',
+    #
+    # Be careful, because despite of "ensure => present" (ie
+    # normally just set /etc/fstab, if options are changed I
+    # have noticed a new process of ceph-fuse (like a new
+    # mount) and the dockers have access to filedir no
+    # longer. To sum up:
+    #
+    #      /!\ WARNING /!\
+    #
+    #      Don't change mount options or only when no docker
+    #      is started and the server but just reboot the
+    #      server after the puppet run
+    #
+    options  => 'noatime,nonempty,defaults,_netdev',
     require  => File[$shared_root_path],
   }
 
@@ -186,15 +204,53 @@ class moo::cargo (
     owner   => 'root',
     group   => 'root',
     mode    => '0755',
-    content => epp('moo/restart-all-dockers.puppet.epp', {}),
+    content => epp('moo/restart-all-dockers.puppet.epp',
+                   { 'shared_root_path' => $shared_root_path, },
+                  ),
   }
 
   cron { 'cron-restart-all-dockers-at-boot':
-    ensure  => $ensure_cron,
+    ensure  => present,
     user    => 'root',
     command => '/usr/local/sbin/restart-all-dockers.puppet',
     require => File['/usr/local/sbin/restart-all-dockers.puppet'],
     special => 'reboot',
+  }
+
+  # Packages needed for this script.
+  ensure_packages(
+                   [
+                     'jq',
+                     'python',
+                     'mysql-client',
+                     'rsync',
+                   ], { ensure => present } )
+  file { '/usr/local/sbin/moobackup.puppet':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0755',
+    content => epp('moo/moobackup.puppet.epp',
+                   {
+                    'backups_dir'       => $backups_dir,
+                    'backups_retention' => $backups_retention,
+                    'shared_root_path'  => $shared_root_path,
+                   },
+                  ),
+  }
+
+  if $make_backups {
+
+    cron { 'cron-backups-moodles':
+      ensure  => $present,
+      user    => 'root',
+      # Yes, 2 consecutive backups are run.
+      command => '/usr/local/sbin/moobackup.puppet; /usr/local/sbin/moobackup.puppet',
+      hour    => 2,
+      minute  => 0,
+      require => File['/usr/local/sbin/moobackup.puppet'],
+    }
+
   }
 
 }

@@ -24,7 +24,9 @@ class moo::captain (
   }
 
   exec { 'init-moobot-database':
-    command => 'mysql < /root/init-moobot-database.sql',
+    # No risk. No automatic execution of this command in any case.
+    #command => 'mysql < /root/init-moobot-database.sql',
+    command => 'true',
     path    => '/usr/sbin:/usr/bin:/sbin:/bin',
     cwd     => '/root',
     user    => 'root',

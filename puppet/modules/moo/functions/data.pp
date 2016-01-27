@@ -90,6 +90,9 @@ function moo::data {
     moo::cargo::ceph_account            => 'cephfs',
     moo::cargo::ceph_client_mountpoint  => '/moodle',
     moo::cargo::ceph_mount_on_the_fly   => false,
+    moo::cargo::backups_dir             => '/backups',
+    moo::cargo::backups_retention       => 2,
+    moo::cargo::make_backups            => false,
     moo::cargo::supported_distributions => [ 'trusty' ],
 
     moo::lb::supported_distributions => [ 'trusty' ],
