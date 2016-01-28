@@ -1,0 +1,20 @@
+<%- |String[1] $shared_root_path| -%>
+#!/bin/sh
+
+### This file is managed by Puppet, don't edit it. ###
+
+LC_ALL='C'
+export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+script_name="${0##*/}"
+shared_root_path="<%= $shared_root_path %>"
+
+if ! mountpoint -q "$shared_root_path"
+then
+    echo "Sorry, $shared_root_path is not mounted, script aborted." >&2
+    exit 1
+fi
+
+# Restart all.
+python /opt/moobot/bin/cargo.py --force --verbose --debug
+
+

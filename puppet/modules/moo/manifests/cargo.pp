@@ -253,6 +253,18 @@ class moo::cargo (
 
   }
 
+  file { '/usr/local/sbin/cargo-py-wrapper.puppet':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0755',
+    content => epp('moo/cargo-py-wrapper.puppet.epp',
+                   {
+                    'shared_root_path'  => $shared_root_path,
+                   },
+                  ),
+  }
+
 }
 
 
