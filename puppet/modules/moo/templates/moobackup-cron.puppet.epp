@@ -5,7 +5,7 @@ export LC_ALL='C'
 export PATH='/usr/sbin:/usr/bin:/sbin:/bin'
 arg="$1"
 
-if printf '%s\n' "$arg" | grep -E '^[0-9]+$'
+if printf '%s\n' "$arg" | grep -qE '^[0-9]+$'
 then
 
     for i in $(seq 1 "$arg")
