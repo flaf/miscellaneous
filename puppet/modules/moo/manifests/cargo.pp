@@ -6,6 +6,7 @@ class moo::cargo (
   String[1]           $ceph_client_mountpoint,
   String[1]           $backups_dir,
   Integer[1]          $backups_retention,
+  Integer[1]          $backups_moodles_per_day,
   Boolean             $make_backups,
   Boolean             $ceph_mount_on_the_fly,
   Array[String[1], 1] $supported_distributions,
@@ -239,16 +240,24 @@ class moo::cargo (
                   ),
   }
 
+  file { '/usr/local/sbin/moobackup-cron.puppet':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0755',
+    content => epp('moo/moobackup-cron.puppet.epp', {}),
+    require => File['/usr/local/sbin/moobackup.puppet'],
+  }
+
   if $make_backups {
 
     cron { 'cron-backups-moodles':
       ensure  => $present,
       user    => 'root',
-      # Yes, 2 consecutive backups are run.
-      command => '/usr/local/sbin/moobackup.puppet; /usr/local/sbin/moobackup.puppet',
+      command => "/usr/local/sbin/moobackup-cron.puppet ${backups_moodles_per_day}",
       hour    => 2,
       minute  => 0,
-      require => File['/usr/local/sbin/moobackup.puppet'],
+      require => File['/usr/local/sbin/moobackup-cron.puppet'],
     }
 
   }
