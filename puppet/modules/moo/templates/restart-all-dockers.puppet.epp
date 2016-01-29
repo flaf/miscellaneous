@@ -14,10 +14,13 @@ shared_root_path="<%= $shared_root_path %>"
 c=0
 while [ "$(pgrep -c docker)" = 0 ]
 do
+
+    logger -t "$tag" "pending the start of docker daemon."
+
     sleep 1
     c=$((c+1))
 
-    if [ "$c" = "100" ]
+    if [ "$c" = "60" ]
     then
         logger -t "$tag" "Sorry, docker daemon never started. Script aborted."
         exit 1
@@ -25,16 +28,20 @@ do
 done
 
 c=0
-while [ ! mountpoint -q "$shared_root_path" ]
+while ! mountpoint -q "$shared_root_path"
 do
+
+    logger -t "$tag" "pending the mount of $shared_root_path."
+
     sleep 1
     c=$((c+1))
 
-    if [ "$c" = "30" ]
+    if [ "$c" = "60" ]
     then
         logger -t "$tag" "Sorry, $shared_root_path never mounted. Script aborted."
         exit 1
     fi
+
 done
 
 logger -t "$tag" "docker daemon is started and $shared_root_path is mounted."
@@ -49,7 +56,7 @@ docker rm $(docker ps --all --quiet)
 sleep 1
 
 # Restart all.
-if python /opt/moobot/bin/cargo.py --force --verbose --debug
+if cargo-py-wrapper.puppet
 then
     logger -t "$tag" "All dockers containers has been successfully restarted."
 else
