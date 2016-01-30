@@ -121,7 +121,7 @@ do
 
     docker exec -t "$docker_id" bash -c "$maintenance_cmd --enable" >/dev/null
     my_logger "is offline now."
-    sleep 10
+    sleep 2
 
     sqldumpdir="$backupsdir/$HOSTNAME/sqldump"
     sqldumpfile="$sqldumpdir/${HOSTNAME}_$(get_date).sql.gz"
