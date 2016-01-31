@@ -182,11 +182,11 @@ the values of the call above.
 
 
 
-# The `repository::shinken` class
+# The `repository::shinken`, `repository::jrds` and `repository::raid` classes
 
 ## Usage
 
-Here is an example:
+Here is an example with `shinken` (it's the same with `jrds` and `raid`):
 
 ```puppet
 class { '::repository::shinken':

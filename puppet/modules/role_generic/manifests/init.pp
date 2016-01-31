@@ -10,6 +10,7 @@ class role_generic (
     '::network::resolv_conf',
     '::network::ntp',
     '::repository::distrib',
+    '::raid',
     '::basic_ssh::server',
     '::basic_ssh::client',
     '::basic_packages',

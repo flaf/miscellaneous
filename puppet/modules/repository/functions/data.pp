@@ -76,6 +76,18 @@ function repository::data {
     repository::shinken::supported_distributions => $distribs,
     repository::shinken::stage                   => $stage,
 
+    repository::jrds::url                     => $repository_crdp_url,
+    repository::jrds::key_url                 => $repositroy_crdp_gpgkey,
+    repository::jrds::fingerprint             => $repositroy_crdp_gpgkey_fingerprint,
+    repository::jrds::supported_distributions => $distribs,
+    repository::jrds::stage                   => $stage,
+
+    repository::raid::url                     => $repository_crdp_url,
+    repository::raid::key_url                 => $repositroy_crdp_gpgkey,
+    repository::raid::fingerprint             => $repositroy_crdp_gpgkey_fingerprint,
+    repository::raid::supported_distributions => $distribs,
+    repository::raid::stage                   => $stage,
+
   }
 
 }
