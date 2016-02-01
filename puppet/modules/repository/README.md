@@ -160,17 +160,15 @@ the values of the call above.
 
 
 
-# The `repository::moobot` class
+# The `repository::proxmox` class
 
 ## Usage
 
 Here is an example:
 
 ```puppet
-class { '::repository::moobot':
-  url         => 'http://repository.crdp.ac-versailles.fr',
-  key_url     => 'http://repository.crdp.ac-versailles.fr/crdp.gpg',
-  fingerprint => '741FA112F3B2D515A88593F83DE39DE978BB3659',
+class { '::repository::proxmox':
+  url => 'https://enterprise.proxmox.com/debian',
 }
 ```
 
@@ -182,11 +180,11 @@ the values of the call above.
 
 
 
-# The `repository::shinken`, `repository::jrds` and `repository::raid` classes
+# The `repository::shinken`, `repository::moobot`, `repository::jrds` and `repository::raid` classes
 
 ## Usage
 
-Here is an example with `shinken` (it's the same with `jrds` and `raid`):
+Here is an example with `shinken` (it's the same with the other classes):
 
 ```puppet
 class { '::repository::shinken':

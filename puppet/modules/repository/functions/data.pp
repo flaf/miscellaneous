@@ -94,6 +94,10 @@ function repository::data {
     repository::mco::supported_distributions => $distribs,
     repository::mco::stage                   => $stage,
 
+    repository::proxmox::url                     => 'https://enterprise.proxmox.com/debian',
+    repository::proxmox::supported_distributions => [ 'jessie' ],
+    repository::proxmox::stage                   => $stage,
+
   }
 
 }
