@@ -88,6 +88,12 @@ function repository::data {
     repository::raid::supported_distributions => $distribs,
     repository::raid::stage                   => $stage,
 
+    repository::mco::url                     => $repository_crdp_url,
+    repository::mco::key_url                 => $repositroy_crdp_gpgkey,
+    repository::mco::fingerprint             => $repositroy_crdp_gpgkey_fingerprint,
+    repository::mco::supported_distributions => $distribs,
+    repository::mco::stage                   => $stage,
+
   }
 
 }

@@ -13,6 +13,8 @@ class mcollective::client (
 ) {
 
   require '::mcollective::package'
+  require '::repository::mco'
+  ensure_packages(['mcollective-flaf-clients'], { ensure => present, })
 
   # Just shortcuts.
   $client_keys_dir     = $::mcollective::package::client_keys_dir

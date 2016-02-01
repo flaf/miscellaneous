@@ -15,6 +15,14 @@ class mcollective::server (
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
   require '::mcollective::package'
+  require '::repository::mco'
+  ensure_packages(['mcollective-flaf-agents'],
+                  {
+                    ensure => present,
+                    before => Service['mcollective'],
+                    notify => Service['mcollective'],
+                  }
+                 )
 
   # Just shortcuts.
   $server_keys_dir     = $::mcollective::package::server_keys_dir
