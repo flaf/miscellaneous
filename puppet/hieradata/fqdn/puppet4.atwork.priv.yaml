@@ -7,7 +7,7 @@ enc_datacenter: 'vboxwork'
 # by the "puppetagent" module to avoid that the puppet.conf
 # file is managed twice (by the "puppetserver" module and
 # the "puppetagent" module.
-puppetagent::manage_puppetconf: false
+puppetagent::params::manage_puppetconf: false
 network::restart: true
 
 interfaces:
