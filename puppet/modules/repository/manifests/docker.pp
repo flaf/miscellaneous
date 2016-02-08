@@ -5,7 +5,7 @@ class repository::docker (
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
-  include '::repository::params'
+  if !defined(Class['::repository::params']) { include '::repository::params' }
   $url              = $::repository::params::docker_url
   $src              = $::repository::params::docker_src
   $pinning_version  = $::repository::params::docker_pinning_version

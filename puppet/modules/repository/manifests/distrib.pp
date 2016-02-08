@@ -5,7 +5,7 @@ class repository::distrib (
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
-  include '::repository::params'
+  if !defined(Class['::repository::params']) { include '::repository::params' }
   $url                = $::repository::params::distrib_url
   $src                = $::repository::params::distrib_src
   $install_recommends = $::repository::params::distrib_install_recommends

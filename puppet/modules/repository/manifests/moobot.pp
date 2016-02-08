@@ -5,7 +5,7 @@ class repository::moobot (
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
-  include '::repository::params'
+  if !defined(Class['::repository::params']) { include '::repository::params' }
   $url         = $::repository::params::moobot_url
   $key_url     = $::repository::params::moobot_key_url
   $fingerprint = $::repository::params::moobot_fingerprint

@@ -5,7 +5,7 @@ class repository::mco (
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
-  include '::repository::params'
+  if !defined(Class['::repository::params']) { include '::repository::params' }
   $url         = $::repository::params::mco_url
   $key_url     = $::repository::params::mco_key_url
   $fingerprint = $::repository::params::mco_fingerprint

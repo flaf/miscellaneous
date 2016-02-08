@@ -5,7 +5,7 @@ class repository::ceph (
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
-  include '::repository::params'
+  if !defined(Class['::repository::params']) { include '::repository::params' }
   $url             = $::repository::params::ceph_url
   $src             = $::repository::params::ceph_src
   $codename        = $::repository::params::ceph_codename

@@ -5,7 +5,7 @@ class repository::shinken (
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
-  include '::repository::params'
+  if !defined(Class['::repository::params']) { include '::repository::params' }
   $url         = $::repository::params::shinken_url
   $key_url     = $::repository::params::shinken_key_url
   $fingerprint = $::repository::params::shinken_fingerprint

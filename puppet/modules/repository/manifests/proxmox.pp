@@ -5,7 +5,7 @@ class repository::proxmox (
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
-  include '::repository::params'
+  if !defined(Class['::repository::params']) { include '::repository::params' }
   $url = $::repository::params::proxmox_url
 
   $key      = 'BE257BAA5D406D01157D323EC23AC7F49887F95A'

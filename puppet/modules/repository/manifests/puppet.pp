@@ -5,7 +5,7 @@ class repository::puppet (
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
-  include '::repository::params'
+  if !defined(Class['::repository::params']) { include '::repository::params' }
   $url                    = $::repository::params::puppet_url
   $src                    = $::repository::params::puppet_src
   $collection             = $::repository::params::puppet_collection
