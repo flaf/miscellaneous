@@ -10,14 +10,22 @@ This module configures the puppet agent (ie the client).
 Here is an example:
 
 ```puppet
-class { '::puppetagent':
+# This module uses the "params" pattern.
+
+class { '::puppetagent::params':
   service_enabled   => false,
   runinterval       => '7d',
   server            => 'puppet4.mydomain.tld',
   ca_server         => '$server',
   cron              => 'per-week',
+  puppetconf_path   => '/etc/puppetlabs/puppet/puppet.conf',
   manage_puppetconf => true,
+  ssldir            => '/etc/puppetlabs/puppet/ssl',
+  bindir            => '/opt/puppetlabs/puppet/bin',
+  etcdir            => '/etc/puppetlabs/puppet',
 }
+
+include '::puppetagent'
 ```
 
 
@@ -49,10 +57,18 @@ this parameter is the string `$server`, ie the CA server is
 the same as the puppetmaster.
 
 The `cron` parameter accepts only 3 values:
+
 - `per-day` for per-day cron,
 - `per-week` for per-week cron,
 - `disabled`where no cron will run puppet.
-Its default value is `per-week`.
+
+Its default value is `per-week`. The cron task do absolutely
+nothing if the file `${etcdir}/no-run-via-cron` exists (it's a
+basic way to temporarily disable the cron task).
+
+The `puppetconf_path` parameter is a non-empty string and
+its default value is `'/etc/puppetlabs/puppet/puppet.conf'`.
+Normally you should never change this parameter.
 
 The `manage_puppetconf` parameter is a boolean. If set
 to `false`, the puppet class will not manage the
@@ -70,6 +86,18 @@ puppetagent::manage_puppetconf: false
 
 in the `$fqdn.yaml` file of these specific nodes.
 The default value of this parameter is `true`.
+
+The `ssldir` parameter is a non-empty string and its default
+value is `'/etc/puppetlabs/puppet/ssl'`. Normally you should
+never change this parameter.
+
+The `bindir` parameter is a non-empty string and its default
+value is `'/opt/puppetlabs/puppet/bin'`. Normally you should
+never change this parameter.
+
+The `etcdir` parameter is a non-empty string and its default
+value is `'/etc/puppetlabs/puppet'`. Normally you should
+never change this parameter.
 
 
 

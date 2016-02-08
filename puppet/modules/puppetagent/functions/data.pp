@@ -7,15 +7,23 @@ function puppetagent::data {
     $server = $::server_facts['servername']
   } else {
     $server = 'puppet'
-  };
+  }
+
+  $etcdir = '/etc/puppetlabs/puppet'
+  $bindir = '/opt/puppetlabs/puppet/bin';
 
   {
-    puppetagent::service_enabled         => false,
-    puppetagent::runinterval             => '7d',
-    puppetagent::server                  => $server,
-    puppetagent::ca_server               => '$server',
-    puppetagent::cron                    => 'per-week',
-    puppetagent::manage_puppetconf       => true,
+    puppetagent::params::service_enabled   => false,
+    puppetagent::params::runinterval       => '7d',
+    puppetagent::params::server            => $server,
+    puppetagent::params::ca_server         => '$server',
+    puppetagent::params::cron              => 'per-week',
+    puppetagent::params::puppetconf_path   => "${etcdir}/puppet.conf",
+    puppetagent::params::manage_puppetconf => true,
+    puppetagent::params::ssldir            => "${etcdir}/ssl",
+    puppetagent::params::bindir            => $bindir,
+    puppetagent::params::etcdir            => $etcdir,
+
     puppetagent::supported_distributions => [ 'trusty', 'jessie' ],
   }
 

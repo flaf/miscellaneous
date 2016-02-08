@@ -1,16 +1,22 @@
 class puppetagent (
-  Boolean                                 $service_enabled,
-  String[1]                               $runinterval,
-  Enum['per-day', 'per-week', 'disabled'] $cron,
-  String[1]                               $server,
-  String[1]                               $ca_server,
-  Boolean                                 $manage_puppetconf,
-  Array[String[1], 1]                     $supported_distributions,
+  Array[String[1], 1] $supported_distributions,
 ) {
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
   require '::repository::puppet'
+
+  include '::puppetagent::params'
+  $service_enabled   = $::puppetagent::params::service_enabled
+  $runinterval       = $::puppetagent::params::runinterval
+  $server            = $::puppetagent::params::server
+  $ca_server         = $::puppetagent::params::ca_server
+  $cron              = $::puppetagent::params::cron
+  $puppetconf_path   = $::puppetagent::params::puppetconf_path
+  $manage_puppetconf = $::puppetagent::params::manage_puppetconf
+  $ssldir            = $::puppetagent::params::ssldir
+  $bindir            = $::puppetagent::params::bindir
+  $etcdir            = $::puppetagent::params::etcdir
 
   ensure_packages(['puppet-agent'], { ensure => present, })
 
@@ -26,7 +32,7 @@ class puppetagent (
 
   if $manage_puppetconf {
 
-    file { '/etc/puppetlabs/puppet/puppet.conf':
+    file { $puppetconf_path:
       ensure  => present,
       owner   => 'root',
       group   => 'root',
@@ -59,7 +65,6 @@ class puppetagent (
   # just the "puppet-agent" package is installed but will
   # be puppet:puppet if the "puppetserver" package is
   # installed.
-  $ssldir = '/etc/puppetlabs/puppet/ssl'
   file { [ "${ssldir}",
            "${ssldir}/private_keys",
          ]:
@@ -117,7 +122,12 @@ class puppetagent (
     owner  => 'root',
     group  => 'root',
     mode   => '0750',
-    source => 'puppet:///modules/puppetagent/run-cron.puppet',
+    content => epp( 'puppetagent/run-cron.puppet.epp',
+                    {
+                      'bindir' => $bindir,
+                      'etcdir' => $etcdir,
+                    }
+                  ),
   }
 
   # [i]: if we change the cron from 'per-week' to 'per-day',
