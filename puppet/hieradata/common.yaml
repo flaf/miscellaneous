@@ -51,9 +51,9 @@ unix_accounts:
       - 'francois@flpc.athome.priv'
 
 puppetagent::params::ca_server: 'middleware.%{::domain}'
-repository::puppet::collection: 'PC1'
-repository::puppet::pinning_agent_version: '1.3.5-*'
-repository::puppet::pinning_server_version: '2.2.1-*'
+repository::params::puppet_collection: 'PC1'
+repository::params::puppet_pinning_agent_version: '1.3.5-*'
+repository::params::puppet_pinning_server_version: '2.2.1-*'
 
 mcollective:
   middleware_exchanges: [ 'vboxhome' ]
