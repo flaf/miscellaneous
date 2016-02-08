@@ -1,14 +1,40 @@
 class repository::puppet (
-  String[1]           $url,
-  Boolean             $src,
-  String[1]           $collection,
-  String[1]           $pinning_agent_version,
-  String[1]           $pinning_server_version,
   Array[String[1], 1] $supported_distributions,
   String[1]           $stage = 'main',
 ) {
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
+
+  include '::repository::params'
+  $url                    = $::repository::params::puppet_url
+  $src                    = $::repository::params::puppet_src
+  $collection             = $::repository::params::puppet_collection
+  $pinning_agent_version  = $::repository::params::puppet_pinning_agent_version
+  $pinning_server_version = $::repository::params::puppet_pinning_server_version
+
+  if $collection == 'NOT-DEFINED' {
+    regsubst(@("END"), '\n', ' ', 'G').fail
+      $title: sorry the default value of the parameter
+      `repository::params::puppet_collection` is not valid.
+      You must define it explicitly.
+      |- END
+  }
+
+  if $pinning_agent_version == 'NOT-DEFINED' {
+    regsubst(@("END"), '\n', ' ', 'G').fail
+      $title: sorry the default value of the parameter
+      `repository::params::puppet_pinning_agent_version` is not valid.
+      You must define it explicitly.
+      |- END
+  }
+
+  if $pinning_server_version == 'NOT-DEFINED' {
+    regsubst(@("END"), '\n', ' ', 'G').fail
+      $title: sorry the default value of the parameter
+      `repository::params::puppet_pinning_server_version` is not valid.
+      You must define it explicitly.
+      |- END
+  }
 
   $key         = '47B320EB4C7C375AA9DAE1A01054B7A24BD6EC30'
   $collec_down = $collection.downcase

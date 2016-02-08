@@ -1,12 +1,14 @@
 class repository::distrib (
-  String[1]           $url,
-  Boolean             $src,
-  Boolean             $install_recommends,
   Array[String[1], 1] $supported_distributions,
   String[1]           $stage = 'main',
 ) {
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
+
+  include '::repository::params'
+  $url                = $::repository::params::distrib_url
+  $src                = $::repository::params::distrib_src
+  $install_recommends = $::repository::params::distrib_install_recommends
 
   $codename = $::facts['lsbdistcodename']
 

@@ -1,13 +1,31 @@
 class repository::ceph (
-  String[1]           $url,
-  String[1]           $codename,
-  Boolean             $src,
-  String[1]           $pinning_version,
   Array[String[1], 1] $supported_distributions,
   String[1]           $stage = 'main',
 ) {
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
+
+  include '::repository::params'
+  $url             = $::repository::params::ceph_url
+  $src             = $::repository::params::ceph_src
+  $codename        = $::repository::params::ceph_codename
+  $pinning_version = $::repository::params::ceph_pinning_version
+
+  if $codename == 'NOT-DEFINED' {
+    regsubst(@("END"), '\n', ' ', 'G').fail
+      $title: sorry the default value of the parameter
+      `repository::params::ceph_codename` is not valid.
+      You must define it explicitly.
+      |- END
+  }
+
+  if $pinning_version == 'NOT-DEFINED' {
+    regsubst(@("END"), '\n', ' ', 'G').fail
+      $title: sorry the default value of the parameter
+      `repository::params::ceph_pinning_version` is not valid.
+      You must define it explicitly.
+      |- END
+  }
 
   # Fingerprint of the APT key:
   #

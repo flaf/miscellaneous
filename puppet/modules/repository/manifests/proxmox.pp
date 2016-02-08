@@ -1,14 +1,16 @@
 class repository::proxmox (
-  String[1]           $url,
   Array[String[1], 1] $supported_distributions,
   String[1]           $stage = 'main',
 ) {
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
-  $key         = 'BE257BAA5D406D01157D323EC23AC7F49887F95A'
-  $codename    = $::facts['lsbdistcodename']
-  $comment     = "Proxmox ${codename} Repository."
+  include '::repository::params'
+  $url = $::repository::params::proxmox_url
+
+  $key      = 'BE257BAA5D406D01157D323EC23AC7F49887F95A'
+  $codename = $::facts['lsbdistcodename']
+  $comment  = "Proxmox ${codename} Repository."
 
   # Use hkp on port 80 to avoid problem with firewalls etc.
   apt::key { 'proxmox':
