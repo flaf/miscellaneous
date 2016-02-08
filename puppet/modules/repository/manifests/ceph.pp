@@ -11,11 +11,11 @@ class repository::ceph (
   $codename        = $::repository::params::ceph_codename
   $pinning_version = $::repository::params::ceph_pinning_version
 
-  if $codename == 'NOT-DEFINED' {
+  if $codename !~ Enum['infernalis'] {
     regsubst(@("END"), '\n', ' ', 'G').fail
-      $title: sorry the default value of the parameter
+      $title: sorry the value of the parameter
       `repository::params::ceph_codename` is not valid.
-      You must define it explicitly.
+      You must define it explicitly and now valid values are: 'infernalis'.
       |- END
   }
 

@@ -4,10 +4,10 @@ class repository::params (
   Boolean   $distrib_src,
   Boolean   $distrib_install_recommends,
 
-  String[1]          $ceph_url,
-  Boolean            $ceph_src,
-  Enum['infernalis'] $ceph_codename,
-  String[1]          $ceph_pinning_version,
+  String[1] $ceph_url,
+  Boolean   $ceph_src,
+  String[1] $ceph_codename,
+  String[1] $ceph_pinning_version,
 
   String[1] $puppet_url,
   Boolean   $puppet_src,
