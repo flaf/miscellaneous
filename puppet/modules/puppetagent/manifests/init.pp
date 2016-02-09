@@ -6,7 +6,7 @@ class puppetagent (
 
   require '::repository::puppet'
 
-  include '::puppetagent::params'
+  if !defined(Class['::repository::params']) { include '::puppetagent::params' }
   $service_enabled   = $::puppetagent::params::service_enabled
   $runinterval       = $::puppetagent::params::runinterval
   $server            = $::puppetagent::params::server
@@ -94,6 +94,18 @@ class puppetagent (
     enable     => $enable_value,
     hasrestart => true,
     hasstatus  => true,
+  }
+
+  # pxp-agent is not necessary. See:
+  #
+  #   https://groups.google.com/forum/#!topic/puppet-users/JfK2674Lbxo
+  #
+  service { 'pxp-agent':
+    ensure     => stopped,
+    enable     => false,
+    hasrestart => true,
+    hasstatus  => true,
+    require    => Service['puppet'],
   }
 
   case $cron {
