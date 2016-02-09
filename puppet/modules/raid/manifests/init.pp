@@ -1,6 +1,7 @@
 class raid {
 
-  include '::raid::params'
+  $params_class     = '::raid::params'
+  if !defined(Class[$params_class]) { include $params_class }
   $raid_controllers = $::raid::params::raid_controllers
   $controller2class = $::raid::params::controller2class
 

@@ -44,6 +44,8 @@ class repository::params (
 
   String[1] $proxmox_url,
 
+  String[1] $hp_proliant_url,
+
 ) {
 
 }

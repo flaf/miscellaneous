@@ -2,8 +2,13 @@ function repository::data {
 
   case $::operatingsystem {
 
-    'Debian': { $distrib_url = 'http://ftp.fr.debian.org/debian/' }
-    'Ubuntu': { $distrib_url = 'http://fr.archive.ubuntu.com/ubuntu' }
+    'Debian': {
+      $distrib_url = 'http://ftp.fr.debian.org/debian/'
+     }
+
+    'Ubuntu': {
+      $distrib_url = 'http://fr.archive.ubuntu.com/ubuntu'
+     }
 
   }
 
@@ -57,6 +62,10 @@ function repository::data {
     repository::params::proxmox_url                   => 'https://enterprise.proxmox.com/debian',
     repository::proxmox::supported_distributions      => [ 'jessie' ],
     repository::proxmox::stage                        => $stage,
+
+    repository::params::hp_proliant_url               => 'http://downloads.linux.hpe.com/SDR/repo/mcp',
+    repository::hp_proliant::supported_distributions  => [ 'trusty', 'jessie' ],
+    repository::hp_proliant::stage                    => $stage,
 
     repository::params::moobot_url                    => $repository_crdp_url,
     repository::params::moobot_key_url                => $repositroy_crdp_gpgkey,
