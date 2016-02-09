@@ -2,6 +2,8 @@
 
 This module configures the puppet agent (ie the client).
 
+Remark: this module implements the "params" design pattern.
+
 
 
 
