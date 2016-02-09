@@ -6,7 +6,8 @@ class puppetagent (
 
   require '::repository::puppet'
 
-  if !defined(Class['::repository::params']) { include '::puppetagent::params' }
+  $params_class      = '::puppetagent::params'
+  if !defined(Class[$params_class]) { include $params_class }
   $service_enabled   = $::puppetagent::params::service_enabled
   $runinterval       = $::puppetagent::params::runinterval
   $server            = $::puppetagent::params::server
