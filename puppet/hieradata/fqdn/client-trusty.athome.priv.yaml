@@ -18,3 +18,7 @@ moo::common::memcached_servers: [ 'tcp://172.30.225.99:11211',
                                   'tcp://172.30.225.100:11211' ]
 moo::common::moodle_db_host: '172.30.225.68'
 moo::common::docker_repository: '192.168.0.20:5000/moodle'
+
+
+
+

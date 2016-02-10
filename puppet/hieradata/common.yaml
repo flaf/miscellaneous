@@ -32,7 +32,7 @@ inventory_networks:
     cidr_address: '10.0.0.0/24'
 
 
-unix_accounts::fqdn_in_prompt: true
+unix_accounts::params::fqdn_in_prompt: true
 unix_accounts:
   root:
     password: '%{hiera("_root_unix_pwd_")}'

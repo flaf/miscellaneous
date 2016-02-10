@@ -1,12 +1,15 @@
 class unix_accounts (
-  Hash[String[1], Hash[String[1], Data, 1], 1]      $users,
-  Hash[String[1], Hash[String[1], String[1], 2, 2]] $ssh_public_keys,
-  Boolean                                           $fqdn_in_prompt,
-  Array[String[1], 1]                               $supported_distributions,
-  String[1]                                         $stage = 'main',
+  Array[String[1], 1] $supported_distributions,
+  String[1]           $stage = 'main',
 ) {
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
+
+  $params_class    = '::unix_accounts::params'
+  if !defined(Class[$params_class]) { include $params_class }
+  $users           = $::unix_accounts::params::users
+  $ssh_public_keys = $::unix_accounts::params::ssh_public_keys
+  $fqdn_in_prompt  = $::unix_accounts::params::fqdn_in_prompt
 
   $packages = [ 'sudo' ]
   ensure_packages( $packages, { ensure => present } )
