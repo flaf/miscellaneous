@@ -42,6 +42,19 @@ class unix_accounts (
         |- END
     }
 
+    # The "home_unix_rights" parameter is optional but must be a non-empty
+    # string if it exists and must match to Unix rights in octal format.
+    if $params.has_key('home_unix_rights') {
+      unless $params['home_unix_rights'] =~ String[1]
+      and $params['home_unix_rights'] =~ /^[0-7]{3,4}$/ {
+        @("END").regsubst('\n', ' ', 'G').fail
+          ${title}: `$user` account has the `home_unix_rights` key but
+          its value must be only a non-empty strings which matches with
+          Unix rights in octal format.
+          |- END
+      }
+    }
+
     # The "ssh_authorized_keys" parameter is optional but must be a non-empty
     # array of non-empty strings if it exists.
     if $params.has_key('ssh_authorized_keys')
@@ -49,6 +62,16 @@ class unix_accounts (
       @("END").regsubst('\n', ' ', 'G').fail
         ${title}: `$user` account has the `ssh_authorized_keys` key but
         its value must be only a non-empty array of non-empty strings.
+        |- END
+    }
+
+    # The "supplementary_groups" parameter is optional but must be
+    # array of non-empty strings if it exists.
+    if $params.has_key('supplementary_groups')
+    and $params['supplementary_groups'] !~ Array[String[1]] {
+      @("END").regsubst('\n', ' ', 'G').fail
+        ${title}: `$user` account has the `supplementary_groups` key but
+        its value must be only an array of non-empty strings.
         |- END
     }
 
@@ -60,12 +83,41 @@ class unix_accounts (
       $ensure_account = 'present' # the default value is 'present' of course.
     }
 
+    if $params.has_key('supplementary_groups') {
+      $supp_grps_tmp = $params['supplementary_groups']
+    } else {
+      $supp_grps_tmp = []
+    }
+
+    if $params.has_key('home_unix_rights') {
+      $home_unix_rights = $params['home_unix_rights']
+    } else {
+      $home_unix_rights = '0750'
+    }
+
     if $params.has_key('is_sudo') and $params['is_sudo'] {
       $is_sudo              = true
-      $supplementary_groups = [ 'sudo' ]
+      $supplementary_groups = unique( [ 'sudo' ] + $supp_grps_tmp )
     } else {
       $is_sudo              = false
-      $supplementary_groups = []
+      $supplementary_groups = unique( $supp_grps_tmp )
+    }
+
+    if $supplementary_groups.member($user) {
+      @("END").regsubst('\n', ' ', 'G').fail
+        ${title}: `$user` account has the `supplementary_groups` which
+        contains the group `$user`. It is forbidden because `$user` is
+        automatically the primary group of the account. You must remove
+        the group `$user` from the supplementary groups.
+        |- END
+    }
+
+    if $supplementary_groups.member('sudo') and !$is_sudo {
+      @("END").regsubst('\n', ' ', 'G').fail
+        ${title}: `$user` account has the `supplementary_groups` which
+        contains the group `sudo` but its parameter `is_sudo` set to false.
+        It is inconsistent.
+        |- END
     }
 
     if $params.has_key('ssh_authorized_keys') {
@@ -145,7 +197,7 @@ class unix_accounts (
           ensure  => directory,
           owner   => $user,
           group   => $user,
-          mode    => '0750',
+          mode    => $home_unix_rights,
           require => User[$user],
         }
       }
@@ -188,6 +240,64 @@ class unix_accounts (
           group   => 'root',
           require => User[$user],
         }
+      }
+
+      # Remove the account from groups which are not in
+      # the supplementary groups.
+      # Exceptions: we don't handle the "sudo" group here
+      # which is a specific case handled above (the primary
+      # group $user is not seen as a supplementary group).
+      if $ensure_account == 'present' {
+
+        $suppl = sort($supplementary_groups - [ 'sudo' ]).join(':')
+
+        # Command which returns 0 is there are too many groups
+        # which contain the current user, else returns 1.
+        #
+        # (a) With the first grep, we remove the sudo group
+        # and the primary group of the current user. With
+        # the second grep, we take only the groups which
+        # contain the current user.
+        #
+        # (b) If "$grps" is empty, there isn't too many
+        # groups which contain the current user.
+        #
+        # (c) Now $grps is something like ":grp1:grp2:grp3:"
+        # with all the groups which contain the current user
+        # (except sudo and the primary group of the current
+        # user) and the group names are sorted.
+        #
+        $cmd_too_many_grps = @(END).regsubst('__USER__', $user, 'G').regsubst('__SUPPL__', ":${suppl}:", 'G')
+          grps=$(getent group | grep -Ev '^(__USER__|sudo):' \
+                              | grep -E '(:|,)__USER__(,|$)' \
+                              | cut -d':' -f1 | sort | tr '\n' ':') # (a)
+          [ -z "$grps" ] && exit 1 # (b)
+          grps=":$grps" # (c)
+          if [ "$grps" = '__SUPPL__' ]; then exit 1; else exit 0; fi
+          |- END
+
+        $cmd_remove_user_from_groups = @(END).regsubst('__USER__', $user, 'G').regsubst('__SUPPL__', ":${suppl}:", 'G')
+          grps=$(getent group | grep -Ev '^(__USER__|sudo):' \
+                              | grep -E '(:|,)__USER__(,|$)' \
+                              | cut -d':' -f1)
+          for grp in $grps
+          do
+            printf '%s' '__SUPPL__'  | grep -q ":${grp}:" && continue
+            gpasswd --delete '__USER__' "$grp"
+          done
+          |- END
+
+        exec { "remove-${user}-from-groups-not-in-supplementary-groups":
+          # Needed because the command is a shell script.
+          provider => 'shell',
+          command  => $cmd_remove_user_from_groups,
+          onlyif   => $cmd_too_many_grps,
+          path     => '/usr/sbin:/usr/bin:/sbin:/bin',
+          user     => 'root',
+          group    => 'root',
+          require  => User[$user],
+        }
+
       }
 
     } else {

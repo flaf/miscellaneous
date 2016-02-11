@@ -4,6 +4,11 @@ This module allows to manage some Unix and non-system
 accounts and their ssh public keys. Typically, this module
 can be used to set the administrator accounts.
 
+Remark: this module implements the "params" design pattern.
+
+
+
+
 # Usage
 
 Here is an example:
@@ -15,12 +20,14 @@ $users = { 'root' => { 'password'            => 'xxx',
                                                 ],
                      },
 
-           'bob'  => { 'ensure'              => 'present',
-                       'password'            => 'yyy',
-                       'is_sudo'             => true,
-                       'ssh_authorized_keys' => [ 'bob@foo',
-                                                  'bob@home',
-                                                ],
+           'bob'  => { 'ensure'               => 'present',
+                       'password'             => 'yyy',
+                       'is_sudo'              => true,
+                       'supplementary_groups' => [ 'video', 'fuse' ]
+                       'home_unix_rights'     => '0755'
+                       'ssh_authorized_keys'  => [ 'bob@foo',
+                                                   'bob@home',
+                                                 ],
                      }
          }
 
@@ -35,44 +42,77 @@ $ssh_public_keys = { 'bob@foo'  => { 'type'     => 'ssh-rsa',
                                    },
                    }
 
-class { '::unix_account':
+class { '::unix_account::params':
   users           => $users,
   ssh_public_keys => $ssh_public_keys,
   fqdn_in_prompt  => true,
 }
+
+include '::unix_account'
 ```
 
-For the root account, only the parameters `password`
-and `ssh_authorized_keys` are necessary. For this
-account, the rest is just ignored.
+For the root account, only the parameters `password` and
+`ssh_authorized_keys` are handled. For this account, the
+rest is just ignored.
 
-For the other accounts, the parameters `ensure` and
-`is_sudo` are optional. The `ensure` parameter can
-take 2 values: the string `'present'` or the string
-`'absent'` (to remove completely the account **and his
-home**). The default value is `'present'`.
+For the other accounts, the parameters below are optional:
+- `ensure`
+- `is_sudo`
+- `ssh_authorized_keys`
+- `supplementary_groups`
+- `home_unix_rights`
+
+The `ensure` parameter can take 2 values: the string
+`'present'` or the string `'absent'` (to remove completely
+the account **and his home** etc.). The default value is
+`'present'`.
 
 The `is_sudo` parameter is a boolean and its default
 value is `false`.
 
-The `fqdn_in_prompt` parameter is a boolean. If `true`,
-the fqdn will be displayed in the prompt, if `false`
-the short hostname will be used.
+The `ssh_authorized_keys` parameter allows to add ssh public
+key in the file `~/.ssh/authorized_keys` of the user. Its
+default value is an empty hash (ie no ssh key added).
+
+The `supplementary_groups` parameter is an array of the
+supplementary groups of the user. This parameter doesn't
+contain (and shouldn't contain) the primary group of the
+user which is automatically set to the group `$user` (ie a
+group with the same name as the user himself). If the
+`is_sudo` parameter is set to `true`, the group `sudo` will
+be automatically added in the `supplementary_groups`
+parameter (it's useless to add it explicitly). The default
+value of the `supplementary_groups` parameter is `[]` (ie an
+empty array) which means that the user will have no
+supplementary group (just the primary group `$user`) or
+maybe just the `sudo` group if `is_sudo` is set to `true`.
+
+**Warning:** each supplementary group must exist. If not,
+the module will raise an error.
+
+The `home_unix_rights` parameter is the Unix rights (in
+octal format) of `/home/$user` directory. Its default value
+is `0750`.
+
+The `fqdn_in_prompt` parameter is a boolean. If `true`, the
+fqdn will be displayed in the prompt of each users, if
+`false` the short hostname will be used. Its default value
+is `false`.
 
 
 
 
 # Data binding
 
-If the class is called without parameter, the module makes a
-lookup of the `unix_accounts` entry in hiera or in
-`environment.conf` to set the value of the `users`
-parameters and makes a lookup of the `ssh_public_keys` entry
-to set the value of the `ssh_public_keys` parameter. If the
-class is called without any parameter, you must provide the
-`unix_accounts` hiera entry but the `ssh_public_keys` hiera
-entry is optional. Its value will be `{}` (an empty hash) if
-not present. The default value of the `fqdn_in_prompt`
-parameter is `false`.
+If the `params` class is called without parameter, data
+binding makes a lookup of the `unix_accounts` entry in hiera
+or in `environment.conf` to set the value of the `users`
+parameters, if no value is found the default value is `{}`,
+ie an empty hash so no Unix account is managed.
+
+The data binding makes too a lookup of the `ssh_public_keys`
+entry to set the value of the `ssh_public_keys` parameter,
+if no value is found the default value is `{}` (ie no ssh
+public key).
 
 
