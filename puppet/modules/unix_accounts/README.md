@@ -87,8 +87,11 @@ empty array) which means that the user will have no
 supplementary group (just the primary group `$user`) or
 maybe just the `sudo` group if `is_sudo` is set to `true`.
 
-**Warning:** each supplementary group must exist. If not,
-the module will raise an error.
+**Warnings:** a) each supplementary group *must exist*. If
+not, the module will raise an error. b) If a user is in the
+group `foo` and if this group in not present if the array
+`supplementary_groups`, the next puppet run *will remove*
+the user from the group `foo`.
 
 The `home_unix_rights` parameter is the Unix rights (in
 octal format) of `/home/$user` directory. Its default value
