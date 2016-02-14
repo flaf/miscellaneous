@@ -1,4 +1,4 @@
-TARGET_COMPONENT=wheezy
+TARGET_COMPONENT=raid
 GIT_URL='https://github.com/flaf/miscellaneous.git'
 WORGING_DIR_IN_GIT='miscellaneous/debpkg_areca-cli/areca-cli'
 VERSION="$(date '+%Y%m%d%H%M')" # This is a native package so don't put `-' in the version number.
@@ -29,6 +29,8 @@ clean () {
 trap clean EXIT
 
 cd $TARGET_DIR
+
+apt-get update
 
 # Prepare environment
 apt-get install --no-install-recommends --yes git openssl ca-certificates devscripts equivs
