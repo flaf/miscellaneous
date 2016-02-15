@@ -1,0 +1,101 @@
+<%- |
+  $stomp_ssl_ip,
+  $stomp_ssl_port,
+  $ssl_versions,
+| -%>
+<%-
+  $ssl_versions_str_tmp = $ssl_versions.map |$v| { "'${v}'" }.join(', ')
+  $ssl_versions_str     = "[ ${ssl_versions_str_tmp} ]"
+-%>
+%%% This file is managed by Puppet, don't edit it. %%%
+
+% The syntax of this config file is:
+%
+%    [{ApplicationA, [ {ParamA1, ValA1}, {ParamA2, ValA2} ... ] },
+%     {ApplicationB, [ {ParamB1, ValB1}, {ParamB2, ValB2} ... ] }
+%    ].
+%
+% See: http://www.erlang.org/doc/man/config.html.
+%
+% For the configuration of a STOMP adaptater with SSL support,
+% see: https://www.rabbitmq.com/stomp.html where we can see
+% that the SSL configuration is put in the broker configuration,
+% ie "rabbit", not in the "stomp" plugin.
+%
+
+[
+
+  {
+    rabbitmq_stomp,
+      [
+        {
+          % No STOMP tcp connection allowed.
+          tcp_listeners, []
+        },
+        {
+          % STOMP ssl connections allowed.
+          ssl_listeners,
+            [
+              {"<%= $stomp_ssl_ip %>", <%= $stomp_ssl_port %>}
+            ]
+        }
+      ]
+  },
+
+<%- if ! $ssl_versions.empty { -%>
+  { ssl, [{ versions, <%= $ssl_versions_str %> }] },
+
+<%- } -%>
+  {
+    rabbit,
+      [
+        {
+          % No AMQP tcp connection allowed.
+          tcp_listeners, []
+        },
+        {
+          % No AMQP ssl connection allowed.
+          ssl_listeners, []
+        },
+        {
+          % - fail_if_no_peer_cert == true means "don't accept connection of
+          %   client which has not a certificate".
+          % - verify == verify_peer means "don't accept connection of client
+          %   if its certificate doesn't valid the chain of trust with the CA".
+          ssl_options,
+            [
+              {          cacertfile, "/etc/rabbitmq/ssl/cacert.pem"},
+              {            certfile, "/etc/rabbitmq/ssl/cert.pem"},
+              {             keyfile, "/etc/rabbitmq/ssl/key.pem"},
+              {              verify, verify_peer},
+<%- if ! $ssl_versions.empty { -%>
+              {            versions, <%= $ssl_versions_str %>},
+<% } -%>
+              {fail_if_no_peer_cert, true}
+            ]
+        }
+      ]
+  },
+
+  {
+    rabbitmq_management,
+      [
+        {
+          % The WebUI for management.
+          listener,
+            [
+              {  ip, "127.0.0.1"},
+              {port, 15672}
+            ]
+        },
+        {
+          % Without this parameter, the RabbitMQ WebUI continue
+          % to listen on 55672 (old port for RabbitMQ < 3.0).
+          redirect_old_port, false
+        }
+      ]
+  }
+
+].
+
+
