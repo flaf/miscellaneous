@@ -236,7 +236,12 @@ class { '::mcollective::params':
   mcollective_pwd    => '@mC0+45mpLSs',
   puppet_ssl_dir     => '/etc/puppetlabs/puppet/ssl',
 }
+
+include '::mcollective::client'
 ```
+
+
+
 
 ## Data binding
 
