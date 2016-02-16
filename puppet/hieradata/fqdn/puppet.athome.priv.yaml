@@ -29,9 +29,9 @@ interfaces:
   #  in_networks: [ 'vbox_adm' ]
   #  macaddress: '08:00:27:bc:ce:e7'
 
-mcollective:
-  client_private_key: "%{hiera('_mcollective_client_private_key_')}"
-  client_public_key: "%{hiera('_mcollective_client_public_key_')}"
+
+mcollective::params::client_public_key: "%{hiera('_mcollective_client_public_key_')}"
+mcollective::params::client_private_key: "%{hiera('_mcollective_client_private_key_')}"
 
 
 

@@ -13,4 +13,5 @@ interfaces:
     inet:
       method: 'dhcp'
 
+mcomiddleware::params::admin_pwd: '1194ffe92fb61cce11944cde368a33ded22d7fd0'
 
