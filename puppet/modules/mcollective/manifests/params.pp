@@ -11,6 +11,7 @@ class mcollective::params (
   String[1]                    $mcollective_pwd,
   String[1]                    $mco_tag,
   String[1]                    $puppet_ssl_dir,
+  String[1]                    $puppet_bin_dir,
 ) {
 }
 

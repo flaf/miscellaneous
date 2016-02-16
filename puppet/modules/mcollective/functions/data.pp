@@ -7,6 +7,7 @@ function mcollective::data {
 
   if !defined(Class['::puppetagent::params']) { include '::puppetagent::params' }
   $puppet_ssl_dir = $::puppetagent::params::ssldir
+  $puppet_bin_dir = $::puppetagent::params::bindir
 
   $collectives = $::datacenter ? {
     undef   => [ 'mcollective' ],
@@ -28,6 +29,7 @@ function mcollective::data {
     mcollective::params::mcollective_pwd    => $mcollective_pwd,
     mcollective::params::mco_tag            => 'mcollective_client_public_key',
     mcollective::params::puppet_ssl_dir     => $puppet_ssl_dir,
+    mcollective::params::puppet_bin_dir     => $puppet_bin_dir,
 
     mcollective::client::supported_distributions => $supported_distribs,
 

@@ -15,6 +15,7 @@ class mcollective::server (
   $mcollective_pwd    = $::mcollective::params::mcollective_pwd
   $mco_tag            = $::mcollective::params::mco_tag
   $puppet_ssl_dir     = $::mcollective::params::puppet_ssl_dir
+  $puppet_bin_dir     = $::mcollective::params::puppet_bin_dir
 
   if $server_private_key == 'NOT-DEFINED' {
     regsubst(@("END"), '\n', ' ', 'G').fail
@@ -123,6 +124,7 @@ class mcollective::server (
                       'server_pub_key_path' => $server_pub_key_path,
                       'allowed_clients_dir' => $allowed_clients_dir,
                       'puppet_ssl_dir'      => $puppet_ssl_dir,
+                      'puppet_bin_dir'      => $puppet_bin_dir,
                       'connector'           => $connector,
                       'middleware_address'  => $middleware_address,
                       'middleware_port'     => $middleware_port,

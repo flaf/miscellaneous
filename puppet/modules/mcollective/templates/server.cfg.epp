@@ -7,7 +7,8 @@ Enum['rabbitmq', 'activemq'] $connector,
 String[1]                    $middleware_address,
 Integer[1]                   $middleware_port,
 String[1]                    $mcollective_pwd,
-String[1]                    $puppet_ssl_dir
+String[1]                    $puppet_ssl_dir,
+String[1]                    $puppet_bin_dir,
 | -%>
 ### This file is managed by Puppet, don't edit it. ###
 
@@ -41,6 +42,8 @@ plugin.<%= $connector %>.stomp_1_0_fallback  = 0
 plugin.<%= $connector %>.heartbeat_interval  = 30
 plugin.<%= $connector %>.max_hbread_fails    = 2
 plugin.<%= $connector %>.max_hbrlck_fails    = 0
+
+plugin.puppet.command = <%= $puppet_bin_dir %>/puppet agent
 
 # Facts
 factsource = yaml
