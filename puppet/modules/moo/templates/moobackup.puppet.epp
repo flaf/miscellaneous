@@ -179,7 +179,7 @@ do
     #        already exist on the  destnation
     #
     # With this option, we use a specificity of the moodle
-    # filedir where the name of each file is it sha1sum.
+    # filedir where the name of each file is its sha1sum.
     if ! nice -n 10 ionice -c2 -n7 rsync -xr --ignore-existing --delete "$filedir" "$filedirbackup"
     then
         my_logger "problem during the rsync command."
