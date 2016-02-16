@@ -1,7 +1,7 @@
 ---
 enc_included_classes:
   - [ 'flaf', '::role_generic' ]
-  - [ 'flaf', '::mcollective::middleware' ]
+  - [ 'flaf', '::mcomiddleware' ]
 enc_datacenter: 'vboxhome'
 
 network::restart: true
