@@ -1,7 +1,8 @@
 class mcollective::params (
-  Array[String[1]]             $collectives,
+  Array[String[1]]             $client_collectives,
   String[1]                    $client_private_key,
   String[1]                    $client_public_key,
+  Array[String[1]]             $server_collectives,
   String[1]                    $server_private_key,
   String[1]                    $server_public_key,
   Boolean                      $server_enabled,

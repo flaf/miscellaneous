@@ -2,7 +2,7 @@
   "name": "flaf-mcomiddleware",
   "version": "0.1.0",
   "author": "flaf",
-  "summary": "Module to install a mcollective middleware",
+  "summary": "Module to install a MCollective middleware",
   "license": "Apache-2.0",
   "source": "",
   "project_page": null,

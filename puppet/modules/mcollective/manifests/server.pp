@@ -5,7 +5,7 @@ class mcollective::server (
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
   if !defined(Class['::mcollective::params']) { include '::mcollective::params' }
-  $collectives        = $::mcollective::params::collectives
+  $collectives        = $::mcollective::params::server_collectives
   $server_private_key = $::mcollective::params::server_private_key
   $server_public_key  = $::mcollective::params::server_public_key
   $server_enabled     = $::mcollective::params::server_enabled

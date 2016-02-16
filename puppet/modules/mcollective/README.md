@@ -3,6 +3,7 @@
 This module configures mcollective server/client
 and middleware with ssl.
 
+Remark: this module implements the "params" design pattern.
 
 
 
@@ -108,90 +109,22 @@ directory).
 
 
 
-# The `mcollective::middleware` class
+# The `mcollective::server` and the `mcollective::client` classes
 
 ## Usage
 
 Here is an example:
 
 ```puppet
-class { '::mcollective::middleware':
-  stomp_ssl_ip    => '0.0.0.0',
-  stomp_ssl_port  => 61614,
-  ssl_versions    => ['tlsv1.2', 'tlsv1.1'],
-  puppet_ssl_dir  => '/etc/puppetlabs/puppet/ssl',
-  admin_pwd       => 'xEd67+er',
-  mcollective_pwd => '@mC0+45mpLSs',
-  exchanges       => [ 'mcollective' ],
-}
-```
+$pubkey         = '<content-of-the-public-key>'
+$privkey        = '<content-of-the-private-key>'
+$client_pubkey  = '<content-of-the-public-key>'
+$client_privkey = '<content-of-the-private-key>'
 
-## Data binding
-
-The `stomp_ssl_ip` parameter defines the address used by the
-middleware server. The default value is the string
-`'0.0.0.0'` which means "listening on any address of current
-the host". The `stomp_ssl_port` parameter must be an integer
-and its default value is `61614`. The `ssl_versions`
-parameter is an array of non-empty strings which gives the
-versions of TLS/SSL accepted by the middleware server. The
-default value of this parameter is `['tlsv1.2', 'tlsv1.1']`.
-The value `[]` (ie an empty array) is possible for this
-parameter. In this case, no TLS/SSL version is explicitly
-put in the RabbitMQ configuration so that the accepted
-versions are the default accepted versions of the current
-RabbitMQ server (and it depends on the version of the
-installed software).
-
-The `puppet_ssl_dir` parameter is the ssl directory of the
-puppet installation. Indeed, this class installs a
-middleware server with 2-way SSL connections and it uses the
-certificate, the private key and the CA certificate of the
-puppet agent (which is present in the `$ssldir` directory of
-the puppet installation). The default value of this
-parameter is the string `'/etc/puppetlabs/puppet/ssl'` which
-is the ssl directory of a classical puppet 4 installation.
-Normally, you should never need to change this setting.
-
-The `admin_pwd` parameter is the password of the `admin`
-rabbitMQ account. Its default value is `sha1($::fqdn)`.
-
-The `mcollective_pwd` is the password of the `mcollective`
-rabbitMQ account. For the default value of this parameter,
-there is a lookup in hiera or in the `environment.conf`.
-**You must provide this entry**:
-
-```yaml
-mcollective:
-  middleware_mcollective_pwd: '<value-of-mcollective-pwd>'
-  middleware_exchanges: [ 'mcollective', 'dc2' ] # optional (see below).
-```
-
-As you can see in the schema above, the mcollective password
-is shared by the middleware, the clients and the servers. So
-you will probably put this entry in a `common.yaml` file in
-hiera or something like that.
-
-The `exchanges` parameter is an array of strings which
-contains the created exchanges. This parameter can be empty
-and its default value is `[ 'mcollective' ]` or, if present,
-the value of the sub-entry `middleware_exchanges` of the
-hiera entry `mcollective`. The class handles this parameter
-and appends the `'mcollective'` string if not present.
-
-
-# The `mcollective::server` class
-
-## Usage
-
-Here is an example:
-
-```puppet
-$pubkey  = '<content-of-the-public-key>'
-$privkey = '<content-of-the-private-key>'
-
-class { '::mcollective::server':
+class { '::mcollective::params':
   collectives        => [ 'mysql', 'foo' ],
+  client_private_key => $client_privkey,
+  client_public_key  => $client_pubkey,
   server_private_key => $privkey,
   server_public_key  => $pubkey,
   server_enabled     => true,
@@ -201,10 +134,14 @@ class { '::mcollective::server':
   mcollective_pwd    => '@mC0+45mpLSs',
   mco_tag            => 'mcollective_clients_pub_keys',
   puppet_ssl_dir     => '/etc/puppetlabs/puppet/ssl',
+  puppet_bin_dir     => '/opt/puppetlabs/puppet/bin',
 }
+
+include '::mcollective::server'
+include '::mcollective::client'
 ```
 
-## Data binding
+## Parameters and Data binding
 
 Some of these parameters will be searched via a lookup in
 hiera or in the `environment.conf` and **you must provide

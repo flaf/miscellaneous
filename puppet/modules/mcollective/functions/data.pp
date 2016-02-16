@@ -17,9 +17,10 @@ function mcollective::data {
   $supported_distribs = ['trusty', 'jessie'];
 
   {
-    mcollective::params::collectives        => $collectives,
+    mcollective::params::client_collectives => $collectives,
     mcollective::params::client_private_key => 'NOT-DEFINED',
     mcollective::params::client_public_key  => 'NOT-DEFINED',
+    mcollective::params::server_collectives => $collectives,
     mcollective::params::server_private_key => 'NOT-DEFINED',
     mcollective::params::server_public_key  => 'NOT-DEFINED',
     mcollective::params::server_enabled     => true,
