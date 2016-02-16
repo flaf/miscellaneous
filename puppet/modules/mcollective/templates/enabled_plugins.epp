@@ -1,8 +1,0 @@
-%%% This file is managed by Puppet, don't edit it. %%%
-
-[
- rabbitmq_management,
- rabbitmq_stomp
-].
-
-

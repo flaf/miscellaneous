@@ -1,6 +1,6 @@
 function mcomiddleware::data {
 
-  include '::puppetagent::params'
+  if !defined(Class['::puppetagent::params']) { include '::puppetagent::params' }
   $puppet_ssl_dir     = $::puppetagent::params::ssldir
   $supported_distribs = ['trusty', 'jessie'];
 

@@ -1,18 +1,36 @@
 class mcollective::server (
-  Array[String[1]]             $collectives,
-  String[1]                    $server_private_key,
-  String[1]                    $server_public_key,
-  Boolean                      $server_enabled,
-  Enum['rabbitmq', 'activemq'] $connector,
-  String[1]                    $middleware_address,
-  Integer[1]                   $middleware_port,
-  String[1]                    $mcollective_pwd,
-  String[1]                    $mco_tag,
-  String[1]                    $puppet_ssl_dir,
-  Array[String[1], 1]          $supported_distributions,
+  Array[String[1], 1] $supported_distributions,
 ) {
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
+
+  if !defined(Class['::mcollective::params']) { include '::mcollective::params' }
+  $collectives        = $::mcollective::params::collectives
+  $server_private_key = $::mcollective::params::server_private_key
+  $server_public_key  = $::mcollective::params::server_public_key
+  $server_enabled     = $::mcollective::params::server_enabled
+  $connector          = $::mcollective::params::connector
+  $middleware_address = $::mcollective::params::middleware_address
+  $middleware_port    = $::mcollective::params::middleware_port
+  $mcollective_pwd    = $::mcollective::params::mcollective_pwd
+  $mco_tag            = $::mcollective::params::mco_tag
+  $puppet_ssl_dir     = $::mcollective::params::puppet_ssl_dir
+
+  if $server_private_key == 'NOT-DEFINED' {
+    regsubst(@("END"), '\n', ' ', 'G').fail
+      $title: sorry the default value of the parameter
+      `mcollective::params::server_private_key` is not valid.
+      You must define it explicitly.
+      |- END
+  }
+
+  if $server_public_key == 'NOT-DEFINED' {
+    regsubst(@("END"), '\n', ' ', 'G').fail
+      $title: sorry the default value of the parameter
+      `mcollective::params::server_public_key` is not valid.
+      You must define it explicitly.
+      |- END
+  }
 
   require '::mcollective::package'
   require '::repository::mco'
