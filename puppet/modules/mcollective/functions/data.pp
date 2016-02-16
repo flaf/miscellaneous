@@ -28,6 +28,10 @@ function mcollective::data {
     mcollective::params::mcollective_pwd    => $mcollective_pwd,
     mcollective::params::mco_tag            => 'mcollective_client_public_key',
     mcollective::params::puppet_ssl_dir     => $puppet_ssl_dir,
+
+    mcollective::client::supported_distributions => $supported_distribs,
+
+    mcollective::server::supported_distributions => $supported_distribs,
   }
 
 }
