@@ -109,7 +109,7 @@ directory).
 
 
 
-# The `mcollective::server` and the `mcollective::client` classes
+# The `mcollective::server` class
 
 ## Usage
 
@@ -118,13 +118,9 @@ Here is an example:
 ```puppet
 $pubkey         = '<content-of-the-public-key>'
 $privkey        = '<content-of-the-private-key>'
-$client_pubkey  = '<content-of-the-public-key>'
-$client_privkey = '<content-of-the-private-key>'
 
 class { '::mcollective::params':
-  collectives        => [ 'mysql', 'foo' ],
-  client_private_key => $client_privkey,
-  client_public_key  => $client_pubkey,
+  server_collectives => [ 'mysql', 'foo', 'bar' ],
   server_private_key => $privkey,
   server_public_key  => $pubkey,
   server_enabled     => true,
@@ -138,30 +134,27 @@ class { '::mcollective::params':
 }
 
 include '::mcollective::server'
-include '::mcollective::client'
 ```
+
+
+
 
 ## Parameters and Data binding
 
-Some of these parameters will be searched via a lookup in
-hiera or in the `environment.conf` and **you must provide
-these entries**:
-
-```yaml
-mcollective:
-  middleware_mcollective_pwd: '<value of the $mcollective_pwd parameter>'
-  middleware_address: '<value of the $middleware_address parameter>'
-  server_private_key: '<value of the $server_private_key parameter>'
-  server_public_key: '<value of the $server_public_key parameter>'
-  server_enabled: '<value of the $server_enabled parameter>' # optional entry (see below)
-  tag: '<value of the $mco_tag parameter>' # optional entry (see below)
-  collectives: [ 'mcollective', 'mysql' ]  # optional entry (see below)
-```
+The `server_collectives` parameter is an array of strings.
+The mcollective server will belong to the collectives put in
+this parameter. The default value of this parameter is `[
+'collective' ]` or `[ 'collective', $::datacenter ]` if
+`$::datacenter` if defined.
 
 The `server_private_key` and `server_public_key` parameters
 are non-empty strings to provide mcollective private and
-public keys shared by all the servers. To generate these
-keys, you can execute these commands:
+public keys shared by all the servers. These parameters have
+the default value `'NOT-DEFINED'` which not accepted by the
+`mcollective::server` (in clear you must define these
+parameter in hiera).
+
+To generate these keys, you can execute these commands:
 
 ```sh
 # Generate the private key.
@@ -171,21 +164,10 @@ openssl genrsa -out 'private_key.pem' 4096
 openssl rsa -in 'private_key.pem' -out 'public_key.pem' -outform PEM -pubout
 ```
 
-The `collectives` parameter sets the `collectives` parameter
-in the `server.cfg` file (see
-[here](https://docs.puppetlabs.com/mcollective/configure/server.html#collectives)
-for more details). The type of this parameter is an array of
-strings (the array can be empty). The default value of this
-parameter is `[ 'mcollective' ]` or, if present, the value
-of the `collectives` sub-entry of the hiera entry
-`mcollective`. This parameter is handled in the class:
-- if not already present, the string `'mcollective'` is automatically
-appended in the `collectives` parameter,
-- if not already present and if not undefined the value of
-`$::datacenter` is automatically appended in the `collectives` parameter.
-
-**warning :** be careful, the collectives used by the mcollective
-server must exist as exchanges in the middleware server.
+The `server_enabled` parameter is a boolean and its default
+value is `true`. If it is set to `false` the mcollective
+service will be stopped and disabled (no automatic start
+during the boot).
 
 The `connector` parameter is the connector used by mcollective
 to connect to the middleware server. The authorized values are
@@ -193,36 +175,40 @@ only `rabbitmq` or `activemq`. Its default value is `rabbitmq`.
 
 The `middleware_address` parameter is the address of the
 middleware server (an IP, a fqdn etc). The default value
-of this parameter is set in the hiera entries above.
+of this parameter is the value of the parameter
+`mcomiddleware::params::stomp_ssl_ip` from the `mcomiddleware`
+module.
 
 The `middleware_port` parameter is the port used by the
-middleware server. It's an integer and its default value
-is `61614`.
+middleware server. It's an integer and its default value is
+the value of the `mcomiddleware::params::stomp_ssl_port`
+parameter from the `mcomiddleware` module.
 
 The `mcollective_pwd` parameter is the password of the
 `mcollective` rabbitMQ account. The default value of this
-parameter is set in the hiera entries above.
+parameter is the value of the
+`mcomiddleware::params::mcollective_pwd` parameter from the
+`mcomiddleware` module.
 
 The `mco_tag` parameter is a non-empty string which gives the
 name of the tag used to import public keys of the
 mcollective clients. Indeed, the mcollective servers need the
 public keys of each authorized client in its configuration.
 Each client will export its public key with a specific tag
+(tag defined by the `mco_tag` parameter itself)
 and the servers will retrieve these public keys via the same
 tag given by the `mco_tag` parameter. The default value of
-this parameter can be set by the `tag` entry in the hiera
-entries above but it's optional. If the `tag` entry is not
-present, the value `'mcollective_client_public_key'` will be
-used.
+this parameter is `'mcollective_client_public_key'`.
 
-The `server_enabled` parameter is a boolean and its default
-value is `true`. If it is set to `false` the mcollective
-service will be stopped and disabled (no automatic start
-during the boot). This parameter is completely optional.
+The `puppet_ssl_dir` parameter is the ssl directory of the
+puppet-agent module (mcollective server and client use the
+certificate present in this directory). The default value
+of this parameter is `puppetagent::params::ssldir` from
+the `puppetagent` module.
 
-The `puppet_ssl_dir` parameter has exactly the same meaning
-of the `puppet_ssl_dir` parameter in the
-`::mcollective::middleware` class.
+The `puppet_bin_dir` parameter is the bin directory of the
+puppet-agent module The default value of this parameter is
+`puppetagent::params::bindir` from the `puppetagent` module.
 
 
 
@@ -238,8 +224,8 @@ $client_pubkey  = '<content-of-the-public-key>'
 $client_privkey = '<content-of-the-private-key>'
 $server_pubkey  = '<content-of-the-public-servers-public-key>'
 
-class { '::mcollective::client':
-  collectives        => [ 'mysql', 'foo' ],
+class { '::mcollective::params':
+  client_collectives => [ 'mysql', 'foo' ],
   client_private_key => $server_pubkey,
   client_public_key  => $client_pubkey,
   server_public_key  => $server_pubkey,
@@ -254,35 +240,20 @@ class { '::mcollective::client':
 
 ## Data binding
 
-The `collectives` parameter sets the `collectives` parameter
-in the `client.cfg` file. The type of this parameter is an
-array of strings (the array can be empty). The default value
-of this parameter is `[ 'mcollective' ]` or, if present, the
-value of the `middleware_exchanges` sub-entry of the hiera
-entry `mcollective`. This parameter is handled in the class:
-- if not already present, the string `'mcollective'` is automatically
-appended in the `collectives` parameter,
-- if not already present and if not undefined the value of
-`$::datacenter` is automatically appended in the `collectives` parameter.
+The `client_collectives` parameter is an array of strings of
+collectives allowed for the MCollective client. Its default
+value is the value of the parameter
+`mcomiddleware::params::exchanges` from the `mcomiddleware`
+module. So, by default, a client can reach all collectives
+provided by the middleware.
 
-Except the `client_private_key` and `client_public_key`
-parameters, the remaining parameters have exactly the same
-meaning of the parameters of the `::mcollective::server`
-class. The meaning of the `client_private_key` and
-`client_public_key` parameters is clear. The default values
-of these parameters will be set via a lookup in hiera or in
-the `environment.conf` (see below). Finally for a
-mcollective client **you must provide these entries**:
+The `client_private_key` and `client_public_key` are the keys
+of the mcollective client. The default value (`'NOT-DEFINED'`)
+is not accepted by the class `mcollective::client` (you must
+defined explicitly the values).
 
-```yaml
-mcollective:
-  client_private_key: '<value of the $client_private_key parameter>'
-  client_public_key: '<value of the $client_public_key parameter>'
-  middleware_mcollective_pwd: '<value of the $mcollective_pwd parameter>'
-  middleware_address: '<value of the $middleware_address parameter>'
-  server_public_key: '<value of the $server_public_key parameter>'
-  #tag: '<value of the $mco_tag parameter>' # optional entry
-```
+The other parameters have been already described in the
+previous section.
 
 
 
@@ -293,14 +264,5 @@ mcollective:
 server. But RabbitMQ seems to not support certificate revocation
 list (crl). Is it the case with Activemq? Activemq is in Ubuntu
 repositories now.
-
-* The mcollective `shell` plugin and the mcollective `puppet` plugin
-are not currently packaged in the PC1 APT repository. But it's expected
-to add these packages in PC1
-(see [here](https://groups.google.com/forum/#!topic/puppet-users/XSSXGY_rmy0)).
-
-* Need to split this module in 3 different modules: `mcollective_middileware`,
-`mcollective_server` and `mcollective_client`. It will be better as
-regard the data handle.
 
 
