@@ -1,6 +1,16 @@
 function pxeserver::data {
 
-  include '::network::params'
+  # Puppet part.
+  if !defined(Class['::repository::params']) { include '::repository::params' }
+  include '::repository::params'
+  $puppet_collection      = $::repository::params::puppet_collection
+  $pinning_puppet_version = $::repository::params::puppet_pinning_agent_version
+
+  if !defined(Class['::puppetagent::params']) { include '::puppetagent::params' }
+  $puppet_server    = $::puppetagent::params::server
+  $puppet_ca_server = $::puppetagent::params::ca_server
+
+  if !defined(Class['::network::params']) { include '::network::params' }
   $inventory_networks = $::network::params::inventory_networks
 
   $dhcp_conf = $inventory_networks.reduce({}) |$memo, $entry| {
@@ -51,17 +61,7 @@ function pxeserver::data {
   }
 
   $tags_excluded = []
-  $tags_included = 'all'
-
-  # Puppet part.
-  $puppet_collection      = lookup('repository::puppet::collection',
-                                   String[1], 'first', 'NOT-DEFINED')
-  $pinning_puppet_version = lookup('repository::puppet::pinning_agent_version',
-                                   String[1], 'first', 'NOT-DEFINED')
-  $puppet_server          = lookup('puppetagent::server',
-                                   String[1], 'first', 'NOT-DEFINED')
-  $puppet_ca_server       = lookup('puppetagent::ca_server',
-                                   String[1], 'first', 'NOT-DEFINED');
+  $tags_included = 'all';
 
   {
     pxeserver::dhcp_conf               => $dhcp_conf,

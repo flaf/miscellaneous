@@ -1,19 +1,19 @@
 function mcollective::data {
 
+  $default_collectives = $::datacenter ? {
+    undef   => [ 'mcollective' ],
+    default => [ 'mcollective', $::datacenter ],
+  }
+
   if !defined(Class['::mcomiddleware::params']) { include '::mcomiddleware::params' }
   $middleware_address = $::mcomiddleware::params::stomp_ssl_ip
   $middleware_port    = $::mcomiddleware::params::stomp_ssl_port
   $mcollective_pwd    = $::mcomiddleware::params::mcollective_pwd
-  $client_collectives = $::mcomiddleware::params::exchanges
+  $client_collectives = $::mcomiddleware::params::exchanges.concat($default_collectives)
 
   if !defined(Class['::puppetagent::params']) { include '::puppetagent::params' }
   $puppet_ssl_dir = $::puppetagent::params::ssldir
   $puppet_bin_dir = $::puppetagent::params::bindir
-
-  $server_collectives = $::datacenter ? {
-    undef   => [ 'mcollective' ],
-    default => [ 'mcollective', $::datacenter ],
-  }
 
   $supported_distribs = ['trusty', 'jessie'];
 
@@ -21,7 +21,7 @@ function mcollective::data {
     mcollective::params::client_collectives => $client_collectives,
     mcollective::params::client_private_key => 'NOT-DEFINED',
     mcollective::params::client_public_key  => 'NOT-DEFINED',
-    mcollective::params::server_collectives => $server_collectives,
+    mcollective::params::server_collectives => $default_collectives,
     mcollective::params::server_private_key => 'NOT-DEFINED',
     mcollective::params::server_public_key  => 'NOT-DEFINED',
     mcollective::params::server_enabled     => true,

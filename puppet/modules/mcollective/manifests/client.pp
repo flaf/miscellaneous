@@ -54,11 +54,7 @@ class mcollective::client (
   $client_pub_key_path_exp = "${allowed_clients_dir}/${::fqdn}.pub-key.pem"
   $server_pub_key_path     = "${client_keys_dir}/servers-pub-key.pem"
 
-  $default_collectives = $::datacenter ? {
-    undef   => [ 'mcollective' ],
-    default => [ 'mcollective', $::datacenter ],
-  }
-  $collectives_final_value = $default_collectives.concat($collectives).unique()
+  $collectives_final_value = $collectives.unique.sort
 
   # mcollective::client and mcollective::server will manage this
   # directory because the client keys are very sensitive. If a

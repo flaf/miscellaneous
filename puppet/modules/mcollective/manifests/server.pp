@@ -52,7 +52,7 @@ class mcollective::server (
   $server_priv_key_path = "${server_keys_dir}/server.priv-key.pem"
   $server_pub_key_path  = "${server_keys_dir}/server.pub-key.pem"
 
-  $collectives_final_value = $collectives.unique()
+  $collectives_final_value = $collectives.unique.sort
 
   # mcollective::client and mcollective::server will manage this
   # directory because the client keys are very sensitive. If a
