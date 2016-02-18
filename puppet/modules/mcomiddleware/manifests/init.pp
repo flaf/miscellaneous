@@ -302,7 +302,7 @@ user=admin configure='.*' write='.*' read='.*'"
     |- END
 
   $sp    = '[[:space:]]+' # regex for spaces.
-  $regex = "\|${sp}/mcollective${sp}\|${sp}EXCHANGE_(broadcast|directed)${sp}\|"
+  $regex = '\|_SP_/mcollective_SP_\|_SP_EXCHANGE_(broadcast|directed)_SP_\|'.regsubst('_SP_', $sp, 'G')
 
   $unless_cmd_exchange = "test $(${rbmqadm} list exchanges | grep -Ec '${regex}') = 2"
 
