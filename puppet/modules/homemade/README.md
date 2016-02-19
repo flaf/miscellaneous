@@ -126,3 +126,28 @@ See [PUP-4825](https://tickets.puppetlabs.com/browse/PUP-4825)
 for more explanations.
 
 
+
+
+# `fail_if_undef()` function
+
+Here is a typical example:
+
+```puppet
+class foo {
+
+  $var = $::foo::params::var
+
+  ::homemade::fail_if_undef($var, 'foo::params::var', $title)
+
+}
+```
+
+If `$var` is `undef` then the function just fails with a
+friendly error message given the name of the current class
+(with the `$title` parameter) and the name of the variable
+(the second parameter). If `$var` is not `undef`, the
+function does absolutely nothing.
+
+
+
+

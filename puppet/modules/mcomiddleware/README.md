@@ -55,10 +55,10 @@ module. Normally, you should never need to change this
 setting.
 
 The `admin_pwd` parameter is the password of the `admin`
-rabbitMQ account. Its default value is `NOT-DEFINED` which
-will be not accepted by the module. In clear, you must
-provide explicitly (for instance with hiera) a value for
-this parameter.
+rabbitMQ account. Its default value is `undef` which will be
+not accepted by the class `mcomiddleware`. In clear, you
+must provide explicitly (for instance with hiera) a value
+for this parameter.
 
 The `mcollective_pwd` is the password of the `mcollective`
 rabbitMQ account. For its default value it's the same as

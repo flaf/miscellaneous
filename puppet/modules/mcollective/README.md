@@ -1,7 +1,6 @@
 # Module description
 
-This module configures mcollective server/client
-and middleware with ssl.
+This module configures mcollective server/client.
 
 Remark: this module implements the "params" design pattern.
 
@@ -116,8 +115,8 @@ directory).
 Here is an example:
 
 ```puppet
-$pubkey         = '<content-of-the-public-key>'
-$privkey        = '<content-of-the-private-key>'
+$pubkey  = '<content-of-the-public-key>'
+$privkey = '<content-of-the-private-key>'
 
 class { '::mcollective::params':
   server_collectives => [ 'mysql', 'foo', 'bar' ],
@@ -145,13 +144,13 @@ The `server_collectives` parameter is an array of strings.
 The mcollective server will belong to the collectives put in
 this parameter. The default value of this parameter is `[
 'collective' ]` or `[ 'collective', $::datacenter ]` if
-`$::datacenter` if defined.
+`$::datacenter` is defined.
 
 The `server_private_key` and `server_public_key` parameters
 are non-empty strings to provide mcollective private and
 public keys shared by all the servers. These parameters have
-the default value `'NOT-DEFINED'` which not accepted by the
-`mcollective::server` (in clear you must define these
+the default value `undef` which not accepted by the
+`mcollective::server` class (in clear you must define these
 parameter in hiera).
 
 To generate these keys, you can execute these commands:
@@ -165,19 +164,19 @@ openssl rsa -in 'private_key.pem' -out 'public_key.pem' -outform PEM -pubout
 ```
 
 The `server_enabled` parameter is a boolean and its default
-value is `true`. If it is set to `false` the mcollective
-service will be stopped and disabled (no automatic start
-during the boot).
+value is `true`. If set to `false`, the mcollective service
+will be stopped and disabled (no automatic start during the
+boot).
 
-The `connector` parameter is the connector used by mcollective
-to connect to the middleware server. The authorized values are
-only `rabbitmq` or `activemq`. Its default value is `rabbitmq`.
+The `connector` parameter is the connector used by
+mcollective to connect to the middleware server. The
+authorized values are only `rabbitmq` or `activemq`. Its
+default value is `rabbitmq`.
 
 The `middleware_address` parameter is the address of the
 middleware server (an IP, a fqdn etc). The default value
-of this parameter is the value of the parameter
-`mcomiddleware::params::stomp_ssl_ip` from the `mcomiddleware`
-module.
+of this parameter is `undef`. In clear, you must define the
+value of this parameter.
 
 The `middleware_port` parameter is the port used by the
 middleware server. It's an integer and its default value is
@@ -190,25 +189,28 @@ parameter is the value of the
 `mcomiddleware::params::mcollective_pwd` parameter from the
 `mcomiddleware` module.
 
-The `mco_tag` parameter is a non-empty string which gives the
-name of the tag used to import public keys of the
-mcollective clients. Indeed, the mcollective servers need the
-public keys of each authorized client in its configuration.
-Each client will export its public key with a specific tag
-(tag defined by the `mco_tag` parameter itself)
-and the servers will retrieve these public keys via the same
-tag given by the `mco_tag` parameter. The default value of
-this parameter is `'mcollective_client_public_key'`.
+The `mco_tag` parameter is a non-empty string which gives
+the name of the tag used to import public keys from the
+mcollective clients. Indeed, the mcollective servers need
+the public keys of each authorized client in its
+configuration. Each client will export its public key with a
+specific tag (tag defined by the present `mco_tag` parameter
+itself) and the servers will retrieve these public keys via
+the same tag given by the `mco_tag` parameter. The default
+value of this parameter is
+`'mcollective_client_public_key'`.
 
 The `puppet_ssl_dir` parameter is the ssl directory of the
-puppet-agent module (mcollective server and client use the
-certificate present in this directory). The default value
-of this parameter is `puppetagent::params::ssldir` from
-the `puppetagent` module.
+`puppet-agent` package (mcollective servers and clients use
+the certificate present in this directory). The default
+value of this parameter is the value of the
+`puppetagent::params::ssldir` parameter from the
+`puppetagent` module.
 
 The `puppet_bin_dir` parameter is the bin directory of the
-puppet-agent module The default value of this parameter is
-`puppetagent::params::bindir` from the `puppetagent` module.
+`puppet-agent` package. The default value of this parameter
+is the value of the parameter `puppetagent::params::bindir`
+from the `puppetagent` module.
 
 
 
@@ -249,13 +251,12 @@ The `client_collectives` parameter is an array of strings of
 collectives allowed for the MCollective client. Its default
 value is the value of the parameter
 `mcomiddleware::params::exchanges` from the `mcomiddleware`
-module. So, by default, a client can reach all collectives
-provided by the middleware.
+module.
 
 The `client_private_key` and `client_public_key` are the keys
-of the mcollective client. The default value (`'NOT-DEFINED'`)
+of the mcollective client. The default value is `undef` which
 is not accepted by the class `mcollective::client` (you must
-defined explicitly the values).
+define explicitly the values).
 
 The other parameters have been already described in the
 previous section.

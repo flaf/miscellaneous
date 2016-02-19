@@ -16,29 +16,10 @@ class mcollective::client (
   $mco_tag            = $::mcollective::params::mco_tag
   $puppet_ssl_dir     = $::mcollective::params::puppet_ssl_dir
 
-  if $client_public_key == 'NOT-DEFINED' {
-    regsubst(@("END"), '\n', ' ', 'G').fail
-      $title: sorry the default value of the parameter
-      `mcollective::params::client_public_key` is not valid.
-      You must define it explicitly.
-      |- END
-  }
-
-  if $client_private_key == 'NOT-DEFINED' {
-    regsubst(@("END"), '\n', ' ', 'G').fail
-      $title: sorry the default value of the parameter
-      `mcollective::params::client_private_key` is not valid.
-      You must define it explicitly.
-      |- END
-  }
-
-  if $server_public_key == 'NOT-DEFINED' {
-    regsubst(@("END"), '\n', ' ', 'G').fail
-      $title: sorry the default value of the parameter
-      `mcollective::params::server_public_key` is not valid.
-      You must define it explicitly.
-      |- END
-  }
+  ::homemade::fail_if_undef($client_public_key, 'mcollective::params::client_public_key', $title)
+  ::homemade::fail_if_undef($client_private_key, 'mcollective::params::client_private_key', $title)
+  ::homemade::fail_if_undef($server_public_key, 'mcollective::params::server_public_key', $title)
+  ::homemade::fail_if_undef($middleware_address, 'mcollective::params::middleware_address', $title)
 
   require '::mcollective::package'
   require '::repository::mco'

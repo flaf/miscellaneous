@@ -17,21 +17,9 @@ class mcollective::server (
   $puppet_ssl_dir     = $::mcollective::params::puppet_ssl_dir
   $puppet_bin_dir     = $::mcollective::params::puppet_bin_dir
 
-  if $server_private_key == 'NOT-DEFINED' {
-    regsubst(@("END"), '\n', ' ', 'G').fail
-      $title: sorry the default value of the parameter
-      `mcollective::params::server_private_key` is not valid.
-      You must define it explicitly.
-      |- END
-  }
-
-  if $server_public_key == 'NOT-DEFINED' {
-    regsubst(@("END"), '\n', ' ', 'G').fail
-      $title: sorry the default value of the parameter
-      `mcollective::params::server_public_key` is not valid.
-      You must define it explicitly.
-      |- END
-  }
+  ::homemade::fail_if_undef($server_private_key, 'mcollective::params::server_private_key', $title)
+  ::homemade::fail_if_undef($server_public_key, 'mcollective::params::server_public_key', $title)
+  ::homemade::fail_if_undef($middleware_address, 'mcollective::params::middleware_address', $title)
 
   require '::mcollective::package'
   require '::repository::mco'

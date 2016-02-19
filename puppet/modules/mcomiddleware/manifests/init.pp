@@ -15,21 +15,8 @@ class mcomiddleware (
   $mcollective_pwd = $::mcomiddleware::params::mcollective_pwd
   $exchanges       = $::mcomiddleware::params::exchanges
 
-  if $admin_pwd == 'NOT-DEFINED' {
-    regsubst(@("END"), '\n', ' ', 'G').fail
-      $title: sorry the default value of the parameter
-      `mcomiddleware::params::admin_pwd` is not valid.
-      You must define it explicitly.
-      |- END
-  }
-
-  if $mcollective_pwd == 'NOT-DEFINED' {
-    regsubst(@("END"), '\n', ' ', 'G').fail
-      $title: sorry the default value of the parameter
-      `mcomiddleware::params::mcollective_pwd` is not valid.
-      You must define it explicitly.
-      |- END
-  }
+  ::homemade::fail_if_undef($admin_pwd, 'mcomiddleware::params::admin_pwd', $title)
+  ::homemade::fail_if_undef($mcollective_pwd, 'mcomiddleware::params::mcollective_pwd', $title)
 
   $packages = [ 'rabbitmq-server',
                 'python',          # Needed for the cli rabbitmqadmin.
