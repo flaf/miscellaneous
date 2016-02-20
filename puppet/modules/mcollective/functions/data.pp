@@ -35,6 +35,11 @@ function mcollective::data {
     mcollective::client::supported_distributions => $supported_distribs,
 
     mcollective::server::supported_distributions => $supported_distribs,
+
+    # Merging policy.
+    lookup_options => {
+                        mcollective::params::server_collectives => { merge => 'unique', },
+                      },
   }
 
 }

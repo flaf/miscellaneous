@@ -62,13 +62,6 @@ mcomiddleware::params::mcollective_pwd: "%{hiera('_middleware_mcollective_pwd_')
 
 
 
-### lookup options ####
-
-lookup_options:
-  mcollective::params::server_collectives:
-     merge: 'unique'
-
-
 
 ### Long values below ###
 

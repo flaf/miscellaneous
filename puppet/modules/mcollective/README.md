@@ -138,7 +138,7 @@ include '::mcollective::server'
 
 
 
-## Parameters and Data binding
+## Parameters
 
 The `server_collectives` parameter is an array of strings.
 The mcollective server will belong to the collectives put in
@@ -245,7 +245,7 @@ include '::mcollective::client'
 
 
 
-## Data binding
+## Parameters
 
 The `client_collectives` parameter is an array of strings of
 collectives allowed for the MCollective client. Its default
@@ -260,6 +260,15 @@ define explicitly the values).
 
 The other parameters have been already described in the
 previous section.
+
+
+
+
+# Merging policy
+
+By default, the merging policy of the `server_collectives`
+is `unique`. For the other parameters, it's the default
+merging policy ie the `first` policy.
 
 
 
