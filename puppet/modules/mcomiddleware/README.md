@@ -23,7 +23,7 @@ include '::mcomiddleware'
 ```
 
 
-# Parameters and data binding
+# Parameters
 
 The `stomp_ssl_ip` parameter defines the address used by the
 middleware server. The default value is the string
@@ -71,5 +71,7 @@ the `foo` exchange in the RabbitMQ server. The default value
 of this parameter is `[ 'mcollective' ]`. In any case, the
 `'mcollective'` exchanges is automatically added if not
 present in the `exchanges` parameter.
+
+
 
 

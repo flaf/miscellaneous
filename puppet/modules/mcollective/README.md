@@ -144,7 +144,11 @@ The `server_collectives` parameter is an array of strings.
 The mcollective server will belong to the collectives put in
 this parameter. The default value of this parameter is `[
 'collective' ]` or `[ 'collective', $::datacenter ]` if
-`$::datacenter` is defined.
+`$::datacenter` is defined. The default merging policy of
+this `server_collectives` parameter is `unique`.
+
+
+
 
 The `server_private_key` and `server_public_key` parameters
 are non-empty strings to provide mcollective private and
@@ -260,15 +264,6 @@ define explicitly the values).
 
 The other parameters have been already described in the
 previous section.
-
-
-
-
-# Merging policy
-
-By default, the merging policy of the `server_collectives`
-is `unique`. For the other parameters, it's the default
-merging policy ie the `first` policy.
 
 
 
