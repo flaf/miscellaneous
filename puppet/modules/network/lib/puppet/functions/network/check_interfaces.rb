@@ -69,9 +69,7 @@ Puppet::Functions.create_function(:'network::check_interfaces') do
       # the "routes" key.
       [ 'on_networks', 'comment', 'routes' ].each do |e|
         if settings.has_key?(e)
-          # TODO: PUP-5209
-          #unless call_function('::homemade::is_clean_arrayofstr', settings[e])
-          unless call_function('::network::is_clean_arrayofstr', settings[e])
+          unless call_function('::homemade::is_clean_arrayofstr', settings[e])
             msg_options_error = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
               |#{function_name}(): the `#{ifname}` interface is not valid
               |because its hash value has the `#{e}` key which is
@@ -121,11 +119,8 @@ Puppet::Functions.create_function(:'network::check_interfaces') do
               raise(Puppet::ParseError, msg_options_error)
             end
           end
-          # TODO: PUP-5209
-          #if settings[family].has_key?('options') and \
-          #  unless call_function("::homemade::is_clean_hashofstr", settings[family]['options'])
           if settings[family].has_key?('options') and \
-            unless call_function("::network::is_clean_hashofstr", settings[family]['options'])
+            unless call_function("::homemade::is_clean_hashofstr", settings[family]['options'])
               msg_options_error = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
                 |#{function_name}(): the `#{ifname}` interface is not valid
                 |because `options` in its `#{family}` configuration is not
