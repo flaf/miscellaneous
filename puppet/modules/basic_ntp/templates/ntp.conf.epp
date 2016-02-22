@@ -1,4 +1,9 @@
-<%- |$interfaces, $subnets_authorized, $ipv6, $ntp_servers| -%>
+<%- |
+Variant[ Array[String[1], 1], Enum['all'] ] $interfaces,
+Array[String[1], 1]                         $servers,
+Variant[ Array[String[1], 1], Enum['all'] ] $subnets_authorized,
+Boolean                                     $ipv6,
+| -%>
 ### This file is managed by Puppet, don't edit it. ###
 
 # /etc/ntp.conf, configuration for ntpd; see ntp.conf(5) for help
@@ -21,8 +26,8 @@ filegen peerstats file peerstats type day enable
 filegen clockstats file clockstats type day enable
 
 # NTP server(s) to use.
-<%- $ntp_servers.sort.each |$ntp_server| { -%>
-server <%= $ntp_server %> iburst
+<%- $servers.sort.each |$server| { -%>
+server <%= $server %> iburst
 <%- } -%>
 
 <%- if $subnets_authorized != 'all' { -%>

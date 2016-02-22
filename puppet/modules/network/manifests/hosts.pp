@@ -5,7 +5,7 @@ class network::hosts (
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
-  include '::network::params'
+  if !defined(Class['::network::params']) { include '::network::params' }
   $entries  = $::network::params::hosts_entries
   $from_tag = $::network::params::hosts_from_tag
 

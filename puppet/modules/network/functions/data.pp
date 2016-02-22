@@ -17,18 +17,10 @@ function network::data {
                          '8.8.4.4',
                         ]
   $default_timeout    = 5
-  $default_ntp        = [
-                         '0.debian.pool.ntp.org',
-                         '1.debian.pool.ntp.org',
-                         '2.debian.pool.ntp.org',
-                         '3.debian.pool.ntp.org',
-                        ]
   $dns_servers        = ::network::get_param($interfaces, $inventory_networks,
                                              'dns_servers', $default_dns)
   $dns_search         = ::network::get_param($interfaces, $inventory_networks,
                                              'dns_search', [ $::domain ])
-  $ntp_servers        = ::network::get_param($interfaces, $inventory_networks,
-                                      'ntp_servers', $default_ntp)
   $default_stage      = 'network'
 
   # Default is no tag and the one basic hosts entry.
@@ -95,10 +87,6 @@ function network::data {
     network::params::local_resolver_access_control => $lr_access_control,
     network::params::hosts_entries                 => $hosts_entries_filled,
     network::params::hosts_from_tag                => $hosts_tag,
-    network::params::ntp_interfaces                => 'all',
-    network::params::ntp_servers                   => $ntp_servers,
-    network::params::ntp_subnets_authorized        => 'all',
-    network::params::ntp_ipv6                      => false,
     network::params::smtp_relay                    => $smtp_relay,
     network::params::smtp_port                     => $smtp_port,
 
@@ -110,8 +98,6 @@ function network::data {
 
     network::hosts::supported_distributions => $supported_distribs,
     network::hosts::stage                   => $default_stage,
-
-    network::ntp::supported_distributions => $supported_distribs,
   }
 
 }

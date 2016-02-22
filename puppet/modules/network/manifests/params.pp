@@ -15,11 +15,6 @@ class network::params (
   Hash[ String[1], Array[String[1],1] ]        $hosts_entries,
   String                                       $hosts_from_tag,
 
-  Variant[ Array[String[1], 1], Enum['all'] ]  $ntp_interfaces,
-  Array[String[1], 1]                          $ntp_servers,
-  Variant[ Array[String[1], 1], Enum['all'] ]  $ntp_subnets_authorized,
-  Boolean                                      $ntp_ipv6,
-
   String[1]                                    $smtp_relay,
   Integer[1]                                   $smtp_port,
 ) {

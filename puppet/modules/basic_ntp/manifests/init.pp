@@ -1,14 +1,14 @@
-class network::ntp (
+class basic_ntp (
   Array[String[1], 1] $supported_distributions,
 ) {
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
-  include '::network::params'
-  $interfaces         = $::network::params::ntp_interfaces
-  $ntp_servers        = $::network::params::ntp_servers
-  $subnets_authorized = $::network::params::ntp_subnets_authorized
-  $ipv6               = $::network::params::ntp_ipv6
+  if !defined(Class['::basic_ntp::params']) { include '::basic_ntp::params' }
+  $interfaces         = $::basic_ntp::params::interfaces
+  $servers            = $::basic_ntp::params::servers
+  $subnets_authorized = $::basic_ntp::params::subnets_authorized
+  $ipv6               = $::basic_ntp::params::ipv6
 
   ensure_packages(['ntp', ], { ensure => present, })
 
@@ -17,11 +17,11 @@ class network::ntp (
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    content => epp( 'network/ntp.conf.epp',
+    content => epp( 'basic_ntp/ntp.conf.epp',
                     { 'interfaces'         => $interfaces,
                       'subnets_authorized' => $subnets_authorized,
                       'ipv6'               => $ipv6,
-                      'ntp_servers'        => $ntp_servers,
+                      'servers'            => $servers,
                     }
                   ),
     require => Package['ntp'],

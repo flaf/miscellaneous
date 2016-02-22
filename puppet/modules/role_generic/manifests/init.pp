@@ -8,7 +8,7 @@ class role_generic (
     '::network',
     '::network::hosts',
     '::network::resolv_conf',
-    '::network::ntp',
+    '::basic_ntp',
     '::repository::distrib',
     '::raid',
     '::basic_ssh::server',

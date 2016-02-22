@@ -5,7 +5,7 @@ class network::resolv_conf (
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
-  include '::network::params'
+  if !defined(Class['::network::params']) { include '::network::params' }
   # TODO: $nameservers is a bad name because is not systematically
   #       the nameservers in resolv.conf.
   $domain            = $::network::params::resolvconf_domain

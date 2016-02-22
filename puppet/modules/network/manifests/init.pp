@@ -12,7 +12,7 @@ class network (
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
-  include '::network::params'
+  if !defined(Class['::network::params']) { include '::network::params' }
   $interfaces = $::network::params::interfaces
   $restart    = $::network::params::restart
 
