@@ -10,6 +10,10 @@ sleep 0.5
 
 if [ -f '/etc/network/interfaces.puppet' ]
 then
+    if [ -f '/etc/network/interfaces' ]
+    then
+      cp -a '/etc/network/interfaces' "/etc/network/interfaces.$(date '+%Y-%m-%d-%Hh%M')"
+    fi
     cat '/etc/network/interfaces.puppet' >'/etc/network/interfaces'
 else
     echo "Sorry the file /etc/network/interfaces.puppet doesn't exist." >&2
