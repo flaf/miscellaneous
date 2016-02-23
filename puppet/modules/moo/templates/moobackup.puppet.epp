@@ -119,7 +119,7 @@ do
         continue
     fi
 
-    docker exec -t "$docker_id" bash -c "$maintenance_cmd --enable" >/dev/null
+    docker exec -t "$docker_id" bash -c "$maintenance_cmd --enableold" >/dev/null
     my_logger "is offline now."
     sleep 2
 
