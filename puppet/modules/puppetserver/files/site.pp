@@ -53,7 +53,7 @@ stage { 'network':
 
 # /!\ WARNING /!\
 # We do not want to have automatic removes of packages
-# during then installation of another package (because of
+# during the installation of another package (because of
 # conflicts between packages etc).
 if $::facts['os']['family'].downcase == 'debian' {
 
