@@ -18,7 +18,14 @@ class network (
 
   ::network::check_interfaces($interfaces)
 
-  $packages = [ 'vlan',         # To have the vlan feature.
+  # Normally, the "vlan" package is not necessary to have
+  # VLAN. The "ifupdown" commands use the "ip" command.
+  # Furthermore, it could be dangerous to add the "vlan"
+  # package because, for instance, some proxmox packages are
+  # incompatible with the "vlan" package: if you install the
+  # "vlan" package some proxmox packages are automatically
+  # removed.
+  $packages = [
                 'ifenslave',    # To have the bonding feature.
                 'bridge-utils', # To have the bridge feature.
               ]

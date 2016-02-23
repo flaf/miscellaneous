@@ -51,6 +51,38 @@ stage { 'network':
 }
 
 
+# /!\ WARNING /!\
+# We do not want to have automatic removes of packages
+# during the installation of another package (because of
+# conflicts between packages etc).
+if $::facts['os']['family'].downcase == 'debian' {
+
+  # It's possible to put this in /etc/apt/apt.conf.d/80no-revmove:
+  #
+  #   APT::Get::Remove false;
+  #
+  # But, in this case, the setting is enabled too for the
+  # admins during command lines etc. which could be not
+  # handy. The setting below will be available during puppet
+  # runs only.
+  Package {
+    install_options => [ '--no-remove' ],
+  }
+
+} else {
+
+  $a_family = $::facts['os']['family']
+
+  @("END").regsubst('\n', ' ', 'G').fail
+    site.pp: package resource must be defined by default to be
+    unable to remove packages during an installation. This is
+    not the case with this current node. Update the code of
+    `site.pp` to implement this setting with the OS family of
+    this current node (ie $a_family).
+    |- END
+
+}
+
 
 # We assume that the $::included_classes variable must
 # be defined by the ENC and must be a non-empty array of
