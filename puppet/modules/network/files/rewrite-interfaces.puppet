@@ -16,6 +16,10 @@ then
         exit 0
     else
         echo "$ip and $i are NOT identical. Update..."
+        if [ -f "$i" ]
+        then
+          cp -a "$i" "$i.$(date '+%Y-%m-%d-%Hh%M')"
+        fi
         cat "$ip" >"$i"
     fi
 else
