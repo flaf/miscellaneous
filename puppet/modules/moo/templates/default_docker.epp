@@ -1,10 +1,10 @@
-<%- |$docker_bridge_network, $docker_dns| -%>
+<%- |$docker_bridge_cidr_address, $docker_dns| -%>
 <%-
   $dns_opts = $docker_dns.map |$dns_addr| { "--dns=${dns_addr}" }
   $opts_str = $dns_opts.concat(
                 [ '--ip-forward=true',
                   '--iptables=false',
-                  "--bip=${docker_bridge_network}",
+                  "--bip=${docker_bridge_cidr_address}",
                 ]
               ).join(' ')
 -%>

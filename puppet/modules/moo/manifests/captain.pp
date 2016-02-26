@@ -1,12 +1,22 @@
 class moo::captain (
-  String[1]           $mysql_rootpwd,
   Array[String[1], 1] $supported_distributions,
 ) {
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
+  if !defined(Class['::moo::params']) { include '::moo::params' }
+  $mysql_rootpwd   = $::moo::params::captain_mysql_rootpwd
+  $mysql_moobotpwd = $::moo::params::moobot_db_pwd
+
+  [
+    'mysql_rootpwd',
+    'mysql_moobotpwd',
+  ].each |$var_name| {
+    ::homemade::fail_if_undef( getvar($var_name), "moo::params::${var_name}",
+                               $title )
+  }
+
   require '::moo::common'
-  $mysql_moobotpwd = $::moo::common::moobot_db_pwd
   ensure_packages( [ 'mysql-server' ], { ensure => present } )
 
   file { '/root/init-moobot-database.sql':
@@ -47,8 +57,6 @@ class moo::captain (
                    }
                   )
   }
-
-  $address = $::facts['networking']['ip']
 
   $content = @("END")
     [mysqld]

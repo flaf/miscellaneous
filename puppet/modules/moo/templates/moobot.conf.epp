@@ -4,8 +4,8 @@
   $default_version_tag,
   $lb,
   $moodle_db_host,
-  $moodle_adm_user,
-  $moodle_adm_pwd,
+  $moodle_db_adm_user,
+  $moodle_db_adm_pwd,
   $moodle_db_pfx,
   $docker_repository,
   $default_desired_num,
@@ -33,8 +33,8 @@ update_lb = <%= $lb.join(',') %>
 
 [docker]
 db_host = <%= $moodle_db_host %>
-db_adm_user = <%= $moodle_adm_user %>
-db_adm_password = <%= $moodle_adm_pwd %>
+db_adm_user = <%= $moodle_db_adm_user %>
+db_adm_password = <%= $moodle_db_adm_pwd %>
 db_pfx = <%= $moodle_db_pfx %>
 repository = <%= $docker_repository %>
 default_desired_num = <%= $default_desired_num %>

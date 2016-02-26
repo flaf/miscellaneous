@@ -1,43 +1,43 @@
-class moo::common (
-  String[1]           $shared_root_path,
-  Integer[5000]       $first_guid,
-  String[1]           $default_version_tag,
-  Array[String[1], 1] $lb,
-  String[1]           $moodle_db_host,
-  String[1]           $moodle_adm_user,
-  String[1]           $moodle_adm_pwd,
-  String[1]           $moodle_db_pfx,
-  String[1]           $docker_repository,
-  Integer[1]          $default_desired_num,
-  String[1]           $moobot_db_host,
-  String[1]           $moobot_db_pwd,
-  Array[String[1], 1] $memcached_servers,
-  String[1]           $ha_template,
-  String[1]           $ha_reload_cmd,
-  String[1]           $ha_stats_login,
-  String[1]           $ha_stats_pwd,
-  String[1]           $smtp_relay,
-  Integer[1]          $smtp_port,
-  Array[String[1], 1] $mongodb_servers,
-  String[1]           $replicaset,
-) {
+class moo::common  {
 
-  if $lb[0] == 'NOT-DEFINED' {
-    regsubst(@("END"), '\n', ' ', 'G').fail
-      $title: sorry the mandatory parameter `lb` is not defined.
-      |- END
-  }
-  if $memcached_servers[0] == 'NOT-DEFINED' {
-    regsubst(@("END"), '\n', ' ', 'G').fail
-      $title: sorry the mandatory parameter `memcached_servers` is not defined.
-      |- END
-  }
-  [ 'moodle_db_host', 'docker_repository' ].each |$param| {
-    if getvar($param) == 'NOT-DEFINED' {
-      regsubst(@("END"), '\n', ' ', 'G').fail
-        $title: sorry the mandatory parameter `$param` is not defined.
-        |- END
-    }
+  if !defined(Class['::moo::params']) { include '::moo::params' }
+
+  $shared_root_path    = $::moo::params::shared_root_path
+  $first_guid          = $::moo::params::first_guid
+  $default_version_tag = $::moo::params::default_version_tag
+  $lb                  = $::moo::params::lb
+  $moodle_db_host      = $::moo::params::moodle_db_host
+  $moodle_db_adm_user  = $::moo::params::moodle_db_adm_user
+  $moodle_db_adm_pwd   = $::moo::params::moodle_db_adm_pwd
+  $moodle_db_pfx       = $::moo::params::moodle_db_pfx
+  $docker_repository   = $::moo::params::docker_repository
+  $default_desired_num = $::moo::params::default_desired_num
+  $moobot_db_host      = $::moo::params::moobot_db_host
+  $moobot_db_pwd       = $::moo::params::moobot_db_pwd
+  $memcached_servers   = $::moo::params::memcached_servers
+  $ha_template         = $::moo::params::ha_template
+  $ha_reload_cmd       = $::moo::params::ha_reload_cmd
+  $ha_stats_login      = $::moo::params::ha_stats_login
+  $ha_stats_pwd        = $::moo::params::ha_stats_pwd
+  $smtp_relay          = $::moo::params::smtp_relay
+  $smtp_port           = $::moo::params::smtp_port
+  $mongodb_servers     = $::moo::params::mongodb_servers
+  $replicaset          = $::moo::params::replicaset
+
+  [
+    'lb',
+    'moodle_db_host',
+    'moodle_db_adm_pwd',
+    'moodle_db_pfx',
+    'docker_repository',
+    'moobot_db_host',
+    'moobot_db_pwd',
+    'memcached_servers',
+    'ha_stats_pwd',
+    'mongodb_servers',
+  ].each |$var_name| {
+    ::homemade::fail_if_undef( getvar($var_name), "moo::params::${var_name}",
+                               $title )
   }
 
   require '::repository::moobot'
@@ -56,8 +56,8 @@ class moo::common (
                     'default_version_tag' => $default_version_tag,
                     'lb'                  => $lb,
                     'moodle_db_host'      => $moodle_db_host,
-                    'moodle_adm_user'     => $moodle_adm_user,
-                    'moodle_adm_pwd'      => $moodle_adm_pwd,
+                    'moodle_db_adm_user'  => $moodle_db_adm_user,
+                    'moodle_db_adm_pwd'   => $moodle_db_adm_pwd,
                     'moodle_db_pfx'       => $moodle_db_pfx,
                     'docker_repository'   => $docker_repository,
                     'default_desired_num' => $default_desired_num,

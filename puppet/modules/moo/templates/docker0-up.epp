@@ -1,6 +1,6 @@
 <%-|
   String[1] $docker_iface,
-  String[1] $docker_bridge_network,
+  String[1] $docker_bridge_cidr_address,
   String[1] $docker_gateway,
   Boolean   $iptables_allow_dns,
 |-%>
@@ -27,7 +27,7 @@ docker_iface_addrmask=$(ip addr show dev "$docker_iface" | grep 'inet ' | awk '{
 docker_iface_cidr=$(ipcalc -nb "$docker_iface_addrmask" | grep '^Network:' | awk '{print $2}')
 
 # The CIDR address of the internal "docker" network.
-docker_network='<%= $docker_bridge_network %>'
+docker_network='<%= $docker_bridge_cidr_address %>'
 
 # The routing table fo dockers.
 docker_table='dockertable'

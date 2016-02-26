@@ -1,33 +1,29 @@
 class moo::cargo (
-  String[1]           $docker_iface,
-  String[1]           $docker_bridge_network,
-  Array[String[1]]    $docker_dns,
-  String[1]           $ceph_account,
-  String[1]           $ceph_client_mountpoint,
-  String[1]           $backups_dir,
-  Integer[1]          $backups_retention,
-  Integer[1]          $backups_moodles_per_day,
-  Boolean             $make_backups,
-  Boolean             $ceph_mount_on_the_fly,
   Array[String[1], 1] $supported_distributions,
 ) {
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
-  # WARNING: finally, it's probably better to use the
-  # package from Ubuntu repositories.
-  #
-  #require '::repository::docker'
+  if !defined(Class['::moo::params']) { include '::moo::params' }
 
-  include '::network::params'
-  require '::moo::common'
-  include '::moo::dockerapi'
+  $shared_root_path           = $::moo::params::shared_root_path
+  $docker_iface               = $::moo::params::docker_iface
+  $docker_bridge_cidr_address = $::moo::params::docker_bridge_cidr_address
+  $docker_dns                 = $::moo::params::docker_dns
+  $ceph_account               = $::moo::params::ceph_account
+  $ceph_client_mountpoint     = $::moo::params::ceph_client_mountpoint
+  $ceph_mount_on_the_fly      = $::moo::params::ceph_mount_on_the_fly
+  $backups_dir                = $::moo::params::backups_dir
+  $backups_retention          = $::moo::params::backups_retention
+  $backups_moodles_per_day    = $::moo::params::backups_moodles_per_day
+  $make_backups               = $::moo::params::make_backups
 
-  $interfaces         = $::network::params::interfaces
-  $inventory_networks = $::network::params::inventory_networks
-  $shared_root_path   = $::moo::common::shared_root_path
+  $iptables_allow_dns         = $::moo::params::iptables_allow_dns_final
+  $docker_gateway             = $::moo::params::docker_gateway_final
 
-  unless $interfaces.has_key($docker_iface) {
+  ::homemade::fail_if_undef( $docker_iface, "moo::params::docker_iface", $title )
+
+  if $::moo::params::docker_iface_not_among_interfaces {
     regsubst(@("END"), '\n', ' ', 'G').fail
       $title: sorry, problem with the parameter docker_iface. The
       interface `$docker_iface` is not defined among the interfaces
@@ -35,24 +31,20 @@ class moo::cargo (
       |- END
   }
 
-  $only_docker_ifcace = { $docker_iface => $interfaces[$docker_iface] }
-  $docker_gateway     = ::network::get_param($only_docker_ifcace,
-                                             $inventory_networks,
-                                             'gateway', '')
-
-  if $docker_gateway.empty {
+  if $docker_gateway =~ Undef {
     regsubst(@("END"), '\n', ' ', 'G').fail
       $title: sorry, problem with the parameter docker_iface. No
       gateway has been found for the interface docker_iface=`$docker_iface`.
       |- END
   }
 
-  $host_addr = ::network::get_addresses($interfaces)
-  if $docker_dns.filter |$a_dns_addr| { $host_addr.member($a_dns_addr) }.empty {
-    $iptables_allow_dns = false
-  } else {
-    $iptables_allow_dns = true
-  }
+  # WARNING: finally, it's probably better to use the
+  # package from Ubuntu repositories.
+  #
+  #require '::repository::docker'
+
+  require '::moo::common'
+  include '::moo::dockerapi'
 
   file_line { 'set-dockertable-name':
     path   => '/etc/iproute2/rt_tables',
@@ -72,8 +64,8 @@ class moo::cargo (
     notify  => Service['docker'],
     content => epp('moo/default_docker.epp',
                    {
-                    'docker_bridge_network' => $docker_bridge_network,
-                    'docker_dns'            => $docker_dns,
+                    'docker_bridge_cidr_address' => $docker_bridge_cidr_address,
+                    'docker_dns'                 => $docker_dns,
                    }
                   )
   }
@@ -90,10 +82,10 @@ class moo::cargo (
     notify  => Exec['set-iptables-rules'],
     content => epp('moo/docker0-up.epp',
                    {
-                    'docker_bridge_network' => $docker_bridge_network,
-                    'docker_iface'          => $docker_iface,
-                    'docker_gateway'        => $docker_gateway,
-                    'iptables_allow_dns'    => $iptables_allow_dns,
+                    'docker_bridge_cidr_address' => $docker_bridge_cidr_address,
+                    'docker_iface'               => $docker_iface,
+                    'docker_gateway'             => $docker_gateway,
+                    'iptables_allow_dns'         => $iptables_allow_dns,
                    }
                   )
   }
