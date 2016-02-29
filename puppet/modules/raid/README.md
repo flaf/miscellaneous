@@ -15,6 +15,6 @@ That's all.
 In this module, the puppet fact `$::raid_controllers` is
 defined. It's an array with all the RAID controllers in the
 current node. It will be equal to `[]` (empty array) if
-there is no RAID controller.
+there is no RAID controller found.
 
 
