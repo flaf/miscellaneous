@@ -1,22 +1,22 @@
 function raid::data {
 
-  $megaraidsas2208rev05   = 'LSI Logic / Symbios Logic MegaRAID SAS 2208 [Thunderbolt] (rev 05)'
-  $megaraidsas2208rev05_2 = 'LSI Logic / Symbios Logic MegaRAID SAS 2108 [Liberator] (rev 05)'
-  $hpproliantdl360gen9    = 'Hewlett-Packard Company Device 3239 (rev 01)'
-  $hpproliantdl360gen9_2  = 'Hewlett-Packard Company Smart Array Gen9 Controllers (rev 01)'
-  $areca1880              = 'Areca Technology Corp. ARC-1880 8/12 port PCIe/PCI-X to SAS/SATA II RAID Controller (rev 05)'
-
-  $controller2class = {
-    $megaraidsas2208rev05   => 'megaraid',
-    $megaraidsas2208rev05_2 => 'megaraid',
-    $hpproliantdl360gen9    => 'hpssacli',
-    $hpproliantdl360gen9_2  => 'hpssacli',
-    $areca1880              => 'areca',
+  $classes2controllers = {
+    'megaraid' => [
+                   'LSI Logic / Symbios Logic MegaRAID SAS 2208 [Thunderbolt] (rev 05)',
+                   'LSI Logic / Symbios Logic MegaRAID SAS 2108 [Liberator] (rev 05)',
+                  ],
+    'hpssacli' => [
+                   'Hewlett-Packard Company Device 3239 (rev 01)',
+                   'Hewlett-Packard Company Smart Array Gen9 Controllers (rev 01)',
+                  ],
+    'areca'    => [
+                   'Areca Technology Corp. ARC-1880 8/12 port PCIe/PCI-X to SAS/SATA II RAID Controller (rev 05)',
+                  ],
   };
 
   {
     raid::params::raid_controllers          => $::raid_controllers, # it's a fact
-    raid::params::controller2class          => $controller2class,
+    raid::params::classes2controllers       => $classes2controllers,
 
     raid::megaraid::supported_distributions => [ 'jessie' ],
 
