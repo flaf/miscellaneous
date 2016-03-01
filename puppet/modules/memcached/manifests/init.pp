@@ -1,9 +1,11 @@
 class memcached (
-  Integer[1]          $memory,
   Array[String[1], 1] $supported_distributions,
 ) {
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
+
+  if !defined(Class['::memcached::params']) { include '::memcached::params' }
+  $memory = $::memcached::params::memory
 
   ensure_packages( [ 'memcached' ], { ensure => present } )
 

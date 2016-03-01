@@ -4,7 +4,8 @@ function memcached::data {
   $default_memory = 64;
 
   {
-    memcached::memory                  => $default_memory,
+    memcached::params::memory => $default_memory,
+
     memcached::supported_distributions => [ 'trusty' ],
   }
 
