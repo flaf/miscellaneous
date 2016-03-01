@@ -16,6 +16,7 @@
   $ha_reload_cmd,
   $ha_stats_login,
   $ha_stats_pwd,
+  $ha_log_server,
   $smtp_relay,
   $smtp_port,
   $mongodb_servers,
@@ -59,5 +60,6 @@ template = <%= $ha_template %>
 reload_cmd = <%= $ha_reload_cmd %>
 stats_login = <%= $ha_stats_login %>
 stats_password = <%= $ha_stats_pwd %>
+log_server = <%= $ha_log_server %>
 
 

@@ -16,6 +16,8 @@ class moo::params (
   String[1]                       $ha_reload_cmd,
   String[1]                       $ha_stats_login,
   Optional[ String[1] ]           $ha_stats_pwd = undef,
+  Optional[ String[1] ]           $ha_log_server = undef,
+  String[1]                       $ha_log_format,
   String[1]                       $smtp_relay,
   Integer[1]                      $smtp_port,
   Optional[ Array[String[1], 1] ] $mongodb_servers = undef,
@@ -87,6 +89,9 @@ class moo::params (
 
   }
 
+#  ### The same as above but with a if {} else {} instruction.
+#  ### Finally it's less readable.
+#
 #  if $docker_gateway =~ Undef {
 #
 #    # $docker_gateway is not set by the user (for instance via hiera).

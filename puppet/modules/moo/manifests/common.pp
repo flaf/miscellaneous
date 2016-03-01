@@ -18,6 +18,8 @@ class moo::common  {
   $ha_template         = $::moo::params::ha_template
   $ha_reload_cmd       = $::moo::params::ha_reload_cmd
   $ha_stats_login      = $::moo::params::ha_stats_login
+  $ha_log_server       = $::moo::params::ha_log_server
+  $ha_log_format       = $::moo::params::ha_log_format
   $ha_stats_pwd        = $::moo::params::ha_stats_pwd
   $smtp_relay          = $::moo::params::smtp_relay
   $smtp_port           = $::moo::params::smtp_port
@@ -34,6 +36,7 @@ class moo::common  {
     'moobot_db_pwd',
     'memcached_servers',
     'ha_stats_pwd',
+    'ha_log_server',
     'mongodb_servers',
   ].each |$var_name| {
     ::homemade::fail_if_undef( getvar($var_name), "moo::params::${var_name}",
@@ -68,10 +71,24 @@ class moo::common  {
                     'ha_reload_cmd'       => $ha_reload_cmd,
                     'ha_stats_login'      => $ha_stats_login,
                     'ha_stats_pwd'        => $ha_stats_pwd,
+                    'ha_log_server'       => $ha_log_server,
                     'smtp_relay'          => $smtp_relay,
                     'smtp_port'           => $smtp_port,
                     'mongodb_servers'     => $mongodb_servers,
                     'replicaset'          => $replicaset,
+                   },
+                  ),
+  }
+
+  file { '/opt/moobot/templates/haproxy.conf.j2':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    require => Package['moobot'],
+    content => epp('moo/haproxy.conf.j2.epp',
+                   {
+                     'ha_log_format' => $ha_log_format,
                    },
                   ),
   }

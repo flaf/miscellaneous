@@ -1,0 +1,55 @@
+<%- |String[1] $ha_log_format| -%>
+### This file is managed by Puppet, don't edit it. ###
+
+global
+    log {{ log_server }} local7 info
+    log /dev/log local1 notice
+    chroot /var/lib/haproxy
+    user haproxy
+    group haproxy
+    daemon
+    stats socket /var/run/haproxy.sock mode 600 level user
+
+defaults
+    log global
+    mode http
+    option httplog
+    option dontlognull
+    timeout connect 5000
+    timeout client  50000
+    timeout server  50000
+    errorfile 400 /etc/haproxy/errors/400.http
+    errorfile 403 /etc/haproxy/errors/403.http
+    errorfile 408 /etc/haproxy/errors/408.http
+    errorfile 500 /etc/haproxy/errors/500.http
+    errorfile 502 /etc/haproxy/errors/502.http
+    errorfile 503 /etc/haproxy/errors/503.http
+    errorfile 504 /etc/haproxy/errors/504.http
+    cookie SRV insert indirect nocache
+    log-format <%= $ha_log_format %>
+
+listen admin
+    bind *:8080
+    stats enable
+    stats refresh 5
+    stats auth {{ stats_login }}:{{ stats_password }}
+
+frontend http-in
+    bind *:80
+    capture request header referer len 64
+    capture request header user-agent len 200
+    capture request header x-forwarded-for len 45
+{%- for backend in backends %}
+    use_backend {{ backend.fqdn }} if { hdr(host) -i {{ backend.fqdn }} }
+{%- endfor %}
+{% for backend in backends %}
+backend {{ backend.fqdn }}
+{%- set index = 1 -%}
+{%- for server in backend.servers %}
+    server server{{ index }} {{ server.ip }}:{{ server.port }} cookie s{{ index }} check
+{%- set index = index + 1 -%}
+{%- endfor %}
+    server backup 127.0.0.1:9000 backup
+{% endfor %}
+
+

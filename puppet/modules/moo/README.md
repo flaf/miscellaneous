@@ -6,7 +6,25 @@ This module implements the management of:
 - lb server,
 - captain server
 
-in a moodle plateform.
+in a moodle platform.
+
+
+# Cargo server
+
+## Usage
+
+Here is an example:
+
+```puppet
+class { '::moo::params':
+  shared_root_path => '/mnt/moodle',
+}
+
+include '::moo::cargo'
+```
+
+## Parameters
+
 
 
 # Post-installation in captain

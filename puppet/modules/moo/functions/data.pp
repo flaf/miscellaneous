@@ -52,6 +52,12 @@ function moo::data {
   if !defined(Class['::mongodb::params']) { include '::mongodb::params' }
   $replicaset = $::mongodb::params::replset
 
+  $interfaces         = $::network::params::interfaces
+  $inventory_networks = $::network::params::inventory_networks
+  $ha_log_server = ::network::get_param($interfaces, $inventory_networks,
+                                        'log_server', undef)
+  $ha_log_format = '%{+Q}o\ %{-Q}b\ %{-Q}ci\ -\ -\ [%T]\ %r\ %ST\ %B\ %hrl'
+
   $smtp_relay = $::network::params::smtp_relay
   $smtp_port  = $::network::params::smtp_port;
 
@@ -73,6 +79,8 @@ function moo::data {
     moo::params::ha_reload_cmd                => '/opt/moobot/bin/haproxy_graceful_reload',
     moo::params::ha_stats_login               => 'admin',
     moo::params::ha_stats_pwd                 => undef,
+    moo::params::ha_log_server                => $ha_log_server,
+    moo::params::ha_log_format                => $ha_log_format,
     moo::params::smtp_relay                   => $smtp_relay,
     moo::params::smtp_port                    => $smtp_port,
     moo::params::mongodb_servers              => undef,
