@@ -22,10 +22,10 @@ class moo::params (
   String[1]                       $replicaset,
   Optional[ String[1] ]           $captain_mysql_rootpwd = undef,
   Optional[ String[1] ]           $docker_iface = undef,
-  Optional[ String[1] ]           $docker_gateway = undef,
+  Optional[ String[1] ]           $docker_gateway = undef, # Specific, definitive value $docker_gateway_final
   String[1]                       $docker_bridge_cidr_address,
   Array[String[1]]                $docker_dns,
-  Optional[ Boolean ]             $iptables_allow_dns = undef,
+  Optional[ Boolean ]             $iptables_allow_dns = undef, # Specific, definitive value $docker_allow_dns_final
   String[1]                       $ceph_account,
   String[1]                       $ceph_client_mountpoint,
   Boolean                         $ceph_mount_on_the_fly,
