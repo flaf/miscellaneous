@@ -49,37 +49,75 @@ class moo::params (
   # Because reassignment is forbidden, we must use a new
   # variable $docker_gateway_final (yes it socks).
 
-  if $docker_gateway =~ Undef {
+  case $docker_gateway {
 
-    # $docker_gateway is not set by the user (for instance via hiera).
+    Undef: {
 
-    if !defined(Class['::network::params']) { include '::network::params' }
-    $interfaces         = $::network::params::interfaces
-    $inventory_networks = $::network::params::inventory_networks
+      # $docker_gateway is not set by the user (for instance via hiera).
 
-    if $docker_iface !~ Undef and $interfaces.has_key($docker_iface) {
+      if !defined(Class['::network::params']) { include '::network::params' }
+      $interfaces         = $::network::params::interfaces
+      $inventory_networks = $::network::params::inventory_networks
 
-      $only_docker_ifcace   = { $docker_iface => $interfaces[$docker_iface] }
-      $docker_gateway_final = ::network::get_param($only_docker_ifcace,
-                                                   $inventory_networks,
-                                                   'gateway', undef)
+      if $docker_iface !~ Undef and $interfaces.has_key($docker_iface) {
 
-    } else {
+        $only_docker_ifcace   = { $docker_iface => $interfaces[$docker_iface] }
+        $docker_gateway_final = ::network::get_param($only_docker_ifcace,
+                                                     $inventory_networks,
+                                                     'gateway', undef)
 
-      # Bad case when $docker_iface is undef or not in the
-      # $interfaces of the current node. It will fail in the
-      # cargo class.
-      $docker_iface_not_among_interfaces = true
-      $docker_gateway_final              = undef
+      } else {
 
-    }
+        # Bad case when $docker_iface is undef or not in the
+        # $interfaces of the current node. It will fail in the
+        # cargo class.
+        $docker_iface_not_among_interfaces = true
+        $docker_gateway_final              = undef
 
-  } else {
+      }
 
-    # $docker_gateway is already set.
-    $docker_gateway_final = $docker_gateway
+    } ### end Undef case ###
+
+    NotUndef: {
+
+      # $docker_gateway is already set.
+      $docker_gateway_final = $docker_gateway
+
+    } ### end NotUndef case ###
 
   }
+
+#  if $docker_gateway =~ Undef {
+#
+#    # $docker_gateway is not set by the user (for instance via hiera).
+#
+#    if !defined(Class['::network::params']) { include '::network::params' }
+#    $interfaces         = $::network::params::interfaces
+#    $inventory_networks = $::network::params::inventory_networks
+#
+#    if $docker_iface !~ Undef and $interfaces.has_key($docker_iface) {
+#
+#      $only_docker_ifcace   = { $docker_iface => $interfaces[$docker_iface] }
+#      $docker_gateway_final = ::network::get_param($only_docker_ifcace,
+#                                                   $inventory_networks,
+#                                                   'gateway', undef)
+#
+#    } else {
+#
+#      # Bad case when $docker_iface is undef or not in the
+#      # $interfaces of the current node. It will fail in the
+#      # cargo class.
+#      $docker_iface_not_among_interfaces = true
+#      $docker_gateway_final              = undef
+#
+#    }
+#
+#  } else {
+#
+#    # $docker_gateway is already set.
+#    $docker_gateway_final = $docker_gateway
+#
+#  }
 
 
   # Same problem with the parameter $iptables_allow_dns. Its
