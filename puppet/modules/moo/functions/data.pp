@@ -96,7 +96,7 @@ function moo::data {
     # interface.
     moo::params::docker_bridge_cidr_address   => $docker_bridge_cidr_address,
     moo::params::docker_dns                   => $docker_dns,
-    moo::params::iptables_allow_dns           => $iptables_allow_dns,
+    moo::params::iptables_allow_dns           => undef,
     moo::params::ceph_account                 => 'cephfs',
     moo::params::ceph_client_mountpoint       => '/moodle',
     moo::params::ceph_mount_on_the_fly        => false,
