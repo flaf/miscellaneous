@@ -49,16 +49,11 @@ function moo::data {
 
   }
 
-  # TODO: currently, the module mongodb is not ready to support this
-  # (ie a "params" class callable everywhere).
-  #if !defined(Class['::mongodb::params']) { include '::mongodb::params' }
-  #$replicaset = $::mongodb::params::replset
-  $replicaset = 'mongo'
+  if !defined(Class['::mongodb::params']) { include '::mongodb::params' }
+  $replicaset = $::mongodb::params::replset
 
   $smtp_relay = $::network::params::smtp_relay
-  $smtp_port  = $::network::params::smtp_port
-
-  $r = 'salt';
+  $smtp_port  = $::network::params::smtp_port;
 
   {
     moo::params::shared_root_path             => '/mnt/moodle',

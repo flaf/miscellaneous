@@ -2,7 +2,7 @@ class mongodb (
   Array[String[1], 1] $supported_distributions,
 ) {
 
-  include '::mongodb::params'
+  if !defined(Class['::mongodb::params']) { include '::mongodb::params' }
   $bind_ip    = $::mongodb::params::bind_ip
   $port       = $::mongodb::params::port
   $auth       = $::mongodb::params::auth
