@@ -103,6 +103,9 @@ is `true` if, among the addresses in `docker_dns`, there is
 one address which belongs to the current host (else the
 value is `fasle` by default).
 
+The parameter `shared_root_path` is the directory used by
+the cargo server to mount the ceph file system. Its default
+value is `/mnt/moodle`.
 
 
 # Post-installation in captain
