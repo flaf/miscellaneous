@@ -51,41 +51,30 @@ class moo::params (
   # Because reassignment is forbidden, we must use a new
   # variable $docker_gateway_final (yes it socks).
 
-  case $docker_gateway {
+  if !defined(Class['::network::params']) { include '::network::params' }
+  $interfaces         = $::network::params::interfaces
+  $inventory_networks = $::network::params::inventory_networks
 
-    Undef: {
+  case [ $docker_gateway, $docker_iface, $interfaces.has_key($docker_iface) ] {
 
-      # $docker_gateway is not set by the user (for instance via hiera).
+    [ Undef, NotUndef, true ]: {
+      $only_docker_ifcace   = { $docker_iface => $interfaces[$docker_iface] }
+      $docker_gateway_final = ::network::get_param($only_docker_ifcace,
+                                                   $inventory_networks,
+                                                   'gateway', undef)
+    }
 
-      if !defined(Class['::network::params']) { include '::network::params' }
-      $interfaces         = $::network::params::interfaces
-      $inventory_networks = $::network::params::inventory_networks
+    [ Undef, NotUndef, false ]: {
+      # Bad case when $docker_iface is defined but not in
+      # the $interfaces of the current node. It will fail in
+      # the cargo class.
+      $docker_iface_not_among_interfaces = true
+    }
 
-      if $docker_iface !~ Undef and $interfaces.has_key($docker_iface) {
-
-        $only_docker_ifcace   = { $docker_iface => $interfaces[$docker_iface] }
-        $docker_gateway_final = ::network::get_param($only_docker_ifcace,
-                                                     $inventory_networks,
-                                                     'gateway', undef)
-
-      } else {
-
-        # Bad case when $docker_iface is undef or not in the
-        # $interfaces of the current node. It will fail in the
-        # cargo class.
-        $docker_iface_not_among_interfaces = true
-        $docker_gateway_final              = undef
-
-      }
-
-    } ### end Undef case ###
-
-    NotUndef: {
-
-      # $docker_gateway is already set.
+    [ NotUndef, default, default ]: {
+      # $docker_gateway is defined.
       $docker_gateway_final = $docker_gateway
-
-    } ### end NotUndef case ###
+    }
 
   }
 
