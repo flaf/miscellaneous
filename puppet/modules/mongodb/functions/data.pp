@@ -6,7 +6,7 @@ function mongodb::data {
     mongodb::params::auth            => false,
     mongodb::params::replset         => "mongo-${::domain}",
     mongodb::params::smallfiles      => true,
-    mongodb::params::keyfile         => '',
+    mongodb::params::keyfile         => undef,
     mongodb::params::quiet           => true,
     # loglevel is a bad name for a class because it's
     # the name of metaparameter so loglevel becomes

@@ -15,13 +15,21 @@ class mongodb (
   $databases  = $::mongodb::params::databases
 
   $has_keyfile = $keyfile ? {
-    ''      => false,
+    undef   => false,
     default => true,
   }
 
   $ensure_keyfile = $keyfile ? {
-    ''      => 'absent',
+    undef   => 'absent',
     default => 'present',
+  }
+
+  if $auth and !$has_keyfile {
+    regsubst(@("END"), '\n', ' ', 'G').fail
+      ${title}: the parameter `auth` if set to true but the parameter
+      `keyfile` is not defined. When `auth` is set to true, the parameter
+      `keyfile` is required.
+      |- END
   }
 
   ensure_packages( [ 'mongodb-server',
