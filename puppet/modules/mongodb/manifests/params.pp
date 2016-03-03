@@ -4,7 +4,7 @@ class mongodb::params (
   Boolean                                             $auth,
   String[1]                                           $replset,
   Boolean                                             $smallfiles,
-  Optional[ String[1] ]                               $keyfile,
+  Optional[ String[1] ]                               $keyfile = undef,
   Boolean                                             $quiet,
   Integer                                             $log_level,
   Enum[ '/var/log/mongodb/mongodb.log', '/dev/null' ] $logpath,
