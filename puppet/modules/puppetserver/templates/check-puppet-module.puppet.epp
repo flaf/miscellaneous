@@ -64,6 +64,7 @@ do
 
     if [ "$available_version" = 'null' ]
     then
+      available_version='NOT FOUND IN THE FORGE'
       version_color="$red"
     elif dpkg --compare-versions "$available_version" gt "$version"
     then
