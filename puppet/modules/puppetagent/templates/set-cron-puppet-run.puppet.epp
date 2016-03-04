@@ -22,27 +22,36 @@ if [ "$action" = "enable" ]
 then
     if [ -e "$file_flag" ]
     then
-        rm "$file_flag" && printf "File %s removed, puppet run via cron enabled now.\n" "$file_flag"
+        rm "$file_flag" && printf "File %s removed, puppet run via cron ENABLED now.\n" "$file_flag"
     else
-        printf "File %s already absent, so puppet run via cron already enabled.\n" "$file_flag"
+        printf "File %s already absent, so puppet run via cron already ENABLED.\n" "$file_flag"
     fi
     exit 0
 elif [ "$action" = "disable" ]
 then
     if [ -e "$file_flag" ]
     then
-        printf "File %s already present, so puppet run via cron already disabled.\n" "$file_flag"
+        printf "File %s already present, so puppet run via cron already DISABLED.\n" "$file_flag"
     else
-        touch "$file_flag" && printf "File %s created, puppet run via cron disabled now.\n" "$file_flag"
+        touch "$file_flag" && printf "File %s created, puppet run via cron DISABLED now.\n" "$file_flag"
     fi
     exit 0
 elif [ "$action" = "switch" ]
 then
     if [ -e "$file_flag" ]
     then
-        rm "$file_flag" && printf "File %s removed, puppet run via cron enabled now.\n" "$file_flag"
+        rm "$file_flag" && printf "File %s removed, puppet run via cron ENABLED now.\n" "$file_flag"
     else
-        touch "$file_flag" && printf "File %s created, puppet run via cron disabled now.\n" "$file_flag"
+        touch "$file_flag" && printf "File %s created, puppet run via cron DISABLED now.\n" "$file_flag"
+    fi
+    exit 0
+elif [ "$action" = "status" ] || [ -z "$action" ]
+then
+    if [ -e "$file_flag" ]
+    then
+        printf "Puppet run via cron currently DISABLED.\n"
+    else
+        printf "Puppet run via cron currently ENABLED.\n"
     fi
     exit 0
 else
