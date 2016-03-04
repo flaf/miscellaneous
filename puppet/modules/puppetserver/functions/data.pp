@@ -4,7 +4,7 @@ function puppetserver::data {
   $puppet_memory           = '1g'
   $puppetdb_memory         = '1g'
   $profile                 = 'client'
-  $modules_repository      = undef,
+  $modules_repository      = undef
   $puppetdb_name           = 'puppet'
   $puppetdb_user           = 'puppet'
   $puppetdb_pwd            = sha1($::fqdn)

@@ -1,4 +1,4 @@
-<%- |Sting[1] $profile, String[1] $modules_repository| -%>
+<%- |String[1] $profile, String[1] $modules_repository| -%>
 ### This file is managed by Puppet, don't edit it. ###
 
 # Documentation here:

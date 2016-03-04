@@ -65,7 +65,6 @@ class puppetserver::puppetconf {
   $keys_path         = "${puppet_path}/keys"
   $eyaml_public_key  = "${keys_path}/public_key.pkcs7.pem"
   $eyaml_private_key = "${keys_path}/private_key.pkcs7.pem"
-  $puppet_bin_dir    = '/opt/puppetlabs/puppet/bin'
 
   file { [ $environment_path,
            $production_path,
