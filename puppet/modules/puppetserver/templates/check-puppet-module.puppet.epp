@@ -1,0 +1,86 @@
+<%- |String[1] $puppet_bin_dir| -%>
+#!/bin/sh
+
+### This file is managed by Puppet, don't edit it. ###
+
+export LC_ALL='C'
+export PATH='<%= $puppet_bin_dir %>:/usr/sbin:/usr/bin:/sbin:/bin'
+forge_url=$(puppet config print --section=main module_repository)
+red='\033[1;31m'
+green='\033[1;32m'
+reset='\033[00m'
+c=0
+
+# Example:
+#
+#    print_param "full name" "flaf-mod" "$green"
+#
+print_param () {
+    printf "%-18s => %b%s%b\n" "$1" "$3" "$2" "$reset"
+}
+
+for d in "$@"
+do
+
+    c=$((c + 1))
+
+    # Title (cosmetic)
+    title="| $d |"
+    n=$(printf "$title" | wc --chars)
+    line=$(printf "%${n}s" '' | tr ' ' '-' | sed -r 's/^./+/;s/.$/+/')
+    printf '\n'
+    printf '         %s\n' "$line"
+    printf '(#%+2s) => %s\n' "$c" "$title"
+    printf '         %s\n' "$line"
+
+    if [ ! -d "$d" ]
+    then
+        printf "%bSorry, %s isn't a directory.%b\n" "$red" "$d" "$reset"
+        printf '\n'
+        continue
+    fi
+
+    if [ ! -e "$d/metadata.json" ]
+    then
+        printf "%bSorry, no metadata.json in %s.%b\n" "$red" "$d" "$reset"
+        printf '\n'
+        continue
+    fi
+
+    if [ -e "$d/checksums.json" ]
+    then
+        checksums=true
+        checksums_file='present'
+        checksums_color="$green"
+    else
+        checksums=false
+        checksums_file='ABSENT'
+        checksums_color="$red"
+    fi
+
+    name=$(cat "$d/metadata.json" | jq --raw-output '.["name"]')
+    version=$(cat "$d/metadata.json" | jq --raw-output '.["version"]')
+    available_version=$(curl --silent "$forge_url/v3/modules/$name" | jq --raw-output '.["current_release"]["version"]')
+
+    if [ "$available_version" = 'null' ]
+    then
+      version_color="$red"
+    elif dpkg --compare-versions "$available_version" gt "$version"
+    then
+      # $available_version grower than $version.
+      version_color="$red"
+    else
+      version_color="$green"
+    fi
+
+    print_param "full name" "$name" "$reset"
+    print_param "metadata.json" "present" "$reset"
+    print_param "checksums.json" "$checksums_file" "$checksums_color"
+    print_param "version" "$version" "$reset"
+    print_param "available version" "$available_version" "$version_color"
+    printf "\n"
+    "$checksums" && printf "Checksums of the files...\n" && (cd /tmp && puppet module changes "$d")
+
+done
+
+

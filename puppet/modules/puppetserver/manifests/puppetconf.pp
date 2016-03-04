@@ -34,9 +34,9 @@ class puppetserver::puppetconf {
   }
 
   require '::repository::puppet'
-  # git is to be able to change modules directly in the
-  # puppetserver.
-  ensure_packages( ['puppetserver', 'puppetdb-termini', 'git'],
+  # git has to be able to change modules directly in the
+  # puppetserver. jq has to be able in some scripts.
+  ensure_packages( ['puppetserver', 'puppetdb-termini', 'git', 'jq'],
                    { ensure => present, }
                  )
 
@@ -131,7 +131,7 @@ class puppetserver::puppetconf {
     # No need to restart the puppetserver here.
   }
 
-  file { "/usr/local/sbin/update-modules.puppet":
+  file { '/usr/local/sbin/update-modules.puppet':
     ensure  => present,
     owner   => 'root',
     group   => 'root',
@@ -142,6 +142,20 @@ class puppetserver::puppetconf {
                      'modules_path'     => $modules_path,
                      'puppet_bin_dir'   => $puppet_bin_dir,
                      'modules_versions' => $modules_versions,
+                   }
+                  ),
+    # No need to restart the puppetserver here.
+  }
+
+  file { '/usr/local/sbin/check-puppet-module.puppet':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0750',
+    before  => Service['puppetserver'],
+    content => epp('puppetserver/check-puppet-module.puppet.epp',
+                   {
+                     'puppet_bin_dir' => $puppet_bin_dir,
                    }
                   ),
     # No need to restart the puppetserver here.
