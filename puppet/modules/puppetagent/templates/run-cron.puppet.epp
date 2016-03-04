@@ -14,11 +14,23 @@ exec >/dev/null 2>&1
 
 export LC_ALL=C
 export PATH='<%= $bindir %>:/usr/sbin:/usr/bin:/sbin:/bin'
+script_name="${0##*/}"
+pid="$$"
+tag="$script_name[$pid]"
+file_stop='<%= $file_flag_puppet_cron %>'
+pause=$((RANDOM % 300)) # a sleep during x seconds where 0 =< x < 300.
+msg_stop="This puppet run via cron will be NOT started because the file $file_stop is present."
+msg_start="This puppet run via cron will be started (in ${pause}s) because the file $file_stop is absent."
 
-[ -e '<%= $file_flag_puppet_cron %>' ] && exit 0
+if [ -e "$file_stop" ]
+then
+    logger -t "$tag" "$msg_stop"
+    exit 0
+else
+    logger -t "$tag" "$msg_start"
+fi
 
-# A sleep during x seconds where 0 =< x < 300.
-sleep $((RANDOM % 300))
+sleep "$pause"
 
 timeout --signal TERM --kill-after 120s 360s puppet agent --test
 
