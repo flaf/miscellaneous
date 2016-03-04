@@ -1,4 +1,4 @@
-<%- | String[1] $bindir, String[1] $etcdir |-%>
+<%- |String[1] $bindir, String[1] $file_flag_puppet_cron | -%>
 #!/bin/bash
 
 ### This file is managed by puppet, don't exist
@@ -15,7 +15,7 @@ exec >/dev/null 2>&1
 export LC_ALL=C
 export PATH='<%= $bindir %>:/usr/sbin:/usr/bin:/sbin:/bin'
 
-[ -e '<%= $etcdir %>/no-run-via-cron' ] && exit 0
+[ -e '<%= $file_flag_puppet_cron %>' ] && exit 0
 
 # A sleep during x seconds where 0 =< x < 300.
 sleep $((RANDOM % 300))

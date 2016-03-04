@@ -19,6 +19,9 @@ class puppetagent (
   $bindir            = $::puppetagent::params::bindir
   $etcdir            = $::puppetagent::params::etcdir
 
+  # It's not a parameter but an internal value.
+  $file_flag_puppet_cron = $::puppetagent::params::file_flag_puppet_cron
+
   ensure_packages(['puppet-agent'], { ensure => present, })
 
   if $service_enabled {
@@ -137,8 +140,20 @@ class puppetagent (
     mode   => '0750',
     content => epp( 'puppetagent/run-cron.puppet.epp',
                     {
-                      'bindir' => $bindir,
-                      'etcdir' => $etcdir,
+                      'bindir'                => $bindir,
+                      'file_flag_puppet_cron' => $file_flag_puppet_cron,
+                    }
+                  ),
+  }
+
+  file { '/usr/local/sbin/set-cron-puppet-run.puppet':
+    ensure => $ensure_cron,
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0750',
+    content => epp( 'puppetagent/set-cron-puppet-run.puppet.epp',
+                    {
+                      'file_flag_puppet_cron' => $file_flag_puppet_cron,
                     }
                   ),
   }

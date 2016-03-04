@@ -1,0 +1,53 @@
+<%- |String[1] $file_flag_puppet_cron| -%>
+#!/bin/sh
+
+### This file is managed by puppet, don't exist
+
+set -e
+export LC_ALL=C
+export PATH='/usr/sbin:/usr/bin:/sbin:/bin'
+
+file_flag='<%= $file_flag_puppet_cron %>'
+dir=$(dirname "$file_flag")
+
+if [ ! -d "$dir" ]
+then
+    printf "Sorry, the parent directory of the file %s doesn't exist.\n" "$file_flag" >&2
+    exit 1
+fi
+
+action="$1"
+
+if [ "$action" = "enable" ]
+then
+    if [ -e "$file_flag" ]
+    then
+        rm "$file_flag" && printf "File %s removed, puppet run via cron enabled now.\n" "$file_flag"
+    else
+        printf "File %s already absent, so puppet run via cron already enabled.\n" "$file_flag"
+    fi
+    exit 0
+elif [ "$action" = "disable" ]
+then
+    if [ -e "$file_flag" ]
+    then
+        printf "File %s already present, so puppet run via cron already disabled.\n" "$file_flag"
+    else
+        touch "$file_flag" && printf "File %s created, puppet run via cron disabled now.\n" "$file_flag"
+    fi
+    exit 0
+elif [ "$action" = "switch" ]
+then
+    if [ -e "$file_flag" ]
+    then
+        rm "$file_flag" && printf "File %s removed, puppet run via cron enabled now.\n" "$file_flag"
+    else
+        touch "$file_flag" && printf "File %s created, puppet run via cron disabled now.\n" "$file_flag"
+    fi
+    exit 0
+else
+    printf "Sorry, the argument [%s] isn't supported.\n" "$action" >&2
+    exit 1
+fi
+
+
