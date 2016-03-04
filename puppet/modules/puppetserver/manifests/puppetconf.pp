@@ -26,6 +26,11 @@ class puppetserver::puppetconf {
   $max_groups         = $::puppetserver::max_groups
   $groups_from_master = $::puppetserver::groups_from_master
 
+  $puppetlabs_path   = $::puppetserver::puppetlabs_path
+  $puppet_path       = $::puppetserver::puppet_path
+  $ssldir            = $::puppetserver::ssldir
+  $puppet_bin_dir    = $::puppetserver::puppet_bin_dir
+
   if $profile == 'autonomous' {
     $notify_puppetserver = undef
   } else {
@@ -52,14 +57,11 @@ class puppetserver::puppetconf {
   }
 
   # The environment directories and its sub-directories etc.
-  $puppetlabs_path   = '/etc/puppetlabs'
   $code_path         = "${puppetlabs_path}/code"
   $environment_path  = "${code_path}/environments"
   $production_path   = "${environment_path}/production"
   $manifests_path    = "${production_path}/manifests"
   $modules_path      = "${production_path}/modules"
-  $puppet_path       = "${puppetlabs_path}/puppet"
-  $ssldir            = "${puppet_path}/ssl"
   $keys_path         = "${puppet_path}/keys"
   $eyaml_public_key  = "${keys_path}/public_key.pkcs7.pem"
   $eyaml_private_key = "${keys_path}/private_key.pkcs7.pem"

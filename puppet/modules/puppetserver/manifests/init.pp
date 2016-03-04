@@ -1,18 +1,26 @@
 class puppetserver (
-  String[1]                    $puppet_memory,
-  String[1]                    $puppetdb_memory,
-  Enum['autonomous', 'client'] $profile,
-  String                       $modules_repository,
-  String[1]                    $puppetdb_name,
-  String[1]                    $puppetdb_user,
-  String[1]                    $puppetdb_pwd,
-  Hash[String[1], String[1]]   $modules_versions,
-  Integer[1]                   $max_groups,
-  Array[String[1]]             $groups_from_master,
-  Array[String[1], 1]          $supported_distributions,
+  Array[String[1], 1] $supported_distributions,
 ) {
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
+
+  if !defined(Class['::puppetserver::params']) { include '::puppetserver::params' }
+  $puppet_memory      = $::puppetserver::params::puppet_memory
+  $puppetdb_memory    = $::puppetserver::params::puppetdb_memory
+  $profile            = $::puppetserver::params::profile
+  $modules_repository = $::puppetserver::params::modules_repository
+  $puppetdb_name      = $::puppetserver::params::puppetdb_name
+  $puppetdb_user      = $::puppetserver::params::puppetdb_user
+  $puppetdb_pwd       = $::puppetserver::params::puppetdb_pwd
+  $modules_versions   = $::puppetserver::params::modules_versions
+  $max_groups         = $::puppetserver::params::max_groups
+  $groups_from_master = $::puppetserver::params::groups_from_master
+
+  # From params but there are not parameters of the class.
+  $puppetlabs_path   = $::puppetserver::params::puppetlabs_path
+  $puppet_path       = $::puppetserver::params::puppet_path
+  $ssldir            = $::puppetserver::params::ssldir
+  $puppet_bin_dir    = $::puppetserver::params::puppet_bin_dir
 
   include '::puppetserver::puppetconf'
 

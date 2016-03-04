@@ -7,8 +7,11 @@ class puppetserver::puppetdb {
   $user             = $::puppetserver::puppetdb_user
   $pwd              = $::puppetserver::puppetdb_pwd
   $memory           = $::puppetserver::puppetdb_memory
-  $puppet_ssl_dir   = '/etc/puppetlabs/puppet/ssl'
-  $puppetdb_ssl_dir = '/etc/puppetlabs/puppetdb/ssl'
+
+  $puppet_ssl_dir   = $::puppetserver::ssldir
+  $puppetlabs_path  = $::puppetserver::puppetlabs_path
+  $puppetdb_path    = "${puppetlabs_path}/puppetdb"
+  $puppetdb_ssl_dir = "${puppetdb_path}/ssl"
 
   # Set the memory for the JVM which runs the puppetdb.
   $java_args = "-Xmx${memory}"

@@ -4,7 +4,7 @@ function puppetserver::data {
   $puppet_memory           = '1g'
   $puppetdb_memory         = '1g'
   $profile                 = 'client'
-  $modules_repository      = ''
+  $modules_repository      = undef,
   $puppetdb_name           = 'puppet'
   $puppetdb_user           = 'puppet'
   $puppetdb_pwd            = sha1($::fqdn)
@@ -14,16 +14,17 @@ function puppetserver::data {
   $supported_distributions = [ 'trusty' ];
 
   {
-    puppetserver::puppet_memory           => $puppet_memory,
-    puppetserver::puppetdb_memory         => $puppetdb_memory,
-    puppetserver::profile                 => $profile,
-    puppetserver::modules_repository      => $modules_repository,
-    puppetserver::puppetdb_name           => $puppetdb_name,
-    puppetserver::puppetdb_user           => $puppetdb_user,
-    puppetserver::puppetdb_pwd            => $puppetdb_pwd,
-    puppetserver::modules_versions        => $modules_versions,
-    puppetserver::max_groups              => $max_groups,
-    puppetserver::groups_from_master      => $groups_from_master,
+    puppetserver::params::puppet_memory      => $puppet_memory,
+    puppetserver::params::puppetdb_memory    => $puppetdb_memory,
+    puppetserver::params::profile            => $profile,
+    puppetserver::params::modules_repository => $modules_repository,
+    puppetserver::params::puppetdb_name      => $puppetdb_name,
+    puppetserver::params::puppetdb_user      => $puppetdb_user,
+    puppetserver::params::puppetdb_pwd       => $puppetdb_pwd,
+    puppetserver::params::modules_versions   => $modules_versions,
+    puppetserver::params::max_groups         => $max_groups,
+    puppetserver::params::groups_from_master => $groups_from_master,
+
     puppetserver::supported_distributions => $supported_distributions,
   }
 
