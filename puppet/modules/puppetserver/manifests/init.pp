@@ -16,10 +16,13 @@ class puppetserver (
   $max_groups         = $::puppetserver::params::max_groups
   $groups_from_master = $::puppetserver::params::groups_from_master
 
-  # These variables must be defined by the user.
-  [ 'profile', 'puppetdb_pwd' ].each |$var_name| {
-    ::homemade::fail_if_undef( getvar($var_name), "puppetserver::params::${var_name}",
-                               $title )
+  # The "profile" parameter is mandatory.
+  ::homemade::fail_if_undef($profile, 'puppetserver::params::profile', $title)
+
+  # The "puppetdb_pwd" parameter is mandatory only if the
+  # profile is "autonomous".
+  if $profile == 'autonomous' {
+    ::homemade::fail_if_undef($puppetdb_pwd, 'puppetserver::params::puppetdb_pwd', $title)
   }
 
   # From params but there are not parameters of the class,
