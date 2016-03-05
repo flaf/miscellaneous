@@ -25,7 +25,9 @@ class moo::lb (
   ::homemade::is_supported_distrib($supported_distributions, $title)
   require '::moo::common'
 
-  ensure_packages( [ 'haproxy' ], { ensure => present } )
+  # The package "netcat-openbsd" is useful to send requests
+  # to the haproxy socket file.
+  ensure_packages( [ 'haproxy', 'netcat-openbsd' ], { ensure => present } )
 
   service { 'haproxy':
     ensure     => running,
