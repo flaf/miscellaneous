@@ -16,7 +16,14 @@ class puppetserver (
   $max_groups         = $::puppetserver::params::max_groups
   $groups_from_master = $::puppetserver::params::groups_from_master
 
-  # From params but there are not parameters of the class.
+  # These variables must be defined by the user.
+  [ 'profile', 'puppetdb_pwd' ].each |$var_name| {
+    ::homemade::fail_if_undef( getvar($var_name), "puppetserver::params::${var_name}",
+                               $title )
+  }
+
+  # From params but there are not parameters of the class,
+  # just common internal values.
   $puppetlabs_path   = $::puppetserver::params::puppetlabs_path
   $puppet_path       = $::puppetserver::params::puppet_path
   $ssldir            = $::puppetserver::params::ssldir

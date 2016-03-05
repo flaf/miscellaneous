@@ -3,11 +3,11 @@ function puppetserver::data {
   # '2g' => 2GB, '512m' => 512MB etc.
   $puppet_memory           = '1g'
   $puppetdb_memory         = '1g'
-  $profile                 = 'client'
+  $profile                 = undef
   $modules_repository      = undef
   $puppetdb_name           = 'puppet'
   $puppetdb_user           = 'puppet'
-  $puppetdb_pwd            = sha1($::fqdn)
+  $puppetdb_pwd            = undef
   $modules_versions        = {} # no pinning by default
   $max_groups              = 5
   $groups_from_master      = []

@@ -1,11 +1,11 @@
 class puppetserver::params (
   String[1]                    $puppet_memory,
   String[1]                    $puppetdb_memory,
-  Enum['autonomous', 'client'] $profile,
+  Optional[ Enum['autonomous', 'client'] ] $profile = undef,
   Optional[ String[1] ]        $modules_repository = undef,
   String[1]                    $puppetdb_name,
   String[1]                    $puppetdb_user,
-  String[1]                    $puppetdb_pwd,
+  Optional[ String[1] ]                    $puppetdb_pwd = undef,
   Hash[String[1], String[1]]   $modules_versions,
   Integer[1]                   $max_groups,
   Array[String[1]]             $groups_from_master,
