@@ -11,14 +11,14 @@ enc_datacenter: 'vboxhome'
 # the "puppetagent" module.
 puppetagent::params::manage_puppetconf: false
 
-puppetserver::puppetdb_memory: '512m'
-puppetserver::profile: 'autonomous'
-#puppetserver::modules_repository: 'http://client-jessie:8080'
-puppetserver::modules_versions:
+puppetserver::params::puppetdb_memory: '512m'
+puppetserver::params::profile: 'autonomous'
+#puppetserver::params::modules_repository: 'http://client-jessie:8080'
+puppetserver::params::modules_versions:
   flaf-role_generic: '0.1.0'
 
-network::resolv_conf::override_dhcp: true
-#network::restart: true
+network::params::resolv_conf::override_dhcp: true
+#network::params::restart: true
 interfaces:
   eth0:
     in_networks: [ 'vbox_adm' ]
