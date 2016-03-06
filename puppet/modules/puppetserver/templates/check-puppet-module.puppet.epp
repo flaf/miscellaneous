@@ -40,6 +40,10 @@ do
         continue
     fi
 
+    # If not, we replace "$d" by an absolute path (better
+    # than relative path).
+    d=$(cd "$d"; pwd)
+
     if [ ! -e "$d/metadata.json" ]
     then
         printf "%bSorry, no metadata.json in %s.%b\n" "$red" "$d" "$reset"

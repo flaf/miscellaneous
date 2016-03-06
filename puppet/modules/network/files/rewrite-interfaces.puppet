@@ -21,6 +21,7 @@ then
           cp -a "$i" "$i.$(date '+%Y-%m-%d-%Hh%M')"
         fi
         cat "$ip" >"$i"
+        exit 0
     fi
 else
     echo "Sorry the file $ip doesn't exist." >&2

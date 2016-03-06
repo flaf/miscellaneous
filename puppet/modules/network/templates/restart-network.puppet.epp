@@ -1,25 +1,16 @@
+<%- |String[1] $rewrite_interfaces_bin| -%>
 #!/bin/sh
 
 ### This file is managed by Puppet, don't edit it. ###
 
 export LC_ALL='C'
 export PATH='/usr/sbin:/usr/bin:/sbin:/bin'
+rewrite_interfaces_bin='<%= $rewrite_interfaces_bin %>'
 
 timeout --signal=TERM --kill-after=5s 20s ifdown --all
 sleep 0.5
 
-if [ -f '/etc/network/interfaces.puppet' ]
-then
-    if [ -f '/etc/network/interfaces' ]
-    then
-      cp -a '/etc/network/interfaces' "/etc/network/interfaces.$(date '+%Y-%m-%d-%Hh%M')"
-    fi
-    cat '/etc/network/interfaces.puppet' >'/etc/network/interfaces'
-else
-    echo "Sorry the file /etc/network/interfaces.puppet doesn't exist." >&2
-    echo "Action aborted." >&2
-    exit 1
-fi
+"$rewrite_interfaces_bin" || exit 1
 
 # Refresh the names of interfaces.
 udevadm control --reload-rules

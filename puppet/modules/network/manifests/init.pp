@@ -66,22 +66,26 @@ class network (
     refreshonly => true,
   }
 
-  file { '/usr/local/sbin/restart-network.puppet':
-    ensure => present,
-    owner  => 'root',
-    group  => 'root',
-    mode   => '0750',
-    source => 'puppet:///modules/network/restart-network.puppet',
-    before => File['/etc/network/interfaces.puppet'],
-  }
+  $rewrite_interfaces_bin = '/usr/local/sbin/rewrite-interfaces.puppet'
 
-  file { '/usr/local/sbin/rewrite-interfaces.puppet':
+  file { $rewrite_interfaces_bin:
     ensure => present,
     owner  => 'root',
     group  => 'root',
     mode   => '0750',
     source => 'puppet:///modules/network/rewrite-interfaces.puppet',
     before => File['/etc/network/interfaces.puppet'],
+  }
+
+  file { '/usr/local/sbin/restart-network.puppet':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0750',
+    before  => File['/etc/network/interfaces.puppet'],
+    content => epp( 'network/restart-network.puppet.epp',
+                    { 'rewrite_interfaces_bin' => $rewrite_interfaces_bin, },
+                  ),
   }
 
   file { '/etc/network/interfaces.puppet':
