@@ -1,10 +1,12 @@
 # TODO
 
-* Use the `funcion` data provider with the `lookup_options` key.
-* Normally, remove groups is useless with the `attribute_membership`
-  set to `minimum` in user resources. Allow to make this module
-  simpler.
+* Normally, remove groups is useless with the `membership`
+  set to `inclusive` instead of the `minimum` (the default) in
+  user resources. This module will be simpler. Allow to define
+  this attribute in hiera.
 * Update this README.
+
+
 
 
 # Module description
@@ -60,6 +62,15 @@ class { '::unix_account::params':
 include '::unix_account'
 ```
 
+
+
+
+# Parameters
+
+**Note concerning the merging policy:** for the parameters
+`users` and `ssh_public_keys`, the merging policy is `hash`.
+For these parameters, its default value is `{}`.
+
 For the root account, only the parameters `password` and
 `ssh_authorized_keys` are handled. For this account, the
 rest is just ignored.
@@ -111,20 +122,9 @@ fqdn will be displayed in the prompt of each users, if
 `false` the short hostname will be used. Its default value
 is `false`.
 
-
-
-
-# Data binding
-
-If the `params` class is called without parameter, data
-binding makes a lookup of the `unix_accounts` entry in hiera
-or in `environment.conf` to set the value of the `users`
-parameters, if no value is found the default value is `{}`,
-ie an empty hash so no Unix account is managed.
-
-The data binding makes too a lookup of the `ssh_public_keys`
-entry to set the value of the `ssh_public_keys` parameter,
-if no value is found the default value is `{}` (ie no ssh
-public key).
+**Warning:** the root user resource is put in a specific
+**internal** class `::unix_accounts::root`. For this class,
+the `stage` parameter is set to `'basis'` by default (not
+`'main'`).
 
 

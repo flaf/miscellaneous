@@ -1,6 +1,5 @@
 class unix_accounts (
   Array[String[1], 1] $supported_distributions,
-  String[1]           $stage = 'main',
 ) {
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
@@ -302,14 +301,11 @@ class unix_accounts (
 
     } else {
 
-      # $user == 'root' is a specific case.
-      user { 'root':
-        name           => 'root',
-        ensure         => present,
-        home           => '/root',
-        password       => $password,
-        purge_ssh_keys => true,
-      }
+      # The root user resource is in a specific class to be
+      # able to define the attribute "stage" for this
+      # specific class. It's possible to define this
+      # attribute only for a class, not for a resource.
+      include '::unix_accounts::root'
 
     }
 
