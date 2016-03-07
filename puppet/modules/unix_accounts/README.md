@@ -1,3 +1,12 @@
+# TODO
+
+* Use the `funcion` data provider with the `lookup_options` key.
+* Normally, remove groups is useless with the `attribute_membership`
+  set to `minimum` in user resources. Allow to make this module
+  simpler.
+* Update this README.
+
+
 # Module description
 
 This module allows to manage some Unix and non-system
