@@ -33,7 +33,7 @@ inventory_networks:
 
 
 unix_accounts::params::fqdn_in_prompt: true
-unix_accounts:
+unix_accounts::params::users:
   root:
     password: '%{hiera("_root_unix_pwd_")}'
     ssh_authorized_keys:
@@ -65,7 +65,7 @@ mcomiddleware::params::mcollective_pwd: "%{hiera('_middleware_mcollective_pwd_')
 
 ### Long values below ###
 
-ssh_public_keys:
+unix_accounts::params::ssh_public_keys:
   root@router.athome.priv:
     type: 'ssh-rsa'
     keyvalue: >
