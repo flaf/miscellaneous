@@ -4,20 +4,28 @@ class puppetserver::puppetconf {
   #
   # If the puppetserver host has the "autonomous" profile,
   # During a puppet run, its puppet agent (ie the client)
-  # will communicate with its hosted puppetserver (the server).
-  # In this case, it's complicated to restart the puppetserver
-  # service during a puppet run because, in this case, the
-  # puppet client can't talk with the service which is
-  # restarting. Generally, we have an error during the puppet
-  # run like this:
+  # will communicate with its hosted puppetserver (the
+  # server). In this case, it's complicated to restart the
+  # puppetserver service during a puppet run because, in
+  # this case, the puppet client can't talk with the service
+  # which is restarting. Generally, we have an error during
+  # the puppet run like this:
   #
   #   Error: Could not send report: Connection refused - connect(2)
   #   for "puppet4.dom.tld" port 8140
   #
-  # It's logical. So, in this class there is no refresh of the
-  # puppetserver service in the case where the node has the
-  # "autonomus" profile.. If you notice changes during the puppet
-  # run, you should restart yourself the puppetserver service.
+  # It's logical. So, in this class there is no refresh of
+  # the puppetserver service in the case where the node has
+  # the "autonomus" profile. If you notice changes during
+  # the puppet run, you should restart yourself the
+  # puppetserver service.
+  #
+  # Remark: according to binford2k and WhatsARanjit (IRC),
+  # this error is not a problem because "After the catalog
+  # is compiled, most of the puppetserver's work is done. It
+  # can be restarted during the agent run. puppet:/// file
+  # requests will fail, the report might not send properly
+  # at the end, but it totally works".
 
   $profile            = $::puppetserver::profile
   $memory             = $::puppetserver::puppet_memory
