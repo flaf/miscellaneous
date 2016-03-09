@@ -15,7 +15,7 @@ Puppet::Functions.create_function(:'network::dump_cidr') do
       |valid CIDR address.
       EOS
 
-    # Check is cidr_str has this form 'xxx/yyy' with just
+    # Check if cidr_str has this form 'xxx/yyy' with just
     # one slash.
     regex_one_slash = '^[^/]+/[^/]+$'
     if not cidr_str =~ Regexp.new(regex_one_slash)
