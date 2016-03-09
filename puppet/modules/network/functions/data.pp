@@ -27,42 +27,33 @@ function network::data {
   $default_hosts_tag = ''
   $default_hosts_entries = { '127.0.1.1' => [ $::fqdn, $::hostname ] }
 
-  if $hosts_conf.empty {
-    $hosts_tag     = $default_hosts_tag
-    $hosts_entries = $default_hosts_entries
-  } else {
-    if $hosts_conf.has_key('tag') {
-      $hosts_tag = $hosts_conf['tag']
-    } else {
-      $hosts_tag = $default_hosts_tag
-    }
-    if $hosts_conf.has_key('entries') {
-      $hosts_entries = $hosts_conf['entries']
-    } else {
-      $hosts_entries = $default_hosts_entries
-    }
+  case $hosts_conf.has_key('entries') {
+    true:  { $hosts_entries = $hosts_conf['entries'] }
+    false: { $hosts_entries = $default_hosts_entries }
+  }
+
+  case $hosts_conf.has_key('tag') {
+    true:  { $hosts_tag = $hosts_conf['tag'] }
+    false: { $hosts_tag = $default_hosts_tag }
   }
 
   # If '127.0.1.1' is not present in hosts entries and if
   # $::fqdn _and_ $::hostname are not present at all in any
   # hosts entries, we add the automatically $default_hosts_entries.
-  if ! $hosts_entries.has_key('127.0.1.1') {
-
-    $tmp_entries = $hosts_entries.values.filter |$addresses| {
+  $fqdn_hostname_not_in = $hosts_entries.values.filter |$addresses| {
       $addresses.member($::fqdn) or $addresses.member($::hostname)
+  }.empty
+
+  case [ $hosts_entries.has_key('127.0.1.1'), $fqdn_hostname_not_in ] {
+
+    [ false, true ]: {
+      $hosts_entries_filled = $default_hosts_entries + $hosts_entries
     }
 
-    if $tmp_entries.empty {
-      # No entry with $::fqdn or $::hostname.
-      $ht_must_be_filled = true
+    [ default, default ]: {
+      $hosts_entries_filled = $hosts_entries
     }
 
-  }
-
-  if $ht_must_be_filled {
-    $hosts_entries_filled = $default_hosts_entries + $hosts_entries
-  } else {
-    $hosts_entries_filled = $hosts_entries
   }
 
   $smtp_relay = ::network::get_param($interfaces, $inventory_networks,
