@@ -3,6 +3,7 @@ class puppetserver::params (
   String[1]                                $puppetdb_memory,
   Optional[ Enum['autonomous', 'client'] ] $profile = undef,
   Optional[ String[1] ]                    $modules_repository = undef,
+  Optional[ Boolean ]                      $strict_variables = undef,
   String[1]                                $puppetdb_name,
   String[1]                                $puppetdb_user,
   Optional[ String[1] ]                    $puppetdb_pwd = undef,

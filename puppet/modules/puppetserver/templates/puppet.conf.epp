@@ -1,4 +1,8 @@
-<%- |String[1] $profile, Optional[String[1]] $modules_repository| -%>
+<%-|
+  String[1]           $profile,
+  Optional[String[1]] $modules_repository,
+  Optional[ Boolean ] $strict_variables,
+|-%>
 ### This file is managed by Puppet, don't edit it. ###
 
 # Documentation here:
@@ -12,6 +16,14 @@
 # permission 0771. Of course, we keep the default path of
 # the ssldir.
 ssldir = $confdir/ssl { owner = service, mode = 0750 }
+<%- case $strict_variables { -%>
+  <%- true: { -%>
+strict_variables = true
+  <%- } -%>
+  <%- false: { -%>
+strict_variables = false
+  <%- } -%>
+<%- } -%>
 <%- if $profile == 'client' { -%>
 cacrl = $ssldir/ca_crl.pem
 <%- } -%>

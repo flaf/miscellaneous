@@ -30,6 +30,7 @@ class puppetserver::puppetconf {
   $profile            = $::puppetserver::profile
   $memory             = $::puppetserver::puppet_memory
   $modules_repository = $::puppetserver::modules_repository
+  $strict_variables   = $::puppetserver::strict_variables
   $modules_versions   = $::puppetserver::modules_versions
   $max_groups         = $::puppetserver::max_groups
   $groups_from_master = $::puppetserver::groups_from_master
@@ -332,6 +333,7 @@ class puppetserver::puppetconf {
     content => epp('puppetserver/puppet.conf.epp',
                    { 'profile'            => $profile,
                      'modules_repository' => $modules_repository,
+                     'strict_variables'   => $strict_variables,
                    }
                   ),
   }

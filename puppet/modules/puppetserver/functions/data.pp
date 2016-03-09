@@ -5,6 +5,7 @@ function puppetserver::data {
   $puppetdb_memory         = '1g'
   $profile                 = undef
   $modules_repository      = undef
+  $strict_variables        = undef
   $puppetdb_name           = 'puppet'
   $puppetdb_user           = 'puppet'
   $puppetdb_pwd            = undef
@@ -18,6 +19,7 @@ function puppetserver::data {
     puppetserver::params::puppetdb_memory    => $puppetdb_memory,
     puppetserver::params::profile            => $profile,
     puppetserver::params::modules_repository => $modules_repository,
+    puppetserver::params::strict_variables   => $strict_variables,
     puppetserver::params::puppetdb_name      => $puppetdb_name,
     puppetserver::params::puppetdb_user      => $puppetdb_user,
     puppetserver::params::puppetdb_pwd       => $puppetdb_pwd,
