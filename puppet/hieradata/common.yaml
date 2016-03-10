@@ -61,6 +61,37 @@ mcollective::params::middleware_address: 'middleware.%{::domain}'
 mcomiddleware::params::mcollective_pwd: "%{hiera('_middleware_mcollective_pwd_')}"
 
 
+snmp::params:views: #
+    monitoring: [ '.1.3.6.1.2.1', '.1.3.6.1.4.1' ]
+snmp::params::snmpv3_accounts:
+  shinken:
+    name: 'azerty'
+    authproto: 'sha' # optional and default is 'sha'
+    authpass: 'xxxxxxxxxxxxxxxxxxxxx'
+    privproto: 'aes' # optional and default is 'aes'
+    privpass: 'YYYYYYYYYYYYYYYYYYYYYY'
+    view: 'monitoring' # optional and default is 'monitorng'
+  test:
+    name: 'security'
+    authproto: 'sha'
+    authpass: 'xxxxxxxxxxxxxxxxxxxxx'
+    privproto: 'aes'
+    privpass: 'YYYYYYYYYYYYYYYYYYYYYY'
+    view: 'monitoring'
+snmp::params::communities:
+  jrds:
+    name: 'xxxx'
+    access:
+      - sources: 'localhost'
+        view: 'monitoring' # optional and default is 'monitorng'
+      - source: '172.31.0.182'
+        view: 'monitoring' # optional and default is 'monitorng'
+  jrds2:
+    name: 'yyy'
+    access:
+      - source: '172.30.240.182'
+        view: 'monitoring'
+
 
 
 ### Long values below ###

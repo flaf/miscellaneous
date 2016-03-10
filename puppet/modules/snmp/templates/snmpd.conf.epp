@@ -1,16 +1,16 @@
 <%-|
-String                               $interface,
-Variant[Integer[1], String[1]]       $port,
-String[1]                            $syslocation,
-String[1]                            $syscontact,
-Array[Hash[String[1], String[1], 3]] $snmpv3_accounts,
-Array[Hash[String[1], Data, 2, 2]]   $communities,
-Hash[String[1], Array[String[1]]]    $views,
+String[1]                                        $interface,
+Integer[1]                                       $port,
+String[1]                                        $syslocation,
+String[1]                                        $syscontact,
+Hash[ String[1], Hash[String[1], String[1], 3] ] $snmpv3_accounts,
+Hash[ String[1], Hash[String[1], Data, 2, 2] ]   $communities,
+Hash[ String[1], Array[String[1], 1], 1 ]        $views,
 |-%>
 ### This file is managed by Puppet, don't edit it. ###
 
 # Listening interface.
-<%- if $interface.empty { -%>
+<%- if $interface == 'all' { -%>
 agentAddress udp:<%= $port %>
 <%- } else { -%>
 agentAddress udp:<%= $interface-%>:<%= $port %>
@@ -21,7 +21,7 @@ syslocation <%= $syslocation %>
 syscontact <%= $syscontact %>
 
 # SNMPv3 accounts.
-<%- $snmpv3_accounts.each |$an_account| { -%>
+<%- $snmpv3_accounts.each |$metaname, $an_account| { -%>
 <%-
   $authproto = $an_account['authproto'] ? {
     undef   => 'SHA',
@@ -50,14 +50,14 @@ view <%= $name %> included <%= $oid %>
 <%- } -%>
 
 # Access control.
-<%- $snmpv3_accounts.each |$an_account| { -%>
+<%- $snmpv3_accounts.each |$metaname, $an_account| { -%>
   <%-
     $view = $an_account['view'] ? { undef => 'monitoring', default => $an_account['view'] }
     $name = $an_account['name']
   -%>
 rouser <%= $name %> priv -V <%= $view %>
 <%- } -%>
-<%- $communities.each |$community| { -%>
+<%- $communities.each |$metaname, $community| { -%>
   <%-
     $name   = $community['name']
     $access = $community['access']

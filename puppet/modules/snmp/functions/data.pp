@@ -1,44 +1,22 @@
 function snmp::data {
 
-  include '::network::params'
+  if !defined(Class['::network::params']) { include '::network::params' }
   $inventory_networks = $::network::params::inventory_networks
   $interfaces         = $::network::params::interfaces
-  $conf               = lookup('snmp', Hash[String[1], Data], 'hash', {})
 
-  $interface = $conf['interface'] ? {
-    undef   => '',
-    default => $conf['interface'],
+  $interface       = $::facts['networking']['ip']
+  $port            = 161
+  $views           = { 'monitoring' => [ '.1.3.6.1.2.1', '.1.3.6.1.4.1' ] }
+  $snmpv3_accounts = {}
+  $communities     = {}
+
+  $syslocation = $::datacenter ? {
+    undef   => $::domain,
+    default => $::datacenter,
   }
 
-  $port = $conf['port'] ? {
-    undef   => 161,
-    default => $conf['port'],
-  }
-
-  $syslocation = $conf['syslocation'] ? {
-    undef   => $::datacenter ? { undef => $::domain, default => $::datacenter },
-    default => $conf['syslocation'],
-  }
-
-  # TODO: currently a puppet bug https://tickets.puppetlabs.com/browse/PUP-5209
-  #$syscontact = ::network::get_param($interfaces, $inventory_networks,
-  #                                   'admin_email', "admin@${::domain}")
-  $syscontact = "admin@${::domain}"
-
-  $snmpv3_accounts = $conf['snmpv3_accounts'] ? {
-    undef   => [],
-    default => $conf['snmpv3_accounts'],
-  }
-
-  $communities = $conf['communities'] ? {
-    undef   => [],
-    default => $conf['communities'],
-  }
-
-  $views = $conf['views'] ? {
-    undef   => { 'monitoring' => [ '.1.3.6.1.2.1', '.1.3.6.1.4.1' ] },
-    default => $conf['views'],
-  };
+  $syscontact = ::network::get_param($interfaces, $inventory_networks,
+                                     'admin_email', "admin@${::domain}");
 
   {
     snmp::params::interface       => $interface,
@@ -50,6 +28,13 @@ function snmp::data {
     snmp::params::views           => $views,
 
     snmp::supported_distributions => ['trusty', 'jessie'],
+
+    # Merging policy.
+    lookup_options => {
+      snmp::params::snmpv3_accounts => { merge => 'hash', },
+      snmp::params::communities     => { merge => 'hash', },
+      snmp::params::views           => { merge => 'hash', },
+    },
   }
 
 }
