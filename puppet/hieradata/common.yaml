@@ -82,7 +82,7 @@ snmp::params::communities:
   jrds:
     name: 'xxxx'
     access:
-      - sources: 'localhost'
+      - source: 'localhost'
         view: 'monitoring' # optional and default is 'monitorng'
       - source: '172.31.0.182'
         view: 'monitoring' # optional and default is 'monitorng'
