@@ -1,0 +1,18 @@
+---
+enc_included_classes:
+  - [ 'flaf', '::role_generic' ]
+  - [ 'flaf', '::mcomiddleware' ]
+enc_datacenter: 'vboxwork'
+
+network::restart: true
+
+interfaces:
+  eth0:
+    in_networks: [ 'vbox_adm' ]
+    macaddress: '08:00:27:6e:21:02'
+    inet:
+      method: 'dhcp'
+
+mcomiddleware::params::admin_pwd: 'cabc9a78a76267c799fac322150a01c6'
+
+

@@ -11,12 +11,13 @@ enc_datacenter: 'vboxwork'
 # the "puppetagent" module.
 puppetagent::params::manage_puppetconf: false
 
-puppetserver::puppetdb_memory: '512m'
-puppetserver::puppet_memory: '1g'
-puppetserver::profile: 'autonomous'
-puppetserver::modules_repository: 'http://puppetforge.lss1.backbone.education:8080'
-puppetserver::modules_versions:
+puppetserver::params::puppetdb_memory: '512m'
+puppetserver::params::puppet_memory: '1g'
+puppetserver::params::profile: 'autonomous'
+puppetserver::params::modules_repository: 'http://puppetforge.lss1.backbone.education:8080'
+puppetserver::params::modules_versions:
   flaf-role_generic: '0.1.0'
+puppetserver::params::puppetdb_pwd: '10d2058e00404c8dc168fd09096e09ac7695ae30'
 
 network::resolv_conf::override_dhcp: true
 network::restart: true
@@ -27,9 +28,8 @@ interfaces:
     inet:
       method: 'dhcp'
 
-mcollective:
-  client_private_key: "%{hiera('_mcollective_client_private_key_')}"
-  client_public_key: "%{hiera('_mcollective_client_public_key_')}"
+mcollective::params::client_public_key: "%{hiera('_mcollective_client_public_key_')}"
+mcollective::params::client_private_key: "%{hiera('_mcollective_client_private_key_')}"
 
 
 
