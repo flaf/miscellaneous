@@ -1,0 +1,19 @@
+---
+# Important: we disable the management of puppet.conf
+# by the "puppetagent" module to avoid that the puppet.conf
+# file is managed twice (by the "puppetserver" module and
+# the "puppetagent" module.
+puppetagent::params::manage_puppetconf: false
+
+puppetserver::params::puppet_memory: '1g'
+puppetserver::params::puppetdb_memory: '512m'
+puppetserver::params::profile: 'autonomous'
+puppetserver::params::strict_variables: true
+puppetserver::params::puppetdb_pwd: '%{hiera("_puppetdb_password_")}'
+#puppetserver::params::modules_versions:
+#  flaf-role_generic: '0.1.0'
+
+mcollective::params::client_public_key: "%{hiera('_mcollective_client_public_key_')}"
+mcollective::params::client_private_key: "%{hiera('_mcollective_client_private_key_')}"
+
+

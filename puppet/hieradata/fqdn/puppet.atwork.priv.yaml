@@ -4,23 +4,9 @@ enc_included_classes:
   - [ 'flaf', '::puppetserver' ]
   - [ 'flaf', '::mcollective::client' ]
 enc_datacenter: 'vboxwork'
+enc_groups: [ 'puppetserver' ]
 
-# Important: we disable the management of puppet.conf
-# by the "puppetagent" module to avoid that the puppet.conf
-# file is managed twice (by the "puppetserver" module and
-# the "puppetagent" module.
-puppetagent::params::manage_puppetconf: false
-
-puppetserver::params::puppetdb_memory: '512m'
-puppetserver::params::puppet_memory: '1g'
-puppetserver::params::profile: 'autonomous'
-puppetserver::params::modules_repository: 'http://puppetforge.lss1.backbone.education:8080'
-puppetserver::params::modules_versions:
-  flaf-role_generic: '0.1.0'
-puppetserver::params::puppetdb_pwd: '10d2058e00404c8dc168fd09096e09ac7695ae30'
-
-network::resolv_conf::override_dhcp: true
-network::restart: true
+network::params::resolv_conf::override_dhcp: true
 interfaces:
   eth0:
     in_networks: [ 'vbox_adm' ]
@@ -28,15 +14,9 @@ interfaces:
     inet:
       method: 'dhcp'
 
-mcollective::params::client_public_key: "%{hiera('_mcollective_client_public_key_')}"
-mcollective::params::client_private_key: "%{hiera('_mcollective_client_private_key_')}"
+puppetserver::params::modules_repository: 'http://puppetforge.lss1.backbone.education:8080'
 
-
-
-
-####################################
-### Long values referenced above ###
-####################################
+_puppetdb_password_: '10d2058e00404c8dc168fd09096e09ac7695ae30'
 
 _mcollective_client_private_key_: >
   ENC[PKCS7,MIIOHQYJKoZIhvcNAQcDoIIODjCCDgoCAQAxggEhMIIBHQIBADAFMAACAQEw
@@ -149,7 +129,5 @@ _mcollective_client_public_key_: >
   4Ca1rtJVBr2ddHsmzhnIGFI9IkbJSEku8kTYPWsd2tND7yO1EC0ns52SoM56
   7E6vRs60ozAkW9idxiSdsh/M7TtAIWUFBo1arHRsHRQfSOxtBlz6JNEd9Al2
   UWvPpPW4lEbkCzQvU+Kr]
-
-
 
 
