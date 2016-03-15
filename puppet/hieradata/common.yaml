@@ -59,6 +59,7 @@ mcollective::params::server_private_key: "%{hiera('_mcollective_server_private_k
 mcollective::params::server_public_key: "%{hiera('_mcollective_server_public_key_')}"
 mcollective::params::middleware_address: 'middleware.%{::domain}'
 mcomiddleware::params::mcollective_pwd: "%{hiera('_middleware_mcollective_pwd_')}"
+mcomiddleware::params::exchanges: [ 'vboxwork', 'vboxhome' ]
 
 
 snmp::params:views: #
