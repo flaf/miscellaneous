@@ -151,3 +151,38 @@ function does absolutely nothing.
 
 
 
+# `hash2yaml()` function
+
+Here si an example:
+
+```puppet
+$my_hash = {
+  'param1' => 'value1',
+  'param2' => [ 1, 2, 3 ],
+  'param3' => {
+      'subkey1' => 'subvalue1',
+      'subkey2' => 'subvalue2',
+  }
+}
+
+$yaml = ::homemade::hash2yaml($my_hash)
+```
+
+And the content of `$yaml` will be yaml content equivalent
+to something like that:
+
+```yaml
+param1: 'value1'
+param2: [ 1, 2, 3 ]
+param3:
+  subkey1: 'subvalue1'
+  subkey2: 'subvalue2'
+```
+
+Be careful:
+* The yaml header (ie `---\n`) is absent in the result.
+* The parameter of the function *must* be a non-empty hash.
+
+
+
+

@@ -1,0 +1,8 @@
+<%- |String[1] $yaml_content| -%>
+---
+### This file is managed by Puppet, don't edit it. ###
+mcollective: 1
+
+### Content extracted from the $::facts hash in Puppet. ###
+<%= $yaml_content %>
+

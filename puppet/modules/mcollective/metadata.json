@@ -1,6 +1,6 @@
 {
   "name": "flaf-mcollective",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "author": "flaf",
   "summary": "Module to configure mcollective server/client and middleware (with ssl).",
   "license": "Apache-2.0",
@@ -9,11 +9,11 @@
   "issues_url": null,
   "data_provider": "function",
   "dependencies": [
-    {"name":"puppetlabs-stdlib","version_requirement":">= 4.6.0"},
+    {"name":"puppetlabs-stdlib","version_requirement":">= 4.11.0"},
     {"name":"flaf-repository","version_requirement":">= 0.2.4"},
     {"name":"flaf-mcomiddleware","version_requirement":">= 0.1.2"},
     {"name":"flaf-puppetagent","version_requirement":">= 0.2.1"},
-    {"name":"flaf-homemade","version_requirement":">= 0.1.3"}
+    {"name":"flaf-homemade","version_requirement":">= 0.1.4"}
   ]
 }
 

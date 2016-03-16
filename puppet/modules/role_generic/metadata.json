@@ -1,6 +1,6 @@
 {
   "name": "flaf-role_generic",
-  "version": "0.1.17",
+  "version": "0.1.18",
   "author": "flaf",
   "summary": "Module to set a basic and generic configuration",
   "license": "Apache-2.0",
@@ -20,7 +20,7 @@
     {"name":"flaf-locale","version_requirement":"0.1.1"},
     {"name":"flaf-timezone","version_requirement":"0.1.1"},
     {"name":"flaf-puppetagent","version_requirement":"0.2.3"},
-    {"name":"flaf-mcollective","version_requirement":"0.2.1"},
+    {"name":"flaf-mcollective","version_requirement":"0.2.2"},
     {"name":"flaf-snmp","version_requirement":"0.1.2"}
   ]
 }
