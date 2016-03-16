@@ -85,6 +85,12 @@ function repository::data {
     repository::jrds::supported_distributions         => [ 'trusty', 'jessie' ],
     repository::jrds::stage                           => $stage,
 
+    repository::params::php_url                       => $repository_crdp_url,
+    repository::params::php_key_url                   => $repositroy_crdp_gpgkey,
+    repository::params::php_fingerprint               => $repositroy_crdp_gpgkey_fingerprint,
+    repository::php::supported_distributions          => [ 'trusty', 'jessie' ],
+    repository::php::stage                            => $stage,
+
     repository::params::docker_url                    => 'http://apt.dockerproject.org/repo',
     repository::params::docker_src                    => false,
     repository::params::docker_pinning_version        => 'NOT-DEFINED',

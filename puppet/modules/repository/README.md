@@ -204,6 +204,7 @@ This section concerns the classes:
 - `repository::mco`
 - `repository::moobot`,
 - `repository::jrds`
+- `repository::php`
 
 which work with exactly the same way.
 

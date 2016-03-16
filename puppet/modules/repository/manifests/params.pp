@@ -38,6 +38,10 @@ class repository::params (
   String[1] $jrds_key_url,
   String[1] $jrds_fingerprint,
 
+  String[1] $php_url,
+  String[1] $php_key_url,
+  String[1] $php_fingerprint,
+
   String[1] $docker_url,
   Boolean   $docker_src,
   String[1] $docker_pinning_version,
