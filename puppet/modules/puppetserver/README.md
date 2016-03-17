@@ -136,6 +136,14 @@ been restarted.
 
 # TODO
 
+* In the template `puppet.conf.epp`, a default value is
+  given for two parameter in the lambda function (`modules_repository`
+  and `strict_variables`). **Normally it's not necessary** because
+  the type of this parameters is `Optional[...]` which means "ok if
+  the value is undef" (different of "missing key is ok).
+  But it's a regression of Puppet version 4.4.0 and it will be fixed
+  in Puppet 4.4.1 (https://tickets.puppetlabs.com/browse/PUP-6064)
+
 * Make a schema with puppetserver, puppetdb and postresql.
 
 * A client uses the `$ssldir/crl.pem` file as CRL. This file
