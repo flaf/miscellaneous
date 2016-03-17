@@ -1,5 +1,10 @@
 # TODO
 
+* In fact, this module should offer a simple wrapper
+  of the user resource (a define resource). Anyway,
+  this module should be allow to add user account
+  *after* an include (we can imagine the include
+  just manage de common [administrator] users).
 * Normally, remove groups is useless with the `membership`
   set to `inclusive` instead of the `minimum` (the default) in
   user resources. This module will be simpler. Allow to define
