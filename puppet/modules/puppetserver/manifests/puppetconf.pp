@@ -48,8 +48,18 @@ class puppetserver::puppetconf {
   }
 
   require '::repository::puppet'
-  # git has to be able to change modules directly in the
-  # puppetserver. jq has to be able in some scripts.
+  # git is present to be able to change modules directly in
+  # the puppetserver. jq is present to be able read and
+  # parse json in some scripts. puppetdb-termini is a
+  # package needed when a puppetserver want to contact a
+  # puppetdb server (installed in the same server or not).
+  # This package is needed to make puppetserver able to
+  # communicate with a puppetdb server. In our case, this
+  # package is necessary for a "autonomous" _and_ a "client"
+  # puppetserver (a "client" puppetserver doesn't host a
+  # puppetdb server but must be able to talk with a puppetdb
+  # server, so the package puppetdb-termini must be
+  # installed in a "client" puppetserver too).
   ensure_packages( ['puppetserver', 'puppetdb-termini', 'git', 'jq'],
                    { ensure => present, }
                  )

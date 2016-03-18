@@ -35,3 +35,12 @@ node-purge-ttl = 10d
 report-ttl     = 14d
 
 
+# Number of seconds before any SQL query is considered
+# 'slow'; offending queries will not be interrupted, but
+# will be logged at the WARN log level.
+#
+# Parameter emerged from puppetdb package version 4.0.0.
+# 10 is the default value proposed in this package.
+log-slow-statements = 10
+
+
