@@ -210,28 +210,43 @@ class mcollective::server (
     # Pienaar in #mcollective.
   }
 
-  # TODO: workaround for PUP-5232.
+  # WARNING: was a workaround for PUP-5232 in Trusty:
+  #
   #       https://tickets.puppetlabs.com/browse/PUP-5232
-  if $::lsbdistcodename == 'trusty' {
-    $etc_default = @(END)
-      ### This file is managed by Puppet, don't edit it. ###
-      #START=true
-      #DAEMON_OPTS="--pid ${pidfile}"
-      pidfile="/var/run/mcollectived-puppetlabs.pid"
-      daemonopts="--pid=${pidfile} --config=/etc/puppetlabs/mcollective/server.cfg"
+  #
+  # But this problem is fixed now. However, now, the content
+  # of /etc/default/mcollective is completely irrelevant. There
+  # is a ticket which is currently (Mars 18 2016) not resolved
+  # about this:
+  #
+  #       https://tickets.puppetlabs.com/browse/MCO-754
+  #
+  # But it's not a problem, the variables set in this file are
+  # just ignored by mcollectived. Furthermore it's better to let
+  # the file in the strictly same version as in the puppet-agent
+  # package.
+  #
+  #
+  #if $::lsbdistcodename == 'trusty' {
+  #  $etc_default = @(END)
+  #    ### This file is managed by Puppet, don't edit it. ###
+  #    #START=true
+  #    #DAEMON_OPTS="--pid ${pidfile}"
+  #    pidfile="/var/run/mcollectived-puppetlabs.pid"
+  #    daemonopts="--pid=${pidfile} --config=/etc/puppetlabs/mcollective/server.cfg"
 
-      | END
+  #    | END
 
-    file { '/etc/default/mcollective':
-      ensure  => present,
-      owner   => 'root',
-      group   => 'root',
-      mode    => '0644',
-      content => $etc_default,
-      before  => Service['mcollective'],
-      notify  => Service['mcollective'],
-    }
-  }
+  #  file { '/etc/default/mcollective':
+  #    ensure  => present,
+  #    owner   => 'root',
+  #    group   => 'root',
+  #    mode    => '0644',
+  #    content => $etc_default,
+  #    before  => Service['mcollective'],
+  #    notify  => Service['mcollective'],
+  #  }
+  #}
 
   $ensure_mco = $server_enabled ? {
     true  => 'running',
