@@ -1,0 +1,62 @@
+# -*- mode: ruby -*-
+
+HOME            = ENV['HOME']
+VAGRANT_COMMAND = ARGV[0]
+
+privkey_path = "#{HOME}/.ssh/id_rsa"
+pubkey_path  = "#{HOME}/.ssh/id_rsa.pub"
+pubkey       = File.open(pubkey_path, 'r').read
+
+script = <<EOF
+sed -i 's/^PermitRootLogin.*$/PermitRootLogin yes/' /etc/ssh/sshd_config
+service ssh restart >/dev/null 2>&1
+echo 'root:root' | chpasswd
+pubkey="#{pubkey}"
+mkdir -p /root/.ssh
+printf '%s' "$pubkey" >/root/.ssh/authorized_keys
+chmod 700 /root/.ssh
+chmod 600 /root/.ssh/authorized_keys
+EOF
+
+
+Vagrant.configure(2) do |config|
+
+  config.vm.provision 'shell', inline: script
+
+  if VAGRANT_COMMAND == "ssh"
+    config.ssh.username         = 'root'
+    config.ssh.private_key_path = privkey_path
+    config.ssh.forward_agent    = true
+  end
+
+  VMs = {
+    'trustyclean' => {
+      'iface1' => { 'mac' => '080027000011', 'ip' => 'N/A' },
+      'box'    => 'ubuntu/trusty64',
+    },
+    'jessieclean' => {
+      'iface1' => { 'mac' => '080027000021', 'ip' => 'N/A' },
+      'box'    => 'debian/jessie64',
+    },
+  }
+
+  VMs.each do |hostname, settings|
+
+    config.vm.define hostname, autostart: false do |h|
+
+      h.vm.box      = settings['box']
+      h.vm.hostname = hostname
+
+      h.vm.provider :virtualbox do |v|
+        v.customize ["modifyvm", :id, "--memory", 512]
+        v.customize ["modifyvm", :id, "--name", "v-#{hostname}"]
+        v.customize ["modifyvm", :id, "--cpus", 1]
+      end
+
+    end
+
+  end # End of VMs.each...
+
+end
+
+
