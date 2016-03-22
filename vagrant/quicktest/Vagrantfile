@@ -6,17 +6,7 @@ VAGRANT_COMMAND = ARGV[0]
 privkey_path = "#{HOME}/.ssh/id_rsa"
 pubkey_path  = "#{HOME}/.ssh/id_rsa.pub"
 pubkey       = File.open(pubkey_path, 'r').read
-
-script = <<EOF
-sed -i 's/^PermitRootLogin.*$/PermitRootLogin yes/' /etc/ssh/sshd_config
-service ssh restart >/dev/null 2>&1
-echo 'root:root' | chpasswd
-pubkey="#{pubkey}"
-mkdir -p /root/.ssh
-printf '%s' "$pubkey" >/root/.ssh/authorized_keys
-chmod 700 /root/.ssh
-chmod 600 /root/.ssh/authorized_keys
-EOF
+script       = File.open('../share/provision.sh', 'r').read.gsub('__PUBKEY__', pubkey)
 
 
 Vagrant.configure(2) do |config|
