@@ -22,7 +22,7 @@ Vagrant.configure(2) do |config|
   VMs = {
     'trustyclean' => {
       'iface1' => { 'mac' => '080027000011', 'ip' => 'N/A' },
-      'box'    => 'ubuntu/trusty64',
+      'box'    => 'flaf/trusty',
     },
     'jessieclean' => {
       'iface1' => { 'mac' => '080027000021', 'ip' => 'N/A' },
