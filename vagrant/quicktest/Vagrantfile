@@ -2,12 +2,12 @@
 
 HOME            = ENV['HOME']
 VAGRANT_COMMAND = ARGV[0]
+RAM             = if ENV['V_RAM'].nil? then 512 else ENV['V_RAM'] end
 
 privkey_path = "#{HOME}/.ssh/id_rsa"
 pubkey_path  = "#{HOME}/.ssh/id_rsa.pub"
 pubkey       = File.open(pubkey_path, 'r').read
 script       = File.open('../share/provision.sh', 'r').read.gsub('__PUBKEY__', pubkey)
-
 
 Vagrant.configure(2) do |config|
 
@@ -38,7 +38,7 @@ Vagrant.configure(2) do |config|
       h.vm.hostname = hostname
 
       h.vm.provider :virtualbox do |v|
-        v.customize ["modifyvm", :id, "--memory", 512]
+        v.customize ["modifyvm", :id, "--memory", RAM]
         v.customize ["modifyvm", :id, "--name", "v-#{hostname}"]
         v.customize ["modifyvm", :id, "--cpus", 1]
       end
