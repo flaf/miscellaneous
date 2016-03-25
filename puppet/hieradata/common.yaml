@@ -52,8 +52,8 @@ unix_accounts::params::users:
 
 puppetagent::params::ca_server: 'middleware.%{::domain}'
 repository::params::puppet_collection: 'PC1'
-repository::params::puppet_pinning_agent_version: '1.4.0-*'
-repository::params::puppet_pinning_server_version: '2.3.0-*'
+repository::params::puppet_pinning_agent_version: '1.4.1-*'
+repository::params::puppet_pinning_server_version: '2.3.1-*'
 
 mcollective::params::server_private_key: "%{hiera('_mcollective_server_private_key_')}"
 mcollective::params::server_public_key: "%{hiera('_mcollective_server_public_key_')}"
