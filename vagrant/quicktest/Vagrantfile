@@ -26,7 +26,7 @@ Vagrant.configure(2) do |config|
     },
     'jessieclean' => {
       'iface1' => { 'mac' => '080027000021', 'ip' => 'N/A' },
-      'box'    => 'debian/jessie64',
+      'box'    => 'flaf/jessie',
     },
   }
 
