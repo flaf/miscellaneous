@@ -3,14 +3,15 @@
 #       git server and so trigger an update locally.
 #
 class puppetforge (
-  String[1]           $puppetforge_git_url,
-  String[1]           $commit_id,
-  String[1]           $remote_forge,
-  String[1]           $address,
-  Integer[1]          $port,
-  Integer[1]          $pause,
-  Array[String[1]]    $modules_git_urls,
-  Array[String[1], 1] $supported_distributions,
+  String[1]                           $puppetforge_git_url,
+  String[1]                           $commit_id,
+  String[1]                           $remote_forge,
+  String[1]                           $address,
+  Integer[1]                          $port,
+  Integer[1]                          $pause,
+  Array[String[1]]                    $modules_git_urls,
+  Optional[ Puppetforge::Sshkeypair ] $sshkeypair,
+  Array[String[1], 1]                 $supported_distributions,
 ) {
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
@@ -21,6 +22,7 @@ class puppetforge (
   $cachedir              = "${homedir}/cache"
   $gitdir                = "${homedir}/git"
   $giturlsfile           = "${homedir}/giturls.conf"
+  $sshdir                = "${homedir}/.ssh"
   $logdir                = '/var/log/puppetforge'
   $workdir               = '/opt/puppetforge-server'
   $puppetforge_pid       = "${homedir}/puppetforge.pid"
@@ -84,6 +86,43 @@ class puppetforge (
     require => User['puppetforge'],
     before  => File[$puppetforge_bin],
     notify  => Service['puppetforge'],
+  }
+
+  file { $sshdir:
+    ensure  => directory,
+    owner   => 'puppetforge',
+    group   => 'puppetforge',
+    mode    => '07500',
+    require => User['puppetforge'],
+    before  => File[$puppetforge_bin],
+    notify  => Service['puppetforge'],
+  }
+
+  if $sshkeypair =~ NotUndef {
+
+    $privkey = $sshkeypair['privkey'].strip
+    $pubkey  = $sshkeypair['pubkey'].regsubst(' ', '', 'G').strip
+
+    file { "${sshdir}/id_rsa":
+      ensure  => present,
+      owner   => 'puppetforge',
+      group   => 'puppetforge',
+      mode    => '0600',
+      require => File[$sshdir],
+      notify  => Service['puppetforge'],
+      content => "${privkey}\n",
+    }
+
+    file { "${sshdir}/id_rsa.pub":
+      ensure  => present,
+      owner   => 'puppetforge',
+      group   => 'puppetforge',
+      mode    => '0644',
+      require => File[$sshdir],
+      notify  => Service['puppetforge'],
+      content => "ssh-rsa ${pubkey} Puppetforge\n",
+    }
+
   }
 
   file { $puppetforge_bin:

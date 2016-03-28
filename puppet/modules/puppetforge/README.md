@@ -21,6 +21,12 @@ $modules_git_urls = [
                       'https://github.com/joe/bar.git',
                     ]
 
+$sshkeypair = {
+  'pubkey'  => 'XXXXXXXXX', # Just the public key without the key type and
+                            # the comment.
+  'privkey' => 'YYYYYYYYY', # The exact content of ~/.ssh/id_rsa file.
+}
+
 class { '::puppetforge':
   puppetforge_git_url => 'http://github.com/unibet/puppet-forge-server',
   commit_id           => '6f1b224a4e666c754876139f3643b22f3515f5e6',
@@ -81,11 +87,12 @@ The Puppet forge retrieves new commits (via a `git pull`)
 of the modules listed in `modules_git_urls` every `pause` seconds.
 The default value of the `pause` parameter is 300 (seconds).
 
-**Warning :** the daemon which retrieves modules given in the
-list of git repositories runs as the `puppetforge` UniX account.
-If some repositories need to be authenticated with a ssh key
-(for instance), you must generate a ssh key pair **manually** for
-the `puppetforge` account (`su - puppetforge`, `ssh-keygen ...` etc).
+The `sshkeypair` is optional. If present, this parameter must
+have the exact structure in the example above. This parameter
+can be useful to set the ssh key pair when authentication is
+needed to clone/pull the git repositories. Be careful, **it's
+necessarily a RSA key pair**. If not present, the default value
+of this parameter is `undef` and no ssh key pair is managed.
 
 
 TODO:

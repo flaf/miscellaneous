@@ -10,6 +10,7 @@ function puppetforge::data {
   $port                = 8080
   $pause               = 180
   $modules_git_urls    = []
+  $sshkeypair          = undef
   $supported_distribs  = [ 'jessie' ];
 
   {
@@ -21,6 +22,7 @@ function puppetforge::data {
     puppetforge::pause                   => $pause,
     puppetforge::modules_git_urls        => $modules_git_urls,
     puppetforge::supported_distributions => $supported_distribs,
+    puppetforge::sshkeypair              => $sshkeypair,
   }
 
 }
