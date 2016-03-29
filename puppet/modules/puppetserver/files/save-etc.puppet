@@ -1,0 +1,34 @@
+#!/bin/sh
+
+set -e
+export LC_ALL='C'
+export PATH='/usr/local/bin:/usr/bin:/bin'
+
+backupdir='/root/backup'
+targzfile="$backupdir/etc_$(date '+%Y-%m-%d').tar.gz"
+me=$(id --user --name)
+
+if [ "$me" != 'root' ]
+then
+    echo "Sorry, this script must be run by root only" >&2
+    echo "Script aborted."                             >&2
+    exit 1
+fi
+
+[ ! -d "$backupdir" ] && mkdir "$backupdir"
+[ -f "$targzfile" ] && rm "$targzfile"
+
+if [ ! -d "$backupdir" ]
+then
+    echo "There is a problem, $backupdir exists but is not a directory." >&2
+    echo "Script aborted."                                               >&2
+    exit 1
+fi
+
+tar -zcf /root/backup/etc_$(date '+%Y-%m-%d').tar.gz /etc 2>/dev/null
+
+# We remove backups older than 100 days.
+# "-mtime +99" means "mtime equal to 100 or 101 or 102 etc."
+find "$backupdir" -maxdepth 1 -type f -name 'etc_*.tar.gz' -mtime +99 -delete
+
+

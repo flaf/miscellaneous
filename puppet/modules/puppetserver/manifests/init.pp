@@ -34,6 +34,7 @@ class puppetserver (
   $puppet_bin_dir    = $::puppetserver::params::puppet_bin_dir
 
   include '::puppetserver::puppetconf'
+  include '::puppetserver::backupetc'
 
   if $profile == 'autonomous' {
 
