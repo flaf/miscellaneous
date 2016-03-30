@@ -5,19 +5,19 @@ class puppetserver (
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
   if !defined(Class['::puppetserver::params']) { include '::puppetserver::params' }
-  $puppet_memory         = $::puppetserver::params::puppet_memory
-  $puppetdb_memory       = $::puppetserver::params::puppetdb_memory
-  $profile               = $::puppetserver::params::profile
-  $modules_repository    = $::puppetserver::params::modules_repository
-  $strict_variables      = $::puppetserver::params::strict_variables
-  $puppetdb_name         = $::puppetserver::params::puppetdb_name
-  $puppetdb_user         = $::puppetserver::params::puppetdb_user
-  $puppetdb_pwd          = $::puppetserver::params::puppetdb_pwd
-  $modules_versions      = $::puppetserver::params::modules_versions
-  $max_groups            = $::puppetserver::params::max_groups
-  $groups_from_master    = $::puppetserver::params::groups_from_master
-  $mcrypt_pwd            = $::puppetserver::params::mcrypt_pwd
-  $authorized_backup_key = $::puppetserver::params::authorized_backup_key
+  $puppet_memory          = $::puppetserver::params::puppet_memory
+  $puppetdb_memory        = $::puppetserver::params::puppetdb_memory
+  $profile                = $::puppetserver::params::profile
+  $modules_repository     = $::puppetserver::params::modules_repository
+  $strict_variables       = $::puppetserver::params::strict_variables
+  $puppetdb_name          = $::puppetserver::params::puppetdb_name
+  $puppetdb_user          = $::puppetserver::params::puppetdb_user
+  $puppetdb_pwd           = $::puppetserver::params::puppetdb_pwd
+  $modules_versions       = $::puppetserver::params::modules_versions
+  $max_groups             = $::puppetserver::params::max_groups
+  $groups_from_master     = $::puppetserver::params::groups_from_master
+  $mcrypt_pwd             = $::puppetserver::params::mcrypt_pwd
+  $authorized_backup_keys = $::puppetserver::params::authorized_backup_keys
 
   # The "profile" parameter is mandatory.
   ::homemade::fail_if_undef($profile, 'puppetserver::params::profile', $title)

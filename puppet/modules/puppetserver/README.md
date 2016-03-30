@@ -10,20 +10,27 @@ This module allows to install a Puppet 4 server.
 Here is an example:
 
 ```puppet
+$pubkeys = {
+  'root@srv-1' => { 'type' => 'ssh-rsa', 'keyvalue' => 'AAA...', },
+  'root@srv-2' => { 'type' => 'ssh-rsa', 'keyvalue' => 'AAA...', },
+}
+
 class { '::puppetserver::params':
-  puppet_memory      => '4g',
-  puppetdb_memory    => '1g',
-  profile            => 'autonomous',
-  modules_repository => 'http://puppetforge.domain.tld',
-  puppetdb_name      => 'puppet',
-  puppetdb_user      => 'puppet',
-  puppetdb_pwd       => '123456',
-  modules_versions   => {
-                          'author-modA' => '1.2.1',
-                          'author-modB' => '0.4.0',
-                        },
-  max_groups         => 3,
-  groups_from_master => [],
+  puppet_memory          => '4g',
+  puppetdb_memory        => '1g',
+  profile                => 'autonomous',
+  modules_repository     => 'http://puppetforge.domain.tld',
+  puppetdb_name          => 'puppet',
+  puppetdb_user          => 'puppet',
+  puppetdb_pwd           => '123456',
+  modules_versions       => {
+                              'author-modA' => '1.2.1',
+                              'author-modB' => '0.4.0',
+                            },
+  max_groups             => 3,
+  groups_from_master     => [],
+  mcrypt_pwd             => 'abcdef',
+  authorized_backup_keys => $pubkeys,
 }
 
 include '::puppetserver'
@@ -116,7 +123,24 @@ puppetserver. Furthermore, it the global variable
 `datacenter/${::datacenter}.yaml`will be automatically
 imported from the parent `autonomous` puppetserver.
 
+The `mcrypt_pwd` parameter is a mandatory parameter which
+must be a non-empty string. Every day, `/etc/` will be saved
+in `/home/ppbackup/etc/` in a file `etc_${date}.tar.gz.nc`
+which is encrypted via the `mcrypt` command. And this
+command uses the password set by the parameter `mcrypt_pwd`.
+The goal is to have a safe backup because, in a puppet
+server, the `/etc` directory contains lot of sensitive data.
+To decrypt the file `etc_${date}.tar.gz.nc`, you have to
+launch the command `mcrypt -d "etc_${date}.tar.gz.nc"` and
+you have to give the password `mcrypt_pwd`.
 
+The `authorized_backup_keys` parameter allows to set ssh
+public keys which will be put in the `~/.ssh/authorized_keys`
+file of the Unix account `ppbackup`. Indeed, this account
+has a locked password and the only way to use this account
+(for instance to make a `scp` of the backups) is to use ssh
+public keys. The structure of this parameter must be the
+same as the example above.
 
 
 # A security point

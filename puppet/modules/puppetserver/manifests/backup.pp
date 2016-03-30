@@ -1,7 +1,7 @@
 class puppetserver::backup {
 
-  $mcrypt_pwd            = $::puppetserver::mcrypt_pwd
-  $authorized_backup_key = $::puppetserver::authorized_backup_key
+  $mcrypt_pwd             = $::puppetserver::mcrypt_pwd
+  $authorized_backup_keys = $::puppetserver::authorized_backup_keys
 
   ensure_packages( [ 'mcrypt' ], { ensure => present } )
 
@@ -37,7 +37,7 @@ class puppetserver::backup {
     before         => Cron['save-etc-cron'],
   }
 
-  $authorized_backup_key.each |String[1] $keyname, Puppetserver::Pubkey $pubkey| {
+  $authorized_backup_keys.each |String[1] $keyname, Puppetserver::Pubkey $pubkey| {
 
     ssh_authorized_key { "ppbackup~${keyname}":
       user    => 'ppbackup',
