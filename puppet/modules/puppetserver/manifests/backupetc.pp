@@ -1,11 +1,62 @@
-class puppetserver::backupetc {
+class puppetserver::backup {
+
+  $mcrypt_pwd            = $::puppetserver::mcrypt_pwd
+  $authorized_backup_key = $::puppetserver::authorized_backup_key
+
+  ensure_packages( [ 'mcrypt' ], { ensure => present } )
+
+  file { '/root/.mcryptrc':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0600',
+    content => "algorithm rijndael-256\nkey ${mcrypt_pwd}\n",
+    require => Package['mcrypt'],
+    before  => Cron['save-etc-cron'],
+  }
+
+  # It's the result of this command:
+  #
+  #   mkpasswd --method=sha-512 --salt="$(openssl rand -hex 8)" "backup"
+  #
+  # So "backup" is the password. But we don't care here because
+  # the password will be locked below.
+  #
+  $pwd = '$6$dcf5365f2a53c3b5$V17cV7d7TywPju3TvOnvcSSrfEDbb63MyLurxISdfjZEQyROfc2KfJomM0OyrT417.4z56uMzIrgA73/dIask.'
+
+  user { 'backup':
+    name           => 'backup',
+    ensure         => present,
+    expiry         => absent,
+    managehome     => true,
+    home           => "/home/backup",
+    password       => "!${pwd}", # <= password locked with "!".
+    shell          => '/bin/false',
+    system         => false,
+    purge_ssh_keys => true,
+    before         => Cron['save-etc-cron'],
+  }
+
+  $authorized_backup_key.each |String[1] $keyname, Puppetserver::Pubkey $pubkey| {
+
+    ssh_authorized_key { "backup~${keyname}":
+      user    => 'backup',
+      type    => $pubkey['type'],
+      # To allow ssh_public_keys in hiera in multilines with ">".
+      key     => $pubkey['keyvalue'].regsubst(' ', '', 'G').strip,
+      require => User['backup'],
+      before  => Cron['save-etc-cron'],
+    }
+
+  }
 
   file { '/usr/local/sbin/save-etc.puppet':
-    ensure => present,
-    owner  => 'root',
-    group  => 'root',
-    mode   => '0750',
-    source => 'puppet:///modules/puppetserver/save-etc.puppet',
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0750',
+    source  => 'puppet:///modules/puppetserver/save-etc.puppet',
+    before  => Cron['save-etc-cron'],
   }
 
   cron { 'save-etc-cron':

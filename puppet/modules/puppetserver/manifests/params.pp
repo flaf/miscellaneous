@@ -10,6 +10,8 @@ class puppetserver::params (
   Hash[String[1], String[1]]               $modules_versions,
   Integer[1]                               $max_groups,
   Array[String[1]]                         $groups_from_master,
+  String[1]                                $mcrypt_pwd = undef,
+  Hash[ String[1], Puppetserver::Pubkey ]  $authorized_backup_key,
 ) {
 
   # Variables present in several classes of this modules.
