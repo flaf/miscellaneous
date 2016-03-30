@@ -27,7 +27,8 @@ then
     exit 1
 fi
 
-if [ ! -d "$backupdir" ] then
+if [ ! -d "$backupdir" ]
+then
     mkdir "$backupdir"
     chown ppbackup:ppbackup "$backupdir"
 fi
