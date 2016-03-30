@@ -44,7 +44,7 @@ then
 fi
 
 tar -zcf "$targzfile" /etc 2>/dev/null
-mcrypt --conf "$config" --quiet "$targzfile"
+mcrypt --config "$config" --quiet "$targzfile"
 rm "$targzfile"
 
 # We remove backups older than 100 days.
