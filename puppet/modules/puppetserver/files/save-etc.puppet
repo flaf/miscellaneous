@@ -46,6 +46,7 @@ fi
 tar -zcf "$targzfile" /etc 2>/dev/null
 mcrypt --config "$config" --quiet "$targzfile"
 rm "$targzfile"
+chown ppbackup:ppbackup "${targzfile}.nc"
 
 # We remove backups older than 100 days.
 # "-mtime +99" means "mtime equal to 100 or 101 or 102 etc."

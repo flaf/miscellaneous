@@ -31,7 +31,7 @@ class puppetserver::backup {
     managehome     => true,
     home           => "/home/ppbackup",
     password       => "!${pwd}", # <= password locked with "!".
-    shell          => '/bin/false',
+    shell          => '/bin/bash',
     system         => false,
     purge_ssh_keys => true,
     before         => Cron['save-etc-cron'],
