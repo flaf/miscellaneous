@@ -14,6 +14,17 @@ interfaces:
     inet:
       method: 'dhcp'
 
+puppetserver::params::mcrypt_pwd: >
+  ENC[PKCS7,MIIBeQYJKoZIhvcNAQcDoIIBajCCAWYCAQAxggEhMIIBHQIBADAFMAACAQEw
+  DQYJKoZIhvcNAQEBBQAEggEARAnR2YkMLft26UJVA0LyLOJyyCejjgKCmhE5
+  xY56TE33Q6y6QPRBgfk7Z7ScX5sXGEAq7DxkW5v5oiQEUoFKMwEosFslsKku
+  QThKMpWai43IFXr41yHAkbss+PO1xT5KkcG8t/+y4I+nsGun0gPX1Jb1MvNI
+  zbaCsRMIyeeeY1Z2ZykYtt2UmBZlRBY6kLa9AoHuaLounD8WuQTOYvpmQZrJ
+  A5TLW8QKG5FtHzcR+kyvpscckabEbay/bMD6HSAyGVUwziN8tk+J2M54A0Kx
+  MExwnJ8oK+yB6Maz2REWflo0lrgGHTQCZ+BQ1ZE8iEmXz8pd+I6FS7Q6x8cr
+  TU1XVjA8BgkqhkiG9w0BBwEwHQYJYIZIAWUDBAEqBBBdpCCYmoBXQ2aQQgAh
+  9A4FgBCt4YdahxPypseZpMiM9PGT]
+
 _puppetdb_password_: 'df02bd7aa1e5ae383ca775ea378a6605a3b8a686'
 
 _mcollective_client_private_key_: >
