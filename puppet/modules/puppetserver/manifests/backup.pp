@@ -24,12 +24,12 @@ class puppetserver::backup {
   #
   $pwd = '$6$dcf5365f2a53c3b5$V17cV7d7TywPju3TvOnvcSSrfEDbb63MyLurxISdfjZEQyROfc2KfJomM0OyrT417.4z56uMzIrgA73/dIask.'
 
-  user { 'backup':
-    name           => 'backup',
+  user { 'ppbackup':
+    name           => 'ppbackup',
     ensure         => present,
     expiry         => absent,
     managehome     => true,
-    home           => "/home/backup",
+    home           => "/home/ppbackup",
     password       => "!${pwd}", # <= password locked with "!".
     shell          => '/bin/false',
     system         => false,
@@ -39,12 +39,12 @@ class puppetserver::backup {
 
   $authorized_backup_key.each |String[1] $keyname, Puppetserver::Pubkey $pubkey| {
 
-    ssh_authorized_key { "backup~${keyname}":
-      user    => 'backup',
+    ssh_authorized_key { "ppbackup~${keyname}":
+      user    => 'ppbackup',
       type    => $pubkey['type'],
       # To allow ssh_public_keys in hiera in multilines with ">".
       key     => $pubkey['keyvalue'].regsubst(' ', '', 'G').strip,
-      require => User['backup'],
+      require => User['ppbackup'],
       before  => Cron['save-etc-cron'],
     }
 

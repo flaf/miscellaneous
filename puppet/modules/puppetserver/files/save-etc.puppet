@@ -4,7 +4,7 @@ set -e
 export LC_ALL='C'
 export PATH='/usr/local/bin:/usr/bin:/bin'
 
-backupdir='/home/backup/etc'
+backupdir='/home/ppbackup/etc'
 targzfile="$backupdir/etc_$(date '+%Y-%m-%d').tar.gz"
 config='/root/.mcryptrc'
 me=$(id --user --name)
@@ -29,7 +29,7 @@ fi
 
 if [ ! -d "$backupdir" ] then
     mkdir "$backupdir"
-    chown backup:backup "$backupdir"
+    chown ppbackup:ppbackup "$backupdir"
 fi
 
 [ -f "$targzfile" ] && rm "$targzfile"
