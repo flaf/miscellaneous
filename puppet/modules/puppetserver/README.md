@@ -142,6 +142,31 @@ has a locked password and the only way to use this account
 public keys. The structure of this parameter must be the
 same as the example above.
 
+**Remark:** with the mechanism of backups in
+`/home/ppbackup/etc/` and the `authorized_backup_keys`
+parameter to put ssh public keys in the file
+`authorized_keys` of the `ppbackup` account, you should be
+able to set easily a cron task in another server to
+retrieve. For instance, you could retrieve the backups with
+a simple script like that:
+
+```sh
+#!/bin/sh
+
+set -e
+
+export LC_ALL='C'
+export PATH='/usr/local/bin:/usr/bin:/bin'
+
+sshtarget='ppbackup@puppet.domain.tld'
+targzfile="/home/ppbackup/etc/etc_$(date '+%Y-%m-%d').tar.gz.nc"
+backupdir='/backups/puppet'
+
+timeout 180s scp "${sshtarget}:${targzfile}" "$backupdir"
+find "$backupdir" -maxdepth 1 -type f -name 'etc_*.tar.gz.nc' -mtime +365 -delete
+```
+
+
 
 # A security point
 
