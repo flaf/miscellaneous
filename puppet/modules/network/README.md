@@ -14,7 +14,7 @@ All the parameters of this module are in the class
 
 ## Usage
 
-Here is some examples with a this yaml configuration:
+Here is some examples with this yaml configuration:
 
 ```yaml
 network::params::inventory_networks:
