@@ -38,7 +38,7 @@ network::params::inventory_networks:
 
 ### A basic example
 
-Whit this yaml code:
+With this yaml code:
 
 ```yaml
 network::params::restart: true
