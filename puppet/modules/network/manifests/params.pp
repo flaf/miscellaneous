@@ -9,7 +9,9 @@ class network::params (
   Array[String[1], 1]             $resolvconf_search             = ::network::get_param($interfaces, $inventory_networks, 'dns_search', [$::domain]),
   Integer[1]                      $resolvconf_timeout            = 5,
   Boolean                         $resolvconf_override_dhcp      = false,
-  Array[String[1], 1]             $dns_servers                   = ::network::get_param($interfaces, $inventory_networks, 'dns_servers'),
+  # $dns_servers can be undef for instance in a DHCP network
+  # where /etc/resolv.conf is not managed by default.
+  Optional[ Array[String[1], 1] ] $dns_servers                   = ::network::get_param($interfaces, $inventory_networks, 'dns_servers'),
   Boolean                         $local_resolver                = true,
   Array[String[1]]                $local_resolver_interface      = [],
   Array[ Array[String[1], 2, 2] ] $local_resolver_access_control = [],

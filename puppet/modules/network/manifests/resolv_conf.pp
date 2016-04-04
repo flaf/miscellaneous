@@ -18,6 +18,39 @@ class network::resolv_conf (
   $lr_access_control = $::network::params::local_resolver_access_control
   $interfaces        = $::network::params::interfaces
 
+  # Get the interfaces configured via DHCP.
+  $dhcp_ifaces = $interfaces.filter |$ifname, $settings| {
+    $dhcp_families = ['inet', 'inet6'].filter |$family| {
+      if $settings.has_key($family) and $settings[$family]['method'] == 'dhcp' {
+        true
+      } else {
+        false
+      }
+    }
+    !$dhcp_families.empty
+  }
+
+  if $override_dhcp {
+    $manage_resolv_conf = true
+  } else {
+    if $dhcp_ifaces.empty {
+      # No DHCP interfaces, we manage resolf.conf.
+      $manage_resolv_conf = true
+    } else {
+      # There is at least one DHCP interface, so we don't
+      # manage resolv.conf.
+      $manage_resolv_conf = false
+    }
+  }
+
+  # Test irrelevant case.
+  if $manage_resolv_conf and $nameservers =~ Undef {
+    @("END").regsubst('\n', ' ', 'G').fail
+      $title: sorry the class intends to manage /etc/resolv.conf
+      but the parameter `::network::params::dns_servers` is undef.
+      |- END
+  }
+
   if $local_resolver {
 
     ensure_packages(['unbound'],
@@ -112,31 +145,6 @@ class network::resolv_conf (
     }
 
   } # Enf of if $local_resolver.
-
-  # Get the interfaces configured via DHCP.
-  $dhcp_ifaces = $interfaces.filter |$ifname, $settings| {
-    $dhcp_families = ['inet', 'inet6'].filter |$family| {
-      if $settings.has_key($family) and $settings[$family]['method'] == 'dhcp' {
-        true
-      } else {
-        false
-      }
-    }
-    !$dhcp_families.empty
-  }
-
-  if $override_dhcp {
-    $manage_resolv_conf = true
-  } else {
-    if $dhcp_ifaces.empty {
-      # No DHCP interfaces, we manage resolf.conf.
-      $manage_resolv_conf = true
-    } else {
-      # There is at least one DHCP interface, so we don't
-      # manage resolv.conf.
-      $manage_resolv_conf = false
-    }
-  }
 
   # If no DHCP, we can manage the content of the resolv.conf
   # file. Indeed, if at least one interface is configured
