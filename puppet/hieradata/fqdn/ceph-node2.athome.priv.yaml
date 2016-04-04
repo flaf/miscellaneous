@@ -8,7 +8,7 @@ enc_datacenter: 'vboxhome'
 
 network::resolv_conf::override_dhcp: true
 network::restart: true
-interfaces:
+network::params::ifaces:
   eth0:
     in_networks: [ 'vbox_adm' ]
     macaddress: '08:00:27:bc:cd:82'

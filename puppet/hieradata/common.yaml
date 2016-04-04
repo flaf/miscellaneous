@@ -1,5 +1,5 @@
 ---
-inventory_networks:
+network::params::inventory_networks:
   freeboox_lan:
     comment: [ 'LAN behind the Freebox (dhcp).' ]
     vlan_id: '1000'

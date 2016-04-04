@@ -7,7 +7,7 @@ enc_datacenter: 'vboxhome'
 enc_groups: [ 'puppetserver' ]
 
 network::params::resolv_conf::override_dhcp: true
-interfaces:
+network::params::ifaces:
   eth0:
     in_networks: [ 'vbox_adm' ]
     macaddress: '08:00:27:bc:ce:e4'
