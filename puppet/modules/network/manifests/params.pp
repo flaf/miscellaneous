@@ -19,8 +19,8 @@ class network::params (
   Hash[ String[1], Array[String[1],1] ] $hosts_entries  = ::network::complete_hosts_entries($hosts),
   String                                $hosts_from_tag = '',
 
-  String[1]  $smtp_relay = ::network::get_param($interfaces, $inventory_networks, 'smtp_relay'),
-  Integer[1] $smtp_port  = ::network::get_param($interfaces, $inventory_networks, 'smtp_port', 25),
+  Optional[String[1]] $smtp_relay = ::network::get_param($interfaces, $inventory_networks, 'smtp_relay'),
+  Integer[1]          $smtp_port  = ::network::get_param($interfaces, $inventory_networks, 'smtp_port', 25),
 
 ) {
 }

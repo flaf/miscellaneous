@@ -2,7 +2,7 @@ function network::get_param (
   Hash[String[1], Hash[String[1], Data, 1], 1] $interfaces,
   Hash[String[1], Data, 1]                     $inventory_networks,
   String[1]                                    $param,
-  Data                                         $default,
+  Optional[Data]                               $default = undef,
 ) {
 
   # Create an array of interface names among $interfaces
