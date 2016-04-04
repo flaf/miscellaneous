@@ -7,7 +7,7 @@ enc_datacenter: 'vboxhome'
 
 
 network::resolv_conf::override_dhcp: true
-network::restart: true
+network::params::restart: true
 network::params::ifaces:
   eth0:
     in_networks: [ 'vbox_adm' ]
