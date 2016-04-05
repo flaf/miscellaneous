@@ -17,7 +17,7 @@ dhcp-boot=tag:<%= $tag %>,pxelinux.0
 <%- } -%>
 # tftp is enabled. With the option "tftp-secure", the owner
 # of the content in tftp-root must be "dnsmasq" (warning: the
-# grop "dnsmasq" doesn't exist).
+# group "dnsmasq" doesn't exist).
 enable-tftp
 tftp-secure
 tftp-root=/srv/tftp
