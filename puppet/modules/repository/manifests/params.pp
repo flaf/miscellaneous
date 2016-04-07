@@ -3,6 +3,7 @@ class repository::params (
   String[1] $distrib_url,
   Boolean   $distrib_src,
   Boolean   $distrib_install_recommends,
+  Boolean   $distrib_backports,
 
   String[1] $ceph_url,
   Boolean   $ceph_src,

@@ -9,8 +9,17 @@ class repository::distrib (
   $url                = $::repository::params::distrib_url
   $src                = $::repository::params::distrib_src
   $install_recommends = $::repository::params::distrib_install_recommends
+  $backports          = $::repository::params::distrib_backports
 
   $codename = $::facts['lsbdistcodename']
+
+  if $::operatingsystem != 'Debian' and $backports == true {
+    @("END").regsubst('\n', ' ', 'G').fail
+      ${title}: if the parameter repository::params::distrib_backports is
+      set to true, the OS must be Debian but it is ${::operatingsystem}
+      currently.
+      |- END
+  }
 
   # Now, the sources.list, sources.list.d/ and preferences.d
   # are only managed by Puppet.
@@ -58,6 +67,12 @@ class repository::distrib (
         release  => "${codename}/updates",
         repos    => 'main contrib non-free',
         include  => { 'src' => $src, 'deb' => true },
+      }
+
+      if $backports {
+        class { '::apt::backports':
+          location => $url,
+        }
       }
 
     }

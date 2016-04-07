@@ -24,6 +24,7 @@ function repository::data {
     repository::params::distrib_url                   => $distrib_url,
     repository::params::distrib_src                   => false,
     repository::params::distrib_install_recommends    => false,
+    repository::params::distrib_backports             => false,
     repository::distrib::supported_distributions      => [ 'trusty', 'jessie' ],
     repository::distrib::stage                        => $stage,
 

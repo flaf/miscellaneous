@@ -17,6 +17,7 @@ class { '::repository::params':
   distrib_url                => 'http://ftp.fr.debian.org/debian/',
   distrib_src                => false,
   distrib_install_recommends => false,
+  distrib_backports          => false,
 }
 
 include '::repository::distrib'
@@ -37,6 +38,12 @@ default value is `false`.
 The `distrib_install_recommends` is a boolean to tell if Puppet
 sets the parameter `APT::Install-Recommends` to `true`
 or `false`. The default value of this parameter is `false`.
+
+The `distrib_backports` is a boolean to tell if Puppet
+adds the backports repository for Debian. The default value
+of this parameter is `false`. If set to `true` for a node which
+is not a Debian operating system (for instance for a Ubuntu node),
+it raises an error.
 
 **Warning:** with this class, the file `/etc/apt/sources.list`,
 the directory `/etc/apt/sources.list.d/` and the directory
