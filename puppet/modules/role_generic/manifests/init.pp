@@ -1,49 +1,45 @@
-class role_generic (
-  Array[String[1]] $excluded_classes,
-) {
+class role_generic {
 
-  # Classes applied by default.
-  $included_classes = [
-    '::unix_accounts',
-    '::network',
-    '::network::hosts',
-    '::network::resolv_conf',
-    '::basic_ntp',
-    '::repository::distrib',
-    '::raid',
-    '::basic_ssh::server',
-    '::basic_ssh::client',
-    '::basic_packages',
-    '::keyboard',
-    '::locale',
-    '::timezone',
-    '::puppetagent',
-    '::mcollective::server',
-    '::snmp',
-  ]
+  if !defined(Class['::role_generic::params']) {
+      include '::role_generic::params'
+  }
+
+  $supported_classes = $::role_generic::params::supported_classes
+  $excluded_classes  = $::role_generic::params::excluded_classes
+  $included_classes  = $::role_generic::params::included_classes
 
   # All classes in $excluded_classes must belong to the
-  # $included_classes array. The goal is to avoid a case
-  # where the user wants to exclude a class but but makes a
-  # misprint in its name (and the real class is not
-  # excluded).
+  # $supported_classes array. The goal is to avoid a case
+  # where the user wants to exclude a class but he makes a
+  # misprint in its name and the real class is not excluded.
   $excluded_classes.each |$a_class| {
-    if ! $included_classes.member($a_class) {
+    unless $a_class in $supported_classes {
       @("END").regsubst('\n', ' ', 'G').fail
-        ${title}: you want to exclude the class `${$a_class}` from the
+        ${title}: you want to exclude the class `${a_class}` from the
         module `${title}` but this class does not belong to the list of
-        classes applied by this module. Are you sure you have not made
-        a typo?
+        classes supported by this module. Are you sure you have not made
+        a misprint?
         |- END
     }
   }
 
-  # Classes are applied except the classes in the
-  # $excluded_classes array.
+  # We check that all classes in $included_classes are in
+  # $supported_classes.
   $included_classes.each |$a_class| {
-    if ! $excluded_classes.member($a_class) {
-      include $a_class
+    unless $a_class in $supported_classes {
+      @("END").regsubst('\n', ' ', 'G').fail
+        ${title}: you want to include the class `${a_class}` from the
+        module `${title}` but this class does not belong to the list of
+        classes supported by this module. Are you sure you have not made
+        a misprint?
+        |- END
     }
+  }
+
+  $remaining_classes = $included_classes - $excluded_classes
+
+  $remaining_classes.each |String[1] $a_class| {
+    include $a_class
   }
 
 }

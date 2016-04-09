@@ -10,35 +10,55 @@ of included modules.
 Here is examples:
 
 ```puppet
-# To just install the ssh client.
+# Problably all the classes will be included (see below).
 include '::role_generic'
 
 # To exclude some classes which will be not applied.
-class { '::role_generic':
+class { '::role_generic::params':
   excluded_classes => [ '::network', '::network::hosts' ]
 }
+include '::role_generic'
+
+# To include only some classes explicitely.
+class { '::role_generic::params':
+  included_classes => [ '::network' ]
+}
+include '::role_generic'
 ```
 
-The class `::role_generic` has just one parameter
-`excluded_classes` which must be an array of non-empty
-strings. The default value of this parameter is `[]`
-(an empty array), ie all classes in `::role_generic`
-are included and applied (no exception). If you want
-to exclude a class:
+
+
+
+# The parameters of `role_generic::params`
+
+
+The `supported_classes` parameter is an array of classes
+that the module can apply. The module can apply no class
+except the classes in this array. See the code of the module
+to know the (hardcoded) default value of this parameter.
+Normally, you should never set this parameter and always
+keep its default value.
+
+The `excluded_classes` parameter must be an array of
+non-empty strings. The default value of this parameter is
+`[]` (no class is excluded) unless the node is a Proxmox
+server (determined via the custom fact `$::is_proxmox`).
+In this case, the default value is `[ '::network::hosts' ]`.
+If you want to exclude a class:
 
 * you *must* provide its absolute name beginning with `::`,
-* and the class *must* be in the list of classes included
-by default by `::role_generic`.
+* and the class *must* be in the list of `supported_classes`.
 
-If these conditions are not satisfied, there will be
-an error and just no class will be applied.
+If at least one of these conditions is not satisfied, there
+will be an error during the catalog compilation.
 
-You can use hiera to provide the `excluded_classes` parameter,
-ie you can just make a `include '::role_generic'` in Puppet
-and put in the hiera yaml file of your node:
+The `included_classes` parameter must be an array of
+non-empty strings. The default value of this parameter is
+the value of the parameter `supported_classes`. The classes
+in `included_classes` *must* be in the list of
+`supported_classes`.
 
-```yaml
-role_generic::excluded_classes: [ '::network', '::network::hosts' ]
-```
+**Note:** finally the classes applied by the node are always
+`$included_classes - $excluded_classes`.
 
 
