@@ -36,6 +36,7 @@ unix_accounts::params::fqdn_in_prompt: true
 unix_accounts::params::users:
   root:
     password: '%{hiera("_root_unix_pwd_")}'
+    fqdn_in_prompt: true
     ssh_authorized_keys:
       - 'root@router.athome.priv'
       - 'root@router.atwork.priv'

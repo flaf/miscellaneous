@@ -1,23 +1,55 @@
+# Tag: USER_PARAMS
+#
 define unix_accounts::user (
-  String[1]                      $login = $title,
-  String[1]                      $password,
-  Unix_accounts::Ensure          $ensure = ::unix_accounts::defaults()['ensure'],
-  Array[String[1]]               $supplementary_groups = ::unix_accounts::defaults()['supplementary_groups'],
-  Unix_accounts::Membership      $membership = ::unix_accounts::defaults()['membership'],
-  Unix_accounts::Unixrights      $home_unix_rights = ::unix_accounts::defaults()['home_unix_rights'],
-  Boolean                        $fqdn_in_prompt = ::unix_accounts::defaults()['fqdn_in_prompt'],
-  Boolean                        $is_sudo = ::unix_accounts::defaults()['is_sudo'],
-  Array[String[1]]               $ssh_authorized_keys = ::unix_accounts::defaults()['ssh_authorized_keys'],
-  Unix_accounts::Ssh_public_keys $ssh_public_keys = ::unix_accounts::defaults()['ssh_public_keys'],
-  Boolean                        $purge_ssh_keys = ::unix_accounts::defaults()['purge_ssh_keys'],
-  String[1]                      $home = ::unix_accounts::defaults($login)['home'],
-
+  String[1]                             $login = $title,
+  String[1]                             $password,
+  Unix_accounts::Ensure                 $ensure = ::unix_accounts::defaults($login)['ensure'],
+  Optional[Integer]                     $uid = ::unix_accounts::defaults($login)['uid'],
+  Optional[Variant[Integer, String[1]]] $gid = ::unix_accounts::defaults($login)['gid'],
+  String[1]                             $home = ::unix_accounts::defaults($login)['home'],
+  Unix_accounts::Unixrights             $home_unix_rights = ::unix_accounts::defaults($login)['home_unix_rights'],
+  Boolean                               $managehome = ::unix_accounts::defaults($login)['managehome'],
+  String[1]                             $shell = ::unix_accounts::defaults($login)['shell'],
+  Boolean                               $fqdn_in_prompt = ::unix_accounts::defaults($login)['fqdn_in_prompt'],
+  Array[String[1]]                      $supplementary_groups = ::unix_accounts::defaults($login)['supplementary_groups'],
+  Unix_accounts::Membership             $membership = ::unix_accounts::defaults($login)['membership'],
+  Boolean                               $is_sudo = ::unix_accounts::defaults($login)['is_sudo'],
+  Array[String[1]]                      $ssh_authorized_keys = ::unix_accounts::defaults($login)['ssh_authorized_keys'],
+  Boolean                               $purge_ssh_keys = ::unix_accounts::defaults($login)['purge_ssh_keys'],
+  Unix_accounts::Ssh_public_keys        $ssh_public_keys = ::unix_accounts::defaults($login)['ssh_public_keys'],
 ) {
 
-  ### The Unix account management ###
-  if $ensure != 'ignore' {
+  # An explicit name of the resource for error messages.
+  $rsrc_name = "Unix_accounts::User['${title}']"
 
-    $rsrc_name = "Unix_accounts::User['$title']"
+  if $login == 'root' and $ensure != 'present' {
+    @("END").regsubst('\n', ' ', 'G').fail
+      ${rsrc_name}: the `root` account has the `ensure`
+      parameter not set to 'present' which is forbidden
+      for this account.
+      |- END
+  }
+
+  if $login == 'root' and $home != '/root' {
+    @("END").regsubst('\n', ' ', 'G').fail
+      ${rsrc_name}: the `root` account has the `home`
+      parameter not set to '/root' which is forbidden
+      for this account.
+      |- END
+  }
+
+
+
+
+  ###################################
+  ### The Unix account management ###
+  ###################################
+  #
+  # .bashrc.puppet, .vimrc dans ssh authorized keys are not
+  # managed in this part. Futhermore, root is not concerned
+  # by this part.
+  #
+  if $ensure != 'ignore' {
 
     if $login in $supplementary_groups {
       @("END").regsubst('\n', ' ', 'G').fail
@@ -36,15 +68,9 @@ define unix_accounts::user (
         |- END
     }
 
-    if $login == 'root' and $ensure != 'present' {
-      @("END").regsubst('\n', ' ', 'G').fail
-        ${rsrc_name}: the `root` account has the `ensure`
-        parameter not set to 'present' which is forbidden for this
-        account..
-        |- END
-    }
-
-    # The user Unix account is not handled.
+    # The root Unix account is not handled by this user
+    # defined resource. The root Unix account is a specific
+    # case.
     if $login != 'root' {
 
       ensure_packages( ['sudo'], { ensure => present } )
@@ -54,18 +80,21 @@ define unix_accounts::user (
         default: { $suppl_groups = unique($supplementary_groups)            }
       }
 
+      # Tag: USER_PARAMS (not contains all the user parameters)
       user { $login:
+        password       => $password,
         name           => $login,
         ensure         => $ensure,
-        expiry         => absent,
-        managehome     => true,
-        home           => "/home/${login}",
-        password       => $password,
-        shell          => '/bin/bash',
-        system         => false,
+        uid            => $uid,
+        gid            => $gid,
+        home           => $home,
+        managehome     => $managehome,
+        shell          => $shell,
         groups         => $suppl_groups,
         membership     => $membership,
         purge_ssh_keys => $purge_ssh_keys,
+        expiry         => absent,
+        system         => false,
       }
 
       # Set the Unix rights of the home directory.
@@ -98,12 +127,20 @@ define unix_accounts::user (
 
     }
 
-  } # End of the Unix account management.
+  }
+  ##########################################
+  ### End of the Unix account management ###
+  ##########################################
 
 
 
+
+  ########################################
   ### Management of .bashrc and .vimrc ###
-
+  ########################################
+  #
+  # This part concerns the root Unix account too.
+  #
   if $ensure == 'present' {
 
     file_line { "edit-bashrc-of-${login}":
@@ -131,11 +168,19 @@ define unix_accounts::user (
     }
 
   }
+  ##################################################
+  ### End of th management of .bashrc and .vimrc ###
+  ##################################################
 
-  # Management of the ssh_authorized_keys only if the user
-  # has ensure == 'present'. If not, maybe the user exists
-  # no longer and if he exists, he will be deleted or
-  # ignored.
+
+
+
+  #############################################
+  ### Management of the ssh_authorized_keys ###
+  #############################################
+  #
+  # Only if the user has $ensure == 'present'.
+  #
   if $ensure == 'present' {
 
     $ssh_authorized_keys.each |$keyname| {
@@ -158,6 +203,9 @@ define unix_accounts::user (
     }
 
   }
+  ########################################################
+  ### End of the management of the ssh_authorized_keys ###
+  ########################################################
 
 }
 
