@@ -1,6 +1,6 @@
 {
   "name": "flaf-role_generic",
-  "version": "0.2.2",
+  "version": "0.3.1",
   "author": "flaf",
   "summary": "Module to set a basic and generic configuration",
   "license": "Apache-2.0",

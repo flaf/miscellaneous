@@ -8,7 +8,11 @@ Facter.add("is_proxmox") do
     # not a possible return value for a facter (because in
     # this case the facter is not defined). So the return
     # value here must be true or false.
-    if system('pveversion')
+    #
+    # We redirect stdout and stderr to /dev/null. Without
+    # this, on a Proxmox server, the output of the command
+    # is printed at each puppet run.
+    if system('pveversion >/dev/null 2>&1')
       true
     else
       false
