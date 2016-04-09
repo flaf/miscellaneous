@@ -60,7 +60,7 @@ class unix_accounts (
 
     # Tag: USER_PARAMS
     unix_accounts::user { $user:
-      name                 => $user,
+      login                => $user,
       password             => $password,
       ensure               => $ensure,
       uid                  => $uid,

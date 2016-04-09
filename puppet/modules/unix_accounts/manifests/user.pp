@@ -193,11 +193,19 @@ define unix_accounts::user (
           |- END
       }
 
+      case 'type' in $ssh_public_keys[$keyname] {
+        true:    { $type = $ssh_public_keys[$keyname]['type'] }
+        default: { $type = 'ssh-rsa'                          }
+      }
+
+      # Just to allow ssh_public_keys in hiera in multiple
+      # lines with ">".
+      $key = $ssh_public_keys[$keyname]['keyvalue'].regsubst(' ', '', 'G').strip
+
       ssh_authorized_key { "${login}~${keyname}":
         user => $login,
-        type => $ssh_public_keys[$keyname]['type'],
-        # Just to allow ssh_public_keys in hiera in multilines with ">".
-        key  => $ssh_public_keys[$keyname]['keyvalue'].regsubst(' ', '', 'G').strip,
+        type => $type,
+        key  => $key,
       }
 
     }
