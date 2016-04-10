@@ -1,8 +1,8 @@
 {
   "name": "flaf-unix_accounts",
-  "version": "0.4.1",
+  "version": "1.0.0",
   "author": "flaf",
-  "summary": "Module to manage administrator accounts",
+  "summary": "Module to manage Unix accounts",
   "license": "Apache-2.0",
   "source": "",
   "project_page": null,
@@ -10,7 +10,7 @@
   "data_provider": "function",
   "dependencies": [
     {"name":"puppetlabs-stdlib","version_requirement":">= 4.11.0"},
-    {"name":"flaf-homemade","version_requirement":">= 0.1.3"}
+    {"name":"flaf-homemade","version_requirement":">= 0.1.4"}
   ]
 }
 
