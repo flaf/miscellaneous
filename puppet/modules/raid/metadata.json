@@ -1,6 +1,6 @@
 {
   "name": "flaf-raid",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "author": "flaf",
   "summary": "Module to install packages to monitor RAID",
   "license": "Apache-2.0",
