@@ -3,7 +3,7 @@
 This module configures APT repositories. This module
 consists of several public classes.
 
-Remark: this module implements the "params" design pattern.
+
 
 
 # The `repository::distrib` class
@@ -23,10 +23,10 @@ class { '::repository::params':
 include '::repository::distrib'
 ```
 
-## Parameters and default values
+## Parameters
 
-The `distrib_url` parameter is the url of the repository which will be used.
-Its default value is:
+The `distrib_url` parameter is the url of the repository
+which will be used. Its default value is:
 
 * `http://ftp.fr.debian.org/debian/` for a Debian Operating system;
 * `http://fr.archive.ubuntu.com/ubuntu` for a Ubuntu Operating system.
@@ -52,6 +52,8 @@ For instance, to add a specific repository you have to do it
 via Puppet.
 
 
+
+
 # The `::repository::puppet` class
 
 ## Usage
@@ -70,7 +72,7 @@ class { '::repository::params':
 include '::repository::puppet'
 ```
 
-## Data binding
+## Parameters
 
 The `puppet_url` parameter is the url of the APT repository.
 Its default value is `http://apt.puppetlabs.com`.
@@ -87,9 +89,8 @@ which will be pinned in the APT configuration. For the
 `puppet_pinning_agent_version` and
 `puppet_pinning_server_version` parameters, the special
 string value `'none'` means "no pinning". These 3 parameters
-have not relevant default value (the string `'NOT-DEFINED'`
-and you must provide values yourself. For instance in hiera
-with something like that:
+the default value is `undef` and you have to provide a value
+explicitly. For instance in hiera with something like that:
 
 ```yaml
 repository::params::puppet_collection: 'PC1'
@@ -145,10 +146,10 @@ include '::repository::ceph'
 Only `ceph_url` and `ceph_src` parameters have a default
 value which are respectively `http://ceph.com` and `false`.
 The `ceph_codename` and `ceph_pinning_version` have not
-relevant default value (it's the string `'NOT-DEFINED'`) and
-you must provide relevant values explicitly. For the
-`ceph_pinning_version` parameter, the string value `'none'`
-is special and means "no pinning".
+relevant default value (it's `undef`) and you must provide
+relevant values explicitly. For the `ceph_pinning_version`
+parameter, the string value `'none'` is special and means
+"no pinning".
 
 Remark: the complete url used by APT is
 `"${url}/debian-${codename}"` which is the nomenclature used
@@ -165,8 +166,9 @@ Here is an example:
 
 ```puppet
 class { '::repository::params':
-  docker_url => 'http://apt.dockerproject.org/repo/dists',
-  docker_src => false,
+  docker_url             => 'http://apt.dockerproject.org/repo/dists',
+  docker_src             => false,
+  docker_pinning_version => '1.10.0-*',
 }
 
 include '::repository::docker'
@@ -174,8 +176,12 @@ include '::repository::docker'
 
 ## Parameters and default values
 
-The default values of the parameters are exactly
-the values of the call above.
+Except for `docker_pinning_version`, the default values of
+the parameters are exactly the values of the call above. The
+parameter `docker_pinning_version` provides a pinning for
+the package `docker-engine`. Its default value is `undef`
+and you must provide a value explicitly. The special value
+`'none'` means "no pinning".
 
 
 
@@ -202,7 +208,7 @@ the values of the call above.
 
 
 
-# The homemade local repository
+# The homemade local repositories
 
 This section concerns the classes:
 
@@ -236,10 +242,5 @@ The default values of the parameters are exactly
 the values of the call above.
 
 
-
-
-# TODO
-
-* Add pinning support for the docker repository.
 
 

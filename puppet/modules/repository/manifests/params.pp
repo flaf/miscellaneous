@@ -5,16 +5,16 @@ class repository::params (
   Boolean   $distrib_install_recommends,
   Boolean   $distrib_backports,
 
-  String[1] $ceph_url,
-  Boolean   $ceph_src,
-  String[1] $ceph_codename,
-  String[1] $ceph_pinning_version,
+  String[1]           $ceph_url,
+  Boolean             $ceph_src,
+  Optional[String[1]] $ceph_codename,
+  Optional[String[1]] $ceph_pinning_version,
 
-  String[1] $puppet_url,
-  Boolean   $puppet_src,
-  String[1] $puppet_collection,
-  String[1] $puppet_pinning_agent_version,
-  String[1] $puppet_pinning_server_version,
+  String[1]           $puppet_url,
+  Boolean             $puppet_src,
+  Optional[String[1]] $puppet_collection,
+  Optional[String[1]] $puppet_pinning_agent_version,
+  Optional[String[1]] $puppet_pinning_server_version,
 
   String[1] $postgresql_url,
   Boolean   $postgresql_src,
@@ -43,9 +43,9 @@ class repository::params (
   String[1] $php_key_url,
   String[1] $php_fingerprint,
 
-  String[1] $docker_url,
-  Boolean   $docker_src,
-  String[1] $docker_pinning_version,
+  String[1]           $docker_url,
+  Boolean             $docker_src,
+  Optional[String[1]] $docker_pinning_version,
 
   String[1] $proxmox_url,
 

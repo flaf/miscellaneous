@@ -13,7 +13,7 @@ class repository::distrib (
 
   $codename = $::facts['lsbdistcodename']
 
-  if $::operatingsystem != 'Debian' and $backports == true {
+  if $::operatingsystem != 'Debian' and $backports {
     @("END").regsubst('\n', ' ', 'G').fail
       ${title}: if the parameter repository::params::distrib_backports is
       set to true, the OS must be Debian but it is ${::operatingsystem}

@@ -10,10 +10,10 @@ class repository::docker (
   $src              = $::repository::params::docker_src
   $pinning_version  = $::repository::params::docker_pinning_version
 
-  if $pinning_version == 'NOT-DEFINED' {
+  if $pinning_version =~ Undef {
     regsubst(@("END"), '\n', ' ', 'G').fail
-      $title: sorry the default value of the parameter
-      `repository::params::docker_pinning_version` is not valid.
+      $title: sorry the parameter
+      `repository::params::docker_pinning_version` is undefined.
       You must define it explicitly.
       |- END
   }

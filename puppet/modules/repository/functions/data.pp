@@ -30,16 +30,16 @@ function repository::data {
 
     repository::params::ceph_url                      => 'http://ceph.com',
     repository::params::ceph_src                      => false,
-    repository::params::ceph_codename                 => 'NOT-DEFINED',
-    repository::params::ceph_pinning_version          => 'NOT-DEFINED',
+    repository::params::ceph_codename                 => undef,
+    repository::params::ceph_pinning_version          => undef,
     repository::ceph::supported_distributions         => [ 'trusty', 'jessie' ],
     repository::ceph::stage                           => $stage,
 
     repository::params::puppet_url                    => 'http://apt.puppetlabs.com',
     repository::params::puppet_src                    => false,
-    repository::params::puppet_collection             => 'NOT-DEFINED',
-    repository::params::puppet_pinning_agent_version  => 'NOT-DEFINED',
-    repository::params::puppet_pinning_server_version => 'NOT-DEFINED',
+    repository::params::puppet_collection             => undef,
+    repository::params::puppet_pinning_agent_version  => undef,
+    repository::params::puppet_pinning_server_version => undef,
     repository::puppet::supported_distributions       => [ 'trusty', 'jessie' ],
     repository::puppet::stage                         => $stage,
 
@@ -94,7 +94,7 @@ function repository::data {
 
     repository::params::docker_url                    => 'http://apt.dockerproject.org/repo',
     repository::params::docker_src                    => false,
-    repository::params::docker_pinning_version        => 'NOT-DEFINED',
+    repository::params::docker_pinning_version        => undef,
     repository::docker::supported_distributions       => [ 'trusty', 'jessie' ],
     repository::docker::stage                         => $stage,
 

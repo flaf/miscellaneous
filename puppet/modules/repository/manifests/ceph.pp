@@ -11,19 +11,19 @@ class repository::ceph (
   $codename        = $::repository::params::ceph_codename
   $pinning_version = $::repository::params::ceph_pinning_version
 
-  if $codename !~ Enum['infernalis'] {
+  if $codename !~ Enum['infernalis', 'jewel'] {
     regsubst(@("END"), '\n', ' ', 'G').fail
       $title: sorry the value of the parameter
-      `repository::params::ceph_codename` is not valid.
-      You must define it explicitly and now valid values are: 'infernalis'.
+      `repository::params::ceph_codename` is not valid (maybe undefined).
+      You must define it explicitly and now valid values are: 'infernalis'
+      or 'jewel'.
       |- END
   }
 
-  if $pinning_version == 'NOT-DEFINED' {
+  if $pinning_version =~ Undef {
     regsubst(@("END"), '\n', ' ', 'G').fail
-      $title: sorry the default value of the parameter
-      `repository::params::ceph_pinning_version` is not valid.
-      You must define it explicitly.
+      $title: sorry the parameter `repository::params::ceph_pinning_version`
+      is undefined. You must define it explicitly.
       |- END
   }
 

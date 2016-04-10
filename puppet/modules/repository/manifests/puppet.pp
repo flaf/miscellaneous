@@ -12,26 +12,25 @@ class repository::puppet (
   $pinning_agent_version  = $::repository::params::puppet_pinning_agent_version
   $pinning_server_version = $::repository::params::puppet_pinning_server_version
 
-  if $collection == 'NOT-DEFINED' {
+  if $collection =~ Undef {
     regsubst(@("END"), '\n', ' ', 'G').fail
-      $title: sorry the default value of the parameter
-      `repository::params::puppet_collection` is not valid.
+      $title: sorry the parameter `repository::params::puppet_collection`
+      is undefined. You must define it explicitly.
+      |- END
+  }
+
+  if $pinning_agent_version =~ Undef {
+    regsubst(@("END"), '\n', ' ', 'G').fail
+      $title: sorry the parameter
+      `repository::params::puppet_pinning_agent_version` is undefined.
       You must define it explicitly.
       |- END
   }
 
-  if $pinning_agent_version == 'NOT-DEFINED' {
+  if $pinning_server_version =~ Undef {
     regsubst(@("END"), '\n', ' ', 'G').fail
-      $title: sorry the default value of the parameter
-      `repository::params::puppet_pinning_agent_version` is not valid.
-      You must define it explicitly.
-      |- END
-  }
-
-  if $pinning_server_version == 'NOT-DEFINED' {
-    regsubst(@("END"), '\n', ' ', 'G').fail
-      $title: sorry the default value of the parameter
-      `repository::params::puppet_pinning_server_version` is not valid.
+      $title: sorry the parameter
+      `repository::params::puppet_pinning_server_version` is undefined.
       You must define it explicitly.
       |- END
   }
