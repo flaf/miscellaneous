@@ -38,8 +38,39 @@ class role_generic {
 
   $remaining_classes = $included_classes - $excluded_classes
 
+
+  if !defined(Class['::network::params']) {
+    include '::network::params'
+  }
+
+
+  $interfaces         = $::network::params::interfaces
+  $inventory_networks = $::network::params::inventory_networks
+  $ntp_servers        = ::network::get_param($interfaces, $inventory_networks, 'ntp_servers')
+
+  if $ntp_servers =~ Undef {
+    @("END").regsubst('\n', ' ', 'G').fail
+      $title: sorry impossible to find the data 'ntp_servers'
+      in the inventory networks for this host.
+      |- END
+  }
+
   $remaining_classes.each |String[1] $a_class| {
-    include $a_class
+
+    case $a_class {
+
+      '::basic_ntp': {
+        class { '::basic_ntp::params':
+          servers => $ntp_servers # retrieved from inventory networks.
+        }
+        include '::basic_ntp'
+      }
+
+      # By default, it's a simple include.
+      default: { include $a_class }
+
+    }
+
   }
 
 }

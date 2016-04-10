@@ -2,8 +2,6 @@
 
 Module to install a basic installation of a ntp server.
 
-Remark: this module implements the "params" design pattern.
-
 
 
 
@@ -34,7 +32,8 @@ include '::basic_ntp'
 # Example 2
 #
 
-# A basic ntp server like after a simple `apt-get install ntp`.
+# A basic ntp server close to a ntp server just after a
+# simple `apt-get install ntp`.
 class { '::basic_ntp::params'
   interfaces         => 'all',
   servers            => [ '172.31.5.1', '172.31.5.2', '172.31.5.3' ],
@@ -58,8 +57,7 @@ of this parameter is `'all'`.
 
 The `servers` parameter is an array of ntp servers addresses
 to which the ntp daemon will refer. For the `servers`
-parameter, its default value is the value of the `$servers`
-variable below:
+parameter, its default value is the value below:
 
 ```puppet
 $default_ntp = [
@@ -68,18 +66,11 @@ $default_ntp = [
                 '2.debian.pool.ntp.org',
                 '3.debian.pool.ntp.org',
                ]
-
-include '::network::params'
-$interfaces         = $::network::params::interfaces
-$inventory_networks = $::network::params::inventory_networks
-
-$servers = ::network::get_param( $interfaces, $inventory_networks,
-                                 'ntp_servers', $default_ntp )
 ```
 
 The `subnets_authorized` parameter is an array of CIDR
 addresses of only subnets authorized to exchange time with
-the NTP service. It concerns just the time exchange, in any
+the NTP service. It concerns just the time exchange. In any
 case, the configuration will be allowed only from localhost.
 Be careful, the hosts listed in the `servers` parameter must
 be within authorized subnets. If not, the ntp daemon will be
