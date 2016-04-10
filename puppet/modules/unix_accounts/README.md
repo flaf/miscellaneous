@@ -120,7 +120,7 @@ parameter in the built-in `user` resource. Its default value
 is `/home/${login}` or `/root` if `$login == 'root'`.
 
 The `home_unix_rights` is the Unix right of the home
-directory. Its default value is `0700`.
+directory. Its default value is `0750`.
 
 The `managehome` parameter is a boolean to tell if Puppet
 must manage, ie create or remove, the home directory during
@@ -243,5 +243,16 @@ this case the module does absolutely nothing).
 **internal** class `::unix_accounts::root`. For this class,
 the `stage` parameter is set to `'basis'` by default (not
 `'main'`).
+
+
+
+# Personal note
+
+If a new parameter for the users must be added, the files
+which should be modified will be found with this command:
+
+```sh
+rgrep 'USER_PARAMS' .
+```
 
 

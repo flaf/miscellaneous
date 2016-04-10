@@ -11,7 +11,7 @@ function unix_accounts::defaults (String[1] $login) {
     'uid'                  => undef,
     'gid'                  => undef,
     'home'                 => $home,
-    'home_unix_rights'     => '0700',
+    'home_unix_rights'     => '0750',
     'managehome'           => true,
     'shell'                => '/bin/bash',
     'fqdn_in_prompt'       => false,
