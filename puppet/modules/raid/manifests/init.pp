@@ -1,10 +1,11 @@
 class raid {
 
-  $params_class        = '::raid::params'
-  if !defined(Class[$params_class]) { include $params_class }
+  if !defined(Class['::raid::params']) {
+    include '::raid::params'
+  }
+
   $raid_controllers    = $::raid::params::raid_controllers
   $classes2controllers = $::raid::params::classes2controllers
-
 
   $raid_controllers.each |$raid_controller| {
     $classes2controllers.each |String[1] $this_class, Array[String[1], 1] $controllers_for_this_class | {
