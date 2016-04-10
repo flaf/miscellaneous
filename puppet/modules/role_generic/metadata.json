@@ -1,6 +1,6 @@
 {
   "name": "flaf-role_generic",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "author": "flaf",
   "summary": "Module to set a basic and generic configuration",
   "license": "Apache-2.0",
@@ -12,7 +12,7 @@
     {"name":"flaf-unix_accounts","version_requirement":"1.0.1"},
     {"name":"flaf-network","version_requirement":"0.6.1"},
     {"name":"flaf-basic_ntp","version_requirement":"0.1.1"},
-    {"name":"flaf-repository","version_requirement":"0.3.4"},
+    {"name":"flaf-repository","version_requirement":"0.3.5"},
     {"name":"flaf-raid","version_requirement":"0.1.6"},
     {"name":"flaf-basic_ssh","version_requirement":"0.2.1"},
     {"name":"flaf-basic_packages","version_requirement":"0.1.9"},

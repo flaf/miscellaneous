@@ -1,7 +1,6 @@
 function role_generic::data {
 
-  # All the classes handled by this module.
-  $supported_classes = [
+  $common_classes = [
     '::unix_accounts',
     '::network',
     '::network::hosts',
@@ -21,8 +20,17 @@ function role_generic::data {
   ]
 
   case $::is_proxmox {
-    true:    { $excluded_classes = [ '::network::hosts' ] }
-    default: { $excluded_classes = [ ]                    }
+
+    true: {
+      $excluded_classes  = [ '::network::hosts' ]
+      $supported_classes = $common_classes + [ '::repository::proxmox' ]
+    }
+
+    default: {
+      $excluded_classes  = []
+      $supported_classes = $common_classes
+    }
+
   };
 
   {
