@@ -43,7 +43,6 @@ class role_generic {
     include '::network::params'
   }
 
-
   $interfaces         = $::network::params::interfaces
   $inventory_networks = $::network::params::inventory_networks
   $ntp_servers        = ::network::get_param($interfaces, $inventory_networks, 'ntp_servers')
