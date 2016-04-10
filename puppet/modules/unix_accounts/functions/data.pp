@@ -9,8 +9,8 @@ function unix_accounts::data {
 
     # Merging policy.
     lookup_options => {
-      unix_accounts::params::users           => { merge => 'hash', },
-      unix_accounts::params::ssh_public_keys => { merge => 'hash', },
+      unix_accounts::params::users           => { merge => 'deep', },
+      unix_accounts::params::ssh_public_keys => { merge => 'deep', },
     },
 
   }
