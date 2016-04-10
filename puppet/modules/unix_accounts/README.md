@@ -1,8 +1,3 @@
-# TODO
-
-* Update this README.
-
-
 # Module description
 
 This module allows to manage some Unix and non-system
@@ -228,7 +223,7 @@ include '::unix_account'
 In a user, the entries are exactly the parameters of the
 defined resource `unix_accounts::user` except `login` and
 `ssh_public_keys`. The default values are exactly the same
-except for `purge_ssh_keys` which `true` if `ensure ==
+except for `purge_ssh_keys` which is `true` if `ensure ==
 'present'` and `false` if not.
 
 
@@ -241,7 +236,8 @@ For the two parameters of this class, `users` and
 this case the module does absolutely nothing).
 
 **Note concerning the merging policy:** for the parameters
-`users` and `ssh_public_keys`, the merging policy is `deep`.
+`users` and `ssh_public_keys`, the default merging policy is
+`deep`.
 
 **Warning:** the root user resource is put in a specific
 **internal** class `::unix_accounts::root`. For this class,
