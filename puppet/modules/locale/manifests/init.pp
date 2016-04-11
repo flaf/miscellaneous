@@ -1,9 +1,14 @@
 class locale (
-  Enum['en_US.UTF-8', 'fr_FR.utf8'] $default_locale,
   Array[String[1], 1] $supported_distributions,
 ) {
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
+
+  if !defined(Class['::locale::params']) {
+    include '::locale::params'
+  }
+
+  $default_locale = $::locale::params::default_locale
 
   file { '/etc/default/locale':
     ensure  => present,

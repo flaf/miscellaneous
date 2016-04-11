@@ -1,11 +1,12 @@
 function keyboard::data {
 
   {
-    keyboard::xkbmodel                => 'pc105',
-    keyboard::xkblayout               => 'fr',
-    keyboard::xkbvariant              => 'latin9',
-    keyboard::xkboptions              => '',
-    keyboard::backspace               => 'guess',
+    keyboard::params::xkbmodel   => 'pc105',
+    keyboard::params::xkblayout  => 'fr',
+    keyboard::params::xkbvariant => 'latin9',
+    keyboard::params::xkboptions => '',
+    keyboard::params::backspace  => 'guess',
+
     keyboard::supported_distributions => ['trusty', 'jessie'],
   }
 

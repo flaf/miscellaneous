@@ -4,14 +4,13 @@ This module just sets the default locale of the system.
 
 # Usage
 
-The `locale` class has only one parameter:
+Here is an example:
 
 ```puppet
-class { '::locale':
+class { '::locale::params':
   default_locale => 'en_US.utf8',
 }
 
-# Equivalent to:
 include '::locale'
 ```
 

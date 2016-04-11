@@ -7,7 +7,7 @@ Module to set the keyboard configuration.
 Here is the declaration to have a French keyboard:
 
 ```puppet
-class { '::keyboard':
+class { '::keyboard::params':
   xkbmodel   => 'pc105',
   xkblayout  => 'fr',
   xkbvariant => 'latin9',
@@ -15,12 +15,10 @@ class { '::keyboard':
   backspace  => 'guess',
 }
 
-# Equivalent to:
 include '::keyboard'
 ```
 
 The default values of these parameters are exactly the
-same as above so that this code is equivalent to a simple
-`include ::keyboard`.
+same as above.
 
 

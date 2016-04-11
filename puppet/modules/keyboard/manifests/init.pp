@@ -1,13 +1,18 @@
 class keyboard (
-  String[1] $xkbmodel,
-  String[1] $xkblayout,
-  String[1] $xkbvariant,
-  String    $xkboptions,
-  String[1] $backspace,
   Array[String[1], 1] $supported_distributions,
 ) {
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
+
+  if !defined(Class['::keyboard::params']) {
+    include '::keyboard::params'
+  }
+
+  $xkbmodel   = $::keyboard::params::xkbmodel
+  $xkblayout  = $::keyboard::params::xkblayout
+  $xkbvariant = $::keyboard::params::xkbvariant
+  $xkboptions = $::keyboard::params::xkboptions
+  $backspace  = $::keyboard::params::backspace
 
   $conf_hash = {
     'xkbmodel'   => $xkbmodel,
