@@ -1,6 +1,6 @@
 ---
 enc_included_classes:
-  - [ 'flaf', '::role_generic' ]
+  - [ 'flaf', '::roles::generic' ]
 enc_datacenter: 'vboxwork'
 
 
