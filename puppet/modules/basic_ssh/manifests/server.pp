@@ -1,9 +1,11 @@
 class basic_ssh::server (
-  Enum['yes', 'without-password', 'forced-commands-only', 'no'] $permitrootlogin,
   Array[String[1], 1] $supported_distributions,
 ){
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
+
+  if !defined(Class['::basic_ssh::params']) { include '::basic_ssh::params' }
+  $permitrootlogin = $::basic_ssh::params::server_permitrootlogin
 
   ensure_packages(['openssh-server', ], { ensure => present, })
 

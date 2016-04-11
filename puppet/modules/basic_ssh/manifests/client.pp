@@ -4,7 +4,7 @@ class basic_ssh::client (
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
-  ensure_packages(['openssh-client', ], { ensure => present, })
+  ensure_packages( [ 'openssh-client' ], { ensure => present } )
 
 }
 
