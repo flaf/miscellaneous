@@ -18,26 +18,26 @@ This role just sets a basic and generic configuration.
 Here is examples:
 
 ```puppet
-# Problably all the classes will be included (see below).
-include '::role_generic'
+# 1. Problably all the classes will be included (see below).
+include '::roles::generic'
 
-# To exclude some classes which will be not applied.
-class { '::role_generic::params':
+# 2. To exclude some classes which will be not applied.
+class { '::roles::generic::params':
   excluded_classes => [ '::network', '::network::hosts' ]
 }
-include '::role_generic'
+include '::roles::generic'
 
-# To include only some classes explicitely.
-class { '::role_generic::params':
+# 3. To include only some classes explicitely.
+class { '::roles::generic::params':
   included_classes => [ '::network' ]
 }
-include '::role_generic'
+include '::roles::generic'
 ```
 
 
 
 
-## The parameters of `role_generic::params`
+## The parameters of `roles::generic::params`
 
 
 The `supported_classes` parameter is an array of classes
