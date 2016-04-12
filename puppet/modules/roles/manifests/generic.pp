@@ -62,16 +62,19 @@ class roles::generic {
       |- END
   }
 
+  # For this class, we have retrieved NTP servers from
+  # inventory networks.
+  class { '::basic_ntp::params':
+    servers => $ntp_servers,
+  }
+
+  class { '::snmp::params':
+    syscontact => $snmp_syscontact,
+  }
+
   $remaining_classes.each |String[1] $a_class| {
 
     case $a_class {
-
-      '::basic_ntp': {
-        # For this class, we have retrieved NTP servers from
-        # inventory networks.
-        class { '::basic_ntp::params': servers => $ntp_servers }
-        include '::basic_ntp'
-      }
 
       '::snmp': {
         # With SNMP, we want to install the snmpd-extend package.
@@ -81,7 +84,6 @@ class roles::generic {
           require => Class['::repository::shinken'],
           before  => Class['::snmp'],
         })
-        class { '::snmp::params':  syscontact => $snmp_syscontact }
         include '::snmp'
       }
 
