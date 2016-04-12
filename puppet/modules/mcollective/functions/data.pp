@@ -20,10 +20,15 @@ function mcollective::data {
     mcollective::params::client_collectives => $client_collectives,
     mcollective::params::client_private_key => undef,
     mcollective::params::client_public_key  => undef,
-    mcollective::params::server_collectives => $default_collectives,
-    mcollective::params::server_private_key => undef,
-    mcollective::params::server_public_key  => undef,
-    mcollective::params::server_enabled     => true,
+
+
+
+    mcollective::server::params::collectives     => $default_collectives,
+    mcollective::server::params::private_key     => undef,
+    mcollective::server::params::public_key      => undef,
+    mcollective::server::params::service_enabled => true,
+
+
     mcollective::params::connector          => 'rabbitmq',
     mcollective::params::middleware_address => undef,
     mcollective::params::middleware_port    => $middleware_port,

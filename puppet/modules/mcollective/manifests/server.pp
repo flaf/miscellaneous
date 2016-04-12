@@ -4,18 +4,21 @@ class mcollective::server (
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
-  if !defined(Class['::mcollective::params']) { include '::mcollective::params' }
-  $collectives        = $::mcollective::params::server_collectives
-  $server_private_key = $::mcollective::params::server_private_key
-  $server_public_key  = $::mcollective::params::server_public_key
-  $server_enabled     = $::mcollective::params::server_enabled
-  $connector          = $::mcollective::params::connector
-  $middleware_address = $::mcollective::params::middleware_address
-  $middleware_port    = $::mcollective::params::middleware_port
-  $mcollective_pwd    = $::mcollective::params::mcollective_pwd
-  $mco_tag            = $::mcollective::params::mco_tag
-  $puppet_ssl_dir     = $::mcollective::params::puppet_ssl_dir
-  $puppet_bin_dir     = $::mcollective::params::puppet_bin_dir
+  if !defined(Class['::mcollective::server::params']) {
+    include '::mcollective::server::params'
+  }
+
+  $collectives        = $::mcollective::server::params::collectives
+  $server_private_key = $::mcollective::server::params::private_key
+  $server_public_key  = $::mcollective::server::params::public_key
+  $server_enabled     = $::mcollective::server::params::service_enabled
+  $connector          = $::mcollective::server::params::connector
+  $middleware_address = $::mcollective::server::params::middleware_address
+  $middleware_port    = $::mcollective::server::params::middleware_port
+  $mcollective_pwd    = $::mcollective::server::params::mcollective_pwd
+  $mco_tag            = $::mcollective::server::params::mco_tag
+  $puppet_ssl_dir     = $::mcollective::server::params::puppet_ssl_dir
+  $puppet_bin_dir     = $::mcollective::server::params::puppet_bin_dir
 
   ::homemade::fail_if_undef($server_private_key, 'mcollective::params::server_private_key', $title)
   ::homemade::fail_if_undef($server_public_key, 'mcollective::params::server_public_key', $title)
