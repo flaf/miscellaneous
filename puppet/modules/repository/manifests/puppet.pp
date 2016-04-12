@@ -5,12 +5,15 @@ class repository::puppet (
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
-  if !defined(Class['::repository::params']) { include '::repository::params' }
-  $url                    = $::repository::params::puppet_url
-  $src                    = $::repository::params::puppet_src
-  $collection             = $::repository::params::puppet_collection
-  $pinning_agent_version  = $::repository::params::puppet_pinning_agent_version
-  $pinning_server_version = $::repository::params::puppet_pinning_server_version
+  if !defined(Class['::repository::puppet::params']) {
+    include '::repository::puppet::params'
+  }
+
+  $url                    = $::repository::puppet::params::url
+  $src                    = $::repository::puppet::params::src
+  $collection             = $::repository::puppet::params::collection
+  $pinning_agent_version  = $::repository::puppet::params::pinning_agent_version
+  $pinning_server_version = $::repository::puppet::params::pinning_server_version
 
   if $collection =~ Undef {
     regsubst(@("END"), '\n', ' ', 'G').fail

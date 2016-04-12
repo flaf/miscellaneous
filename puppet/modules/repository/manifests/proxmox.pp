@@ -5,8 +5,11 @@ class repository::proxmox (
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
-  if !defined(Class['::repository::params']) { include '::repository::params' }
-  $url = $::repository::params::proxmox_url
+  if !defined(Class['::repository::proxmox::params']) {
+    include '::repository::proxmox::params'
+  }
+
+  $url = $::repository::proxmox::params::url
 
   $key      = 'BE257BAA5D406D01157D323EC23AC7F49887F95A'
   $codename = $::facts['lsbdistcodename']

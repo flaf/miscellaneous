@@ -5,10 +5,13 @@ class repository::php (
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
-  if !defined(Class['::repository::params']) { include '::repository::params' }
-  $url         = $::repository::params::php_url
-  $key_url     = $::repository::params::php_key_url
-  $fingerprint = $::repository::params::php_fingerprint
+  if !defined(Class['::repository::php::params']) {
+    include '::repository::php::params'
+  }
+
+  $url         = $::repository::php::params::url
+  $key_url     = $::repository::php::params::key_url
+  $fingerprint = $::repository::php::params::fingerprint
 
   apt::key { 'php':
     id     => $fingerprint,

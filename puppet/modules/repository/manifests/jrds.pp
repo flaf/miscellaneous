@@ -5,10 +5,13 @@ class repository::jrds (
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
-  if !defined(Class['::repository::params']) { include '::repository::params' }
-  $url         = $::repository::params::jrds_url
-  $key_url     = $::repository::params::jrds_key_url
-  $fingerprint = $::repository::params::jrds_fingerprint
+  if !defined(Class['::repository::jrds::params']) {
+    include '::repository::jrds::params'
+  }
+
+  $url         = $::repository::jrds::params::url
+  $key_url     = $::repository::jrds::params::key_url
+  $fingerprint = $::repository::jrds::params::fingerprint
 
   apt::key { 'jrds':
     id     => $fingerprint,

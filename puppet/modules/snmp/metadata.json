@@ -1,18 +1,16 @@
 {
   "name": "flaf-snmp",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "author": "flaf",
-  "summary": "Module to install and configure snmpd",
+  "summary": "Module to install and configure the snmp service",
   "license": "Apache-2.0",
   "source": "",
   "project_page": null,
   "issues_url": null,
   "data_provider": "function",
   "dependencies": [
-    {"name":"puppetlabs-stdlib","version_requirement":">= 4.10.0"},
-    {"name":"flaf-homemade","version_requirement":">= 0.1.2"},
-    {"name":"flaf-network","version_requirement":">= 0.5.0"},
-    {"name":"flaf-repository","version_requirement":">= 0.2.0"}
+    {"name":"puppetlabs-stdlib","version_requirement":">= 4.11.0"},
+    {"name":"flaf-homemade","version_requirement":">= 0.1.4"}
   ]
 }
 

@@ -5,8 +5,11 @@ class repository::hp_proliant (
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
-  if !defined(Class['::repository::params']) { include '::repository::params' }
-  $url = $::repository::params::hp_proliant_url
+  if !defined(Class['::repository::hp_proliant::params']) {
+    include '::repository::hp_proliant::params'
+  }
+
+  $url = $::repository::hp_proliant::params::url
 
   $key      = '882F7199B20F94BD7E3E690EFADD8D64B1275EA3'
   $codename = $::facts['lsbdistcodename']

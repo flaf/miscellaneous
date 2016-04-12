@@ -5,11 +5,14 @@ class repository::distrib (
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
-  if !defined(Class['::repository::params']) { include '::repository::params' }
-  $url                = $::repository::params::distrib_url
-  $src                = $::repository::params::distrib_src
-  $install_recommends = $::repository::params::distrib_install_recommends
-  $backports          = $::repository::params::distrib_backports
+  if !defined(Class['::repository::distrib::params']) {
+    include '::repository::distrib::params'
+  }
+
+  $url                = $::repository::distrib::params::url
+  $src                = $::repository::distrib::params::src
+  $install_recommends = $::repository::distrib::params::install_recommends
+  $backports          = $::repository::distrib::params::backports
 
   $codename = $::facts['lsbdistcodename']
 

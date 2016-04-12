@@ -1,22 +1,16 @@
 function snmp::data {
 
-  if !defined(Class['::network::params']) { include '::network::params' }
-  $inventory_networks = $::network::params::inventory_networks
-  $interfaces         = $::network::params::interfaces
-
   $interface       = $::facts['networking']['ip']
   $port            = 161
   $views           = { 'monitoring' => [ '.1.3.6.1.2.1', '.1.3.6.1.4.1' ] }
+  $syscontact      = "admin@${::domain}"
   $snmpv3_accounts = {}
   $communities     = {}
 
   $syslocation = $::datacenter ? {
     undef   => $::domain,
     default => $::datacenter,
-  }
-
-  $syscontact = ::network::get_param($interfaces, $inventory_networks,
-                                     'admin_email', "admin@${::domain}");
+  };
 
   {
     snmp::params::interface       => $interface,
@@ -31,9 +25,9 @@ function snmp::data {
 
     # Merging policy.
     lookup_options => {
-      snmp::params::snmpv3_accounts => { merge => 'hash', },
-      snmp::params::communities     => { merge => 'hash', },
-      snmp::params::views           => { merge => 'hash', },
+      snmp::params::snmpv3_accounts => { merge => 'deep', },
+      snmp::params::communities     => { merge => 'deep', },
+      snmp::params::views           => { merge => 'deep', },
     },
   }
 

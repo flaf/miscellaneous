@@ -5,11 +5,14 @@ class repository::ceph (
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
-  if !defined(Class['::repository::params']) { include '::repository::params' }
-  $url             = $::repository::params::ceph_url
-  $src             = $::repository::params::ceph_src
-  $codename        = $::repository::params::ceph_codename
-  $pinning_version = $::repository::params::ceph_pinning_version
+  if !defined(Class['::repository::ceph::params']) {
+    include '::repository::ceph::params'
+  }
+
+  $url             = $::repository::ceph::params::url
+  $src             = $::repository::ceph::params::src
+  $codename        = $::repository::ceph::params::codename
+  $pinning_version = $::repository::ceph::params::pinning_version
 
   if $codename !~ Enum['infernalis', 'jewel'] {
     regsubst(@("END"), '\n', ' ', 'G').fail

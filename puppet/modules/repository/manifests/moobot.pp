@@ -5,10 +5,12 @@ class repository::moobot (
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
-  if !defined(Class['::repository::params']) { include '::repository::params' }
-  $url         = $::repository::params::moobot_url
-  $key_url     = $::repository::params::moobot_key_url
-  $fingerprint = $::repository::params::moobot_fingerprint
+  if !defined(Class['::repository::moobot::params']) {
+    include '::repository::moobot::params'
+  }
+  $url         = $::repository::moobot::params::url
+  $key_url     = $::repository::moobot::params::key_url
+  $fingerprint = $::repository::moobot::params::fingerprint
 
   apt::key { 'moobot':
     id     => $fingerprint,

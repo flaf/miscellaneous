@@ -5,10 +5,13 @@ class repository::docker (
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
-  if !defined(Class['::repository::params']) { include '::repository::params' }
-  $url              = $::repository::params::docker_url
-  $src              = $::repository::params::docker_src
-  $pinning_version  = $::repository::params::docker_pinning_version
+  if !defined(Class['::repository::docker::params']) {
+    include '::repository::docker::params'
+  }
+
+  $url              = $::repository::docker::params::url
+  $src              = $::repository::docker::params::src
+  $pinning_version  = $::repository::docker::params::pinning_version
 
   if $pinning_version =~ Undef {
     regsubst(@("END"), '\n', ' ', 'G').fail

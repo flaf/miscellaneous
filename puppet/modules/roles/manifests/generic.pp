@@ -46,10 +46,18 @@ class roles::generic {
   $interfaces         = $::network::params::interfaces
   $inventory_networks = $::network::params::inventory_networks
   $ntp_servers        = ::network::get_param($interfaces, $inventory_networks, 'ntp_servers')
+  $snmp_syscontact    = ::network::get_param($interfaces, $inventory_networks, 'admin_email')
 
   if $ntp_servers =~ Undef {
     @("END").regsubst('\n', ' ', 'G').fail
-      $title: sorry impossible to find the data 'ntp_servers'
+      $title: sorry impossible to find the (needed) data 'ntp_servers'
+      in the inventory networks for this host.
+      |- END
+  }
+
+  if $snmp_syscontact =~ Undef {
+    @("END").regsubst('\n', ' ', 'G').fail
+      $title: sorry impossible to find the (needed) data 'admin_email'
       in the inventory networks for this host.
       |- END
   }
@@ -59,14 +67,28 @@ class roles::generic {
     case $a_class {
 
       '::basic_ntp': {
-        class { '::basic_ntp::params':
-          servers => $ntp_servers # retrieved from inventory networks.
-        }
+        # For this class, we have retrieved NTP servers from
+        # inventory networks.
+        class { '::basic_ntp::params': servers => $ntp_servers }
         include '::basic_ntp'
       }
 
+      '::snmp': {
+        # With SNMP, we want to install the snmpd-extend package.
+        include '::repository::shinken'
+        [ 'snmpd-extend' ].ensure_packages({
+          ensure  => present,
+          require => Class['::repository::shinken'],
+          before  => Class['::snmp'],
+        })
+        class { '::snmp::params':  syscontact => $snmp_syscontact }
+        include '::snmp'
+      }
+
       # By default, it's a simple include.
-      default: { include $a_class }
+      default: {
+        include $a_class
+      }
 
     }
 

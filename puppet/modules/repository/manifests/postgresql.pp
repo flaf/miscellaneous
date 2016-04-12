@@ -5,9 +5,12 @@ class repository::postgresql (
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
-  if !defined(Class['::repository::params']) { include '::repository::params' }
-  $url = $::repository::params::postgresql_url
-  $src = $::repository::params::postgresql_src
+  if !defined(Class['::repository::postgresql::params']) {
+    include '::repository::postgresql::params'
+  }
+
+  $url = $::repository::postgresql::params::url
+  $src = $::repository::postgresql::params::src
 
   $codename = $::facts['lsbdistcodename']
   $key      = 'B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8'

@@ -5,10 +5,13 @@ class repository::raid (
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
-  if !defined(Class['::repository::params']) { include '::repository::params' }
-  $url         = $::repository::params::raid_url
-  $key_url     = $::repository::params::raid_key_url
-  $fingerprint = $::repository::params::raid_fingerprint
+  if !defined(Class['::repository::raid::params']) {
+    include '::repository::raid::params'
+  }
+
+  $url         = $::repository::raid::params::url
+  $key_url     = $::repository::raid::params::key_url
+  $fingerprint = $::repository::raid::params::fingerprint
 
   apt::key { 'raid':
     id     => $fingerprint,

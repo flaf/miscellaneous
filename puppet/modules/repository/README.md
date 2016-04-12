@@ -13,11 +13,11 @@ consists of several public classes.
 Here is an example:
 
 ```puppet
-class { '::repository::params':
-  distrib_url                => 'http://ftp.fr.debian.org/debian/',
-  distrib_src                => false,
-  distrib_install_recommends => false,
-  distrib_backports          => false,
+class { '::repository::distrib::params':
+  url                => 'http://ftp.fr.debian.org/debian/',
+  src                => false,
+  install_recommends => false,
+  backports          => false,
 }
 
 include '::repository::distrib'
@@ -25,21 +25,21 @@ include '::repository::distrib'
 
 ## Parameters
 
-The `distrib_url` parameter is the url of the repository
+The `url` parameter is the url of the repository
 which will be used. Its default value is:
 
 * `http://ftp.fr.debian.org/debian/` for a Debian Operating system;
 * `http://fr.archive.ubuntu.com/ubuntu` for a Ubuntu Operating system.
 
-The `distrib_src` parameter is a boolean. If `true` then `deb-src`
+The `src` parameter is a boolean. If `true` then `deb-src`
 lines will be added, if `false` no `deb-src` lines. The
 default value is `false`.
 
-The `distrib_install_recommends` is a boolean to tell if Puppet
+The `install_recommends` is a boolean to tell if Puppet
 sets the parameter `APT::Install-Recommends` to `true`
 or `false`. The default value of this parameter is `false`.
 
-The `distrib_backports` is a boolean to tell if Puppet
+The `backports` is a boolean to tell if Puppet
 adds the backports repository for Debian. The default value
 of this parameter is `false`. If set to `true` for a node which
 is not a Debian operating system (for instance for a Ubuntu node),
@@ -61,12 +61,12 @@ via Puppet.
 Here is an example:
 
 ```puppet
-class { '::repository::params':
-  puppet_url                    => 'http://apt.puppetlabs.com',
-  puppet_src                    => false,
-  puppet_collection             => 'PC1',
-  puppet_pinning_agent_version  => '1.3.0-*', # Don't forget the joker.
-  puppet_pinning_server_version => '2.2.0-*', # Don't forget the joker.
+class { '::repository::puppet::params':
+  url                    => 'http://apt.puppetlabs.com',
+  src                    => false,
+  collection             => 'PC1',
+  pinning_agent_version  => '1.3.0-*', # Don't forget the joker.
+  pinning_server_version => '2.2.0-*', # Don't forget the joker.
 }
 
 include '::repository::puppet'
@@ -74,28 +74,28 @@ include '::repository::puppet'
 
 ## Parameters
 
-The `puppet_url` parameter is the url of the APT repository.
+The `url` parameter is the url of the APT repository.
 Its default value is `http://apt.puppetlabs.com`.
 
-The `puppet_src` parameter is a boolean to tell if you
+The `src` parameter is a boolean to tell if you
 want to include the `deb-src` line or not in the
 `sources.list.d/`. Its default value is `false`.
 
-The `puppet_collection` gives the name of the collection
-which will be used. The `puppet_pinning_agent_version` and
-`puppet_pinning_server_version` parameters give the version
+The `collection` gives the name of the collection
+which will be used. The `pinning_agent_version` and
+`pinning_server_version` parameters give the version
 of the `puppet-agent` package and the `puppetserver` package
 which will be pinned in the APT configuration. For the
-`puppet_pinning_agent_version` and
-`puppet_pinning_server_version` parameters, the special
+`pinning_agent_version` and
+`pinning_server_version` parameters, the special
 string value `'none'` means "no pinning". These 3 parameters
 the default value is `undef` and you have to provide a value
 explicitly. For instance in hiera with something like that:
 
 ```yaml
-repository::params::puppet_collection: 'PC1'
-repository::params::puppet_pinning_agent_version: '1.3.0-*'
-repository::params::puppet_pinning_server_version: '2.2.0-*'
+repository::puppet::params::collection: 'PC1'
+repository::puppet::params::pinning_agent_version: '1.3.0-*'
+repository::puppet::params::pinning_server_version: '2.2.0-*'
 ```
 
 
@@ -108,9 +108,9 @@ repository::params::puppet_pinning_server_version: '2.2.0-*'
 Here is an example:
 
 ```puppet
-class { '::repository::postgresql':
-  postgresql_url => 'http://apt.postgresql.org/pub/repos/apt/',
-  postgresql_src => false,
+class { '::repository::postgresql::params':
+  url => 'http://apt.postgresql.org/pub/repos/apt/',
+  src => false,
 }
 
 include '::repository::postgresql'
@@ -131,11 +131,11 @@ the values of the call above.
 Here is an example:
 
 ```puppet
-class { '::repository::params':
-  ceph_url             => 'http://ceph.com',
-  ceph_codename        => 'infernalis',
-  ceph_pinning_version => '9.2.0-*',
-  ceph_src             => false,
+class { '::repository::ceph::params':
+  url             => 'http://ceph.com',
+  codename        => 'infernalis',
+  pinning_version => '9.2.0-*',
+  src             => false,
 }
 
 include '::repository::ceph'
@@ -143,11 +143,11 @@ include '::repository::ceph'
 
 ## Parameters and default values
 
-Only `ceph_url` and `ceph_src` parameters have a default
+Only `url` and `src` parameters have a default
 value which are respectively `http://ceph.com` and `false`.
-The `ceph_codename` and `ceph_pinning_version` have not
+The `codename` and `pinning_version` have not
 relevant default value (it's `undef`) and you must provide
-relevant values explicitly. For the `ceph_pinning_version`
+relevant values explicitly. For the `pinning_version`
 parameter, the string value `'none'` is special and means
 "no pinning".
 
@@ -165,10 +165,10 @@ by the official Ceph repository.
 Here is an example:
 
 ```puppet
-class { '::repository::params':
-  docker_url             => 'http://apt.dockerproject.org/repo/dists',
-  docker_src             => false,
-  docker_pinning_version => '1.10.0-*',
+class { '::repository::docker::params':
+  url             => 'http://apt.dockerproject.org/repo/dists',
+  src             => false,
+  pinning_version => '1.10.0-*',
 }
 
 include '::repository::docker'
@@ -176,9 +176,9 @@ include '::repository::docker'
 
 ## Parameters and default values
 
-Except for `docker_pinning_version`, the default values of
+Except for `pinning_version`, the default values of
 the parameters are exactly the values of the call above. The
-parameter `docker_pinning_version` provides a pinning for
+parameter `pinning_version` provides a pinning for
 the package `docker-engine`. Its default value is `undef`
 and you must provide a value explicitly. The special value
 `'none'` means "no pinning".
@@ -193,8 +193,8 @@ and you must provide a value explicitly. The special value
 Here is an example:
 
 ```puppet
-class { '::repository::params':
-  proxmox_url => 'https://enterprise.proxmox.com/debian',
+class { '::repository::proxmox::params':
+  url => 'https://enterprise.proxmox.com/debian',
 }
 
 include '::repository::proxmox'
@@ -227,10 +227,10 @@ Here is an example with `shinken`. It's the same thing with
 the other classes above:
 
 ```puppet
-class { '::repository::params':
-  shinken_url         => 'http://repository.crdp.ac-versailles.fr',
-  shinken_key_url     => 'http://repository.crdp.ac-versailles.fr/crdp.gpg',
-  shinken_fingerprint => '741FA112F3B2D515A88593F83DE39DE978BB3659',
+class { '::repository::shinken::params':
+  url         => 'http://repository.crdp.ac-versailles.fr',
+  key_url     => 'http://repository.crdp.ac-versailles.fr/crdp.gpg',
+  fingerprint => '741FA112F3B2D515A88593F83DE39DE978BB3659',
 }
 
 include '::repository::shinken'
