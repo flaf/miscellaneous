@@ -6,7 +6,6 @@ enc_groups: [ 'ceph_all_nodes' ]
 enc_datacenter: 'vboxhome'
 
 
-network::resolv_conf::override_dhcp: true
 network::params::restart: true
 network::params::ifaces:
   eth0:
