@@ -407,7 +407,10 @@ include '::network::hosts'
 The `hosts` parameter is a hash where the keys are
 IP addresses and the values are arrays of host names.
 The default value of this parameter is `{}` ie no
-hosts entry. But, if not present, this "default" entry:
+hosts entry. Warning, the default merging policy
+concerning this parameter `hosts` is `deep`.
+
+In fact, if not present, this "default" entry:
 
 ```puppet
 '127.0.1.1' => [ $::fqdn, $::hostname ]

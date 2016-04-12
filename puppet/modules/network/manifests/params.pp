@@ -21,7 +21,9 @@ class network::params (
   Hash[ String[1], Array[String[1],1] ] $hosts_entries  = ::network::complete_hosts_entries($hosts),
   String                                $hosts_from_tag = '',
 
-  # Parameter below currently unused.
+  # Parameter below currently unused. <= TODO: False! It's used by flaf-moo.
+  #                                      Bad idea, this should be in a role class.
+  #                                      Remove it asap when "moo" will be roles.
   #
   # The $smtp_relay parameter can be undef (via the
   # "Optional[...]" instruction), because there is no

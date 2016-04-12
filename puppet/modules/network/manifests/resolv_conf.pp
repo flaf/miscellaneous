@@ -43,10 +43,17 @@ class network::resolv_conf (
     }
   }
 
-  # Test irrelevant case.
+  # Test irrelevant cases.
   if $manage_resolv_conf and $nameservers =~ Undef {
     @("END").regsubst('\n', ' ', 'G').fail
       $title: sorry the class intends to manage /etc/resolv.conf
+      but the parameter `::network::params::dns_servers` is undef.
+      |- END
+  }
+
+  if $local_resolver and $nameservers =~ Undef {
+    @("END").regsubst('\n', ' ', 'G').fail
+      $title: sorry the class intends to configure a local resolver
       but the parameter `::network::params::dns_servers` is undef.
       |- END
   }
