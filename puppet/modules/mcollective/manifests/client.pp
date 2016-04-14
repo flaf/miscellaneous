@@ -4,38 +4,55 @@ class mcollective::client (
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
-  if !defined(Class['::mcollective::params']) { include '::mcollective::params' }
-  $collectives        = $::mcollective::params::client_collectives
-  $client_private_key = $::mcollective::params::client_private_key
-  $client_public_key  = $::mcollective::params::client_public_key
-  $server_public_key  = $::mcollective::params::server_public_key
-  $connector          = $::mcollective::params::connector
-  $middleware_address = $::mcollective::params::middleware_address
-  $middleware_port    = $::mcollective::params::middleware_port
-  $mcollective_pwd    = $::mcollective::params::mcollective_pwd
-  $mco_tag            = $::mcollective::params::mco_tag
-  $puppet_ssl_dir     = $::mcollective::params::puppet_ssl_dir
-
-  ::homemade::fail_if_undef($client_public_key, 'mcollective::params::client_public_key', $title)
-  ::homemade::fail_if_undef($client_private_key, 'mcollective::params::client_private_key', $title)
-  ::homemade::fail_if_undef($server_public_key, 'mcollective::params::server_public_key', $title)
-  ::homemade::fail_if_undef($middleware_address, 'mcollective::params::middleware_address', $title)
-
   require '::mcollective::package'
   require '::repository::mco'
+  include '::mcollective::client::params'
+
+  $translation = {
+    'collectives'             => '::mcollective::client::params::collectives',
+    'client_private_key'      => '::mcollective::client::params::private_key',
+    'client_public_key'       => '::mcollective::client::params::public_key',
+    'server_public_key'       => '::mcollective::client::params::server_public_key',
+    'connector'               => '::mcollective::client::params::connector',
+    'middleware_address'      => '::mcollective::client::params::middleware_address',
+    'middleware_port'         => '::mcollective::client::params::middleware_port',
+    'mcollective_pwd'         => '::mcollective::client::params::mcollective_pwd',
+    'mco_tag'                 => '::mcollective::client::params::mco_tag',
+    'puppet_ssl_dir'          => '::mcollective::client::params::puppet_ssl_dir',
+
+    'client_keys_dir'         => '::mcollective::package::client_keys_dir',
+    'allowed_clients_dir'     => '::mcollective::package::allowed_clients_dir',
+    'client_priv_key_path'    => '::mcollective::package::client_priv_key_path',
+    'client_pub_key_path'     => '::mcollective::package::client_pub_key_path',
+    'client_pub_key_path_exp' => '::mcollective::package::client_pub_key_path_exp',
+  }
+
+  $params_tmp = ::homemade::varname2value($translation, $title)
+  $params     = $params_tmp + {
+    'server_pub_key_path' => "${params_tmp['client_keys_dir']}/servers-pub-key.pem",
+    'collectives'         => $params_tmp['collectives'].unique.sort,
+  }
+
+  [
+    $collectives,
+    $client_private_key,
+    $client_public_key,
+    $server_public_key,
+    $connector,
+    $middleware_address,
+    $middleware_port,
+    $mcollective_pwd,
+    $mco_tag,
+    $puppet_ssl_dir,
+    $client_keys_dir,
+    $allowed_clients_dir,
+    $client_priv_key_path,
+    $client_pub_key_path,
+    $client_pub_key_path_exp,
+    $server_pub_key_path,
+  ] = $params
+
   ensure_packages(['mcollective-flaf-clients'], { ensure => present, })
-
-  # Just shortcuts.
-  $client_keys_dir     = $::mcollective::package::client_keys_dir
-  $allowed_clients_dir = $::mcollective::package::allowed_clients_dir
-
-  # Paths of important files.
-  $client_priv_key_path    = "${client_keys_dir}/${::fqdn}.priv-key.pem"
-  $client_pub_key_path     = "${client_keys_dir}/${::fqdn}.pub-key.pem"
-  $client_pub_key_path_exp = "${allowed_clients_dir}/${::fqdn}.pub-key.pem"
-  $server_pub_key_path     = "${client_keys_dir}/servers-pub-key.pem"
-
-  $collectives_final_value = $collectives.unique.sort
 
   # mcollective::client and mcollective::server will manage this
   # directory because the client keys are very sensitive. If a
@@ -97,7 +114,7 @@ class mcollective::client (
     mode    => '0640',
     content => epp( 'mcollective/client.cfg.epp',
                     {
-                      'collectives'          => $collectives_final_value,
+                      'collectives'          => $collectives,
                       'server_pub_key_path'  => $server_pub_key_path,
                       'client_pub_key_path'  => $client_pub_key_path,
                       'client_priv_key_path' => $client_priv_key_path,

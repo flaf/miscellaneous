@@ -1,8 +1,6 @@
 class roles::generic {
 
-  if !defined(Class['::roles::generic::params']) {
-      include '::roles::generic::params'
-  }
+  include '::roles::generic::params'
 
   $supported_classes = $::roles::generic::params::supported_classes
   $excluded_classes  = $::roles::generic::params::excluded_classes
@@ -38,53 +36,81 @@ class roles::generic {
 
   $remaining_classes = $included_classes - $excluded_classes
 
-
-  if !defined(Class['::network::params']) {
-    include '::network::params'
-  }
-
+  include '::network::params'
   $interfaces         = $::network::params::interfaces
   $inventory_networks = $::network::params::inventory_networks
   $ntp_servers        = ::network::get_param($interfaces, $inventory_networks, 'ntp_servers')
   $snmp_syscontact    = ::network::get_param($interfaces, $inventory_networks, 'admin_email')
 
-  if $ntp_servers =~ Undef {
-    @("END").regsubst('\n', ' ', 'G').fail
-      $title: sorry impossible to find the (needed) data 'ntp_servers'
-      in the inventory networks for this host.
-      |- END
-  }
+  include '::mcomiddleware::params'
+  $middleware_port    = $::mcomiddleware::params::stomp_ssl_port
+  $mcollective_pwd    = $::mcomiddleware::params::mcollective_pwd
 
-  if $snmp_syscontact =~ Undef {
-    @("END").regsubst('\n', ' ', 'G').fail
-      $title: sorry impossible to find the (needed) data 'admin_email'
-      in the inventory networks for this host.
-      |- END
-  }
+  include '::puppetagent::params'
+  $puppet_ssl_dir = $::puppetagent::params::ssldir
+  $puppet_bin_dir = $::puppetagent::params::bindir
 
-  # For this class, we have retrieved NTP servers from
-  # inventory networks.
-  class { '::basic_ntp::params':
-    servers => $ntp_servers,
-  }
-
-  class { '::snmp::params':
-    syscontact => $snmp_syscontact,
-  }
 
   $remaining_classes.each |String[1] $a_class| {
 
     case $a_class {
 
+      '::basic_ntp': {
+
+        if $ntp_servers =~ Undef {
+          @("END").regsubst('\n', ' ', 'G').fail
+            $title: sorry impossible to find the (needed) data 'ntp_servers'
+            in the inventory networks for this host.
+            |- END
+        }
+
+        # For this class, we have retrieved NTP servers from
+        # inventory networks.
+        class { '::basic_ntp::params':
+          servers => $ntp_servers,
+        }
+
+        include '::basic_ntp'
+      }
+
       '::snmp': {
+
+        if $snmp_syscontact =~ Undef {
+          @("END").regsubst('\n', ' ', 'G').fail
+            $title: sorry impossible to find the (needed) data 'admin_email'
+            in the inventory networks for this host.
+            |- END
+        }
+
         # With SNMP, we want to install the snmpd-extend package.
         include '::repository::shinken'
+
         [ 'snmpd-extend' ].ensure_packages({
           ensure  => present,
           require => Class['::repository::shinken'],
           before  => Class['::snmp'],
         })
+
+        class { '::snmp::params':
+          syscontact => $snmp_syscontact,
+          before  => Class['::snmp'],
+        }
+
         include '::snmp'
+
+      }
+
+      '::mcollective::server': {
+
+        class { '::mcollective::server::params':
+          middleware_port    => $middleware_port,
+          mcollective_pwd    => $mcollective_pwd,
+          puppet_ssl_dir     => $puppet_ssl_dir,
+          puppet_bin_dir     => $puppet_bin_dir,
+        }
+
+        include '::mcollective::server'
+
       }
 
       # By default, it's a simple include.

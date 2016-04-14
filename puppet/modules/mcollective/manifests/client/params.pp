@@ -5,10 +5,10 @@ class mcollective::client::params (
   Optional[ String[1] ]        $server_public_key,
   Enum['rabbitmq', 'activemq'] $connector,
   Optional[ String[1] ]        $middleware_address,
-  Integer[1]                   $middleware_port,
-  String[1]                    $mcollective_pwd,
+  Optional[ Integer[1] ]       $middleware_port,
+  Optional[ String[1] ]        $mcollective_pwd,
   String[1]                    $mco_tag,
-  String[1]                    $puppet_ssl_dir,
+  Optional[ String[1] ]        $puppet_ssl_dir,
 ) {
 }
 

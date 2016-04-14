@@ -4,28 +4,55 @@ class mcollective::server (
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
-  if !defined(Class['::mcollective::server::params']) {
-    include '::mcollective::server::params'
-  }
-
-  $collectives        = $::mcollective::server::params::collectives
-  $server_private_key = $::mcollective::server::params::private_key
-  $server_public_key  = $::mcollective::server::params::public_key
-  $server_enabled     = $::mcollective::server::params::service_enabled
-  $connector          = $::mcollective::server::params::connector
-  $middleware_address = $::mcollective::server::params::middleware_address
-  $middleware_port    = $::mcollective::server::params::middleware_port
-  $mcollective_pwd    = $::mcollective::server::params::mcollective_pwd
-  $mco_tag            = $::mcollective::server::params::mco_tag
-  $puppet_ssl_dir     = $::mcollective::server::params::puppet_ssl_dir
-  $puppet_bin_dir     = $::mcollective::server::params::puppet_bin_dir
-
-  ::homemade::fail_if_undef($server_private_key, 'mcollective::params::server_private_key', $title)
-  ::homemade::fail_if_undef($server_public_key, 'mcollective::params::server_public_key', $title)
-  ::homemade::fail_if_undef($middleware_address, 'mcollective::params::middleware_address', $title)
-
   require '::mcollective::package'
   require '::repository::mco'
+  include '::mcollective::server::params'
+
+  $translation = {
+    'collectives'          => '::mcollective::server::params::collectives',
+    'server_private_key'   => '::mcollective::server::params::private_key',
+    'server_public_key'    => '::mcollective::server::params::public_key',
+    'server_enabled'       => '::mcollective::server::params::service_enabled',
+    'connector'            => '::mcollective::server::params::connector',
+    'middleware_address'   => '::mcollective::server::params::middleware_address',
+    'middleware_port'      => '::mcollective::server::params::middleware_port',
+    'mcollective_pwd'      => '::mcollective::server::params::mcollective_pwd',
+    'mco_tag'              => '::mcollective::server::params::mco_tag',
+    'puppet_ssl_dir'       => '::mcollective::server::params::puppet_ssl_dir',
+    'puppet_bin_dir'       => '::mcollective::server::params::puppet_bin_dir',
+
+    'server_keys_dir'      => '::mcollective::package::server_keys_dir',
+    'allowed_clients_dir'  => '::mcollective::package::allowed_clients_dir',
+    'client_keys_dir'      => '::mcollective::package::client_keys_dir',
+    'server_priv_key_path' => '::mcollective::package::server_priv_key_path',
+
+  }
+
+  $params_tmp = ::homemade::varname2value($translation, $title)
+  $params     = $params_tmp + {
+    'server_pub_key_path' => "${params_tmp['server_keys_dir']}/server.pub-key.pem",
+    'collectives'         => $params_tmp['collectives'].unique.sort,
+  }
+
+  [
+    $collectives,
+    $server_private_key,
+    $server_public_key,
+    $server_enabled,
+    $connector,
+    $middleware_address,
+    $middleware_port,
+    $mcollective_pwd,
+    $mco_tag,
+    $puppet_ssl_dir,
+    $puppet_bin_dir,
+    $server_keys_dir,
+    $allowed_clients_dir,
+    $client_keys_dir,
+    $server_priv_key_path,
+    $server_pub_key_path,
+  ] = $params
+
   ensure_packages(['mcollective-flaf-agents'],
                   {
                     ensure => present,
@@ -33,17 +60,6 @@ class mcollective::server (
                     notify => Service['mcollective'],
                   }
                  )
-
-  # Just shortcuts.
-  $server_keys_dir     = $::mcollective::package::server_keys_dir
-  $allowed_clients_dir = $::mcollective::package::allowed_clients_dir
-  $client_keys_dir     = $::mcollective::package::client_keys_dir
-
-  # Paths of important files.
-  $server_priv_key_path = "${server_keys_dir}/server.priv-key.pem"
-  $server_pub_key_path  = "${server_keys_dir}/server.pub-key.pem"
-
-  $collectives_final_value = $collectives.unique.sort
 
   # mcollective::client and mcollective::server will manage this
   # directory because the client keys are very sensitive. If a
@@ -105,8 +121,8 @@ class mcollective::server (
     group   => 'root',
     mode    => '0600',
     content => epp( 'mcollective/server.cfg.epp',
-                    {
-                      'collectives'         => $collectives_final_value,
+                   {
+                      'collectives'         => $collectives,
                       'server_priv_key_path'=> $server_priv_key_path,
                       'server_pub_key_path' => $server_pub_key_path,
                       'allowed_clients_dir' => $allowed_clients_dir,
