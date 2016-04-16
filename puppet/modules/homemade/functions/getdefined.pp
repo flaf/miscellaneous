@@ -1,4 +1,4 @@
-function homemade::getdefined (
+function homemade::getdefined_bad (
   String[1] $var_name,
   String[1] $class_name,
 ) {
@@ -13,6 +13,8 @@ function homemade::getdefined (
 
       $title
   }
+
+  $value
 
 }
 
