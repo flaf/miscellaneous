@@ -1,7 +1,6 @@
 class mcollective::client {
 
   include '::mcollective::client::params'
-
   $collectives        = $::mcollective::client::params::collectives
   $private_key        = $::mcollective::client::params::private_key
   $public_key         = $::mcollective::client::params::public_key
@@ -15,7 +14,6 @@ class mcollective::client {
   $puppet_ssl_dir     = $::mcollective::client::params::puppet_ssl_dir
 
   include '::mcollective::common_paths'
-
   $client_priv_key_path    = $::mcollective::common_paths::client_priv_key_path
   $client_pub_key_path     = $::mcollective::common_paths::client_pub_key_path
   $client_pub_key_path_exp = $::mcollective::common_paths::client_pub_key_path_exp

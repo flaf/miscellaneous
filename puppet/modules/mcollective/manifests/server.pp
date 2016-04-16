@@ -1,7 +1,6 @@
 class mcollective::server {
 
   include '::mcollective::server::params'
-
   $collectives        = $::mcollective::server::params::collectives
   $private_key        = $::mcollective::server::params::private_key
   $public_key         = $::mcollective::server::params::public_key
@@ -16,7 +15,6 @@ class mcollective::server {
   $puppet_bin_dir     = $::mcollective::server::params::puppet_bin_dir
 
   include '::mcollective::common_paths'
-
   $server_keys_dir      = $::mcollective::common_paths::server_keys_dir
   $allowed_clients_dir  = $::mcollective::common_paths::allowed_clients_dir
   $server_priv_key_path = $::mcollective::common_paths::server_priv_key_path

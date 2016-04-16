@@ -25,7 +25,6 @@ function mcollective::data {
     mcollective::server::params::puppet_bin_dir      => undef,
    "mcollective::server::params::${sp}"              => $supported_distribs,
 
-    mcollective::client::params::mco_plugin_clients => [],
     mcollective::client::params::collectives        => $default_collectives,
     mcollective::client::params::private_key        => undef,
     mcollective::client::params::public_key         => undef,
@@ -35,13 +34,14 @@ function mcollective::data {
     mcollective::client::params::middleware_port    => undef,
     mcollective::client::params::mcollective_pwd    => undef,
     mcollective::client::params::mco_tag            => $default_mco_tag,
+    mcollective::client::params::mco_plugin_clients => [],
     mcollective::client::params::puppet_ssl_dir     => undef,
    "mcollective::client::params::${sp}"             => $supported_distribs,
 
 
     # Merging policy.
     lookup_options => {
-       mcollective::params::server_collectives => { merge => 'unique', },
+       mcollective::params::server::collectives => { merge => 'unique', },
     },
   }
 

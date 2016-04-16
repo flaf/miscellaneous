@@ -1,5 +1,7 @@
 class mcollective::client_keys_dir {
 
+  include '::mcollective::common_paths'
+
   $client_keys_dir = $::mcollective::common_paths::client_keys_dir
 
   file { $client_keys_dir:

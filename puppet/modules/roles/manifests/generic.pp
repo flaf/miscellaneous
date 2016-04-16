@@ -43,8 +43,8 @@ class roles::generic {
   $snmp_syscontact    = ::network::get_param($interfaces, $inventory_networks, 'admin_email')
 
   include '::mcomiddleware::params'
-  $middleware_port    = $::mcomiddleware::params::stomp_ssl_port
-  $mcollective_pwd    = $::mcomiddleware::params::mcollective_pwd
+  $middleware_port = $::mcomiddleware::params::stomp_ssl_port
+  $mcollective_pwd = $::mcomiddleware::params::mcollective_pwd
 
   include '::puppetagent::params'
   $puppet_ssl_dir = $::puppetagent::params::ssldir
