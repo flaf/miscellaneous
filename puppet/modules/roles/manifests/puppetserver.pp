@@ -1,7 +1,6 @@
 class roles::puppetserver {
 
   include '::roles::generic'
-
   include '::puppetserver'
 
   include '::mcollective::server::params'
@@ -12,12 +11,19 @@ class roles::puppetserver {
   $puppet_ssl_dir     = $::mcollective::server::params::puppet_ssl_dir
 
   # TODO: only if it's a mcollective client.
+  include '::repository::puppet'
+  include '::repository::mco'
+
   class { 'mcollective::client::params':
     server_public_key  => $server_public_key,
     middleware_address => $middleware_address,
     middleware_port    => $middleware_port,
     mcollective_pwd    => $mcollective_pwd,
     puppet_ssl_dir     => $puppet_ssl_dir,
+    mco_plugin_clients => [ 'mcollective-flaf-clients' ],
+    require            => [ Class['::repository::mco'],
+                            Class['::repository::puppet'],
+                          ],
     # TODO collectives => all the datacenters...
   }
 

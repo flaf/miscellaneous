@@ -1,59 +1,33 @@
-class mcollective::server (
-  Array[String[1], 1] $supported_distributions,
-) {
+class mcollective::server {
 
-  ::homemade::is_supported_distrib($supported_distributions, $title)
-
-  require '::mcollective::package'
-  require '::repository::mco'
   include '::mcollective::server::params'
 
-  $translation = {
-    'collectives'          => '::mcollective::server::params::collectives',
-    'server_private_key'   => '::mcollective::server::params::private_key',
-    'server_public_key'    => '::mcollective::server::params::public_key',
-    'server_enabled'       => '::mcollective::server::params::service_enabled',
-    'connector'            => '::mcollective::server::params::connector',
-    'middleware_address'   => '::mcollective::server::params::middleware_address',
-    'middleware_port'      => '::mcollective::server::params::middleware_port',
-    'mcollective_pwd'      => '::mcollective::server::params::mcollective_pwd',
-    'mco_tag'              => '::mcollective::server::params::mco_tag',
-    'puppet_ssl_dir'       => '::mcollective::server::params::puppet_ssl_dir',
-    'puppet_bin_dir'       => '::mcollective::server::params::puppet_bin_dir',
+  $collectives        = $::mcollective::server::params::collectives
+  $private_key        = $::mcollective::server::params::private_key
+  $public_key         = $::mcollective::server::params::public_key
+  $service_enabled    = $::mcollective::server::params::service_enabled
+  $connector          = $::mcollective::server::params::connector
+  $middleware_address = $::mcollective::server::params::middleware_address
+  $middleware_port    = $::mcollective::server::params::middleware_port
+  $mcollective_pwd    = $::mcollective::server::params::mcollective_pwd
+  $mco_tag            = $::mcollective::server::params::mco_tag
+  $mco_plugin_agents  = $::mcollective::server::params::mco_plugin_agents
+  $puppet_ssl_dir     = $::mcollective::server::params::puppet_ssl_dir
+  $puppet_bin_dir     = $::mcollective::server::params::puppet_bin_dir
 
-    'server_keys_dir'      => '::mcollective::package::server_keys_dir',
-    'allowed_clients_dir'  => '::mcollective::package::allowed_clients_dir',
-    'client_keys_dir'      => '::mcollective::package::client_keys_dir',
-    'server_priv_key_path' => '::mcollective::package::server_priv_key_path',
+  include '::mcollective::common_paths'
 
-  }
+  $server_keys_dir      = $::mcollective::common_paths::server_keys_dir
+  $allowed_clients_dir  = $::mcollective::common_paths::allowed_clients_dir
+  $server_priv_key_path = $::mcollective::common_paths::server_priv_key_path
+  $server_pub_key_path  = $::mcollective::common_paths::server_pub_key_path_for_server
 
-  $params_tmp = ::homemade::varname2value($translation, $title)
-  $params     = $params_tmp + {
-    'server_pub_key_path' => "${params_tmp['server_keys_dir']}/server.pub-key.pem",
-    'collectives'         => $params_tmp['collectives'].unique.sort,
-  }
+  $collectives_sorted   = $collectives.unique.sort
 
-  [
-    $collectives,
-    $server_private_key,
-    $server_public_key,
-    $server_enabled,
-    $connector,
-    $middleware_address,
-    $middleware_port,
-    $mcollective_pwd,
-    $mco_tag,
-    $puppet_ssl_dir,
-    $puppet_bin_dir,
-    $server_keys_dir,
-    $allowed_clients_dir,
-    $client_keys_dir,
-    $server_priv_key_path,
-    $server_pub_key_path,
-  ] = $params
 
-  ensure_packages(['mcollective-flaf-agents'],
+  require '::mcollective::package'
+
+  ensure_packages([$mco_plugin_agents],
                   {
                     ensure => present,
                     before => Service['mcollective'],
@@ -61,20 +35,11 @@ class mcollective::server (
                   }
                  )
 
-  # mcollective::client and mcollective::server will manage this
-  # directory because the client keys are very sensitive. If a
-  # node is no longer a mcollective client, we want to remove the
+  # mcollective::server have to manage this directory too
+  # because the client keys are very sensitive. If a node is
+  # no longer a mcollective client, we want to remove the
   # client keys (especially the client private key).
-  if !defined(File[$client_keys_dir]) {
-    file { $client_keys_dir:
-      ensure  => directory,
-      owner   => 'root',
-      group   => 'root',
-      mode    => '0500',
-      recurse => true,
-      purge   => true,
-    }
-  }
+  include '::mcollective::client_keys_dir'
 
   file { [ "${server_keys_dir}",
            "${allowed_clients_dir}"
@@ -94,7 +59,7 @@ class mcollective::server (
     owner   => 'root',
     group   => 'root',
     mode    => '0600',
-    content => $server_private_key,
+    content => $private_key,
     before  => Service['mcollective'],
     notify  => Service['mcollective'],
   }
@@ -104,7 +69,7 @@ class mcollective::server (
     owner   => 'root',
     group   => 'root',
     mode    => '0600',
-    content => $server_public_key,
+    content => $public_key,
     before  => Service['mcollective'],
     notify  => Service['mcollective'],
   }
@@ -122,7 +87,7 @@ class mcollective::server (
     mode    => '0600',
     content => epp( 'mcollective/server.cfg.epp',
                    {
-                      'collectives'         => $collectives,
+                      'collectives'         => $collectives_sorted,
                       'server_priv_key_path'=> $server_priv_key_path,
                       'server_pub_key_path' => $server_pub_key_path,
                       'allowed_clients_dir' => $allowed_clients_dir,
@@ -267,7 +232,7 @@ class mcollective::server (
   #  }
   #}
 
-  $ensure_mco = $server_enabled ? {
+  $ensure_mco = $service_enabled ? {
     true  => 'running',
     false => 'stopped',
   }
@@ -276,7 +241,7 @@ class mcollective::server (
     ensure     => $ensure_mco,
     hasstatus  => true,
     hasrestart => true,
-    enable     => $server_enabled,
+    enable     => $service_enabled,
   }
 
 }

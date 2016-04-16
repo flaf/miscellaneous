@@ -12,10 +12,10 @@ class roles::generic {
   # misprint in its name and the real class is not excluded.
   $excluded_classes.each |$a_class| {
     unless $a_class in $supported_classes {
-      @("END").regsubst('\n', ' ', 'G').fail
-        ${title}: you want to exclude the class `${a_class}` from the
-        module `${title}` but this class does not belong to the list of
-        classes supported by this module. Are you sure you have not made
+      @("END"/L).fail
+        ${title}: you want to exclude the class `${a_class}` from the \
+        module `${title}` but this class does not belong to the list of \
+        classes supported by this module. Are you sure you have not made \
         a misprint?
         |- END
     }
@@ -25,10 +25,10 @@ class roles::generic {
   # $supported_classes.
   $included_classes.each |$a_class| {
     unless $a_class in $supported_classes {
-      @("END").regsubst('\n', ' ', 'G').fail
-        ${title}: you want to include the class `${a_class}` from the
-        module `${title}` but this class does not belong to the list of
-        classes supported by this module. Are you sure you have not made
+      @("END"/L).fail
+        ${title}: you want to include the class `${a_class}` from the \
+        module `${title}` but this class does not belong to the list of \
+        classes supported by this module. Are you sure you have not made \
         a misprint?
         |- END
     }
@@ -55,11 +55,15 @@ class roles::generic {
 
     case $a_class {
 
+
+      #################
+      ### basic_ntp ###
+      #################
       '::basic_ntp': {
 
         if $ntp_servers =~ Undef {
-          @("END").regsubst('\n', ' ', 'G').fail
-            $title: sorry impossible to find the (needed) data 'ntp_servers'
+          @("END"/L).fail
+            $title: sorry impossible to find the (needed) data 'ntp_servers' \
             in the inventory networks for this host.
             |- END
         }
@@ -71,13 +75,18 @@ class roles::generic {
         }
 
         include '::basic_ntp'
+
       }
 
+
+      ############
+      ### snmp ###
+      ############
       '::snmp': {
 
         if $snmp_syscontact =~ Undef {
-          @("END").regsubst('\n', ' ', 'G').fail
-            $title: sorry impossible to find the (needed) data 'admin_email'
+          @("END"/L).fail
+            $title: sorry impossible to find the (needed) data 'admin_email' \
             in the inventory networks for this host.
             |- END
         }
@@ -100,23 +109,40 @@ class roles::generic {
 
       }
 
+
+      ###########################
+      ### mcollective::server ###
+      ###########################
       '::mcollective::server': {
 
         class { '::mcollective::server::params':
-          middleware_port    => $middleware_port,
-          mcollective_pwd    => $mcollective_pwd,
-          puppet_ssl_dir     => $puppet_ssl_dir,
-          puppet_bin_dir     => $puppet_bin_dir,
+          middleware_port   => $middleware_port,
+          mcollective_pwd   => $mcollective_pwd,
+          puppet_ssl_dir    => $puppet_ssl_dir,
+          puppet_bin_dir    => $puppet_bin_dir,
+          mco_plugin_agents => [ 'mcollective-flaf-agents' ],
         }
 
-        include '::mcollective::server'
+        include '::repository::puppet'
+        include '::repository::mco'
+
+        class { '::mcollective::server':
+          require => [ Class['::repository::mco'],
+                       Class['::repository::puppet'],
+                     ],
+        }
 
       }
 
-      # By default, it's a simple include.
+
+      ########################
+      ### The default case ###
+      ########################
       default: {
+        # By default, it's a simple include.
         include $a_class
       }
+
 
     }
 

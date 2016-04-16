@@ -7,21 +7,25 @@ function mcollective::data {
     default => [ 'mcollective', $::datacenter ],
   }
 
+  $sp = 'supported_distributions'
   $supported_distribs = ['trusty', 'jessie'];
 
   {
-    mcollective::server::params::collectives        => $default_collectives,
-    mcollective::server::params::private_key        => undef,
-    mcollective::server::params::public_key         => undef,
-    mcollective::server::params::service_enabled    => true,
-    mcollective::server::params::connector          => $default_connector,
-    mcollective::server::params::middleware_address => undef,
-    mcollective::server::params::middleware_port    => undef,
-    mcollective::server::params::mcollective_pwd    => undef,
-    mcollective::server::params::mco_tag            => $default_mco_tag,
-    mcollective::server::params::puppet_ssl_dir     => undef,
-    mcollective::server::params::puppet_bin_dir     => undef,
+    mcollective::server::params::collectives         => $default_collectives,
+    mcollective::server::params::private_key         => undef,
+    mcollective::server::params::public_key          => undef,
+    mcollective::server::params::service_enabled     => true,
+    mcollective::server::params::connector           => $default_connector,
+    mcollective::server::params::middleware_address  => undef,
+    mcollective::server::params::middleware_port     => undef,
+    mcollective::server::params::mcollective_pwd     => undef,
+    mcollective::server::params::mco_tag             => $default_mco_tag,
+    mcollective::server::params::mco_plugin_agents   => [],
+    mcollective::server::params::puppet_ssl_dir      => undef,
+    mcollective::server::params::puppet_bin_dir      => undef,
+   "mcollective::server::params::${sp}"              => $supported_distribs,
 
+    mcollective::client::params::mco_plugin_clients => [],
     mcollective::client::params::collectives        => $default_collectives,
     mcollective::client::params::private_key        => undef,
     mcollective::client::params::public_key         => undef,
@@ -32,14 +36,13 @@ function mcollective::data {
     mcollective::client::params::mcollective_pwd    => undef,
     mcollective::client::params::mco_tag            => $default_mco_tag,
     mcollective::client::params::puppet_ssl_dir     => undef,
+   "mcollective::client::params::${sp}"             => $supported_distribs,
 
-    mcollective::client::supported_distributions => $supported_distribs,
-    mcollective::server::supported_distributions => $supported_distribs,
 
     # Merging policy.
     lookup_options => {
-                        mcollective::params::server_collectives => { merge => 'unique', },
-                      },
+       mcollective::params::server_collectives => { merge => 'unique', },
+    },
   }
 
 }
