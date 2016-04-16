@@ -12,6 +12,8 @@ network::params::ifaces:
     inet:
       method: 'dhcp'
 
+roles::puppetserver::params::is_mcollective_client: true
+
 puppetserver::params::mcrypt_pwd: >
   ENC[PKCS7,MIIBeQYJKoZIhvcNAQcDoIIBajCCAWYCAQAxggEhMIIBHQIBADAFMAACAQEw
   DQYJKoZIhvcNAQEBBQAEggEARAnR2YkMLft26UJVA0LyLOJyyCejjgKCmhE5
