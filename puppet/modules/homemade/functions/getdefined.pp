@@ -1,20 +1,23 @@
-function homemade::getdefined_bad (
-  String[1] $var_name,
-  String[1] $class_name,
+function homemade::getvard (
+  Pattern[/^[_a-z0-9:]+$/] $var_name,
+  String[1]                $class_name,
 ) {
 
-  $value = getvar($var_name)
+  $value = getvard($var_name)
 
-  if $value =~ Undef {
+  if defined("\$${var_name}") and $value =~ NotUndef {
+
+    $value
+
+  } else {
+
     @("END"/L).fail
-      ${class_name}: sorry the variable `${var_name}` is undefined \
-      which is forbidden by the function `getdefined()`.
+      in ${class_name} the variable `${var_name}` \
+      retrieved by homemade::getvard() is undefined \
+      which is forbidden.
       |- END
 
-      $title
   }
-
-  $value
 
 }
 
