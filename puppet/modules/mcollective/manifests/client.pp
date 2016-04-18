@@ -11,7 +11,7 @@ class mcollective::client {
   $middleware_port    = ::homemade::getvar("${params}::middleware_port")
   $mcollective_pwd    = ::homemade::getvar("${params}::mcollective_pwd")
   $mco_tag            = ::homemade::getvar("${params}::mco_tag")
-  $mco_plugin_clients = ::homemade::getvar("${params}::mco_plugin_clients")
+  $mco_plugins        = ::homemade::getvar("${params}::mco_plugins")
   $puppet_ssl_dir     = ::homemade::getvar("${params}::puppet_ssl_dir")
   $collectives_sorted = ::homemade::getvar("${params}::collectives_sorted")
 
@@ -24,7 +24,7 @@ class mcollective::client {
 
   require '::mcollective::package'
 
-  ensure_packages($mco_plugin_clients, { ensure => present, })
+  ensure_packages($mco_plugins, { ensure => present, })
 
   include '::mcollective::client_keys_dir'
 

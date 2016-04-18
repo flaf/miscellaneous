@@ -8,7 +8,7 @@ class mcollective::server::params (
   Optional[Integer[1]]         $middleware_port,
   Optional[String[1]]          $mcollective_pwd,
   String[1]                    $mco_tag,
-  Array[String[1]]             $mco_plugin_agents,
+  Array[String[1]]             $mco_plugins,
   Optional[String[1]]          $puppet_ssl_dir,
   Optional[String[1]]          $puppet_bin_dir,
   Array[String[1], 1]          $supported_distributions,

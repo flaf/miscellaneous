@@ -128,7 +128,7 @@ class { '::mcollective::server::params':
   middleware_port    => 61614,
   mcollective_pwd    => '@mC0+45mpLSs',
   mco_tag            => 'mcollective_clients_pub_keys',
-  mco_plugin_agents  => [ 'mcollective-flaf-agents' ],
+  mco_plugins        => [ 'mcollective-flaf-agents' ],
   puppet_ssl_dir     => '/etc/puppetlabs/puppet/ssl',
   puppet_bin_dir     => '/opt/puppetlabs/puppet/bin',
 }
@@ -202,7 +202,7 @@ itself) and the servers will retrieve these public keys via
 the same tag given by the `mco_tag` parameter. The default
 value of this parameter is `'mcollective_client_public_key'`.
 
-The `mco_plugin_agents` is an array of supplementary
+The `mco_plugins` is an array of supplementary
 mcollective agent packages which will be installed. The
 default value is `[]`.
 
@@ -240,7 +240,7 @@ class { '::mcollective::client::params':
   middleware_port    => 61614,
   mcollective_pwd    => '@mC0+45mpLSs',
   mco_tag            => 'mcollective_clients_pub_keys',
-  mco_plugin_clients => [ 'mcollective-flaf-clients' ],
+  mco_plugins        => [ 'mcollective-flaf-clients' ],
   puppet_ssl_dir     => '/etc/puppetlabs/puppet/ssl',
 }
 
@@ -257,7 +257,7 @@ mcollective client. The default value is `undef` which is
 not accepted by the class `mcollective::client` (you must
 define explicitly the values).
 
-The `mco_plugin_clients` is an array of supplementary
+The `mco_plugins` is an array of supplementary
 mcollective client packages which will be installed. The
 default value is `[]`.
 

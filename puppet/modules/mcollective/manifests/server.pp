@@ -11,7 +11,7 @@ class mcollective::server {
   $middleware_port    = ::homemade::getvar("${params}::middleware_port")
   $mcollective_pwd    = ::homemade::getvar("${params}::mcollective_pwd")
   $mco_tag            = ::homemade::getvar("${params}::mco_tag")
-  $mco_plugin_agents  = ::homemade::getvar("${params}::mco_plugin_agents")
+  $mco_plugins        = ::homemade::getvar("${params}::mco_plugins")
   $puppet_ssl_dir     = ::homemade::getvar("${params}::puppet_ssl_dir")
   $puppet_bin_dir     = ::homemade::getvar("${params}::puppet_bin_dir")
   $collectives_sorted = ::homemade::getvar("${params}::collectives_sorted")
@@ -24,7 +24,7 @@ class mcollective::server {
 
   require '::mcollective::package'
 
-  ensure_packages([$mco_plugin_agents],
+  ensure_packages([$mco_plugins],
                   {
                     ensure => present,
                     before => Service['mcollective'],
