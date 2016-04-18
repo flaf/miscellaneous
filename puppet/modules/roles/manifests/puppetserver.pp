@@ -2,13 +2,9 @@ class roles::puppetserver {
 
   include '::roles::generic'
   include '::puppetserver'
-
   include '::roles::puppetserver::params'
-  $is_mcollective_client = $::roles::puppetserver::params::is_mcollective_client
 
-  # TODO: only if it's a mcollective client.
-
-  if $is_mcollective_client {
+  if $::roles::puppetserver::params::is_mcollective_client {
 
     # The mcollective client use the middleware of the mcollective server.
     include '::mcollective::server::params'
