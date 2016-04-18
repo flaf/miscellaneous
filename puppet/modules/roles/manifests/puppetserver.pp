@@ -13,8 +13,6 @@ class roles::puppetserver {
   ###################################
   ### The puppetserver management ###
   ###################################
-  include '::repository::postgresql'
-  include '::repository::puppet'
 
   # Handle of the ssh public keys for the backups.
   include '::unix_accounts::params'
@@ -46,10 +44,17 @@ class roles::puppetserver {
     authorized_backup_keys => $authorized_backup_keys,
   }
 
+  # Repository Postgresql needed only for a autonomous
+  # puppetserver.
+  if $::puppetserver::params::profile == 'autonomous' {
+    class { '::repository::postgresql':
+      before => Class['::puppetserver'],
+    }
+  }
+  include '::repository::puppet'
+
   class { '::puppetserver':
-    require => [ Class['::repository::postgresql'],
-                 Class['::repository::puppet'],
-               ],
+    require => Class['::repository::puppet'],
   }
   ###################################
 
