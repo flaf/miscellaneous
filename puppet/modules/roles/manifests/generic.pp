@@ -36,21 +36,6 @@ class roles::generic {
 
   $remaining_classes = $included_classes - $excluded_classes
 
-  include '::network::params'
-  $interfaces         = $::network::params::interfaces
-  $inventory_networks = $::network::params::inventory_networks
-  $ntp_servers        = ::network::get_param($interfaces, $inventory_networks, 'ntp_servers')
-  $snmp_syscontact    = ::network::get_param($interfaces, $inventory_networks, 'admin_email')
-
-  include '::mcomiddleware::params'
-  $middleware_port = $::mcomiddleware::params::stomp_ssl_port
-  $mcollective_pwd = $::mcomiddleware::params::mcollective_pwd
-
-  include '::puppetagent::params'
-  $puppet_ssl_dir = $::puppetagent::params::ssldir
-  $puppet_bin_dir = $::puppetagent::params::bindir
-
-
   $remaining_classes.each |String[1] $a_class| {
 
     case $a_class {
@@ -60,6 +45,13 @@ class roles::generic {
       ### basic_ntp ###
       #################
       '::basic_ntp': {
+
+        include '::network::params'
+        $ntp_servers = ::network::get_param(
+                         $::network::params::interfaces,
+                         $::network::params::inventory_networks,
+                         'ntp_servers'
+                       )
 
         if $ntp_servers =~ Undef {
           @("END"/L).fail
@@ -83,6 +75,13 @@ class roles::generic {
       ### snmp ###
       ############
       '::snmp': {
+
+        include '::network::params'
+        $snmp_syscontact = ::network::get_param(
+                             $::network::params::interfaces,
+                             $::network::params::inventory_networks,
+                             'admin_email'
+                           )
 
         if $snmp_syscontact =~ Undef {
           @("END"/L).fail
@@ -115,11 +114,14 @@ class roles::generic {
       ###########################
       '::mcollective::server': {
 
+        include '::mcomiddleware::params'
+        include '::puppetagent::params'
+
         class { '::mcollective::server::params':
-          middleware_port   => $middleware_port,
-          mcollective_pwd   => $mcollective_pwd,
-          puppet_ssl_dir    => $puppet_ssl_dir,
-          puppet_bin_dir    => $puppet_bin_dir,
+          middleware_port   => $::mcomiddleware::params::stomp_ssl_port,
+          mcollective_pwd   => $::mcomiddleware::params::mcollective_pwd,
+          puppet_ssl_dir    => $::puppetagent::params::ssldir,
+          puppet_bin_dir    => $::puppetagent::params::bindir,
           mco_plugin_agents => [ 'mcollective-flaf-agents' ],
         }
 
