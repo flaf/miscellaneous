@@ -186,3 +186,18 @@ Be careful:
 
 
 
+# `getvar()` and `getvarpp()` functions
+
+Theses implement the `getvar()` function from the stdlib
+except that an error is raised if the value retrieved is
+`undef`. `getvar()` is a Ruby Puppet function and
+`getvarpp()` is a pure Puppet function. Here is examples:
+
+```puppet
+$var = ::homemade::getvar('::myclass::params::var')
+$var = ::homemade::getvarpp('::myclass::params::var', $title)
+```
+
+
+
+
