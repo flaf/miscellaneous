@@ -5,10 +5,23 @@ class roles::puppetserver {
   $is_mcollective_client  = $::roles::puppetserver::params::is_mcollective_client
   $backup_keynames        = $::roles::puppetserver::params::backup_keynames
 
-  # Include the role "generic" but the module puppetagent
-  # must not manage the puppet.conf file.
-  class { '::puppetagent::params': manage_puppetconf => false }
+
+
+
+  ##################################
+  ### Include the role "generic" ###
+  ##################################
+  #
+  # The module "puppetagent" must not manage the puppet.conf
+  # file.
+  class { '::puppetagent::params':
+    manage_puppetconf => false,
+  }
   include '::roles::generic'
+  ##################################
+
+
+
 
   ###################################
   ### The puppetserver management ###
@@ -18,7 +31,7 @@ class roles::puppetserver {
   include '::unix_accounts::params'
   $ssh_public_keys = $::unix_accounts::params::ssh_public_keys
 
-  $authorized_backup_keys = $backup_keynames.reduce( {} ) |$memo, String[1] $keyname| {
+  $authorized_backup_keys = $backup_keynames.reduce({}) |$memo, String[1] $keyname| {
 
     unless $keyname in $ssh_public_keys {
       @("END"/L).fail
@@ -44,13 +57,15 @@ class roles::puppetserver {
     authorized_backup_keys => $authorized_backup_keys,
   }
 
-  # Repository Postgresql needed only for a autonomous
-  # puppetserver.
+  # Repository Postgresql needed only for a "autonomous"
+  # puppetserver (because Postgresql is installed only on
+  # "autonomous" puppetserver).
   if $::puppetserver::params::profile == 'autonomous' {
     class { '::repository::postgresql':
       before => Class['::puppetserver'],
     }
   }
+
   include '::repository::puppet'
 
   class { '::puppetserver':
@@ -69,8 +84,6 @@ class roles::puppetserver {
     # The mcollective client use the middleware of the mcollective server.
     include '::mcollective::server::params'
     include '::mcomiddleware::params'
-    include '::repository::puppet'
-    include '::repository::mco'
 
     $dcs = $datacenters ? {
       NotUndef => $datacenters,
@@ -85,6 +98,13 @@ class roles::puppetserver {
     $middleware_exchanges = $::mcomiddleware::params::exchanges
     $collectives = ($dcs + $dc + [ 'mcollective' ] + $middleware_exchanges).unique.sort
 
+    # Repository needed to install mcollective which is the
+    # puppet-agent package
+    include '::repository::puppet'
+
+    # Repository needed to install mcollective plugins.
+    include '::repository::mco'
+
     class { 'mcollective::client::params':
       collectives        => $collectives,
       server_public_key  => $::mcollective::server::params::public_key,
@@ -93,14 +113,16 @@ class roles::puppetserver {
       mcollective_pwd    => $::mcollective::server::params::mcollective_pwd,
       puppet_ssl_dir     => $::mcollective::server::params::puppet_ssl_dir,
       mco_plugin_clients => [ 'mcollective-flaf-clients' ],
-      require            => [ Class['::repository::mco'],
-                              Class['::repository::puppet'],
-                            ],
     }
 
-    include '::mcollective::client'
+    class { '::mcollective::client':
+      require => [ Class['::repository::mco'],
+                   Class['::repository::puppet'],
+                 ],
+    }
 
   }
+  ###########################################
 
 }
 

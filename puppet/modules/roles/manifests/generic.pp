@@ -96,12 +96,13 @@ class roles::generic {
         [ 'snmpd-extend' ].ensure_packages({
           ensure  => present,
           require => Class['::repository::shinken'],
+          # To manage the snmp service after the
+          # installation of snmpd-extend.
           before  => Class['::snmp'],
         })
 
         class { '::snmp::params':
           syscontact => $snmp_syscontact,
-          before  => Class['::snmp'],
         }
 
         include '::snmp'
@@ -116,6 +117,7 @@ class roles::generic {
 
         include '::mcomiddleware::params'
         include '::puppetagent::params'
+
         include '::repository::puppet'
         include '::repository::mco'
 
