@@ -16,11 +16,12 @@ class roles::puppetserver {
   include '::repository::postgresql'
   include '::repository::puppet'
 
-  # Handle the ssh public u
+  # Handle of the ssh public keys for the backups.
   include '::unix_accounts::params'
   $ssh_public_keys = $::unix_accounts::params::ssh_public_keys
 
   $authorized_backup_keys = $backup_keynames.reduce( {} ) |$memo, String[1] $keyname| {
+
     unless $keyname in $ssh_public_keys {
       @("END"/L).fail
         ${title}: the ssh public key `${keyname}` from the parameter \
@@ -46,9 +47,9 @@ class roles::puppetserver {
   }
 
   class { '::puppetserver':
-    require                => [ Class['::repository::postgresql'],
-                                Class['::repository::puppet'],
-                              ],
+    require => [ Class['::repository::postgresql'],
+                 Class['::repository::puppet'],
+               ],
   }
   ###################################
 
@@ -69,7 +70,7 @@ class roles::puppetserver {
       default  => [],
     }
 
-    $collectives = ($dcs + $dc).unique.sort
+    $collectives = ($dcs + $dc + [ 'mcollective' ]).unique.sort
 
     class { 'mcollective::client::params':
       collectives        => $collectives,
