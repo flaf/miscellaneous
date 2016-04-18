@@ -1,8 +1,14 @@
 class roles::puppetserver {
 
-  include '::roles::generic'
-  include '::puppetserver'
+  # Import parameters.
   include '::roles::puppetserver::params'
+
+  # Include the role "generic" but the module puppetagent
+  # must not manage the puppet.conf file.
+  class { '::puppetagent::params': manage_puppetconf => false }
+  include '::roles::generic'
+
+  include '::puppetserver'
 
   if $::roles::puppetserver::params::is_mcollective_client {
 
