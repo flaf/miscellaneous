@@ -116,6 +116,8 @@ class roles::generic {
 
         include '::mcomiddleware::params'
         include '::puppetagent::params'
+        include '::repository::puppet'
+        include '::repository::mco'
 
         class { '::mcollective::server::params':
           middleware_port   => $::mcomiddleware::params::stomp_ssl_port,
@@ -124,9 +126,6 @@ class roles::generic {
           puppet_bin_dir    => $::puppetagent::params::bindir,
           mco_plugin_agents => [ 'mcollective-flaf-agents' ],
         }
-
-        include '::repository::puppet'
-        include '::repository::mco'
 
         class { '::mcollective::server':
           require => [ Class['::repository::mco'],

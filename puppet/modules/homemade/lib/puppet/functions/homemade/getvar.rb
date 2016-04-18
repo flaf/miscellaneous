@@ -1,16 +1,16 @@
-Puppet::Functions.create_function(:'homemade::getdefined', Puppet::Functions::InternalFunction) do
+Puppet::Functions.create_function(:'homemade::getvar', Puppet::Functions::InternalFunction) do
 
-  dispatch :getdefined do
+  dispatch :getvar do
     scope_param()
     required_param 'Pattern[/^[_a-z0-9:]+$/]', :varname
   end
 
-  def getdefined(scope, varname)
+  def getvar(scope, varname)
 
     if scope.include?(varname) and (not scope[varname].nil?)
       scope[varname]
     else
-      function_name = 'homemade::getdefined'
+      function_name = 'homemade::getvar'
       title = scope['title']
       msg = <<-"EOS".gsub(/\n\s*/, ' ').strip
         in #{title} the variable `#{varname}` retrieved by

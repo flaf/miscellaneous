@@ -1,25 +1,25 @@
 class mcollective::client {
 
-  include '::mcollective::client::params'
-  $collectives        = $::mcollective::client::params::collectives
-  $private_key        = $::mcollective::client::params::private_key
-  $public_key         = $::mcollective::client::params::public_key
-  $server_public_key  = $::mcollective::client::params::server_public_key
-  $connector          = $::mcollective::client::params::connector
-  $middleware_address = $::mcollective::client::params::middleware_address
-  $middleware_port    = $::mcollective::client::params::middleware_port
-  $mcollective_pwd    = $::mcollective::client::params::mcollective_pwd
-  $mco_tag            = $::mcollective::client::params::mco_tag
-  $mco_plugin_clients = $::mcollective::client::params::mco_plugin_clients
-  $puppet_ssl_dir     = $::mcollective::client::params::puppet_ssl_dir
+  $params = '::mcollective::client::params'
+  include $params
+  $collectives        = ::homemade::getvar("${params}::collectives")
+  $private_key        = ::homemade::getvar("${params}::private_key")
+  $public_key         = ::homemade::getvar("${params}::public_key")
+  $server_public_key  = ::homemade::getvar("${params}::server_public_key")
+  $connector          = ::homemade::getvar("${params}::connector")
+  $middleware_address = ::homemade::getvar("${params}::middleware_address")
+  $middleware_port    = ::homemade::getvar("${params}::middleware_port")
+  $mcollective_pwd    = ::homemade::getvar("${params}::mcollective_pwd")
+  $mco_tag            = ::homemade::getvar("${params}::mco_tag")
+  $mco_plugin_clients = ::homemade::getvar("${params}::mco_plugin_clients")
+  $puppet_ssl_dir     = ::homemade::getvar("${params}::puppet_ssl_dir")
+  $collectives_sorted = ::homemade::getvar("${params}::collectives_sorted")
 
   include '::mcollective::common_paths'
   $client_priv_key_path    = $::mcollective::common_paths::client_priv_key_path
   $client_pub_key_path     = $::mcollective::common_paths::client_pub_key_path
   $client_pub_key_path_exp = $::mcollective::common_paths::client_pub_key_path_exp
   $server_pub_key_path     = $::mcollective::common_paths::server_pub_key_path_for_client
-
-  $collectives_sorted      = $collectives.unique.sort
 
 
   require '::mcollective::package'
