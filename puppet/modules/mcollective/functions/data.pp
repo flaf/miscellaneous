@@ -41,7 +41,7 @@ function mcollective::data {
 
     # Merging policy.
     lookup_options => {
-       mcollective::params::server::collectives => { merge => 'unique', },
+       mcollective::server::params::collectives => { merge => 'unique', },
     },
   }
 
