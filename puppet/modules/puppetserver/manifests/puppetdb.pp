@@ -1,6 +1,5 @@
 class puppetserver::puppetdb {
 
-  require '::repository::puppet'
   ensure_packages(['puppetdb'], { ensure => present, })
 
   $db               = $::puppetserver::puppetdb_name

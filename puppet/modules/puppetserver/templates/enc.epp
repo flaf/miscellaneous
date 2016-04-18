@@ -41,10 +41,17 @@ yaml_file = files_array[0]
 regex_end = "/hieradata/fqdn/#{fqdn}.yaml"
 environment = yaml_file.sub(/^#{ENV_DIR}\//, '').sub(/#{regex_end}$/, '')
 
+# Get the list of all datacenters if available in
+# hieradata/datacenter/*.yaml.
+datacenters_array = Dir.glob("#{ENV_DIR}/#{environment}/hieradata/datacenter/*.yaml")
+datacenters = datacenters_array.map!{ |x| x.sub(/^.*\//, '').sub( /\.yaml/, '') }.to_s
+
+# datacenters is put in parameters.
+parameters = "\"datacenters\": #{datacenters},\n    "
+
 # Search for keys which match /^enc_/ in the yaml file to
 # define the global paramters.
 hash = YAML.load_file(yaml_file)
-parameters = ''
 
 # If the yaml file is empty, hash is nil.
 # Then, we convert nil to an empty hash.

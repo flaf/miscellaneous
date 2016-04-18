@@ -1,7 +1,6 @@
 class puppetserver::postgresql {
 
   # With Puppet 4, a recent version of PostgreSQL is necessary.
-  require '::repository::postgresql'
   ensure_packages( [ 'postgresql-9.4', 'postgresql-contrib-9.4' ],
                    { ensure => present, }
                  )

@@ -2,13 +2,52 @@ class roles::puppetserver {
 
   # Import parameters.
   include '::roles::puppetserver::params'
+  $is_mcollective_client  = $::roles::puppetserver::params::is_mcollective_client
+  $backup_keynames        = $::roles::puppetserver::params::backup_keynames
 
   # Include the role "generic" but the module puppetagent
   # must not manage the puppet.conf file.
   class { '::puppetagent::params': manage_puppetconf => false }
   include '::roles::generic'
 
-  include '::puppetserver'
+  ###################################
+  ### The puppetserver management ###
+  ###################################
+  include '::repository::postgresql'
+  include '::repository::puppet'
+
+  # Handle the ssh public u
+  include '::unix_accounts::params'
+  $ssh_public_keys = $::unix_accounts::params::ssh_public_keys
+
+  $authorized_backup_keys = $backup_keynames.reduce( {} ) |$memo, String[1] $keyname| {
+    unless $keyname in $ssh_public_keys {
+      @("END"/L).fail
+        ${title}: the ssh public key `${keyname}` from the parameter \
+        \$::roles::puppetserver::params::backup_keynames is not \
+        present among the public keys listed in the parameter \
+        \$::unix_accounts::params::ssh_public_keys.
+        |- END
+    }
+
+    $key = {
+      $keyname => {
+        'type'     => $ssh_public_keys[$keyname]['type'],
+        'keyvalue' => $ssh_public_keys[$keyname]['keyvalue'],
+      }
+    }
+
+    $memo + $key
+
+  }
+
+  class { '::puppetserver':
+    authorized_backup_keys => $authorized_backup_keys,
+    require                => [ Class['::repository::postgresql'],
+                                Class['::repository::puppet'],
+                              ],
+  }
+  ###################################
 
   if $::roles::puppetserver::params::is_mcollective_client {
 
@@ -17,7 +56,20 @@ class roles::puppetserver {
     include '::repository::puppet'
     include '::repository::mco'
 
+    $dcs = $datacenters ? {
+      NotUndef => $datacenters,
+      default  => [],
+    }
+
+    $dc = $datacenter ? {
+      NotUndef => [ $datacenter ],
+      default  => [],
+    }
+
+    $collectives = ($dcs + $dc).unique.sort
+
     class { 'mcollective::client::params':
+      $collectives       => $collectives,
       server_public_key  => $::mcollective::server::params::public_key,
       middleware_address => $::mcollective::server::params::middleware_address,
       middleware_port    => $::mcollective::server::params::middleware_port,

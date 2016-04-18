@@ -47,7 +47,6 @@ class puppetserver::puppetconf {
     $notify_puppetserver = Service['puppetserver']
   }
 
-  require '::repository::puppet'
   # git is present to be able to change modules directly in
   # the puppetserver. jq is present to be able read and
   # parse json in some scripts. puppetdb-termini is a
