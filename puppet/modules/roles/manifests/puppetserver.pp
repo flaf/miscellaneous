@@ -41,8 +41,11 @@ class roles::puppetserver {
 
   }
 
-  class { '::puppetserver':
+  class { '::puppetserver::params':
     authorized_backup_keys => $authorized_backup_keys,
+  }
+
+  class { '::puppetserver':
     require                => [ Class['::repository::postgresql'],
                                 Class['::repository::puppet'],
                               ],
@@ -69,7 +72,7 @@ class roles::puppetserver {
     $collectives = ($dcs + $dc).unique.sort
 
     class { 'mcollective::client::params':
-      $collectives       => $collectives,
+      collectives        => $collectives,
       server_public_key  => $::mcollective::server::params::public_key,
       middleware_address => $::mcollective::server::params::middleware_address,
       middleware_port    => $::mcollective::server::params::middleware_port,
