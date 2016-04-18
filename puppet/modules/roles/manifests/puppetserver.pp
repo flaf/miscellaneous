@@ -53,10 +53,17 @@ class roles::puppetserver {
   }
   ###################################
 
+
+
+
+  ###########################################
+  ### The mcollective::clients management ###
+  ###########################################
   if $::roles::puppetserver::params::is_mcollective_client {
 
     # The mcollective client use the middleware of the mcollective server.
     include '::mcollective::server::params'
+    include '::mcomiddleware::params'
     include '::repository::puppet'
     include '::repository::mco'
 
@@ -70,7 +77,8 @@ class roles::puppetserver {
       default  => [],
     }
 
-    $collectives = ($dcs + $dc + [ 'mcollective' ]).unique.sort
+    $middleware_exchanges = $::mcomiddleware::params::exchanges
+    $collectives = ($dcs + $dc + [ 'mcollective' ] + $middleware_exchanges).unique.sort
 
     class { 'mcollective::client::params':
       collectives        => $collectives,
@@ -83,7 +91,6 @@ class roles::puppetserver {
       require            => [ Class['::repository::mco'],
                               Class['::repository::puppet'],
                             ],
-      # TODO collectives => all the datacenters...
     }
 
     include '::mcollective::client'
