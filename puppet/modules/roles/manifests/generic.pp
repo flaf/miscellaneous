@@ -122,11 +122,11 @@ class roles::generic {
         include '::repository::mco'
 
         class { '::mcollective::server::params':
-          middleware_port   => $::mcomiddleware::params::stomp_ssl_port,
-          mcollective_pwd   => $::mcomiddleware::params::mcollective_pwd,
-          puppet_ssl_dir    => $::puppetagent::params::ssldir,
-          puppet_bin_dir    => $::puppetagent::params::bindir,
-          mco_plugin_agents => [ 'mcollective-flaf-agents' ],
+          middleware_port => $::mcomiddleware::params::stomp_ssl_port,
+          mcollective_pwd => $::mcomiddleware::params::mcollective_pwd,
+          puppet_ssl_dir  => $::puppetagent::params::ssldir,
+          puppet_bin_dir  => $::puppetagent::params::bindir,
+          mco_plugins     => [ 'mcollective-flaf-agents' ],
         }
 
         class { '::mcollective::server':

@@ -34,7 +34,7 @@ class roles::puppetserver {
   $authorized_backup_keys = $backup_keynames.reduce({}) |$memo, String[1] $keyname| {
 
     unless $keyname in $ssh_public_keys {
-      @("END"/L).fail
+      @("END"/L$).fail
         ${title}: the ssh public key `${keyname}` from the parameter \
         \$::roles::puppetserver::params::backup_keynames is not \
         present among the public keys listed in the parameter \
@@ -112,7 +112,7 @@ class roles::puppetserver {
       middleware_port    => $::mcollective::server::params::middleware_port,
       mcollective_pwd    => $::mcollective::server::params::mcollective_pwd,
       puppet_ssl_dir     => $::mcollective::server::params::puppet_ssl_dir,
-      mco_plugin_clients => [ 'mcollective-flaf-clients' ],
+      mco_plugins        => [ 'mcollective-flaf-clients' ],
     }
 
     class { '::mcollective::client':
