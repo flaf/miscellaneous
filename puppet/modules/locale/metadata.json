@@ -1,6 +1,6 @@
 {
   "name": "flaf-locale",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "author": "flaf",
   "summary": "Module to set the default locale",
   "license": "Apache-2.0",
@@ -10,7 +10,7 @@
   "data_provider": "function",
   "dependencies": [
     {"name":"puppetlabs-stdlib","version_requirement":">= 4.11.0"},
-    {"name":"flaf-homemade","version_requirement":">= 0.1.4"}
+    {"name":"flaf-homemade","version_requirement":">= 0.1.6"}
   ]
 }
 

@@ -1,6 +1,6 @@
 {
   "name": "flaf-puppetagent",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "author": "flaf",
   "summary": "Module to configure the puppet-agent package.",
   "license": "Apache-2.0",
@@ -10,7 +10,7 @@
   "data_provider": "function",
   "dependencies": [
     {"name":"puppetlabs-stdlib","version_requirement":">= 4.11.0"},
-    {"name":"flaf-homemade","version_requirement":">= 0.1.3"}
+    {"name":"flaf-homemade","version_requirement":">= 0.1.6"}
   ]
 }
 
