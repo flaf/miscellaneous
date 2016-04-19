@@ -212,6 +212,8 @@ unix_account::params::users:
     supplementary_groups: [ 'video', 'fuse' ]
     home_unix_rights: '0750'
     ssh_authorized_keys: [ 'bob@foo', 'bob@home' ]
+
+unix_account::params::rootstage: 'basis'
 ```
 
 and a simple include:
@@ -231,7 +233,7 @@ except for `purge_ssh_keys` which is `true` if `ensure ==
 
 # Parameters of the class `unix_accounts::params`
 
-For the two parameters of this class, `users` and
+For the two parameters `users` and
 `ssh_public_keys`, the default value is `{}` (in
 this case the module does absolutely nothing).
 
@@ -239,10 +241,10 @@ this case the module does absolutely nothing).
 `users` and `ssh_public_keys`, the default merging policy is
 `deep`.
 
-**Warning:** the root user resource is put in a specific
-**internal** class `::unix_accounts::root`. For this class,
-the `stage` parameter is set to `'basis'` by default (not
-`'main'`).
+The `rootstage` parameter is a non-empty string to set
+the stage of the root user management. Its default value
+is `'main'`.
+
 
 
 

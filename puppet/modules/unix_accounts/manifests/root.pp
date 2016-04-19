@@ -1,12 +1,8 @@
 # Internal class.
 #
-class unix_accounts::root (
-  String[1] $stage = 'main',
-) {
+class unix_accounts::root {
 
-  if !defined(Class['::unix_accounts::params']) {
-    include '::unix_accounts::params'
-  }
+  include '::unix_accounts::params'
 
   $users = $::unix_accounts::params::users
 

@@ -3,6 +3,9 @@
 This module configures APT repositories. This module
 consists of several public classes.
 
+**Warning:** the default stage of the public classes of this
+module is `'repository'`, not `'main'`.
+
 
 
 

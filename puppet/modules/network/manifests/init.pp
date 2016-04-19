@@ -1,13 +1,5 @@
-# TODO: I don't know why but a default value for the $stage
-#       parameter is mandatory, else the puppet run just
-#       fails:
-#
-#         stage is a metaparameter; please choose another
-#         parameter name in the network definition at ... etc.
-#
 class network (
   Array[String[1], 1] $supported_distributions,
-  String[1]           $stage = 'main',
 ) {
 
   ::homemade::is_supported_distrib($supported_distributions, $title)

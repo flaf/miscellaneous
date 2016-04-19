@@ -1,6 +1,5 @@
 function network::data {
 
-  $default_stage      = 'network'
   $supported_distribs = [ 'trusty', 'jessie' ];
 
   {
@@ -10,14 +9,9 @@ function network::data {
     # values depend on the value of another parameters of
     # the same class.
 
-    network::supported_distributions => $supported_distribs,
-    network::stage                   => $default_stage,
-
+    network::supported_distributions              => $supported_distribs,
     network::resolv_conf::supported_distributions => $supported_distribs,
-    network::resolv_conf::stage                   => $default_stage,
-
-    network::hosts::supported_distributions => $supported_distribs,
-    network::hosts::stage                   => $default_stage,
+    network::hosts::supported_distributions       => $supported_distribs,
 
     # Merging policy.
     lookup_options => {

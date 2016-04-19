@@ -1,14 +1,10 @@
-class unix_accounts (
-  Array[String[1], 1] $supported_distributions,
-) {
+class unix_accounts {
 
-  ::homemade::is_supported_distrib($supported_distributions, $title)
+  include '::unix_accounts::params'
 
-  if !defined(Class['::unix_accounts::params']) {
-    include '::unix_accounts::params'
-  }
-
-  $users = $::unix_accounts::params::users
+  $users           = $::unix_accounts::params::users
+  $ssh_public_keys = $::unix_accounts::params::ssh_public_keys
+  $rootstage       = $::unix_accounts::params::rootstage
 
   # A user will be managed only if its 'ensure' parameter
   # is absent or present and equal to 'ignore'.
@@ -50,7 +46,7 @@ class unix_accounts (
     $is_sudo              = $params_completed['is_sudo']
     $ssh_authorized_keys  = $params_completed['ssh_authorized_keys']
     $purge_ssh_keys       = $ensure ? { 'present' => true, default   => false }
-    $ssh_public_keys      = $::unix_accounts::params::ssh_public_keys
+    #$ssh_public_keys      = $::unix_accounts::params::ssh_public_keys
     #
     # If $purge_ssh_keys is set to true when the user has
     # "ensure => absent", it can trigger errors because
@@ -84,7 +80,9 @@ class unix_accounts (
       # able to define the attribute "stage" for this
       # specific class. It's possible to define this
       # attribute only for a class, not for a resource.
-      include '::unix_accounts::root'
+      class { '::unix_accounts::root':
+        stage => $rootstage,
+      }
 
     }
 

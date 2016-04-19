@@ -40,6 +40,32 @@ class roles::generic {
 
     case $a_class {
 
+      #####################
+      ### unix_accounts ###
+      #####################
+      '::unix_accounts': {
+
+        # We wabt to manage root at first.
+        class { '::unix_accounts::params':
+          rootstage => 'basis',
+        }
+
+        include '::unix_accounts'
+
+      }
+
+
+      ################################
+      ### network _and_ network::* ###
+      ################################
+      /^::network(::.*)?$/: {
+
+        class { "${a_class}":
+          stage => 'network',
+        }
+
+      }
+
 
       #################
       ### basic_ntp ###
@@ -143,7 +169,7 @@ class roles::generic {
       ########################
       default: {
         # By default, it's a simple include.
-        include $a_class
+        include "${a_class}"
       }
 
 
