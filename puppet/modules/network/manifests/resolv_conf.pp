@@ -1,21 +1,16 @@
-class network::resolv_conf (
-  Array[String[1], 1] $supported_distributions,
-) {
+class network::resolv_conf {
 
-  ::homemade::is_supported_distrib($supported_distributions, $title)
+  include '::network::resolv_conf::params'
 
-  if !defined(Class['::network::params']) { include '::network::params' }
-  # TODO: $nameservers is a bad name because is not systematically
-  #       the nameservers in resolv.conf.
-  $domain            = $::network::params::resolvconf_domain
-  $search            = $::network::params::resolvconf_search
-  $timeout           = $::network::params::resolvconf_timeout
-  $override_dhcp     = $::network::params::resolvconf_override_dhcp
-  $nameservers       = $::network::params::dns_servers
-  $local_resolver    = $::network::params::local_resolver
-  $lr_interface      = $::network::params::local_resolver_interface
-  $lr_access_control = $::network::params::local_resolver_access_control
-  $interfaces        = $::network::params::interfaces
+  $domain            = $::network::resolv_conf::params::domain
+  $search            = $::network::resolv_conf::params::search
+  $timeout           = $::network::resolv_conf::params::timeout
+  $override_dhcp     = $::network::resolv_conf::params::override_dhcp
+  $dns_servers       = $::network::resolv_conf::params::dns_servers
+  $local_resolver    = $::network::resolv_conf::params::local_resolver
+  $lr_interface      = $::network::resolv_conf::params::local_resolver_interface
+  $lr_access_control = $::network::resolv_conf::params::local_resolver_access_control
+  $interfaces        = $::network::resolv_conf::params::interfaces
 
   # Get the interfaces configured via DHCP.
   $dhcp_ifaces = $interfaces.filter |$ifname, $settings| {
@@ -43,14 +38,14 @@ class network::resolv_conf (
   }
 
   # Test irrelevant cases.
-  if $manage_resolv_conf and $nameservers =~ Undef {
+  if $manage_resolv_conf and $dns_servers =~ Undef {
     @("END").regsubst('\n', ' ', 'G').fail
       $title: sorry the class intends to manage /etc/resolv.conf
       but the parameter `::network::params::dns_servers` is undef.
       |- END
   }
 
-  if $local_resolver and $nameservers =~ Undef {
+  if $local_resolver and $dns_servers =~ Undef {
     @("END").regsubst('\n', ' ', 'G').fail
       $title: sorry the class intends to configure a local resolver
       but the parameter `::network::params::dns_servers` is undef.
@@ -76,7 +71,7 @@ class network::resolv_conf (
       before  => Service['unbound'],
       notify  => Service['unbound'],
       content => epp('network/unbound.forward.conf.epp',
-                     { 'nameservers' => $nameservers, }
+                     { 'dns_servers' => $dns_servers, }
                     ),
     }
 
@@ -158,13 +153,19 @@ class network::resolv_conf (
   # be) updated via the DHCP mechanism, not via Puppet. It
   # seems to me more logical.
   if $manage_resolv_conf {
+
+    if $local_resolver {
+      $nameservers = [ '127.0.0.1' ] + $dns_servers
+    } else {
+      $nameservers = $dns_servers
+    }
+
     $resolv_conf_content = epp('network/resolv.conf.epp',
                                {
                                  'domain'         => $domain,
                                  'search'         => $search,
                                  'nameservers'    => $nameservers,
                                  'timeout'        => $timeout,
-                                 'local_resolver' => $local_resolver,
                                }
                               )
   } else {

@@ -1,10 +1,10 @@
-<%- |$nameservers| -%>
+<%- |$dns_servers| -%>
 ### This file is managed by Puppet, don't edit it. ###
 
 forward-zone:
   name: "."
-  <%- $nameservers.each |$nameserver| { -%>
-  forward-addr: <%= $nameserver %>
+  <%- $dns_servers.each |$dns_server| { -%>
+  forward-addr: <%= $dns_server %>
   <%- } -%>
 
 

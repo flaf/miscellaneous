@@ -4,7 +4,7 @@ enc_included_classes:
 enc_datacenter: 'vboxhome'
 enc_groups: [ 'puppetserver' ]
 
-network::params::resolv_conf::override_dhcp: true
+network::resolv_conf::params::override_dhcp: true
 network::params::ifaces:
   eth0:
     in_networks: [ 'vbox_adm' ]
