@@ -186,16 +186,24 @@ Be careful:
 
 
 
-# `getvar()` and `getvarpp()` functions
+# `getvarrb()` and `getvar()` functions
 
-Theses implement the `getvar()` function from the stdlib
+Theses functions implement the `getvar()` function from the stdlib
 except that an error is raised if the value retrieved is
-`undef`. `getvar()` is a Ruby Puppet function and
-`getvarpp()` is a pure Puppet function. Here is examples:
+`undef`. `getvarrb()` is a Ruby Puppet function and
+`getvar()` is a pure Puppet function. Here is examples:
 
 ```puppet
-$var = ::homemade::getvar('::myclass::params::var')
-$var = ::homemade::getvarpp('::myclass::params::var', $title)
+# The Ruby implementation has access to the current scope
+# and can retrieve the name of the calling class. But the
+# ruby implemetation needs to use Puppet::Functions::InternalFunction
+# which is a experimental private API (according Volcane) so
+# maybe not stable.
+$var = ::homemade::getvarrb('::myclass::params::var')
+
+# With the Puppet implementation, you have to pass the name
+# of the calling class as argument.
+$var = ::homemade::getvar('::myclass::params::var', $title)
 ```
 
 

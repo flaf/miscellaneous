@@ -2,18 +2,18 @@ class mcollective::client {
 
   $params = '::mcollective::client::params'
   include $params
-  $collectives        = ::homemade::getvar("${params}::collectives")
-  $private_key        = ::homemade::getvar("${params}::private_key")
-  $public_key         = ::homemade::getvar("${params}::public_key")
-  $server_public_key  = ::homemade::getvar("${params}::server_public_key")
-  $connector          = ::homemade::getvar("${params}::connector")
-  $middleware_address = ::homemade::getvar("${params}::middleware_address")
-  $middleware_port    = ::homemade::getvar("${params}::middleware_port")
-  $mcollective_pwd    = ::homemade::getvar("${params}::mcollective_pwd")
-  $mco_tag            = ::homemade::getvar("${params}::mco_tag")
-  $mco_plugins        = ::homemade::getvar("${params}::mco_plugins")
-  $puppet_ssl_dir     = ::homemade::getvar("${params}::puppet_ssl_dir")
-  $collectives_sorted = ::homemade::getvar("${params}::collectives_sorted")
+  $collectives        = ::homemade::getvar("${params}::collectives", $title)
+  $private_key        = ::homemade::getvar("${params}::private_key", $title)
+  $public_key         = ::homemade::getvar("${params}::public_key", $title)
+  $server_public_key  = ::homemade::getvar("${params}::server_public_key", $title)
+  $connector          = ::homemade::getvar("${params}::connector", $title)
+  $middleware_address = ::homemade::getvar("${params}::middleware_address", $title)
+  $middleware_port    = ::homemade::getvar("${params}::middleware_port", $title)
+  $mcollective_pwd    = ::homemade::getvar("${params}::mcollective_pwd", $title)
+  $mco_tag            = ::homemade::getvar("${params}::mco_tag", $title)
+  $mco_plugins        = ::homemade::getvar("${params}::mco_plugins", $title)
+  $puppet_ssl_dir     = ::homemade::getvar("${params}::puppet_ssl_dir", $title)
+  $collectives_sorted = ::homemade::getvar("${params}::collectives_sorted", $title)
 
   include '::mcollective::common_paths'
   $client_priv_key_path    = $::mcollective::common_paths::client_priv_key_path

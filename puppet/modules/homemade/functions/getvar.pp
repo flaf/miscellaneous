@@ -1,4 +1,4 @@
-function homemade::getvarpp (
+function homemade::getvar (
   Pattern[/^[_a-z0-9:]+$/] $var_name,
   String[1]                $class_name,
 ) {
@@ -13,7 +13,7 @@ function homemade::getvarpp (
 
     @("END"/L).fail
       in ${class_name} the variable `${var_name}` \
-      retrieved by homemade::getvarpp() is undefined \
+      retrieved by homemade::getvar() is undefined \
       which is forbidden.
       |- END
 

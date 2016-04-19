@@ -2,19 +2,19 @@ class mcollective::server {
 
   $params = '::mcollective::server::params'
   include $params
-  $collectives        = ::homemade::getvar("${params}::collectives")
-  $private_key        = ::homemade::getvar("${params}::private_key")
-  $public_key         = ::homemade::getvar("${params}::public_key")
-  $service_enabled    = ::homemade::getvar("${params}::service_enabled")
-  $connector          = ::homemade::getvar("${params}::connector")
-  $middleware_address = ::homemade::getvar("${params}::middleware_address")
-  $middleware_port    = ::homemade::getvar("${params}::middleware_port")
-  $mcollective_pwd    = ::homemade::getvar("${params}::mcollective_pwd")
-  $mco_tag            = ::homemade::getvar("${params}::mco_tag")
-  $mco_plugins        = ::homemade::getvar("${params}::mco_plugins")
-  $puppet_ssl_dir     = ::homemade::getvar("${params}::puppet_ssl_dir")
-  $puppet_bin_dir     = ::homemade::getvar("${params}::puppet_bin_dir")
-  $collectives_sorted = ::homemade::getvar("${params}::collectives_sorted")
+  $collectives        = ::homemade::getvar("${params}::collectives", $title)
+  $private_key        = ::homemade::getvar("${params}::private_key", $title)
+  $public_key         = ::homemade::getvar("${params}::public_key", $title)
+  $service_enabled    = ::homemade::getvar("${params}::service_enabled", $title)
+  $connector          = ::homemade::getvar("${params}::connector", $title)
+  $middleware_address = ::homemade::getvar("${params}::middleware_address", $title)
+  $middleware_port    = ::homemade::getvar("${params}::middleware_port", $title)
+  $mcollective_pwd    = ::homemade::getvar("${params}::mcollective_pwd", $title)
+  $mco_tag            = ::homemade::getvar("${params}::mco_tag", $title)
+  $mco_plugins        = ::homemade::getvar("${params}::mco_plugins", $title)
+  $puppet_ssl_dir     = ::homemade::getvar("${params}::puppet_ssl_dir", $title)
+  $puppet_bin_dir     = ::homemade::getvar("${params}::puppet_bin_dir", $title)
+  $collectives_sorted = ::homemade::getvar("${params}::collectives_sorted", $title)
 
   include '::mcollective::common_paths'
   $server_keys_dir      = $::mcollective::common_paths::server_keys_dir
