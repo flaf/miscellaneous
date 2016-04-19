@@ -1,12 +1,6 @@
-class keyboard (
-  Array[String[1], 1] $supported_distributions,
-) {
+class keyboard {
 
-  ::homemade::is_supported_distrib($supported_distributions, $title)
-
-  if !defined(Class['::keyboard::params']) {
-    include '::keyboard::params'
-  }
+  include '::keyboard::params'
 
   $xkbmodel   = $::keyboard::params::xkbmodel
   $xkblayout  = $::keyboard::params::xkblayout

@@ -10,7 +10,9 @@ function snmp::data {
   $syslocation = $::datacenter ? {
     undef   => $::domain,
     default => $::datacenter,
-  };
+  }
+
+  $sd = 'supported_distributions';
 
   {
     snmp::params::interface       => $interface,
@@ -20,8 +22,7 @@ function snmp::data {
     snmp::params::snmpv3_accounts => $snmpv3_accounts,
     snmp::params::communities     => $communities,
     snmp::params::views           => $views,
-
-    snmp::supported_distributions => ['trusty', 'jessie'],
+   "snmp::params::${sd}"          => ['trusty', 'jessie'],
 
     # Merging policy.
     lookup_options => {

@@ -9,7 +9,10 @@ class puppetagent::params (
   String[1]                               $ssldir,
   String[1]                               $bindir,
   String[1]                               $etcdir,
+  Array[String[1], 1]                     $supported_distributions,
 ) {
+
+  ::homemade::is_supported_distrib($supported_distributions, $title)
 
   # It's not a parameter of the module but it's an internal
   # value which is can be useful if present here. One day,

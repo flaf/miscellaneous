@@ -10,7 +10,8 @@ function puppetagent::data {
   }
 
   $etcdir = '/etc/puppetlabs/puppet'
-  $bindir = '/opt/puppetlabs/puppet/bin';
+  $bindir = '/opt/puppetlabs/puppet/bin'
+  $sd     = 'supported_distributions';
 
   {
     puppetagent::params::service_enabled   => false,
@@ -23,8 +24,7 @@ function puppetagent::data {
     puppetagent::params::ssldir            => "${etcdir}/ssl",
     puppetagent::params::bindir            => $bindir,
     puppetagent::params::etcdir            => $etcdir,
-
-    puppetagent::supported_distributions => [ 'trusty', 'jessie' ],
+   "puppetagent::params::${sd}"            => [ 'trusty', 'jessie' ],
   }
 
 }

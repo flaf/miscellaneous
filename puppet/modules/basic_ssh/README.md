@@ -11,8 +11,8 @@ Here is an example:
 include '::basic_ssh::client'
 
 # To configure the sshd daemon (very basic).
-class { '::basic_ssh::params':
-  server_permitrootlogin => 'yes'
+class { '::basic_ssh::server::params':
+  permitrootlogin => 'yes'
 }
 include '::basic_ssh::server'
 ```
@@ -20,8 +20,8 @@ include '::basic_ssh::server'
 The class `basic_ssh::client` has no parameter and just
 installs the ssh client.
 
-The class `basic_ssh::params` has only one parameter,
-`server_permitrootlogin`, which must be equal to the strings
+The class `basic_ssh::server::params` has only one parameter,
+`permitrootlogin`, which must be equal to the strings
 `yes`, `without-password`, `forced-commands-only` or `no`.
 Its default value is `without-password`.
 

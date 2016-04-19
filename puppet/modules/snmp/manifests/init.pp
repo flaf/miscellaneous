@@ -1,10 +1,6 @@
-class snmp (
-  Array[String[1], 1] $supported_distributions,
-) {
+class snmp {
 
-  if !defined(Class['::snmp::params']) {
-    include '::snmp::params'
-  }
+  include '::snmp::params'
 
   $interface       = $::snmp::params::interface
   $port            = $::snmp::params::port

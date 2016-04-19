@@ -1,12 +1,6 @@
-class locale (
-  Array[String[1], 1] $supported_distributions,
-) {
+class locale {
 
-  ::homemade::is_supported_distrib($supported_distributions, $title)
-
-  if !defined(Class['::locale::params']) {
-    include '::locale::params'
-  }
+  include '::locale::params'
 
   $default_locale = $::locale::params::default_locale
 

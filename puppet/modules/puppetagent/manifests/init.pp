@@ -1,13 +1,7 @@
-class puppetagent (
-  Array[String[1], 1] $supported_distributions,
-) {
+class puppetagent {
 
-  ::homemade::is_supported_distrib($supported_distributions, $title)
+  include '::puppetagent::params'
 
-  require '::repository::puppet'
-
-  $params_class      = '::puppetagent::params'
-  if !defined(Class[$params_class]) { include $params_class }
   $service_enabled   = $::puppetagent::params::service_enabled
   $runinterval       = $::puppetagent::params::runinterval
   $server            = $::puppetagent::params::server

@@ -1,16 +1,13 @@
-class basic_ntp (
-  Array[String[1], 1] $supported_distributions,
-) {
+class basic_ntp {
 
-  ::homemade::is_supported_distrib($supported_distributions, $title)
+  include '::basic_ntp::params'
 
-  if !defined(Class['::basic_ntp::params']) { include '::basic_ntp::params' }
   $interfaces         = $::basic_ntp::params::interfaces
   $servers            = $::basic_ntp::params::servers
   $subnets_authorized = $::basic_ntp::params::subnets_authorized
   $ipv6               = $::basic_ntp::params::ipv6
 
-  ensure_packages(['ntp', ], { ensure => present, })
+  ensure_packages([ 'ntp' ], { ensure => present, })
 
   file { '/etc/ntp.conf':
     ensure  => present,

@@ -136,6 +136,20 @@ class roles::generic {
       }
 
 
+      ###################
+      ### puppetagent ###
+      ###################
+      '::puppetagent': {
+
+        include '::repository::puppet'
+
+        class { '::puppetagent':
+          require => Class['::repository::puppet'],
+        }
+
+      }
+
+
       ###########################
       ### mcollective::server ###
       ###########################

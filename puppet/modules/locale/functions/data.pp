@@ -1,8 +1,10 @@
 function locale::data {
 
+  $sd = 'supported_distributions';
+
   {
     locale::params::default_locale  => 'en_US.UTF-8',
-    locale::supported_distributions => ['trusty', 'jessie'],
+   "locale::params::${sd}"          => ['trusty', 'jessie'],
   }
 
 }

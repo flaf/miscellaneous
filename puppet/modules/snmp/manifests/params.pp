@@ -6,7 +6,11 @@ class snmp::params (
   Hash[ String[1], Snmp::Snmpv3account ] $snmpv3_accounts,
   Hash[ String[1], Snmp::Community ]     $communities,
   Hash[ String[1], Snmp::View, 1 ]       $views,
+  Array[String[1], 1]                    $supported_distributions,
 ) {
+
+  ::homemade::is_supported_distrib($supported_distributions, $title)
+
 }
 
 

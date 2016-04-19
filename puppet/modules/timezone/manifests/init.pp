@@ -1,12 +1,6 @@
-class timezone (
-  Array[String[1], 1] $supported_distributions,
-) {
+class timezone {
 
-  ::homemade::is_supported_distrib($supported_distributions, $title)
-
-  if !defined(Class['::timezone::params']) {
-    include '::timezone::params'
-  }
+  include '::timezone::params'
 
   $timezone = $::timezone::params::timezone
 

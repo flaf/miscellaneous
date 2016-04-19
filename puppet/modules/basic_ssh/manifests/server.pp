@@ -1,11 +1,8 @@
-class basic_ssh::server (
-  Array[String[1], 1] $supported_distributions,
-){
+class basic_ssh::server {
 
-  ::homemade::is_supported_distrib($supported_distributions, $title)
+  include '::basic_ssh::server::params'
 
-  if !defined(Class['::basic_ssh::params']) { include '::basic_ssh::params' }
-  $permitrootlogin = $::basic_ssh::params::server_permitrootlogin
+  $permitrootlogin = $::basic_ssh::server::params::permitrootlogin
 
   ensure_packages(['openssh-server', ], { ensure => present, })
 

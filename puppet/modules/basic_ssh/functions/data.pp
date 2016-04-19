@@ -1,10 +1,13 @@
 function basic_ssh::data {
 
-  {
-    basic_ssh::params::server_permitrootlogin  => 'without-password',
+  $default_distribs = ['trusty', 'jessie']
+  $sd               = 'supported_distributions';
 
-    basic_ssh::server::supported_distributions => ['trusty', 'jessie'],
-    basic_ssh::client::supported_distributions => ['trusty', 'jessie'],
+  {
+    basic_ssh::server::params::permitrootlogin => 'without-password',
+   "basic_ssh::server::params::${sd}"          => $default_distribs,
+
+   "basic_ssh::client::params::${sd}" => $default_distribs,
   }
 
 }

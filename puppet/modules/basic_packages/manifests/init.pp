@@ -1,8 +1,6 @@
-class basic_packages (
-  Array[String[1], 1] $supported_distributions,
-) {
+class basic_packages {
 
-  ::homemade::is_supported_distrib($supported_distributions, $title)
+  include '::basic_packages::params'
 
   $wanted_packages = [
     'vim',
