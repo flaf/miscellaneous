@@ -3,6 +3,7 @@ function homemade::getvar (
   String[1]                $class_name,
 ) {
 
+  # Here, it's getvar() from the stdlib.
   $value = getvar($var_name)
 
   if defined("\$${var_name}") and $value =~ NotUndef {
