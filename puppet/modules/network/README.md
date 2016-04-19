@@ -165,12 +165,12 @@ just above the interface settings in the file
 
 
 
-## Parameters of `network::params` related to the `network` class
+## Parameters of `network::params`
 
 There is no default value for these parameters :
 
 * `network::params::inventory_networks`
-* `network::params::interfaces`
+* `network::params::ifaces`
 
 **The values of theses parameters must provided explicitely
 by the user** (for instance via hiera or directly in puppet
@@ -272,8 +272,7 @@ $interfaces = $::network::params::interfaces
 
 # The `network::resolv_conf` class
 
-This class manages the file `/etc/resolv.conf`. It uses too some
-parameters of the class `network::params`.
+This class manages the file `/etc/resolv.conf`.
 
 ## Usage
 
@@ -283,11 +282,11 @@ parameter `interfaces`) are already defined for instance via
 hiera:
 
 ```puppet
-class { '::network::params':
-  resolvconf_domain             => $::domain,
-  resolvconf_search             => [ $::domain ],
-  resolvconf_timeout            => 5,
-  resolvconf_override_dhcp      => false,
+class { '::network::resolv_conf::params':
+  domain                        => $::domain,
+  search                        => [ $::domain ],
+  timeout                       => 5,
+  override_dhcp                 => false,
   dns_servers                   => [ '8.8.8.8', '8.8.4.4' ],
   local_resolver                => true,
   local_resolver_interface      => [ '127.0.0.1', '172.31.0.5' ],
@@ -301,29 +300,29 @@ include '::network::resolv_conf'
 ```
 
 
-## Parameters of `network::params` related to `network::resolv_conf`
+## Parameters of `network::resolv_conf::params`
 
-The `resolvconf_domain` parameter is a string which sets the
+The `domain` parameter is a string which sets the
 `domain` stanza in the file `/etc/resolv.conf`. The default
 value of this parameter is `$::domain`.
 
-The `resolvconf_search` parameter is a non-empty array of
+The `search` parameter is a non-empty array of
 non-empty strings which sets the `search` stanza in the file
 `/etc/resolv.conf`. The default value of this parameter is:
 
 ```puppet
 # See below for explanations concerning the function network::get_param().
-$dns_search = ::network::get_param( $interfaces,
-                                    $inventory_networks,
+$dns_search = ::network::get_param( $::network::params::interfaces,
+                                    $::network::params::inventory_networks,
                                     'dns_search',
                                     [ $::domain ] )
 ```
 
-The `resolvconf_timeout` parameter is an integer which sets
+The `timeout` parameter is an integer which sets
 the `timeout:` stanza in the file `/etc/resolv.conf`. Its
 default value is `5`.
 
-The `resolvconf_override_dhcp` parameter is a boolean. If at
+The `override_dhcp` parameter is a boolean. If at
 least one interface of the host is configured via DHCP, by
 default the file `/etc/resolv.conf` is automatically not
 managed. If this parameter is set to `true`, the file will
@@ -341,8 +340,8 @@ value of this parameter is:
 # the file /etc/resolv.conf is not managed (typically in a
 # DHCP configuration). If not, the default undef value can
 # raise an error.
-$dns_servers = ::network::get_param( $interfaces,
-                                     $inventory_networks,
+$dns_servers = ::network::get_param( $::network::params::interfaces,
+                                     $::network::params::inventory_networks,
                                      'dns_servers')
 ```
 
@@ -390,8 +389,8 @@ Here is an example:
 ```puppet
 $address_eth0 = $::facts['networking']['interfaces']['eth0']['bindings'][0]['address']
 
-class { '::network::params':
-  hosts          => {
+class { '::network::hosts::params':
+  entries        => {
                      '127.0.1.1'         => [ $::fqdn, $::hostname ],
                      "@@${address_eth0}" => [ "monitor-1.${::domain}", 'monitor-1' ],
                     },
@@ -402,13 +401,13 @@ include '::network::hosts'
 ```
 
 
-## Parameters of `network::params` related to `network::hosts`
+## Parameters of `network::hosts::params`
 
-The `hosts` parameter is a hash where the keys are
+The `entries` parameter is a hash where the keys are
 IP addresses and the values are arrays of host names.
 The default value of this parameter is `{}` ie no
 hosts entry. Warning, the default merging policy
-concerning this parameter `hosts` is `deep`.
+concerning this parameter `entries` is `deep`.
 
 In fact, if not present, this "default" entry:
 
@@ -416,41 +415,41 @@ In fact, if not present, this "default" entry:
 '127.0.1.1' => [ $::fqdn, $::hostname ]
 ```
 
-is automatically added. Like `ifaces` and `interfaces`
-for the `network` class, the `network::params` has the
-`hosts` parameter and the `hosts_entries` parameters
-where `hosts_entries` is completed with the "default"
-entry `127.0.1.1` above if not present.
+is automatically added. Like `ifaces` and `interfaces` for
+the `network` class, the `network::hosts::params` has the
+`entries` parameter and the `entries_completed` parameters
+where `entries_completed` is completed from `entries`with
+the "default" entry `127.0.1.1` above if not present.
 
 **Warning :** more precisely if :
 1. the address `127.0.1.1` is not present in the hosts entries,
 2. **and** if `$::fqdn` is not present at all in any hosts entries,
-3. **and** if `$::hostnme` is not present at all in any hosts entries,
+3. **and** if `$::hostname` is not present at all in any hosts entries,
 then the entry `'127.0.1.1' => [$::fqdn, $::hostname]` is
 automatically added in the hosts entries (ie in the `hosts_entries`
 parameter).
 
-In the `hosts` parameter, if at least one IP address begins
+In the `entries` parameter, if at least one IP address begins
 with `@@`, the host entry will be exported with the tag
 given by the `hosts_from_tag` parameter and the host will
 retrieve all the hosts entries from the `hosts_from_tag`
 tag.
 
-Here is an example of `hosts` parameter set via hiera:
+Here is an example of `entries` parameter set via hiera:
 
 ```yaml
 # Here, we use the interpolation token in hiera:
 #
 #   http://docs.puppetlabs.com/hiera/3.0/variables.html
 #
-network::params::hosts:
+network::hosts::params::entries:
   '127.0.1.1':
     - '%{::fqdn}'
     - '%{::hostname}'
   '@@%{::facts.networking.interfaces.eth0.bindings.0.address}':
     - 'monitor-1.%{::domain}'
     - 'monitor-1'
-network::params::hosts_from_tag: 'ceph-cluster'
+network::hosts::params::hosts_from_tag: 'ceph-cluster'
 ```
 
 And here is a typical example of yaml file which could
@@ -459,11 +458,11 @@ its "IP eth0-address":
 
 ```yaml
 # File read be each node of a cluster.
-network::params::hosts:
+network::hosts::params::entries:
   '@@%{::facts.networking.interfaces.eth0.bindings.0.address}':
     - '%{::fqdn}'
     - '%{::hostname}'
-network::params::hosts_from_tag: 'ceph-cluster'
+network::hosts::params::hosts_from_tag: 'ceph-cluster'
 ```
 
 The default value of the `hosts_from_tag` parameter is `''`
@@ -474,15 +473,15 @@ In fact, there are 2 possible kinds of configuration:
 
 * If the host exports no hosts entry (ie there is no address
 which begins with `@@`), then the host retrieves hosts
-entries from the `hosts` parameter **and**, **if** the value
+entries from the `entries` parameter **and**, **if** the value
 of the `hosts_from_tag` parameter is a non-empty string, the
-hosts entries exported with the tag equal to the value of
+hosts entries will be exported with the tag equal to the value of
 the `from_tag` parameter.
 
 * If the host exports some hosts entries (ie there are
 addresses which begin with `@@`), then the `hosts_from_tag`
 parameter **must** be set to a non-empty string and the host
-retrieves the hosts entries from the `hosts` parameter (with
+retrieves the hosts entries from the `entries` parameter (with
 its own exported entries included) and the hosts entries
 exported with the tag equal to the value of the
 `hosts_from_tag` parameter.
