@@ -1,12 +1,8 @@
 class repository::shinken (
-  Array[String[1], 1] $supported_distributions,
+  String[1] $stage = 'repository',
 ) {
 
-  ::homemade::is_supported_distrib($supported_distributions, $title)
-
-  if !defined(Class['::repository::shinken::params']) {
-    include '::repository::shinken::params'
-  }
+  include '::repository::shinken::params'
 
   $url         = $::repository::shinken::params::url
   $key_url     = $::repository::shinken::params::key_url

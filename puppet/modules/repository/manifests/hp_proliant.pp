@@ -1,12 +1,8 @@
 class repository::hp_proliant (
-  Array[String[1], 1] $supported_distributions,
+  String[1] $stage = 'repository',
 ) {
 
-  ::homemade::is_supported_distrib($supported_distributions, $title)
-
-  if !defined(Class['::repository::hp_proliant::params']) {
-    include '::repository::hp_proliant::params'
-  }
+  include '::repository::hp_proliant::params'
 
   $url = $::repository::hp_proliant::params::url
 

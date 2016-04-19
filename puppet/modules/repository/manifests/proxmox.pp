@@ -1,12 +1,8 @@
 class repository::proxmox (
-  Array[String[1], 1] $supported_distributions,
+  String[1] $stage = 'repository',
 ) {
 
-  ::homemade::is_supported_distrib($supported_distributions, $title)
-
-  if !defined(Class['::repository::proxmox::params']) {
-    include '::repository::proxmox::params'
-  }
+  include '::repository::proxmox::params'
 
   $url = $::repository::proxmox::params::url
 

@@ -1,12 +1,8 @@
 class repository::mco (
-  Array[String[1], 1] $supported_distributions,
+  String[1] $stage = 'repository',
 ) {
 
-  ::homemade::is_supported_distrib($supported_distributions, $title)
-
-  if !defined(Class['::repository::mco::params']) {
-    include '::repository::mco::params'
-  }
+  include '::repository::mco::params'
 
   $url         = $::repository::mco::params::url
   $key_url     = $::repository::mco::params::key_url

@@ -1,12 +1,8 @@
 class repository::puppet (
-  Array[String[1], 1] $supported_distributions,
+  String[1] $stage = 'repository',
 ) {
 
-  ::homemade::is_supported_distrib($supported_distributions, $title)
-
-  if !defined(Class['::repository::puppet::params']) {
-    include '::repository::puppet::params'
-  }
+  include '::repository::puppet::params'
 
   $url                    = $::repository::puppet::params::url
   $src                    = $::repository::puppet::params::src

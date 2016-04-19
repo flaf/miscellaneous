@@ -1,12 +1,8 @@
 class repository::distrib (
-  Array[String[1], 1] $supported_distributions,
+  String[1] $stage = 'repository',
 ) {
 
-  ::homemade::is_supported_distrib($supported_distributions, $title)
-
-  if !defined(Class['::repository::distrib::params']) {
-    include '::repository::distrib::params'
-  }
+  include '::repository::distrib::params'
 
   $url                = $::repository::distrib::params::url
   $src                = $::repository::distrib::params::src
