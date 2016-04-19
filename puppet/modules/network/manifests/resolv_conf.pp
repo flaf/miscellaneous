@@ -155,9 +155,10 @@ class network::resolv_conf {
   if $manage_resolv_conf {
 
     if $local_resolver {
-      $nameservers = [ '127.0.0.1' ] + $dns_servers
+      # Normally, '127.0.0.1' will be the first in the array.
+      $nameservers = ( [ '127.0.0.1' ] + $dns_servers ).unique
     } else {
-      $nameservers = $dns_servers
+      $nameservers = $dns_servers.unique
     }
 
     $resolv_conf_content = epp('network/resolv.conf.epp',
