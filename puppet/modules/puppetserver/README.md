@@ -185,6 +185,10 @@ been restarted.
 
 # TODO
 
+* The `check-puppet-module.puppet` should list files in
+  a module and check is each file is present in the file
+  `checksums.json`.
+
 * In the template `puppet.conf.epp`, a default value is
   given for two parameter in the lambda function (`modules_repository`
   and `strict_variables`). **Normally it's not necessary** because
