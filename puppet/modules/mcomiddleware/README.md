@@ -1,8 +1,8 @@
 # Module description
 
 This module installs a MCollective middleware (via RabbitMQ).
+It's a 2-way SSL RabbitMQ server.
 
-Remark: this module implements the "params" design pattern.
 
 # Usage
 
@@ -49,10 +49,7 @@ middleware server with 2-way SSL connections and it uses the
 certificate, the private key and the CA certificate of the
 puppet agent (which is present in the `$ssldir` directory of
 the puppet installation). The default value of this
-parameter is value of the parameter
-`::puppetagent::params::ssldir` from the `puppetagent`
-module. Normally, you should never need to change this
-setting.
+parameter is `undef`, so you must provided a value explicitly.
 
 The `admin_pwd` parameter is the password of the `admin`
 rabbitMQ account. Its default value is `undef` which will be
@@ -73,5 +70,9 @@ of this parameter is `[ 'mcollective' ]`. In any case, the
 present in the `exchanges` parameter.
 
 
+# TODO
+
+* The class `mcomiddleware` is awful (lot of exec resources etc).
+  Could it be simpler with Activemq etc.?
 
 
