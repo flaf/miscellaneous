@@ -23,7 +23,8 @@ class puppetforge {
   $logdir                = '/var/log/puppetforge'
   $workdir               = '/opt/puppetforge-server'
   $puppetforge_pid       = "${homedir}/puppetforge.pid"
-  $update_pp_modules_pid = "${homedir}/update-pp-modules.pidpuppet_bin_dirbin       = '/usr/local/bin/puppetforge'
+  $update_pp_modules_pid = "${homedir}/update-pp-modules.pid"
+  $puppetforge_bin       = '/usr/local/bin/puppetforge'
 
   # 'jq' is a cli to read json in command line.
   $packages = [ 'bundler', 'ruby-dev', 'build-essential', 'git', 'jq', 'sudo' ]

@@ -10,6 +10,7 @@ class roles::puppetforge {
     puppet_bin_dir => $::puppetagent::params::bindir,
   }
 
+  include '::puppetforge'
 
 }
 

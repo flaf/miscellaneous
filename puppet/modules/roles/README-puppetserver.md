@@ -1,7 +1,7 @@
 # The role `puppetserver`
 
 This role sets a puppetserver which can be too a MCollective
-client. This role includes :
+client. This role includes:
 
 - the `roles::generic` class,
 - the `puppetserver` class,

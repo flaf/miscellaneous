@@ -50,6 +50,12 @@ keep_release () {
     return 1
 }
 
+restart_puppetforge () {
+    sudo /usr/sbin/service puppetforge restart
+    sleep 1
+    printf 'Service puppetforge restarted...\n'
+}
+
 
 while true
 do
@@ -91,17 +97,16 @@ do
         for module_release in "$modulesdir/$name-"*".tar.gz"
         do
             [ "$module_release" = "$modulesdir/$name-*.tar.gz" ] && continue
-            if ! $v=$(keep_release "$module_release" $tags)
+            if ! v=$(keep_release "$module_release" $tags)
             then
                 # The release is too old. We remove it.
-                printf 'The release %s of the module %s it too old. Removed...' "$v" "$name"
+                printf 'The release %s of the module %s it too old. Removed...\n' "$v" "$name"
                 rm -f "$module_release"
                 need_restart='true'
             fi
         done
 
-        "$need_restart" && sudo /usr/sbin/service puppetforge restart
-        printf 'Service puppetforge restarted...\n'
+        "$need_restart" && restart_puppetforge
 
         for tag in $tags
         do
@@ -194,6 +199,7 @@ EOF
 
             rm -rf "$modulesdir/$full_name"
             rm -rf "/tmp/$repo_name"
+            restart_puppetforge
             printf "[%s] Module stored. Next if it exists...\n" "$full_name"
         done
 
