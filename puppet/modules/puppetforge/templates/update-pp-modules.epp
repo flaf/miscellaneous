@@ -4,13 +4,14 @@
   $giturlsfile,
   $pause,
   $release_retention,
+  $puppet_bin_dir,
   $update_pp_modules_pid,
 | -%>
 #!/bin/bash
 ### This file is managed by Puppet, don't edit it ###
 
 echo $$ ><%= $update_pp_modules_pid %>
-export PATH='/opt/puppetlabs/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+export PATH='<%= $puppet_bin_dir %>:/usr/sbin:/usr/bin:/sbin:/bin'
 
 gitdir='<%= $gitdir %>'
 modulesdir='<%= $modulesdir %>'

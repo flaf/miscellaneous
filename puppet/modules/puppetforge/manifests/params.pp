@@ -7,6 +7,7 @@ class puppetforge::params (
   Integer[1]                          $pause,
   Array[String[1]]                    $modules_git_urls,
   Integer[1]                          $release_retention,
+  Optional[ String[1] ]               $puppet_bin_dir,
   Optional[ Puppetforge::Sshkeypair ] $sshkeypair,
   Array[String[1], 1]                 $supported_distributions,
 ) {

@@ -35,13 +35,15 @@ class { '::puppetforge::params':
   port                => 8080,
   modules_git_urls    => $modules_git_urls,
   pause               => 300,
+  release_retention   => 5,
+  puppet_bin_dir      => '/opt/puppetlabs/puppet/bin',
 }
 
 include '::puppetforge'
 ```
 
 
-# Data binding
+# Parameters of the class `puppetforge::params`
 
 The `puppetforge_git_url` is the url of the repository used to
 installed the Puppet forge. The default value of this
@@ -88,6 +90,15 @@ this case the Puppet forge server retrieves no module.
 The Puppet forge retrieves new commits (via a `git pull`)
 of the modules listed in `modules_git_urls` every `pause` seconds.
 The default value of the `pause` parameter is 300 (seconds).
+
+The `release_retention` is the maximum number of different
+releases of a same module the puppetforge server must keep.
+The default value of this parameter is 5.
+
+The `puppet_bin_dir` parameter is a string which gives  the
+bin directory of the puppet-agent package. This parameter
+has no default value (`undef` is the default in fact)  and
+should be explicitly provided by the user of this module.
 
 The `sshkeypair` is optional. If present, this parameter must
 have the exact structure in the example above. This parameter
