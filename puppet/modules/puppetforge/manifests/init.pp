@@ -1,20 +1,17 @@
-# TODO: implement the service "update-pp-module" via a push
-#       system (ie the host receives a message from the
-#       git server and so trigger an update locally.
-#
-class puppetforge (
-  String[1]                           $puppetforge_git_url,
-  String[1]                           $commit_id,
-  String[1]                           $remote_forge,
-  String[1]                           $address,
-  Integer[1]                          $port,
-  Integer[1]                          $pause,
-  Array[String[1]]                    $modules_git_urls,
-  Optional[ Puppetforge::Sshkeypair ] $sshkeypair,
-  Array[String[1], 1]                 $supported_distributions,
-) {
+class puppetforge {
 
-  ::homemade::is_supported_distrib($supported_distributions, $title)
+  include '::puppetforge::params'
+  $puppetforge_git_url = $::puppetforge::params::puppetforge_git_url
+  $commit_id           = $::puppetforge::params::commit_id
+  $remote_forge        = $::puppetforge::params::remote_forge
+  $address             = $::puppetforge::params::address
+  $port                = $::puppetforge::params::port
+  $pause               = $::puppetforge::params::pause
+  $modules_git_urls    = $::puppetforge::params::modules_git_urls
+  $release_retention   = $::puppetforge::params::release_retention
+  $sshkeypair          = $::puppetforge::params::sshkeypair # undef is allowed
+  # undef not allowed here.
+  $puppet_bin_dir      = ::homemade::getvar('::puppetforge::params::puppet_bin_dir', $title)
 
   # Some specific directories or files.
   $homedir               = '/var/lib/puppetforge'
@@ -30,7 +27,7 @@ class puppetforge (
   $puppetforge_bin       = '/usr/local/bin/puppetforge'
 
   # 'jq' is a cli to read json in command line.
-  $packages = [ 'bundler', 'ruby-dev', 'build-essential', 'git', 'jq' ]
+  $packages = [ 'bundler', 'ruby-dev', 'build-essential', 'git', 'jq', 'sudo' ]
   ensure_packages( $packages,
                    { ensure => present,
                      before => Exec['install-puppetforge-server'],
@@ -62,7 +59,10 @@ class puppetforge (
   # We absolutely don't care about the password of this account
   # which will be disabled, because of the "!" character at the
   # begin of the hash password.
-  $pwd = '!$6$8532054bba$XMdu1vK/k48rWNrpDoca3e7tpdS8Dcv1HrXEbxRcn8H2GkaUhLDJZXlzXKtDkn74rQwlQmsGT8pVEL9G2bkXB.'
+  $pwd = @(END/L)
+    !$6$8532054bba$XMdu1vK/k48rWNrpDoca3e7tpdS8Dcv1HrXEbxRcn8H2\
+    GkaUhLDJZXlzXKtDkn74rQwlQmsGT8pVEL9G2bkXB.
+    |- END
 
   # The Unix account used to run the puppet forge server.
   user { 'puppetforge':
@@ -163,6 +163,21 @@ class puppetforge (
                   ),
   }
 
+  $sudo_content = @(END)
+    ### This file is managed by Puppet, don't edit it. ###
+    puppetforge ALL = NOPASSWD: /usr/sbin/service puppetforge *
+    | END
+
+  file { '/etc/sudoers.d/puppetforge':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0440',
+    before  => Service['puppetforge'],
+    require => Package['sudo'],
+    content => $sudo_content,
+  }
+
   service { 'puppetforge':
     ensure     => running,
     hasstatus  => true,
@@ -195,6 +210,7 @@ class puppetforge (
                      'modulesdir'            => $modulesdir,
                      'giturlsfile'           => $giturlsfile,
                      'pause'                 => $pause,
+                     'release_retention'     => $release_retention,
                      'update_pp_modules_pid' => $update_pp_modules_pid,
                    }
                   ),

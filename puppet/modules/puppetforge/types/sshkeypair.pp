@@ -1,5 +1,5 @@
-type Puppetforge::Sshkeypair = Struct[ 
-  { 
+type Puppetforge::Sshkeypair = Struct[
+  {
     'pubkey'  => String[1],
     'privkey' => String[1],
   }

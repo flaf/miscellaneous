@@ -3,6 +3,7 @@
   $modulesdir,
   $giturlsfile,
   $pause,
+  $release_retention,
   $update_pp_modules_pid,
 | -%>
 #!/bin/bash
@@ -10,6 +11,12 @@
 
 echo $$ ><%= $update_pp_modules_pid %>
 export PATH='/opt/puppetlabs/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+
+gitdir='<%= $gitdir %>'
+modulesdir='<%= $modulesdir %>'
+giturlsfile='<%= $giturlsfile %>'
+pause='<%= $pause %>'
+release_retention='<%= $release_retention %>'
 
 user=$(id -un)
 group=$(id -gn)
@@ -23,8 +30,25 @@ else
     exit 1
 fi
 
-gitdir='<%= $gitdir %>'
-modulesdir='<%= $modulesdir %>'
+
+keep_release () {
+    local targz_file="$1"
+    shift
+    local current_version
+    current_version="${targz_file##*-}"          # remove all except -$version.tar.gz
+    current_version="${current_version%.tar.gz}" # remove the ".tar.gz" part.
+    printf '%s\n' "$current_version"
+    for version in "$@"
+    do
+        if [ "$current_version" = "$version" ]
+        then
+            # We keep the release.
+            return 0
+        fi
+    done
+    return 1
+}
+
 
 while true
 do
@@ -58,8 +82,25 @@ do
         printf "[%s] git pull...\n" "$repo_name"
         timeout --kill-after=20s 40s git pull >/dev/null
 
-        tags=$(git tag | sort -V | tail)
+        tags=$(git tag | sort -V | tail -n "$release_retention")
         name=$(cat metadata.json | jq --raw-output '.name')
+
+        # We remove old modules.
+        need_restart='false'
+        for module_release in "$modulesdir/$name-"*".tar.gz"
+        do
+            [ "$module_release" = "$modulesdir/$name-*.tar.gz" ] && continue
+            if ! $v=$(keep_release "$module_release" $tags)
+            then
+                # The release is too old. We remove it.
+                printf 'The release %s of the module %s it too old. Removed...' "$v" "$name"
+                rm -f "$module_release"
+                need_restart='true'
+            fi
+        done
+
+        "$need_restart" && sudo /usr/sbin/service puppetforge restart
+        printf 'Service puppetforge restarted...\n'
 
         for tag in $tags
         do
@@ -155,9 +196,9 @@ EOF
             printf "[%s] Module stored. Next if it exists...\n" "$full_name"
         done
 
-    done <<%= $giturlsfile %>
+    done <"$giturlsfile"
 
-    sleep <%= $pause %>
+    sleep "$pause"
 
 done
 

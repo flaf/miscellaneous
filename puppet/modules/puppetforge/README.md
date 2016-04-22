@@ -27,7 +27,7 @@ $sshkeypair = {
   'privkey' => 'YYYYYYYYY', # The exact content of ~/.ssh/id_rsa file.
 }
 
-class { '::puppetforge':
+class { '::puppetforge::params':
   puppetforge_git_url => 'http://github.com/unibet/puppet-forge-server',
   commit_id           => '6f1b224a4e666c754876139f3643b22f3515f5e6',
   remote_forge        => 'https://forgeapi.puppetlabs.com',
@@ -36,6 +36,8 @@ class { '::puppetforge':
   modules_git_urls    => $modules_git_urls,
   pause               => 300,
 }
+
+include '::puppetforge'
 ```
 
 
@@ -98,5 +100,9 @@ of this parameter is `undef` and no ssh key pair is managed.
 TODO:
 
 * implement some cleaning procedures.
+
+* implement the service "update-pp-module" via a push
+  system (ie the host receives a message from the
+  git server and so trigger an update locally.
 
 
