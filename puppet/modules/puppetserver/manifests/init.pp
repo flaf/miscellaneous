@@ -1,10 +1,6 @@
-class puppetserver (
-  Array[String[1], 1] $supported_distributions,
-) {
+class puppetserver {
 
-  ::homemade::is_supported_distrib($supported_distributions, $title)
-
-  if !defined(Class['::puppetserver::params']) { include '::puppetserver::params' }
+  include '::puppetserver::params'
   $puppet_memory          = $::puppetserver::params::puppet_memory
   $puppetdb_memory        = $::puppetserver::params::puppetdb_memory
   $profile                = $::puppetserver::params::profile

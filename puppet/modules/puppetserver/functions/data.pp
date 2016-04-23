@@ -14,7 +14,8 @@ function puppetserver::data {
   $groups_from_master      = []
   $mcrypt_pwd              = undef
   $authorized_backup_keys  = {}
-  $supported_distributions = [ 'trusty' ];
+  $supported_distributions = [ 'trusty' ]
+  $sd                      = 'supported_distributions';
 
   {
     puppetserver::params::puppet_memory          => $puppet_memory,
@@ -30,8 +31,7 @@ function puppetserver::data {
     puppetserver::params::groups_from_master     => $groups_from_master,
     puppetserver::params::mcrypt_pwd             => $mcrypt_pwd,
     puppetserver::params::authorized_backup_keys => $authorized_backup_keys,
-
-    puppetserver::supported_distributions => $supported_distributions,
+   "puppetserver::params::${sd}"                 => $supported_distributions,
   }
 
 }

@@ -20,6 +20,7 @@ class { '::puppetserver::params':
   puppetdb_memory        => '1g',
   profile                => 'autonomous',
   modules_repository     => 'http://puppetforge.domain.tld',
+  strict_variables       => true,
   puppetdb_name          => 'puppet',
   puppetdb_user          => 'puppet',
   puppetdb_pwd           => '123456',
@@ -71,6 +72,13 @@ forge. If you set this parameter, you must give a complete
 url: for instance `http://mypuppetforge.domain.tld:8080`
 (with the protocol, ie http or https, and the port if
 different of 80).
+
+The `strict_variables` parameter is the value of the option
+`strict_variables` in the `puppet.conf` file. The possible
+values are `true`, `false` and `undef` (the default). When
+the value is `undef`, the option is just not present in the
+file `puppet.conf` and, in this case, the default value from
+Puppet software is set.
 
 The `puppetdb_name`, `puppetdb_user` and `puppetdb_pwd`
 parameters set the name of the PostgreSQL database, the
