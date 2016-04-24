@@ -6,6 +6,30 @@ class roles::generic {
   $excluded_classes  = $::roles::generic::params::excluded_classes
   $included_classes  = $::roles::generic::params::included_classes
 
+  # Checks concerning the ENC variables $::datacenter and
+  # $::datacenters.
+  unless $::datacenter =~ String[1] {
+    @("END"/L$).fail
+      ${title}: sorry you must define the ENC variable \
+      \$::datacenter as a non-empty string.
+      |- END
+  }
+
+  unless $::datacenters =~ Array[String[1], 1] {
+    @("END"/L$).fail
+      ${title}: sorry you must define the ENC variable \
+      \$::datacenters as a non-empty array of non-empty \
+      strings.
+      |- END
+  }
+
+  unless $::datacenter in $::datacenters {
+    @("END"/L$).fail
+      ${title}: sorry the ENC variable \$::datacenter must \
+      a member of the array \$::datacenters.
+      |- END
+  }
+
   # All classes in $excluded_classes must belong to the
   # $supported_classes array. The goal is to avoid a case
   # where the user wants to exclude a class but he makes a
