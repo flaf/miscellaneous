@@ -7,5 +7,6 @@ List of roles provided:
 * [The role `generic`](README-generic.md)
 * [The role `puppetserver`](README-puppetserver.md)
 * [The role `puppetforge`](README-puppetforge.md)
+* [The role `mcomiddleware`](README-mcomiddleware.md)
 
 

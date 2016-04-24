@@ -26,7 +26,7 @@ class roles::generic {
   unless $::datacenter in $::datacenters {
     @("END"/L$).fail
       ${title}: sorry the ENC variable \$::datacenter must \
-      a member of the array \$::datacenters.
+      be a member of the array \$::datacenters.
       |- END
   }
 
