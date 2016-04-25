@@ -10,7 +10,7 @@ Here is an example:
 
 ```puppet
 class { '::roles::mcomiddleware::params':
-  additional_exchanges => ['mysql', 'ceph'],
+  exchanges => ['mysql', 'ceph'],
 }
 
 include '::roles::mcomiddleware'
@@ -19,11 +19,9 @@ include '::roles::mcomiddleware'
 
 ## Parameter of `roles::mcomiddleware::params`
 
-The `additional_exchanges` parameter is an array of
-non-empty strings to set additional exchanges. Indeed, the
-exchanges of the middleware server will be
-`$additional_exchanges + $::datacenters`. The default value
-of the parameter `additional_exchanges` is `[]` (and in this
-case the exchanges are just `$::datacenters`).
+The `exchanges` parameter is an array of non-empty strings
+to set exchanges. Its default value is `[ $::datacenter,
+'mcollective' ] + $::datacenters` and its merge policy is
+`unique`.
 
 

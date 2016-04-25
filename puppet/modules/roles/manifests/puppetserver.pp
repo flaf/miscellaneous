@@ -81,32 +81,14 @@ class roles::puppetserver {
   ###########################################
   if $::roles::puppetserver::params::is_mcollective_client {
 
-    # The mcollective client use the middleware of the mcollective server.
     include '::mcollective::server::params'
-    include '::mcomiddleware::params'
+    include '::roles::mcomiddleware::params'
 
-    $dcs = $datacenters ? {
-      NotUndef => $datacenters,
-      default  => [],
-    }
-
-    $dc = $datacenter ? {
-      NotUndef => [ $datacenter ],
-      default  => [],
-    }
-
-    $middleware_exchanges = $::mcomiddleware::params::exchanges
-    $collectives = ($dcs + $dc + [ 'mcollective' ] + $middleware_exchanges).unique.sort
-
-    # Repository needed to install mcollective which is the
-    # puppet-agent package
     include '::repository::puppet'
-
-    # Repository needed to install mcollective plugins.
     include '::repository::mco'
 
     class { 'mcollective::client::params':
-      collectives        => $collectives,
+      collectives        => $::roles::mcomiddleware::params::exchanges,
       server_public_key  => $::mcollective::server::params::public_key,
       middleware_address => $::mcollective::server::params::middleware_address,
       middleware_port    => $::mcollective::server::params::middleware_port,
