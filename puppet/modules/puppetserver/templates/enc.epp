@@ -44,10 +44,7 @@ environment = yaml_file.sub(/^#{ENV_DIR}\//, '').sub(/#{regex_end}$/, '')
 # Get the list of all datacenters if available in
 # hieradata/datacenter/*.yaml.
 datacenters_array = Dir.glob("#{ENV_DIR}/#{environment}/hieradata/datacenter/*.yaml")
-datacenters = datacenters_array.map!{ |x| x.sub(/^.*\//, '').sub( /\.yaml/, '') }.to_s
-
-# datacenters is put in parameters.
-parameters = "\"datacenters\": #{datacenters},\n    "
+datacenters_array = datacenters_array.map!{ |x| x.sub(/^.*\//, '').sub( /\.yaml/, '') }
 
 # Search for keys which match /^enc_/ in the yaml file to
 # define the global paramters.
@@ -71,17 +68,23 @@ if not hash.has_key?('enc_groups')
   hash['enc_groups'] = []
 end
 
+datacenter = nil
+parameters = ''
+
 hash.each do |key, value|
 
   if key =~ /^enc_/
 
     key = key.sub(/^enc_/, '')
 
-    # Handle when the value is a string.
+    # Handle when the value is a string or a number.
     if value.is_a?(String) or value.is_a?(Numeric)
       if value.is_a?(Numeric) then value = value.to_s() end
       value = value.gsub('"', '\\"') # Escape " in value.
       parameters += "\"#{key}\": \"#{value}\",\n    "
+      if key == 'datacenter'
+        datacenter = value
+      end
     end
 
     # Handle when the value is a array.
@@ -120,6 +123,15 @@ hash.each do |key, value|
   end
 
 end
+
+# datacenters is put in parameters.
+if datacenters_array.empty? and not datacenter.nil?
+  datacenters = [ datacenter ].to_s
+else
+  datacenters = datacenters_array.to_s
+end
+parameters += "\"datacenters\": #{datacenters},\n"
+
 parameters = parameters.strip()
 
 output = output.sub('###environment###', environment)
