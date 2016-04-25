@@ -20,7 +20,7 @@ function roles::data {
     default  => [],
   }
 
-  $default_exchanges = ($dcs + $dc + ['mcollective']).unique.sort
+  $default_exchanges = ($dcs + $dc + ['mcollective']).unique.sort;
 
   {
     roles::mcomiddleware::params::exchanges => $default_exchanges,
