@@ -61,11 +61,12 @@ repository::puppet::params::collection: 'PC1'
 repository::puppet::params::pinning_agent_version: '1.4.2-*'
 repository::puppet::params::pinning_server_version: '2.3.1-*'
 
-mcollective::server::params::private_key: "%{hiera('_mcollective_server_private_key_')}"
-mcollective::server::params::public_key: "%{hiera('_mcollective_server_public_key_')}"
+mcollective::server::params::private_key: '%{hiera("_mcollective_server_private_key_")}'
+mcollective::server::params::public_key: '%{hiera("_mcollective_server_public_key_")}'
 mcollective::server::params::middleware_address: 'middleware.%{::domain}'
+
 mcomiddleware::params::mcollective_pwd: "%{hiera('_middleware_mcollective_pwd_')}"
-mcomiddleware::params::exchanges: [ 'vboxwork', 'vboxhome' ]
+roles::mcomiddleware::params::exchanges: [ 'vboxwork', 'vboxhome' ]
 
 
 snmp::params:views: #
