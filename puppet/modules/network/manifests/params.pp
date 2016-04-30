@@ -1,6 +1,6 @@
 class network::params (
 
-  Hash[String[1], Data, 1] $inventory_networks,
+  Network::Inventory       $inventory_networks,
   Hash[String[1], Data, 1] $ifaces,
   Hash[String[1], Data, 1] $interfaces = ::network::fill_interfaces($ifaces, $inventory_networks),
   Boolean                  $restart    = false,
