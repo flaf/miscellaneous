@@ -1,16 +1,4 @@
-class pxeserver (
-  Hash[String[1], Hash[String[1], Data]]  $dhcp_conf,
-  Array[String[1]]                        $tags_excluded,
-  Variant[Array[String[1]], Enum['all']]  $tags_included,
-  Hash[String[1], Array[String[1], 2, 2]] $ip_reservations,
-  String[1]                               $puppet_collection,
-  String[1]                               $pinning_puppet_version,
-  String[1]                               $puppet_server,
-  String[1]                               $puppet_ca_server,
-  Array[String[1], 1]                     $supported_distributions,
-) {
-
-  ::homemade::is_supported_distrib($supported_distributions, $title)
+class pxeserver {
 
   #if $dhcp_range[0] == 'NOT-DEFINED' and $dhcp_range[1] == 'NOT-DEFINED' {
   #  regsubst(@("END"), '\n', ' ', 'G').fail
