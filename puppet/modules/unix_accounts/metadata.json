@@ -1,6 +1,6 @@
 {
   "name": "flaf-unix_accounts",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "author": "flaf",
   "summary": "Module to manage Unix accounts",
   "license": "Apache-2.0",
