@@ -1,4 +1,4 @@
-<%- |$dhcp_conf, $domain| -%>
+<%- |$dhcp_confs, $domain| -%>
 ### This file is managed by Puppet, don't edit it. ###
 
 # To disable DNS completely. We just want to have a DHCP/PXE server.
@@ -7,7 +7,7 @@ port=0
 # Domain sent by the DHCP server (if enabled).
 domain=<%= $domain %>
 
-<%- $dhcp_conf.each |$tag, $settings| { -%>
+<%- $dhcp_confs.each |$tag, $settings| { -%>
 # <%= $tag %>
 dhcp-range=set:<%= $tag %>,<%= $settings['range'].join(',') %>,12h
 dhcp-option=tag:<%= $tag %>,option:router,<%= $settings['router'] %>

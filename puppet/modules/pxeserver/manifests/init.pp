@@ -1,74 +1,34 @@
 class pxeserver {
 
-  #if $dhcp_range[0] == 'NOT-DEFINED' and $dhcp_range[1] == 'NOT-DEFINED' {
-  #  regsubst(@("END"), '\n', ' ', 'G').fail
-  #    $title: sorry you must provide a value to the
-  #    `dhcp_range` parameter.
-  #    |- END
-  #}
+  $params = '::pxeserver::params'
+  include $params
+  $dhcp_confs             = ::homemade::getvar("${params}::dhcp_confs", $title)
+  $ip_reservations        = ::homemade::getvar("${params}::ip_reservations", $title)
+  $puppet_collection      = ::homemade::getvar("${params}::puppet_collection", $title)
+  $pinning_puppet_version = ::homemade::getvar("${params}::pinning_puppet_version", $title)
+  $puppet_server          = ::homemade::getvar("${params}::puppet_server", $title)
+  $puppet_ca_server       = ::homemade::getvar("${params}::puppet_ca_server", $title)
+  $pxe_entries            = ::homemade::getvar("${params}::pxe_entries", $title)
+  $distribs_provided      = ::homemade::getvar("${params}::distribs_provided", $title)
 
-  #if $dhcp_dns_servers.empty {
-  #  regsubst(@("END"), '\n', ' ', 'G').fail
-  #    $title: sorry the parameter `dhcp_dns_servers` is empty.
-  #    You must provide DNS servers in the DHCP configuration.
-  #    |- END
-  #}
-
-  [ 'puppet_collection',
-    'pinning_puppet_version',
-    'puppet_server',
-    'puppet_ca_server',
-  ].each |$var| {
-    if getvar($var) == 'NOT-DEFINED' {
-      regsubst(@("END"), '\n', ' ', 'G').fail
-        $title: sorry the mandatory parameter `$var` is not defined.
-        |- END
-    }
-  }
-
-  require '::pxeserver::conf'
-
-  $distribs_provided = {
-    'trusty' => {
-      'family'       => 'ubuntu',
-      'boot_options' => 'locale=en_US.UTF-8 keymap=fr',
-    },
-    'jessie' => {
-      'family'       => 'debian',
-      'boot_options' => 'locale=en_US.UTF-8 keyboard-configuration/xkb-keymap=fr(latin9)',
-    },
-  }
 
   $distribs_provided_array = $distribs_provided.keys
   $distribs_provided_str   = $distribs_provided_array.join(', ')
   $my_family               = $facts['os']['distro']['id'].downcase
   $my_ip                   = $facts['networking']['ip']
-  $pxe_entries             = $::pxeserver::conf::pxe_entries
 
   # Check that distribs are in provided distribs.
   $pxe_entries.each |$id, $settings| {
 
     $distrib = $settings['distrib']
 
-    if ! $distribs_provided_array.member($distrib) {
-      regsubst(@("END"), '\n', ' ', 'G').fail
-        $title: sorry the distribution `$distrib` is not
-        provided by the module $module_name. Currently, the
+    unless  $distrib in $distribs_provided_array {
+      @("END"/L).fail
+        $title: sorry the distribution `$distrib` is not \
+        provided by the module $module_name. Currently, the \
         allowed distributions are $distribs_provided_str.
         |- END
     }
-
-  }
-
-  $dhcp_conf_updated = $dhcp_conf.reduce({}) |$memo, $entry| {
-    $tag         = $entry[0]
-    $settings    = $entry[1]
-    $range_ip1   = $settings['range'][0]
-    $range_ip2   = $settings['range'][1]
-    $netmask_tmp = $settings['range'][2]
-    $netmask     = ::network::dump_cidr("${range_ip1}/${netmask_tmp}")['netmask']
-
-    $memo + { $tag => $settings + { 'range' => [$range_ip1, $range_ip2, $netmask] } }
 
   }
 
@@ -156,7 +116,7 @@ class pxeserver {
     require => Package['dnsmasq'],
     content => epp('pxeserver/dnsmasq-main.conf.epp',
                    {
-                    'dhcp_conf'        => $dhcp_conf_updated,
+                    'dhcp_confs'       => $dhcp_confs,
                     'domain'           => $::domain,
                    }
                   ),
