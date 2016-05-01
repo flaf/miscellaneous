@@ -8,6 +8,9 @@
 # - https://docs.puppetlabs.com/puppet/latest/reference/config_file_main.html
 # - https://docs.puppetlabs.com/references/latest/configuration.html
 
+[agent]
+usecacheonfailure = false
+
 [main]
 # https://docs.puppetlabs.com/puppet/latest/reference/config_file_main.html#files-or-directories
 # 0750 permission for ssldir seems better than the default

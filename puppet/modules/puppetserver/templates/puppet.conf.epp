@@ -67,6 +67,7 @@ server    = <%= $::server_facts['servername'] %>
 <%- } -%>
 
 [agent]
+usecacheonfailure =  false
 <%- if $profile == 'client' { -%>
 server = <%= $::server_facts['servername'] %>
 <%- } else { -%>
