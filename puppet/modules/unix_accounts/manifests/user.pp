@@ -149,13 +149,21 @@ define unix_accounts::user (
       require => User[$login],
     }
 
+    $is_sudo_or_root = $login ? {
+      'root'  => true,
+      default => $is_sudo,
+    }
+
     file { "${home}/.bashrc.puppet":
       owner   => $login,
       group   => $login,
       mode    => '0644',
       require => User[$login],
       content => epp('unix_accounts/bashrc.puppet.epp',
-                     { 'fqdn_in_prompt' => $fqdn_in_prompt, }
+                     {
+                       'fqdn_in_prompt'  => $fqdn_in_prompt,
+                       'is_sudo_or_root' => $is_sudo_or_root,
+                     }
                     ),
     }
 

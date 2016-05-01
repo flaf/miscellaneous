@@ -1,4 +1,4 @@
-<%- |$fqdn_in_prompt| -%>
+<%- |Boolean $fqdn_in_prompt, Boolean $is_sudo_or_root| -%>
 ### This file is managed by Puppet, don't edit it. ###
 
 # The prompt.
@@ -39,22 +39,60 @@ then
     export GIT_SSH='/usr/local/bin/git_ssh_wrapper'
 fi
 
+### Begin: handle of PATH ###
+#
 # Add the Puppet paths in PATH if it's relevant.
 # In a puppet client, /opt/puppetlabs/bin/ just contains
 # symlinks to files in /opt/puppetlabs/puppet/bin/. But, for
 # a puppetserver, /opt/puppetlabs/bin/ contains too symlinks
 # to files which are not in /opt/puppetlabs/puppet/bin/
 # (like the files "puppetdb", "puppetserver").
-for bindir in /opt/puppetlabs/puppet/bin /opt/puppetlabs/bin
+
+## Too complicated.
+#
+#for bindir in /opt/puppetlabs/puppet/bin /opt/puppetlabs/bin
+#do
+#    if [ -e "$bindir" ]
+#    then
+#        if printf '%s\n' "$PATH" | grep -vq "$bindir"
+#        then
+#            export PATH="$bindir:$PATH"
+#        fi
+#    fi
+#done
+
+## It's better to set the PATH explicitly.
+#
+paths='
+<%- if $is_sudo_or_root { -%>
+<%= '/usr/local/sbin' %>
+<%- } -%>
+/usr/local/bin
+/opt/puppetlabs/bin
+/opt/puppetlabs/puppet/bin
+<%- if $is_sudo_or_root { -%>
+<%= '/usr/sbin' %>
+<%- } -%>
+/usr/bin
+<%- if $is_sudo_or_root { -%>
+<%= '/sbin' %>
+<%- } -%>
+/bin
+'
+
+for p in $paths
 do
-    if [ -e "$bindir" ]
-    then
-        if printf '%s\n' "$PATH" | grep -vq "$bindir"
-        then
-            export PATH="$bindir:$PATH"
-        fi
-    fi
+    path="${path}:${p}"
 done
+
+# Don't forge to remove the first character ":".
+export PATH="${path#:}"
+
+# Cleaning...
+unset path
+unset paths
+unset p
+### End: handle of PATH ###
 
 # Misc.
 export EDITOR='vim'
@@ -68,7 +106,7 @@ alias gs='git status'
 alias gd='git diff'
 # To keep PATH during a sudo command.
 # The trailing space allows aliases after the alias "sudo" itself.
-alias psudo='sudo env "PATH=$PATH" '
+alias psudo='sudo -E env "PATH=$PATH" ' # The environment (PATH included) is kept.
 alias rp='psudo puppet agent --test' # rp means "Run Puppet".
 alias dist-upgrade='sudo apt-get update && sudo apt-get dist-upgrade --no-remove'
 alias upgrade='sudo apt-get update && sudo apt-get upgrade --no-remove'
