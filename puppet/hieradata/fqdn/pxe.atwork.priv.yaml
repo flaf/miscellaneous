@@ -1,0 +1,13 @@
+---
+enc_included_classes:
+  - [ 'flaf', '::roles::pxeserver' ]
+enc_datacenter: 'vboxhome'
+
+network::params::ifaces:
+  eth0:
+    in_networks: [ 'vbox_adm' ]
+    macaddress: '08:00:27:bc:ce:f3'
+    inet:
+      method: 'dhcp'
+
+
