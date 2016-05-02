@@ -17,10 +17,12 @@ network::params::inventory_networks:
     comment: [ 'Private LAN in VBox for administration (dhcp).' ]
     vlan_id: '1001'
     vlan_name: 'vbx_adm'
+    datacenters: [ 'vboxhome', 'vboxwork' ]
     cidr_address: '172.31.0.0/16'
     gateway: '172.31.0.1'
     ntp_servers: [ '172.31.0.1' ]
     dns_servers: [ '172.31.0.1' ]
+    dhcp_range: [ '172.31.200.10', '172.31.200.20' ]
     admin_email: '%{hiera("_admin_email_")}'
   vbox_priv:
     comment: [ 'Private LAN in VBox without dhcp.' ]
