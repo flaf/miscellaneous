@@ -22,7 +22,7 @@ class roles::pxeserver {
       |-END
   }
 
-  $dhcp_conf = $networks.reduce({}) |$memo, $entry| {
+  $dhcp_confs = $networks.reduce({}) |$memo, $entry| {
 
     [$netname, $settings] = $entry
 
@@ -52,7 +52,7 @@ class roles::pxeserver {
   }
 
   class { '::pxeserver::params':
-    dhcp_conf              => $dhcp_conf,
+    dhcp_confs             => $dhcp_confs,
     puppet_collection      => $::repository::puppet::params::collection,
     pinning_puppet_version => $::repository::puppet::params::pinning_server_version,
     puppet_server          => $::puppetagent::params::server,

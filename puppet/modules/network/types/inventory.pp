@@ -3,6 +3,7 @@ type Network::Inventory = Hash[String[1], Struct[{
   'vlan_id'               => String[1],
   'vlan_name'             => String[1],
   'cidr_address'          => String[1],
+  Optional['datacenters'] => Array[String[1], 1],
   Optional['gateway']     => String[1],
   Optional['admin_email'] => String[1],
   Optional['ntp_servers'] => Array[String[1], 1],

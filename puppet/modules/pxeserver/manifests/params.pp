@@ -1,4 +1,4 @@
-class pxeserver:params (
+class pxeserver::params (
   Optional[ Hash[String[1], Pxeserver::Dhcpconf, 1] ] $dhcp_confs,
   Hash[String[1], Array[String[1], 2, 2]]             $ip_reservations,
   Optional[ String[1] ]                               $puppet_collection,

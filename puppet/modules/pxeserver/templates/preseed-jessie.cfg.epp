@@ -92,7 +92,7 @@ d-i partman/early_command string <%= $partman_early_command %>
 # Necessary only if there is more than one disk. The device
 # name must be given in traditional, non-devfs format (so
 # e.g. /dev/hda or /dev/sda, and not e.g. /dev/discs/disc0/disc).
-d-i partman-auto/disk string <%= $autopart_disk %>
+d-i partman-auto/disk string <%= $partman_auto_disk %>
 
 # Possible value are "cylinder", "minimal" or "optimal". Not
 # very clear but "optimal" is maybe a good value. With
