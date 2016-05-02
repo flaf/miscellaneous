@@ -8,7 +8,7 @@ port=0
 domain=<%= $domain %>
 
 <%- $dhcp_confs.each |$tag, $settings| { -%>
-# <%= $tag %>
+# <%= $settings['netname'] %> (<%= $tag %>)
 dhcp-range=set:<%= $tag %>,<%= $settings['range'].join(',') %>,12h
 dhcp-option=tag:<%= $tag %>,option:router,<%= $settings['router'] %>
 dhcp-option=tag:<%= $tag %>,option:dns-server,<%= $settings['dns-server'].join(',') %>

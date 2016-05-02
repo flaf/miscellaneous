@@ -16,7 +16,9 @@ class roles::pxeserver {
   if $networks.empty {
     @("END"/L).fail
       ${title}: sorry, there no network candidate to be in \
-      the DHCP configuration of this PXE server.
+      the DHCP configuration of this PXE server. Check the \
+      `dhcp_range` and `datacenters` properties in the inventory \
+      networks.
       |-END
   }
 
