@@ -54,7 +54,7 @@ class roles::pxeserver {
   class { '::pxeserver::params':
     dhcp_confs             => $dhcp_confs,
     puppet_collection      => $::repository::puppet::params::collection,
-    pinning_puppet_version => $::repository::puppet::params::pinning_server_version,
+    pinning_puppet_version => $::repository::puppet::params::pinning_agent_version,
     puppet_server          => $::puppetagent::params::server,
     puppet_ca_server       => $::puppetagent::params::ca_server,
     puppet_apt_url         => $::repository::puppet::params::url,
