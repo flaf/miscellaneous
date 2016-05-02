@@ -1,8 +1,6 @@
 ---
 enc_included_classes:
-  - [ 'flaf', '::roles::generic' ]
-  - [ 'flaf', '::puppetserver' ]
-  - [ 'flaf', '::mcollective::client' ]
+  - [ 'flaf', '::roles::puppetserver' ]
 enc_datacenter: 'vboxwork'
 enc_groups: [ 'puppetserver' ]
 
@@ -13,6 +11,8 @@ network::params::ifaces:
     macaddress: '08:00:27:ad:c9:17'
     inet:
       method: 'dhcp'
+
+roles::puppetserver::params::is_mcollective_client: true
 
 puppetserver::params::modules_repository: 'http://puppetforge.lss1.backbone.education:8080'
 puppetserver::params::mcrypt_pwd: >
