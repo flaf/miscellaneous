@@ -57,6 +57,8 @@ class roles::pxeserver {
     pinning_puppet_version => $::repository::puppet::params::pinning_server_version,
     puppet_server          => $::puppetagent::params::server,
     puppet_ca_server       => $::puppetagent::params::ca_server,
+    puppet_apt_url         => $::repository::puppet::params::url,
+    puppet_apt_key         => [ $::repository::puppet::params::url, 'pubkey.gpg' ].join('/'),
   }
 
   include '::pxeserver'

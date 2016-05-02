@@ -5,6 +5,8 @@ class pxeserver::params (
   Optional[ String[1] ]                               $pinning_puppet_version,
   Optional[ String[1] ]                               $puppet_server,
   Optional[ String[1] ]                               $puppet_ca_server,
+  Optional[ String[1] ]                               $puppet_apt_url,
+  Optional[ String[1] ]                               $puppet_apt_key,
   Array[String[1], 1]                                 $supported_distributions,
 ) {
 

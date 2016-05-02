@@ -8,19 +8,37 @@ This module just installs and manages a little PXE/DHCP server
 Here is an example:
 
 ```puppet
-class { '::pxeserver':
-  dhcp_range              => [ '172.31.0.200', '172.31.0.250' ],
-  dhcp_dns_servers        => [ '172.31.0.5', '172.31.0.6' ],
-  dhcp_gateway            => '172.31.0.1',
-  ip_reservations         => {
-                              '20:cf:30:52:6a:56' => [ '172.31.100.1', 'srv-1' ],
-                              '20:cf:30:52:6a:57' => [ '172.31.100.2', 'srv-2' ],
-                             },
-  puppet_collection       => 'PC1',
-  pinning_puppet_version  => '1.3.0-*',
-  puppet_server           => 'puppet.domain.tld',
-  puppet_ca_server        => 'puppet.domain.tld',
+$dhcp_confs = {
+  'vlan1' => {
+    'netname'    => 'adm@dc2',                                           # Mandatory
+    'range'      => ['172.31.200.100', '172.31.200.150', '255.255.0.0'], # Mandatory
+    'router'     => '172.31.0.1',                                        # Optional
+    'dns-server' => ['172.31.0.11', '172.31.0.12'],                      # optional
+  },
+  'vlan13' => {
+    'netname'    => 'nfs@dc2',
+    'range'      => ['192.168.13.100', '192.168.13.150', '255.255.255,0'],
+  },
 }
+
+$ip_reservations = {
+  '0c:c4:7a:6a:e0:8c' => [ '192.168.13.50', 'nfs-1' ],
+  '0c:c4:7a:6a:5f:ec' => [ '172.31.25.25', 'poller-1' ],
+  '9e:72:c8:38:38:2c' => [ '172.31.25.26', 'poller-2' ],
+}
+
+class { '::pxeserver::params':
+  dhcp_confs             => $dhcp_confs,
+  ip_reservations        => $ip_reservations,
+  puppet_collection      => 'PC1',
+  pinning_puppet_version => '1.3.0-*',
+  puppet_server          => 'puppet.domain.tld',
+  puppet_ca_server       => 'puppet.domain.tld',
+  puppet_apt_url         => 'http://apt.puppetlabs.com',
+  puppet_apt_key         => 'http://apt.puppetlabs.com/pubkey.gpg',
+}
+
+include '::pxeserver'
 ```
 
 # Warning
@@ -35,35 +53,37 @@ into account `lo` of course). Outside of this condition,
 there is no warranty that the module works well.
 
 
-# Data binding
+# Parameters of the class `pxeserver::params`
 
-The `dhcp_range` parameter is mandatory.
-The `ip_reservations` parameter is optional and its default
-value is `{}` (a empty hash), ie no IP reservation.
+The `dhcp_confs` parameter is a hash with the structure
+above. The value of the `range` key is an array with this
+form `[ 'dhcp-ip-min', 'dhcpip-max', 'netmask' ]`. The
+netmask must be provided as an IP address (not an integer).
+The keys `'vlan1'`, `vlan13` above are the tags of the
+networks. The tag of a network is set in the configuration
+of dnsmasq with the instructions `dhcp-range` and used in
+the instructions `dhcp-option` etc. The default value of
+this parameter is `undef` so you must provide a value
+explicitly.
 
-The other parameters are optional and the module will try to
-get smart default values from the data binding mechanism
-from other modules.
+The `ip_reservations` parameter must have the structure
+above but can be the empty hash `{}` which its default
+value, ie no IP reservation.
 
-* The default value of `dhcp_dns_servers` and `dhcp_gateway`
-are retrieved from the data binding mechanism of the
-`flaf-network` module.
-
-* The default value of `puppet_collection` and `pinning_puppet_version`
-are retrieved from the data binding mechanism of the
-`flaf-repository` module.
-
-* The default value of `puppet_server` and `puppet_ca_server`
-are retrieved from the data binding mechanism of the
-`flaf-puppetagent` module.
-
-See the code of `./function/data.pp` for more details.
+The remaining parameters concerned Puppet and, for each, the
+default value is `undef` and you must provide a value.
+Indeed, the PXE server provides installation where the
+puppet-agent package is automatically installed with a
+specific version. All these parameters are clear. Just a
+remark concerning the parameter `puppet_apt_key`. This
+parameter must be any url where the APT key of Puppetlabs
+will be downloaded via wget during the PXE installation.
 
 
 # How to add a custom PXE entry
 
-You have to modify the file `manifest/conf.pp` and add an entry
-in the hash `pxe_entries`:
+You have to modify the file `manifest/manifests/params.pp`
+and add an entry in the hash `pxe_entries`:
 
 ```puppet
   $pxe_entries = {
@@ -88,18 +108,19 @@ in the hash `pxe_entries`:
     },
 ```
 
-`distrib` must be the codename of the distribution in lowercase.
-This parameter is mandatory and has no default value.
+`distrib` must be the codename of the distribution in
+lowercase. This parameter is mandatory and has no default
+value.
 
 `menu_label` and `text_help` are mandatory too (no default
-value). These parameters are strings which described the
-PXE entry.  Just on line for `menu_label` and few lines for
+value). These parameters are strings which described the PXE
+entry.  Just on line for `menu_label` and few lines for
 `text_help` (about 7 maximum).
 
 `apt_proxy` is a string which represents the address of a
 http proxy for APT. For instance `'http://my-proxy:3142'`.
-If not provided, the default value of this parameter is
-an empty string which means "no APT proxy".
+If not provided, the default value of this parameter is an
+empty string which means "no APT proxy".
 
 `partman_early_command_file` is the relative name of the
 file (in the `file/` directory of the module) which contains
@@ -117,9 +138,9 @@ during the preseed installation. Generally, the default
 value will be relevant but this parameter can be useful if
 you want, for instance, used the same file in the module for
 several PXE entry. For this parameter, the value `'nothing'`
-is special. With this value, no command will be added in
-the `partman_early_command` part (and no file must be
-created in the module in this case).
+is special. With this value, no command will be added in the
+`partman_early_command` part (and no file must be created in
+the module in this case).
 
 `partman_auto_disk` is a string to define the disk (like
 `/dev/sda` etc.) where the OS will be installed. The special
@@ -127,11 +148,11 @@ value `''` (ie an empty string) is possible. In this case,
 mount points should be set manually during the installation.
 The default value of this parameter is `''`.
 
-`skip_boot_loader` is a boolean. If set to `true` all
-the part concerning the Grub installation will be removed
-from the preseed file. It can be useful is you want to
-do a special installation of Grub with `late_command`.
-The default value of this parameter is `true`.
+`skip_boot_loader` is a boolean. If set to `true` all the
+part concerning the Grub installation will be removed from
+the preseed file. It can be useful is you want to do a
+special installation of Grub with `late_command`. The
+default value of this parameter is `true`.
 
 `late_command_file` is the same parameter as
 `partman_early_command_file` but for the `late_command` is
@@ -157,23 +178,11 @@ added in the `late_command` part. The default value of this
 parameter is `true`.
 
 
-
-
 # Remark
 
 When new distributions will be added in this module, try to
 keep just 2 template files for the preseeds:
 - one for the Debian family,
 - and one for the Ubuntu family.
-
-
-# TODO
-
-* `tags_excluded` and `tags_included` not yet token into account.
-* Update the README.
-* Some variables needs to be ckecked.
-* Some data which belong to other modules are retrieved via a
-  lookup function but should be retrieved via the params classes
-  of these modules, when they will be implemented.
 
 

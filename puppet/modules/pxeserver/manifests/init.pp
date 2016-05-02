@@ -8,6 +8,9 @@ class pxeserver {
   $pinning_puppet_version = ::homemade::getvar("${params}::pinning_puppet_version", $title)
   $puppet_server          = ::homemade::getvar("${params}::puppet_server", $title)
   $puppet_ca_server       = ::homemade::getvar("${params}::puppet_ca_server", $title)
+  $puppet_apt_url         = ::homemade::getvar("${params}::puppet_apt_url", $title)
+  $puppet_apt_key         = ::homemade::getvar("${params}::puppet_apt_key", $title)
+
   $pxe_entries            = ::homemade::getvar("${params}::pxe_entries", $title)
   $distribs_provided      = ::homemade::getvar("${params}::distribs_provided", $title)
 
@@ -167,6 +170,8 @@ class pxeserver {
                     'pinning_puppet_version' => $pinning_puppet_version,
                     'puppet_server'          => $puppet_server,
                     'puppet_ca_server'       => $puppet_ca_server,
+                    'puppet_apt_url'         => $puppet_apt_url,
+                    'puppet_apt_key'         => $puppet_apt_key,
                    },
                   ),
   }

@@ -1,5 +1,11 @@
-<%- |$puppet_collection, $pinning_puppet_version,
-     $puppet_server, $puppet_ca_server| -%>
+<%-|
+String[1] $puppet_collection,
+String[1] $pinning_puppet_version,
+String[1] $puppet_server,
+String[1] $puppet_ca_server,
+String[1] $puppet_apt_url,
+String[1] $puppet_apt_key,
+|-%>
 #!/bin/sh
 
 ### This file is managed by Puppet, don't edit it. ###
@@ -12,18 +18,19 @@ apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --yes lsb-relea
 
 # I don't why but this doesn't work in the /taget chroot.
 # But it's works well in a classical command line.
-#KEY='47B320EB4C7C375AA9DAE1A01054B7A24BD6EC30'
-#apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys "$KEY"
-
-wget http://apt.puppetlabs.com/pubkey.gpg -O - | apt-key add -
+#
+#   KEY='XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
+#   apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys "$KEY"
+#
+wget <%= $puppet_apt_key %> -O - | apt-key add -
 
 COLLECTION='<%= $puppet_collection %>'
 distrib=$(lsb_release -sc)
 collection=$(echo $COLLECTION | tr '[:upper:]' '[:lower:]')
 cat >/etc/apt/sources.list.d/puppetlabs-$collection.list <<EOF
 # Puppetlabs $COLLECTION $distrib Repository.
-deb http://apt.puppetlabs.com $distrib $COLLECTION
-#deb-src http://apt.puppetlabs.com $distrib $COLLECTION
+deb <%= $puppet_apt_url %> $distrib $COLLECTION
+#deb-src <%= $puppet_apt_url %> $distrib $COLLECTION
 EOF
 
 # Force the version number as below.
