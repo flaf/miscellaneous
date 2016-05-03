@@ -6,11 +6,27 @@ class puppetserver::puppetdb {
   $user             = $::puppetserver::puppetdb_user
   $pwd              = $::puppetserver::puppetdb_pwd
   $memory           = $::puppetserver::puppetdb_memory
+  $certwhitelist    = $::puppetserver::puppetdb_certwhitelist
 
-  $puppet_ssl_dir   = $::puppetserver::ssldir
-  $puppetlabs_path  = $::puppetserver::puppetlabs_path
-  $puppetdb_path    = "${puppetlabs_path}/puppetdb"
-  $puppetdb_ssl_dir = "${puppetdb_path}/ssl"
+  $puppet_ssl_dir     = $::puppetserver::ssldir
+  $puppetlabs_path    = $::puppetserver::puppetlabs_path
+  $puppetdb_path      = "${puppetlabs_path}/puppetdb"
+  $puppetdb_ssl_dir   = "${puppetdb_path}/ssl"
+  $certwhitelist_file = "${puppetdb_path}/certificate-whitelist"
+
+  case $certwhitelist.empty {
+
+    true: {
+      $ensure_puppetdb_ini  = 'absent'
+      $ensure_certwhitelist = 'absent'
+    }
+
+    default: {
+      $ensure_puppetdb_ini  = 'present'
+      $ensure_certwhitelist = 'present'
+    }
+
+  }
 
   # Set the memory for the JVM which runs the puppetdb.
   $java_args = "-Xmx${memory}"
@@ -25,7 +41,7 @@ class puppetserver::puppetdb {
 
   # This file tell to the puppetdb web server how to
   # contact the database.
-  file { '/etc/puppetlabs/puppetdb/conf.d/database.ini':
+  file { "${puppetdb_path}/conf.d/database.ini":
     ensure  => present,
     owner   => 'puppetdb',
     group   => 'puppetdb',
@@ -41,7 +57,35 @@ class puppetserver::puppetdb {
     notify => Service['puppetdb'],
   }
 
-  file { '/etc/puppetlabs/puppetdb/conf.d/jetty.ini':
+  file { "${puppetdb_path}/conf.d/puppetdb.ini":
+    ensure  => $ensure_puppetdb_ini,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    content => epp( 'puppetserver/puppetdb.ini.epp',
+                    {
+                      'certwhitelist_file' => $certwhitelist_file,
+                    },
+                  ),
+    before => Service['puppetdb'],
+    notify => Service['puppetdb'],
+  }
+
+  file { $certwhitelist_file:
+    ensure  => $ensure_certwhitelist,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    content => epp( 'puppetserver/certificate-whitelist.epp',
+                    {
+                      'certwhitelist' => $certwhitelist,
+                    },
+                  ),
+    before => Service['puppetdb'],
+    notify => Service['puppetdb'],
+  }
+
+  file { "${puppetdb_path}/conf.d/jetty.ini":
     ensure  => present,
     owner   => 'root',
     group   => 'root',

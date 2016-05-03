@@ -7,6 +7,7 @@ class puppetserver::params (
   String[1]                                $puppetdb_name,
   String[1]                                $puppetdb_user,
   Optional[ String[1] ]                    $puppetdb_pwd,
+  Array[String[1]]                         $puppetdb_certwhitelist,
   Hash[String[1], String[1]]               $modules_versions,
   Integer[1]                               $max_groups,
   Array[String[1]]                         $groups_from_master,

@@ -9,6 +9,7 @@ function puppetserver::data {
   $puppetdb_name           = 'puppet'
   $puppetdb_user           = 'puppet'
   $puppetdb_pwd            = undef
+  $puppetdb_certwhitelist  = [ $::fqdn ]
   $modules_versions        = {} # no pinning by default
   $max_groups              = 5
   $groups_from_master      = []
@@ -26,6 +27,7 @@ function puppetserver::data {
     puppetserver::params::puppetdb_name          => $puppetdb_name,
     puppetserver::params::puppetdb_user          => $puppetdb_user,
     puppetserver::params::puppetdb_pwd           => $puppetdb_pwd,
+    puppetserver::params::puppetdb_certwhitelist => $puppetdb_certwhitelist,
     puppetserver::params::modules_versions       => $modules_versions,
     puppetserver::params::max_groups             => $max_groups,
     puppetserver::params::groups_from_master     => $groups_from_master,

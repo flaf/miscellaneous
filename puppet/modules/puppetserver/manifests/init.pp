@@ -9,6 +9,7 @@ class puppetserver {
   $puppetdb_name          = $::puppetserver::params::puppetdb_name
   $puppetdb_user          = $::puppetserver::params::puppetdb_user
   $puppetdb_pwd           = $::puppetserver::params::puppetdb_pwd
+  $puppetdb_certwhitelist = $::puppetserver::params::puppetdb_certwhitelist
   $modules_versions       = $::puppetserver::params::modules_versions
   $max_groups             = $::puppetserver::params::max_groups
   $groups_from_master     = $::puppetserver::params::groups_from_master

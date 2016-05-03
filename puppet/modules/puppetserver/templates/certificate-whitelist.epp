@@ -1,0 +1,4 @@
+<%-| Array[String[1]] $certwhitelist |-%>
+<%- $certwhitelist.each |$a_fqdn| { -%>
+<%= $a_fqdn %>
+<%- } -%>
