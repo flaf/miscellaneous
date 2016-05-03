@@ -24,6 +24,7 @@ class { '::puppetserver::params':
   puppetdb_name          => 'puppet',
   puppetdb_user          => 'puppet',
   puppetdb_pwd           => '123456',
+  puppetdb_certwhitelist => [ $::fqdn, "puppet2.${::domain}" ],
   modules_versions       => {
                               'author-modA' => '1.2.1',
                               'author-modB' => '0.4.0',
@@ -91,6 +92,16 @@ these parameters are only needed if the profile of the
 server is `autonomous`. In the case of a `client`
 puppetserver, these parameters are completely ignored
 (and `puppetdb_pwd` can be let unset).
+
+The `puppetdb_certwhitelist` parameter allows to set (or
+not) the `certificate-whitelist` feature of puppetdb. The
+parameter must be an array of fqdns and only the nodes
+specified in this array can request the puppetdb server. The
+specific value `[]` (an empty array) is possible. In this
+case, the feature `certificate-whitelist` is not set at all
+and **all** puppet nodes can request the puppetdb server.
+The default value of this parameter is `[ $::fqdn ]`, ie
+only the puppetserver can request the puppetdb server.
 
 The `modules_versions` is a hash like above to force the
 installation of specific modules with a specific version
