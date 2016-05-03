@@ -120,12 +120,17 @@ function moo::data {
 
     moo::captain::supported_distributions => [ 'trusty' ],
 
-    moo::cargo::supported_distributions => [ 'trusty' ],
-
     # lb available for Jessie not for Trusty because we need
     # to haproxy >= 1.5 to have feature concerning the log
     # format.
     moo::lb::supported_distributions => [ 'jessie' ],
+
+
+
+
+
+
+    moo::cargo::params::supported_distributions => [ 'trusty' ],
   }
 
 }
