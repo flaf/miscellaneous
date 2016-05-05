@@ -16,7 +16,7 @@ define unix_accounts::user (
   Boolean                               $is_sudo = ::unix_accounts::defaults($login)['is_sudo'],
   Array[String[1]]                      $ssh_authorized_keys = ::unix_accounts::defaults($login)['ssh_authorized_keys'],
   Boolean                               $purge_ssh_keys = ::unix_accounts::defaults($login)['purge_ssh_keys'],
-  Unix_accounts::Ssh_public_keys        $ssh_public_keys = ::unix_accounts::defaults($login)['ssh_public_keys'],
+  Unix_accounts::SshPublicKeys          $ssh_public_keys = ::unix_accounts::defaults($login)['ssh_public_keys'],
 ) {
 
   # An explicit name of the resource for error messages.

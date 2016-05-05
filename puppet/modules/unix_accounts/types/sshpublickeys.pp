@@ -1,4 +1,4 @@
-type Unix_accounts::Ssh_public_keys = Hash[
+type Unix_accounts::SshPublicKeys = Hash[
   String[1],
   Struct[
     {
