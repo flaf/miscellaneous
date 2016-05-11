@@ -115,6 +115,7 @@ define pxeserver::pxe_entry (
     mode    => '0644',
     content => epp("pxeserver/preseed-${distrib}.cfg.epp",
                    {
+                    'distrib'               => $distrib,
                     'apt_proxy'             => $apt_proxy,
                     'partman_early_command' => $partman_early_command,
                     'partman_auto_disk'     => $partman_auto_disk,

@@ -1,5 +1,6 @@
 class pxeserver::params (
   Optional[ Hash[String[1], Pxeserver::Dhcpconf, 1] ] $dhcp_confs,
+  String                                              $apt_proxy,
   Hash[String[1], Array[String[1], 2, 2]]             $ip_reservations,
   Optional[ String[1] ]                               $puppet_collection,
   Optional[ String[1] ]                               $pinning_puppet_version,
@@ -26,6 +27,25 @@ class pxeserver::params (
         During the choice of the hostname, put the fqdn directly
         (or just a short hostname if the DHCP sends already a correct domain).
         |- END
+      'apt_proxy'                  => $apt_proxy,
+      'skip_boot_loader'           => false,
+      'partman_early_command_file' => 'nothing',
+      'late_command_file'          => 'nothing',
+    },
+
+    'xenial-partial-preseed-with-puppet' => {
+      'distrib'    => 'xenial',
+      'menu_label' => '[xenial] partial preseed with puppet installed',
+      'text_help'  => @(END),
+        Semi manual installation of Ubuntu Xenial.
+        Manual handling for:
+          - network configuration,
+          - disk partioning,
+          - Grub installation.
+        During the choice of the hostname, put the fqdn directly
+        (or just a short hostname if the DHCP sends already a correct domain).
+        |- END
+      'apt_proxy'                  => $apt_proxy,
       'skip_boot_loader'           => false,
       'partman_early_command_file' => 'nothing',
       'late_command_file'          => 'nothing',
@@ -41,6 +61,7 @@ class pxeserver::params (
           - disk partioning,
           - Grub installation.
         |- END
+      'apt_proxy'                  => $apt_proxy,
       'skip_boot_loader'           => false,
       'partman_early_command_file' => 'nothing',
       'late_command_file'          => 'nothing',
@@ -55,6 +76,23 @@ class pxeserver::params (
         During the choice of the hostname, put the fqdn directly
         (or just a short hostname if the DHCP sends already a correct domain).
         |- END
+      'apt_proxy'                  => $apt_proxy,
+      'partman_auto_disk'          => '/dev/sda',
+      'skip_boot_loader'           => false,
+      'partman_early_command_file' => 'nothing',
+      'late_command_file'          => 'nothing',
+    },
+
+    'xenial-full-preseed-with-puppet' => {
+      'distrib'    => 'xenial',
+      'menu_label' => '[xenial] All in /dev/sda with puppet installed',
+      'text_help'  => @(END),
+        Semi manual installation of Ubuntu Xenial.
+        Manual handling for network configuration.
+        During the choice of the hostname, put the fqdn directly
+        (or just a short hostname if the DHCP sends already a correct domain).
+        |- END
+      'apt_proxy'                  => $apt_proxy,
       'partman_auto_disk'          => '/dev/sda',
       'skip_boot_loader'           => false,
       'partman_early_command_file' => 'nothing',
@@ -68,6 +106,7 @@ class pxeserver::params (
         Semi manual installation of Debian Jessie.
         Manual handling for network configuration.
         |- END
+      'apt_proxy'                  => $apt_proxy,
       'partman_auto_disk'          => '/dev/sda',
       'skip_boot_loader'           => false,
       'partman_early_command_file' => 'nothing',
@@ -86,6 +125,7 @@ class pxeserver::params (
          LV varlogmysql: fs => XFS,  mntpt => /var/log/mysql, mntopt => noatime
          LV varlibmysql: fs => EXT4, mntpt => /var/lib/mysql, mntopt => noatime
         |- END
+      'apt_proxy' => $apt_proxy,
     },
 
     'trusty-elea-cargo' => {
@@ -100,6 +140,7 @@ class pxeserver::params (
              and b) /dev/sdb5 => XFS  /backups noatime.
              (do not format the partition, it is already done)
         |- END
+      'apt_proxy' => $apt_proxy,
     },
 
     'trusty-ceph-dc2' => {
@@ -114,15 +155,22 @@ class pxeserver::params (
              filesytem => EXT4, mountpoint => /, mount options => noatime
              (do not format the partition, it is already done)
         |- END
+      'apt_proxy' => $apt_proxy,
     },
 
   }
 
   $distribs_provided = {
+    ### Ubuntu LTS ###
     'trusty' => {
       'family'       => 'ubuntu',
       'boot_options' => 'locale=en_US.UTF-8 keymap=fr',
     },
+    'xenial' => {
+      'family'       => 'ubuntu',
+      'boot_options' => 'locale=en_US.UTF-8 keymap=fr',
+    },
+    ### Debian ###
     'jessie' => {
       'family'       => 'debian',
       'boot_options' => 'locale=en_US.UTF-8 keyboard-configuration/xkb-keymap=fr(latin9)',

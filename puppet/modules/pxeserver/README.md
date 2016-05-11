@@ -30,6 +30,7 @@ $ip_reservations = {
 class { '::pxeserver::params':
   dhcp_confs             => $dhcp_confs,
   ip_reservations        => $ip_reservations,
+  apt_proxy              => 'http://172.31.10.10:3142',
   puppet_collection      => 'PC1',
   pinning_puppet_version => '1.3.0-*',
   puppet_server          => 'puppet.domain.tld',
@@ -69,6 +70,11 @@ explicitly.
 The `ip_reservations` parameter must have the structure
 above but can be the empty hash `{}` which its default
 value, ie no IP reservation.
+
+The `apt_proxy` parameter allows to set a APT proxy
+in the preseed files. If not set, its default value
+is `''` (an empty string) and no APT proxy is set in
+this case.
 
 The remaining parameters concerned Puppet and, for each, the
 default value is `undef` and you must provide a value.

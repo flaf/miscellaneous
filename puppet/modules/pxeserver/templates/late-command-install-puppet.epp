@@ -22,6 +22,9 @@ apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --yes lsb-relea
 #   KEY='XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
 #   apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys "$KEY"
 #
+apt-get update
+
+apt-get install --yes wget # with a minimal install of Xenial, wget is not installed.
 wget <%= $puppet_apt_key %> -O - | apt-key add -
 
 COLLECTION='<%= $puppet_collection %>'
