@@ -13,6 +13,23 @@ class roles::pxeserver {
     $::datacenter in $settings['datacenters'] and 'dhcp_range' in $settings
   }
 
+  # Search a APT proxy.
+  $apt_proxies = $networks.reduce([]) |$memo, $entry| {
+    [ $netname, $settings ] = $entry
+    case 'apt_proxy' in $settings {
+      true:  { $memo + $settings['apt_proxy'] }
+      false: { $memo }
+    }
+  }
+  .unique
+
+  # Set if only one candidate.
+  $apt_proxy = $apt_proxies.size ? {
+    1       => $apt_proxies[0],
+    default => '',
+  }
+
+
   if $networks.empty {
     @("END"/L).fail
       ${title}: sorry, there no network candidate to be in \
@@ -53,6 +70,7 @@ class roles::pxeserver {
 
   class { '::pxeserver::params':
     dhcp_confs             => $dhcp_confs,
+    apt_proxy              => $apt_proxy,
     puppet_collection      => $::repository::puppet::params::collection,
     pinning_puppet_version => $::repository::puppet::params::pinning_agent_version,
     puppet_server          => $::puppetagent::params::server,
