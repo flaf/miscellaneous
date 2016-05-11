@@ -22,6 +22,7 @@ network::params::inventory_networks:
     gateway: '172.31.0.1'
     ntp_servers: [ '172.31.0.1' ]
     dns_servers: [ '172.31.0.1' ]
+    apt_proxy: 'http://172.31.0.1:3142'
     dhcp_range: [ '172.31.200.10', '172.31.200.20' ]
     admin_email: '%{hiera("_admin_email_")}'
   vbox_priv:
@@ -58,7 +59,7 @@ unix_accounts::params::users:
       - 'root@router.atwork.priv'
       - 'francois@flpc.athome.priv'
 
-puppetagent::params::ca_server: 'middleware.%{::domain}'
+puppetagent::params::ca_server: 'puppet.%{::domain}'
 repository::puppet::params::collection: 'PC1'
 repository::puppet::params::pinning_agent_version: '1.4.2-*'
 repository::puppet::params::pinning_server_version: '2.3.2-*'
