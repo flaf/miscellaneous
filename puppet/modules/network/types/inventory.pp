@@ -13,6 +13,7 @@ type Network::Inventory = Hash[String[1], Struct[{
   Optional['dhcp_range']  => Array[String[1], 2, 2],
   Optional['smtp_relay']  => String[1],
   Optional['smtp_port']   => Integer[1],
+  Optional['apt_proxy']   => String[1],
 }], 1]
 
 
