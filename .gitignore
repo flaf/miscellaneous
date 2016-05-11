@@ -5,3 +5,4 @@ puppet/modules/postfix/
 puppet/modules/test/
 puppet/modules/test2/
 .vagrant/
+toto/.foo
