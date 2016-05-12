@@ -135,7 +135,7 @@ Here is an example:
 
 ```puppet
 class { '::repository::ceph::params':
-  url             => 'http://ceph.com',
+  url             => 'http://download.ceph.com',
   codename        => 'infernalis',
   pinning_version => '9.2.0-*',
   src             => false,
@@ -146,8 +146,8 @@ include '::repository::ceph'
 
 ## Parameters and default values
 
-Only `url` and `src` parameters have a default
-value which are respectively `http://ceph.com` and `false`.
+Only `url` and `src` parameters have default values
+which are respectively `http://download.ceph.com` and `false`.
 The `codename` and `pinning_version` have not
 relevant default value (it's `undef`) and you must provide
 relevant values explicitly. For the `pinning_version`

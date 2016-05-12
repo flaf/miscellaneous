@@ -25,7 +25,7 @@ function repository::data {
     repository::distrib::params::backports          => false,
    "repository::distrib::params::${sd}"             => [ 'trusty', 'jessie' ],
 
-    repository::ceph::params::url             => 'http://ceph.com',
+    repository::ceph::params::url             => 'http://download.ceph.com',
     repository::ceph::params::src             => false,
     repository::ceph::params::codename        => undef,
     repository::ceph::params::pinning_version => undef,

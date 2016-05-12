@@ -1,6 +1,6 @@
 {
   "name": "flaf-repository",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "author": "flaf",
   "summary": "Module to set APT repositories.",
   "license": "Apache-2.0",
@@ -11,7 +11,7 @@
   "dependencies": [
     {"name":"puppetlabs-stdlib","version_requirement":">= 4.11.0"},
     {"name":"puppetlabs-apt","version_requirement":"2.2.2"},
-    {"name":"flaf-homemade","version_requirement":">= 0.1.6"}
+    {"name":"flaf-homemade","version_requirement":">= 0.1.7"}
   ]
 }
 
