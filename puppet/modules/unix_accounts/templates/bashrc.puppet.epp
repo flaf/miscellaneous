@@ -68,8 +68,6 @@ paths='
 <%= '/usr/local/sbin' %>
 <%- } -%>
 /usr/local/bin
-/opt/puppetlabs/bin
-/opt/puppetlabs/puppet/bin
 <%- if $is_sudo_or_root { -%>
 <%= '/usr/sbin' %>
 <%- } -%>
@@ -78,6 +76,8 @@ paths='
 <%= '/sbin' %>
 <%- } -%>
 /bin
+/opt/puppetlabs/bin
+/opt/puppetlabs/puppet/bin
 '
 
 for p in $paths
