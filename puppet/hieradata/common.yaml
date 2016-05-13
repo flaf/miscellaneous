@@ -22,7 +22,7 @@ network::params::inventory_networks:
     gateway: '172.31.0.1'
     ntp_servers: [ '172.31.0.1' ]
     dns_servers: [ '172.31.0.1' ]
-    apt_proxy: 'http://172.31.0.1:3142'
+    apt_proxy: 'http://192.168.0.1:3142'
     dhcp_range: [ '172.31.200.10', '172.31.200.20' ]
     admin_email: '%{hiera("_admin_email_")}'
   vbox_priv:
