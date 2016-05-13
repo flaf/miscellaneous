@@ -161,10 +161,10 @@ special installation of Grub with `late_command`. The
 default value of this parameter is `true`.
 
 `late_command_file` is the same parameter as
-`partman_early_command_file` but for the `late_command` is
-the preseed. Its default value is `$id/late_command` so
-that, in this case, **you must create the file
-`files/$id/late_command` in the module**. Like
+`partman_early_command_file` but for the `late_command`
+instruction in the preseed. Its default value is
+`"$id/late_command"` and, in this case, **you must create
+the file `"files/$id/late_command"` in the module**. Like
 `partman_early_command_file`, with the value `nothing` no
 file must be created in the module and no command will be
 added in the `late_command` part (except maybe the commands
