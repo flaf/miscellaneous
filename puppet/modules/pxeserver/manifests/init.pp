@@ -153,6 +153,18 @@ class pxeserver {
     require    => Package['apache2'],
   }
 
+  # All files/directories which are not managed by Puppet
+  # are deleted.
+  file { '/var/www/html':
+    ensure  => directory,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0755',
+    purge   => true,
+    recurse => true,
+    force   => true,
+  }
+
   file { '/var/www/html/index.html':
     ensure  => absent,
     require => Package['apache2'],

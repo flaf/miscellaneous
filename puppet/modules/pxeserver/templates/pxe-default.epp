@@ -29,12 +29,13 @@ MENU AUTOBOOT AUTOMATIC LOCAL BOOT in # second{,s}...
 MENU COLOR tabmsg      37;40    #80ffffff #00000000 std
 MENU COLOR timeout_msg 31;41    #90ffff00 #00000000 std
 
-
 LABEL local
     menu label Local boot
     localboot 0
     # The default entry if the user just presses Enter before the timeout
     MENU DEFAULT
+
+MENU SEPARATOR
 
 #######################################
 ### Expert and manual installations ###
@@ -43,7 +44,7 @@ LABEL local
 <%- $distribs_provided.each |$distrib, $settings| { -%>
 <%- $family = $settings['family'] -%>
 LABEL <%= $distrib %>-manual
-    MENU LABEL [<%= $distrib %>] expert manual install
+    MENU LABEL [<%= $distrib %>] Expert manual install
     KERNEL <%= $distrib %>/<%= $family %>-installer/amd64/linux
     APPEND priority=low initrd=<%= $distrib %>/<%= $family %>-installer/amd64/initrd.gz --
     TEXT HELP
@@ -51,13 +52,13 @@ LABEL <%= $distrib %>-manual
     ENDTEXT
 
 <%- } -%>
+MENU SEPARATOR
 
 #################################
 ### Semi manual installations ###
 #################################
 
-
-<%- $pxe_entries.each |$id, $settings| { %>
+<%- $pxe_entries.each |$id, $settings| { -%>
 <%-
   $menu_label   = $settings['menu_label']
   $distrib      = $settings['distrib']
@@ -72,6 +73,11 @@ APPEND <%= $boot_options %> url=http://<%= $my_ip %>/<%= $id %>/preseed.cfg init
 TEXT HELP
 <%= $text_help %>
 ENDTEXT
+  <%- if 'insert' in $settings { -%>
+
+<%= $settings['insert'] -%>
+
+  <%- } -%>
 
 <%- } %>
 

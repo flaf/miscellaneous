@@ -17,7 +17,7 @@ class pxeserver::params (
 
     'trusty-partial-preseed-with-puppet' => {
       'distrib'    => 'trusty',
-      'menu_label' => '[trusty] partial preseed with puppet installed',
+      'menu_label' => '[trusty] Partial preseed with puppet installed',
       'text_help'  => @(END),
         Semi manual installation of Ubuntu Trusty.
         Manual handling for:
@@ -35,7 +35,7 @@ class pxeserver::params (
 
     'xenial-partial-preseed-with-puppet' => {
       'distrib'    => 'xenial',
-      'menu_label' => '[xenial] partial preseed with puppet installed',
+      'menu_label' => '[xenial] Partial preseed with puppet installed',
       'text_help'  => @(END),
         Semi manual installation of Ubuntu Xenial.
         Manual handling for:
@@ -53,7 +53,7 @@ class pxeserver::params (
 
     'jessie-partial-preseed-with-puppet' => {
       'distrib'    => 'jessie',
-      'menu_label' => '[jessie] partial preseed with puppet installed',
+      'menu_label' => '[jessie] Partial preseed with puppet installed',
       'text_help'  => @(END),
         Semi manual installation of Debian Jessie.
         Manual handling for:
@@ -65,6 +65,7 @@ class pxeserver::params (
       'skip_boot_loader'           => false,
       'partman_early_command_file' => 'nothing',
       'late_command_file'          => 'nothing',
+      'insert'                     => 'MENU SEPARATOR',
     },
 
     'trusty-full-preseed-with-puppet' => {
@@ -99,7 +100,7 @@ class pxeserver::params (
       'late_command_file'          => 'nothing',
     },
 
-    'jessie-fully-preseed-with-puppet' => {
+    'jessie-full-preseed-with-puppet' => {
       'distrib'    => 'jessie',
       'menu_label' => '[jessie] All in /dev/sda with puppet installed',
       'text_help'  => @(END),
@@ -111,11 +112,12 @@ class pxeserver::params (
       'skip_boot_loader'           => false,
       'partman_early_command_file' => 'nothing',
       'late_command_file'          => 'nothing',
+      'insert'                     => 'MENU SEPARATOR',
     },
 
     'jessie-elea-moosql' => {
       'distrib'    => 'jessie',
-      'menu_label' => '[jessie] install Elea moosql servers',
+      'menu_label' => '[jessie] Install Elea moosql servers',
       'text_help'  => @(END),
         1. Network configuration (interface, hostname)
         2. Partitioning (do not format the partitions, it is already done)
@@ -130,7 +132,7 @@ class pxeserver::params (
 
     'trusty-elea-cargo' => {
       'distrib'    => 'trusty',
-      'menu_label' => '[trusty] install Elea cargo servers',
+      'menu_label' => '[trusty] Install Elea cargo servers',
       'text_help'  => @(END),
         WARNING: For the hostname question, put the FQDN of the host
         unless the DHCP server already sends the good domain name.
@@ -145,7 +147,7 @@ class pxeserver::params (
 
     'trusty-ceph-dc2' => {
       'distrib'    => 'trusty',
-      'menu_label' => '[trusty] install Ceph servers at dc2',
+      'menu_label' => '[trusty] Install Ceph servers at dc2',
       'text_help'  => @(END),
         WARNING: For the hostname question, put the FQDN of the host
         unless the DHCP server already sends the good domain name.
