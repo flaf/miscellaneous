@@ -2,6 +2,7 @@ function pxeserver::data {
 
   {
     pxeserver::params::dhcp_confs              => undef,
+    pxeserver::params::no_dhcp_interface       => [],
     pxeserver::params::apt_proxy               => '',
     pxeserver::params::ip_reservations         => {},
     pxeserver::params::puppet_collection       => undef,

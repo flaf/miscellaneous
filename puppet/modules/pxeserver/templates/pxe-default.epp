@@ -41,12 +41,12 @@ MENU SEPARATOR
 ### Expert and manual installations ###
 #######################################
 
-MENU BEGIN Expert manual install
+MENU BEGIN Expert manual installations
 
 <%- $distribs_provided.each |$distrib, $settings| { -%>
 <%- $family = $settings['family'] -%>
     LABEL <%= $distrib %>-manual
-        MENU LABEL [<%= $distrib %>] Expert manual install
+        MENU LABEL [<%= $distrib %>] Expert manual installation
         KERNEL <%= $distrib %>/<%= $family %>-installer/amd64/linux
         APPEND priority=low initrd=<%= $distrib %>/<%= $family %>-installer/amd64/initrd.gz --
         TEXT HELP

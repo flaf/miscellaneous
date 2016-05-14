@@ -3,6 +3,7 @@ class pxeserver {
   $params = '::pxeserver::params'
   include $params
   $dhcp_confs             = ::homemade::getvar("${params}::dhcp_confs", $title)
+  $no_dhcp_interface      = ::homemade::getvar("${params}::no_dhcp_interface", $title)
   $ip_reservations        = ::homemade::getvar("${params}::ip_reservations", $title)
   $puppet_collection      = ::homemade::getvar("${params}::puppet_collection", $title)
   $pinning_puppet_version = ::homemade::getvar("${params}::pinning_puppet_version", $title)
@@ -119,8 +120,9 @@ class pxeserver {
     require => Package['dnsmasq'],
     content => epp('pxeserver/dnsmasq-main.conf.epp',
                    {
-                    'dhcp_confs'       => $dhcp_confs,
-                    'domain'           => $::domain,
+                    'dhcp_confs'        => $dhcp_confs,
+                    'no_dhcp_interface' => $no_dhcp_interface,
+                    'domain'            => $::domain,
                    }
                   ),
   }

@@ -29,6 +29,7 @@ $ip_reservations = {
 
 class { '::pxeserver::params':
   dhcp_confs             => $dhcp_confs,
+  no_dhcp_interface      => [ 'eth0' ],
   ip_reservations        => $ip_reservations,
   apt_proxy              => 'http://172.31.10.10:3142',
   puppet_collection      => 'PC1',
@@ -48,11 +49,6 @@ With this module, the host will have a DHCP service and
 a TFTP service (to provide boot PXE) but no DNS service
 is installed.
 
-This module should be used only with hosts which have
-just only **one interface** (or two interfaces if you take
-into account `lo` of course). Outside of this condition,
-there is no warranty that the module works well.
-
 
 # Parameters of the class `pxeserver::params`
 
@@ -66,6 +62,16 @@ of dnsmasq with the instructions `dhcp-range` and used in
 the instructions `dhcp-option` etc. The default value of
 this parameter is `undef` so you must provide a value
 explicitly.
+
+In the case where you don't use DHCP relay, each `range +
+netmask` in the `dhcp_confs` parameter must match with one
+address of the host interfaces.
+
+The `no_dhcp_interface` parameter allows to set several
+`no-dhcp-interface=<interface>` instructions in the dnsmask
+configuration to disable DHCP on specific interfaces. The
+default value of this parameter is `[]`, ie DHCP is enabled
+on all host interfaces.
 
 The `ip_reservations` parameter must have the structure
 above but can be the empty hash `{}` which its default
@@ -92,18 +98,21 @@ You have to modify the file `manifest/manifests/params.pp`
 and add an entry in the hash `pxe_entries`:
 
 ```puppet
+  $my_text_help = @(END)
+    Blabla blabla blabla...
+    Blabla blabla blabla...
+    Blabla blabla blabla...
+    |- END
+
   $pxe_entries = {
 
-  [...]
+    # [...]
 
     'auto-documented-id' => {
-      'distrib'    => 'trusty',
-      'menu_label' => '[trusty] bla bla bla',
-      'text_help'  => @(END),
-        Blabla blabla blabla...
-        Blabla blabla blabla...
-        Blabla blabla blabla...
-        |- END
+      'insert_begin'               => 'MENU BEGIN Expert installations',
+      'distrib'                    => 'trusty',
+      'menu_label'                 => '[trusty] bla bla bla',
+      'text_help'                  => $my_text_help,
       'apt_proxy'                  => '',
       'partman_early_command_file' => 'nothing',
       'partman_auto_disk'          => '/dev/sda',
@@ -111,7 +120,13 @@ and add an entry in the hash `pxe_entries`:
       'late_command_file'          => 'nothing',
       'install_puppet'             => true,
       'permitrootlogin_ssh'        => true,
+      #'insert_begin'               => 'MENU END',
+      #'insert_begin'               => 'MENU SEPARATOR',
     },
+
+    # [...]
+
+  }
 ```
 
 `distrib` must be the codename of the distribution in
@@ -182,6 +197,20 @@ history of root. The default value of this parameter is
 commands to allow root login via ssh will be automatically
 added in the `late_command` part. The default value of this
 parameter is `true`.
+
+The keys `insert_begin` and `insert_end` allow to insert
+any content before and after the PXE entry. For instance
+with:
+
+```conf
+MENU BEGIN Blaba blabla # via `insert_begin`
+    # [...]
+MENU END                # via `insert_end`
+```
+
+you can create menu where each PXE entry will be a sub-menu
+of this menu. Another example: the `MENU SEPARATOR`
+instruction allows to insert an empty line.
 
 
 # Remark
