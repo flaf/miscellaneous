@@ -1,8 +1,9 @@
 class pxeserver::params (
   Optional[ Hash[String[1], Pxeserver::Dhcpconf, 1] ] $dhcp_confs,
-  Array[String[1]]                                    $no_dhcp_interface,
+  Array[String[1]]                                    $no_dhcp_interfaces,
   String                                              $apt_proxy,
   Hash[String[1], Array[String[1], 2, 2]]             $ip_reservations,
+  Array[Array[String[1], 2]]                          $host_records,
   Optional[ String[1] ]                               $puppet_collection,
   Optional[ String[1] ]                               $pinning_puppet_version,
   Optional[ String[1] ]                               $puppet_server,

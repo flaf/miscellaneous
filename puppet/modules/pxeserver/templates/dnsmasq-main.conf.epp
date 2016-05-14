@@ -1,14 +1,16 @@
-<%- |$dhcp_confs, $no_dhcp_interface, $domain| -%>
+<%- |$dhcp_confs, $no_dhcp_interfaces, $domain, $disable_dns| -%>
 ### This file is managed by Puppet, don't edit it. ###
 
+<%- if $disable_dns { -%>
 # To disable DNS completely. We just want to have a DHCP/PXE server.
 port=0
 
+<%- } -%>
 # Domain sent by the DHCP server (if enabled).
 domain=<%= $domain %>
 
-<%- unless $no_dhcp_interface.empty { -%>
-  <%- $no_dhcp_interface.each |$interface| { -%>
+<%- unless $no_dhcp_interfaces.empty { -%>
+  <%- $no_dhcp_interfaces.each |$interface| { -%>
 no-dhcp-interface=<%= $interface %>
   <%- } -%>
 

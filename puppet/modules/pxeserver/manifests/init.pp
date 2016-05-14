@@ -3,8 +3,9 @@ class pxeserver {
   $params = '::pxeserver::params'
   include $params
   $dhcp_confs             = ::homemade::getvar("${params}::dhcp_confs", $title)
-  $no_dhcp_interface      = ::homemade::getvar("${params}::no_dhcp_interface", $title)
+  $no_dhcp_interfaces     = ::homemade::getvar("${params}::no_dhcp_interfaces", $title)
   $ip_reservations        = ::homemade::getvar("${params}::ip_reservations", $title)
+  $host_records           = ::homemade::getvar("${params}::host_records", $title)
   $puppet_collection      = ::homemade::getvar("${params}::puppet_collection", $title)
   $pinning_puppet_version = ::homemade::getvar("${params}::pinning_puppet_version", $title)
   $puppet_server          = ::homemade::getvar("${params}::puppet_server", $title)
@@ -20,6 +21,7 @@ class pxeserver {
   $distribs_provided_str   = $distribs_provided_array.join(', ')
   $my_family               = $facts['os']['distro']['id'].downcase
   $my_ip                   = $facts['networking']['ip']
+  $disable_dns             = $host_records.empty
 
   # Check that distribs are in provided distribs.
   $pxe_entries.each |$id, $settings| {
@@ -120,9 +122,10 @@ class pxeserver {
     require => Package['dnsmasq'],
     content => epp('pxeserver/dnsmasq-main.conf.epp',
                    {
-                    'dhcp_confs'        => $dhcp_confs,
-                    'no_dhcp_interface' => $no_dhcp_interface,
-                    'domain'            => $::domain,
+                    'dhcp_confs'         => $dhcp_confs,
+                    'no_dhcp_interfaces' => $no_dhcp_interfaces,
+                    'domain'             => $::domain,
+                    'disable_dns'        => $disable_dns,
                    }
                   ),
   }
@@ -136,6 +139,18 @@ class pxeserver {
     require => Package['dnsmasq'],
     content => epp('pxeserver/dnsmasq-reservations.conf.epp',
                    { 'ip_reservations' => $ip_reservations, }
+                  ),
+  }
+
+  file { "/etc/dnsmasq.d/host-records.conf":
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    notify  => Service['dnsmasq'],
+    require => Package['dnsmasq'],
+    content => epp('pxeserver/dnsmasq-host-records.conf.epp',
+                   { 'host_records' => $host_records, }
                   ),
   }
 

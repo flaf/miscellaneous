@@ -1,7 +1,7 @@
 # Module description
 
-This module just installs and manages a little PXE/DHCP server
-(not DNS service is installed).
+This module just installs and manages a little PXE/DHCP server.
+You can too manage a basic DNS server.
 
 # Usage
 
@@ -27,10 +27,17 @@ $ip_reservations = {
   '9e:72:c8:38:38:2c' => [ '172.31.25.26', 'poller-2' ],
 }
 
+$hosts_records = [
+  [ 'nfs-1.dom.tld',    'nfs-1',    '192.168.13.50' ],
+  [ 'poller-1.dom.tld', 'poller-1', '172.31.25.25'  ],
+  [ 'poller-2.dom.tld', 'poller-2', '172.31.25.26'  ],
+]
+
 class { '::pxeserver::params':
   dhcp_confs             => $dhcp_confs,
   no_dhcp_interface      => [ 'eth0' ],
   ip_reservations        => $ip_reservations,
+  host_records           => $host_records,
   apt_proxy              => 'http://172.31.10.10:3142',
   puppet_collection      => 'PC1',
   pinning_puppet_version => '1.3.0-*',
@@ -42,12 +49,6 @@ class { '::pxeserver::params':
 
 include '::pxeserver'
 ```
-
-# Warning
-
-With this module, the host will have a DHCP service and
-a TFTP service (to provide boot PXE) but no DNS service
-is installed.
 
 
 # Parameters of the class `pxeserver::params`
@@ -76,6 +77,15 @@ on all host interfaces.
 The `ip_reservations` parameter must have the structure
 above but can be the empty hash `{}` which its default
 value, ie no IP reservation.
+
+The `host_records` parameter allow to set several
+`host-record=<name>,<name>,...,<IP-address>` instructions
+in the dnsmask configuration. The default value this
+parameter is `[]` ie no host record at all. In this case,
+the DNS service is completely disabled. If enabled, the
+DNS server forwards the DNS requests to the DNS servers
+set in the local file `/etc/resolv.conf` via the
+`nameserver` instructions.
 
 The `apt_proxy` parameter allows to set a APT proxy
 in the preseed files. If not set, its default value
