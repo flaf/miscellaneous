@@ -16,6 +16,3 @@ roles::puppetserver::params::is_mcollective_client: true
 puppetserver::params::modules_repository: 'http://puppetforge.lss1.backbone.education:8080'
 
 
-_puppetdb_password_: '10d2058e00404c8dc168fd09096e09ac7695ae30'
-
-

@@ -15,6 +15,3 @@ network::params::ifaces:
 roles::puppetserver::params::is_mcollective_client: true
 
 
-_puppetdb_password_: 'df02bd7aa1e5ae383ca775ea378a6605a3b8a686'
-
-
