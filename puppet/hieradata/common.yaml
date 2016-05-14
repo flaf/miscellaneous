@@ -6,13 +6,13 @@ network::params::inventory_networks:
     vlan_name: 'freebox_lan'
     cidr_address: '192.168.0.0/24'
     gateway: '192.168.0.254'
-    admin_email: '%{hiera("_admin_email_")}'
+    admin_email: '%{alias("_admin_email_")}'
   freeboox_lan2:
     comment: [ 'LAN2 behind the Freebox (no dhcp).' ]
     vlan_id: '1000'
     vlan_name: 'freebox_lan2'
     cidr_address: '10.0.0.0/16'
-    admin_email: '%{hiera("_admin_email_")}'
+    admin_email: '%{alias("_admin_email_")}'
   vbox_adm:
     comment: [ 'Private LAN in VBox for administration (dhcp).' ]
     vlan_id: '1001'
@@ -24,26 +24,26 @@ network::params::inventory_networks:
     dns_servers: [ '172.31.0.1' ]
     apt_proxy: 'http://192.168.0.1:3142'
     dhcp_range: [ '172.31.200.10', '172.31.200.20' ]
-    admin_email: '%{hiera("_admin_email_")}'
+    admin_email: '%{alias("_admin_email_")}'
   vbox_priv:
     comment: [ 'Private LAN in VBox without dhcp.' ]
     vlan_id: '1002'
     vlan_name: 'vbox_priv'
     cidr_address: '172.20.0.0/16'
     gateway: '172.20.0.1'
-    admin_email: '%{hiera("_admin_email_")}'
+    admin_email: '%{alias("_admin_email_")}'
   vbox_ceph_priv:
     comment: [ 'Private LAN in VBox without dhcp for Ceph cluster network.' ]
     vlan_id: '1003'
     vlan_name: 'vbox_ceph_priv'
     cidr_address: '10.0.0.0/24'
-    admin_email: '%{hiera("_admin_email_")}'
+    admin_email: '%{alias("_admin_email_")}'
 
 _admin_email_: 'admin@flaf.fr'
 
 unix_accounts::params::users:
   root:
-    password: '%{hiera("_root_unix_pwd_")}'
+    password: '%{alias("_root_unix_pwd_")}'
     fqdn_in_prompt: true
     ssh_authorized_keys:
       - 'root@router.athome.priv'
@@ -52,7 +52,7 @@ unix_accounts::params::users:
 
   flaf:
     ensure: 'present'
-    password: '%{hiera("_flaf_unix_pwd_")}'
+    password: '%{alias("_flaf_unix_pwd_")}'
     is_sudo: true
     ssh_authorized_keys:
       - 'root@router.athome.priv'
@@ -64,11 +64,11 @@ repository::puppet::params::collection: 'PC1'
 repository::puppet::params::pinning_agent_version: '1.4.2-*'
 repository::puppet::params::pinning_server_version: '2.3.2-*'
 
-mcollective::server::params::private_key: '%{hiera("_mcollective_server_private_key_")}'
-mcollective::server::params::public_key: '%{hiera("_mcollective_server_public_key_")}'
+mcollective::server::params::private_key: '%{alias("_mcollective_server_private_key_")}'
+mcollective::server::params::public_key: '%{alias("_mcollective_server_public_key_")}'
 mcollective::server::params::middleware_address: 'middleware.%{::domain}'
 
-mcomiddleware::params::mcollective_pwd: "%{hiera('_middleware_mcollective_pwd_')}"
+mcomiddleware::params::mcollective_pwd: "%{alias('_middleware_mcollective_pwd_')}"
 roles::mcomiddleware::params::exchanges: []
 
 
