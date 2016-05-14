@@ -6,6 +6,7 @@ class pxeserver {
   $no_dhcp_interfaces     = ::homemade::getvar("${params}::no_dhcp_interfaces", $title)
   $ip_reservations        = ::homemade::getvar("${params}::ip_reservations", $title)
   $host_records           = ::homemade::getvar("${params}::host_records", $title)
+  $resolv_file            = ::homemade::getvar("${params}::resolv_file", $title)
   $puppet_collection      = ::homemade::getvar("${params}::puppet_collection", $title)
   $pinning_puppet_version = ::homemade::getvar("${params}::pinning_puppet_version", $title)
   $puppet_server          = ::homemade::getvar("${params}::puppet_server", $title)
@@ -126,6 +127,7 @@ class pxeserver {
                     'no_dhcp_interfaces' => $no_dhcp_interfaces,
                     'domain'             => $::domain,
                     'disable_dns'        => $disable_dns,
+                    'resolv_file'        => $resolv_file,
                    }
                   ),
   }

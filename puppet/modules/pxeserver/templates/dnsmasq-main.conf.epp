@@ -1,9 +1,19 @@
-<%- |$dhcp_confs, $no_dhcp_interfaces, $domain, $disable_dns| -%>
+<%- |
+  $dhcp_confs,
+  $no_dhcp_interfaces,
+  $domain,
+  $disable_dns,
+  $resolv_file
+| -%>
 ### This file is managed by Puppet, don't edit it. ###
 
 <%- if $disable_dns { -%>
 # To disable DNS completely. We just want to have a DHCP/PXE server.
 port=0
+
+<%- } -%>
+<%- unless $resolv_file.empty { -%>
+resolv-file = <%= $resolv_file %>
 
 <%- } -%>
 # Domain sent by the DHCP server (if enabled).
