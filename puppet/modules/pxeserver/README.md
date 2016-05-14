@@ -92,7 +92,7 @@ The `resolv_file` parameter allows to set the `resolv-file`
 instruction in the dnsmasq configuration, ie the DNS to
 forward the requests. The default value of this parameter is
 `''` (an empty string) which means that the parameter is not
-handled at all.
+handled at all (no `resolv-file` instruction is set).
 
 The `apt_proxy` parameter allows to set a APT proxy
 in the preseed files. If not set, its default value
