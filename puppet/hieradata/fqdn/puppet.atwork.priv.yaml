@@ -12,7 +12,6 @@ network::params::ifaces:
     inet:
       method: 'dhcp'
 
-roles::puppetserver::params::is_mcollective_client: true
 puppetserver::params::modules_repository: 'http://puppetforge.lss1.backbone.education:8080'
 
 

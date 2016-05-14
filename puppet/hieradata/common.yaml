@@ -1,17 +1,19 @@
 ---
 network::params::inventory_networks:
-  freeboox_lan:
+  freebox_lan:
     comment: [ 'LAN behind the Freebox (dhcp).' ]
     vlan_id: '1000'
     vlan_name: 'freebox_lan'
     cidr_address: '192.168.0.0/24'
     gateway: '192.168.0.254'
+    dns_servers: [ '192.168.0.254' ]
+    ntp_servers: [ '192.168.0.1' ]
     admin_email: '%{alias("_admin_email_")}'
-  freeboox_lan2:
+  freebox_lan2:
     comment: [ 'LAN2 behind the Freebox (no dhcp).' ]
     vlan_id: '1000'
     vlan_name: 'freebox_lan2'
-    cidr_address: '10.0.0.0/16'
+    cidr_address: '10.0.0.0/8'
     admin_email: '%{alias("_admin_email_")}'
   vbox_adm:
     comment: [ 'Private LAN in VBox for administration (dhcp).' ]
@@ -25,19 +27,19 @@ network::params::inventory_networks:
     apt_proxy: 'http://192.168.0.1:3142'
     dhcp_range: [ '172.31.200.10', '172.31.200.20' ]
     admin_email: '%{alias("_admin_email_")}'
-  vbox_priv:
-    comment: [ 'Private LAN in VBox without dhcp.' ]
-    vlan_id: '1002'
-    vlan_name: 'vbox_priv'
-    cidr_address: '172.20.0.0/16'
-    gateway: '172.20.0.1'
-    admin_email: '%{alias("_admin_email_")}'
-  vbox_ceph_priv:
-    comment: [ 'Private LAN in VBox without dhcp for Ceph cluster network.' ]
-    vlan_id: '1003'
-    vlan_name: 'vbox_ceph_priv'
-    cidr_address: '10.0.0.0/24'
-    admin_email: '%{alias("_admin_email_")}'
+  #vbox_priv:
+  #  comment: [ 'Private LAN in VBox without dhcp.' ]
+  #  vlan_id: '1002'
+  #  vlan_name: 'vbox_priv'
+  #  cidr_address: '172.20.0.0/16'
+  #  gateway: '172.20.0.1'
+  #  admin_email: '%{alias("_admin_email_")}'
+  #vbox_ceph_priv:
+  #  comment: [ 'Private LAN in VBox without dhcp for Ceph cluster network.' ]
+  #  vlan_id: '1003'
+  #  vlan_name: 'vbox_ceph_priv'
+  #  cidr_address: '10.0.0.0/24'
+  #  admin_email: '%{alias("_admin_email_")}'
 
 _admin_email_: 'admin@flaf.fr'
 
@@ -82,26 +84,26 @@ snmp::params::snmpv3_accounts:
     privproto: 'aes' # optional and default is 'aes'
     privpass: 'YYYYYYYYYYYYYYYYYYYYYY'
     view: 'monitoring' # optional and default is 'monitoring'
-  test:
-    name: 'security'
-    authproto: 'sha'
-    authpass: 'xxxxxxxxxxxxxxxxxxxxx'
-    privproto: 'aes'
-    privpass: 'YYYYYYYYYYYYYYYYYYYYYY'
-    view: 'monitoring'
-snmp::params::communities:
-  jrds:
-    name: 'xxxx'
-    access:
-      - source: 'localhost'
-        view: 'monitoring' # optional and default is 'monitorng'
-      - source: '172.31.0.182'
-        view: 'monitoring' # optional and default is 'monitorng'
-  jrds2:
-    name: 'yyy'
-    access:
-      - source: '172.30.240.182'
-        view: 'monitoring'
+  #test:
+  #  name: 'security'
+  #  authproto: 'sha'
+  #  authpass: 'xxxxxxxxxxxxxxxxxxxxx'
+  #  privproto: 'aes'
+  #  privpass: 'YYYYYYYYYYYYYYYYYYYYYY'
+  #  view: 'monitoring'
+#snmp::params::communities:
+#  jrds:
+#    name: 'xxxx'
+#    access:
+#      - source: 'localhost'
+#        view: 'monitoring' # optional and default is 'monitorng'
+#      - source: '172.31.0.182'
+#        view: 'monitoring' # optional and default is 'monitorng'
+#  jrds2:
+#    name: 'yyy'
+#    access:
+#      - source: '172.30.240.182'
+#        view: 'monitoring'
 
 
 
