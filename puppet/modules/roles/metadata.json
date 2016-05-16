@@ -1,6 +1,6 @@
 {
   "name": "flaf-roles",
-  "version": "0.4.9",
+  "version": "0.4.10",
   "author": "flaf",
   "summary": "Module to implement roles, ie very top level classes",
   "license": "Apache-2.0",
@@ -25,7 +25,7 @@
     {"name":"flaf-mcomiddleware","version_requirement":"0.2.0"},
     {"name":"flaf-puppetserver","version_requirement":"0.4.7"},
     {"name":"flaf-puppetforge","version_requirement":"0.4.1"},
-    {"name":"flaf-pxeserver","version_requirement":"0.4.1"}
+    {"name":"flaf-pxeserver","version_requirement":"0.4.2"}
   ]
 }
 
