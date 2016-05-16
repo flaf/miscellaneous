@@ -1,6 +1,6 @@
 ---
 enc_included_classes:
-  - [ 'flaf', '::roles::puppetserver' ]
+  - [ 'flaf', '::roles::puppetrouter' ]
 enc_datacenter: 'vboxhome'
 enc_groups: [ 'puppetserver' ]
 
@@ -30,6 +30,12 @@ network::params::ifaces:
         netmask: '__default__'
         post-up: 'iptables -t nat -A POSTROUTING -s 172.31.0.0/16 -j MASQUERADE'
 
-network::resolv_conf::params::local_resolver: false
+pxeserver::params::host_records:
+  - [ '%{::fqdn}',              '%{::hostname}', '172.31.0.1' ]
+  - [ 'pxe.%{::domain}',        'pxe',           '172.31.0.1' ]
+  - [ 'middleware.%{::domain}', 'middleware',    '172.31.0.2' ]
+
+pxeserver::params::ip_reservations:
+  '08:00:27:00:00:a3': [ '172.31.0.2', 'middleware' ]
 
 

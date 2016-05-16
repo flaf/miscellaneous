@@ -8,7 +8,7 @@ network::params::restart: true
 network::params::ifaces:
   eth0:
     in_networks: [ 'vbox_adm' ]
-    macaddress: '08:00:27:bc:ce:f0'
+    macaddress: '08:00:27:00:00:a3'
     inet:
       method: 'dhcp'
 

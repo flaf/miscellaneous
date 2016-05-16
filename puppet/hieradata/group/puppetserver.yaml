@@ -22,7 +22,17 @@ mcollective::client::params::private_key: "%{alias('_mcollective_client_private_
 
 
 
-_puppetdb_password_: '10d2058e00404c8dc168fd09096e09ac7695ae30'
+_puppetdb_password_:
+  ENC[PKCS7,MIIBmQYJKoZIhvcNAQcDoIIBijCCAYYCAQAxggEhMIIBHQIBADAFMAACAQEw
+  DQYJKoZIhvcNAQEBBQAEggEAUrPOOPrXWEMc9JIIMLrluIOCa75kBW3YISxD
+  GEjF/SHzRsn4mIXV6AWamgqWxXTS0MHLDc2tedQdKCzw11R4PRBt23IbHxpn
+  7y/cLpOczTQS+bKO3in7dJBPFbQQfmLSCRGHde0PHDA/bqrVFUeveV+4Fu3p
+  XpWBp86n72Qxiw7hEwVDMeV0GwHKeWG6jFZWl0b5WJ8CA5XRCj4TWU5y1w7U
+  g+1eVpCzjRhjcnVnseJ+UfYTCfhfKDkTyDltnl15f+b00MXZ7wCTsAfyeAo1
+  ncE0QamF5YQ6lL/j7MONvGJ06Pq/hnZpnUYjCUdApNjaQWAPsJxJ8e+WjmKi
+  SdCA3zBcBgkqhkiG9w0BBwEwHQYJYIZIAWUDBAEqBBDHbwPWvXmXWqK5lAyd
+  Xl/hgDCThDgwbGuaoHuTkwHWLYQH+xjU+IAJ01Y1HKVo4cXHsuDTmsw+up1M
+  vTGlyOA2o2g=]
 
 _puppet_mcrypt_pwd_: >
   ENC[PKCS7,MIIBeQYJKoZIhvcNAQcDoIIBajCCAWYCAQAxggEhMIIBHQIBADAFMAACAQEw
