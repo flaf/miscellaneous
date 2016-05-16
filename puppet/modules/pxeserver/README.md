@@ -27,7 +27,7 @@ $ip_reservations = {
   '9e:72:c8:38:38:2c' => [ '172.31.25.26', 'poller-2' ],
 }
 
-$hosts_records = [
+$host_records = [
   [ 'nfs-1.dom.tld',    'nfs-1',    '192.168.13.50' ],
   [ 'poller-1.dom.tld', 'poller-1', '172.31.25.25'  ],
   [ 'poller-2.dom.tld', 'poller-2', '172.31.25.26'  ],
@@ -35,10 +35,10 @@ $hosts_records = [
 
 class { '::pxeserver::params':
   dhcp_confs             => $dhcp_confs,
-  no_dhcp_interface      => [ 'eth0' ],
+  no_dhcp_interfaces     => [ 'eth0' ],
   ip_reservations        => $ip_reservations,
   host_records           => $host_records,
-  resolv_conf            => '/etc/resolv-dnsmasq.conf',
+  resolv_file            => '/etc/resolv-dnsmasq.conf',
   apt_proxy              => 'http://172.31.10.10:3142',
   puppet_collection      => 'PC1',
   pinning_puppet_version => '1.3.0-*',
@@ -69,7 +69,7 @@ In the case where you don't use DHCP relay, each `range +
 netmask` in the `dhcp_confs` parameter must match with one
 address of the host interfaces.
 
-The `no_dhcp_interface` parameter allows to set several
+The `no_dhcp_interfaces` parameter allows to set several
 `no-dhcp-interface=<interface>` instructions in the dnsmask
 configuration to disable DHCP on specific interfaces. The
 default value of this parameter is `[]`, ie DHCP is enabled

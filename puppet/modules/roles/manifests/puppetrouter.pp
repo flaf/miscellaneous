@@ -11,21 +11,35 @@ class roles::puppetrouter {
   $dhcp_ifaces = $::network::params::interfaces.filter |$iface, $settings| {
     'inet' in $settings
        and $settings['inet']['method'] == 'dhcp'
-       and 'in_networks' in $settings
-       and $settings['in_networks'].size == 1
-  }
-  .filter |$iface, $settings| {
-    $network = $settings['in_networks'][0]
-    'dns_servers' in $::network::params::inventory_networks[$network]
-  }
-  .keys
+  }.keys
 
   unless $dhcp_ifaces.size == 1 {
     fail('boum')
   }
 
+  $dhcp_iface          = $dhcp_ifaces[0]
+  $dhcp_iface_settings = $::network::params::interfaces[$dhcp_iface]
+
+  unless 'in_networks' in $dhcp_iface_settings
+  and $dhcp_iface_settings['in_networks'].size == 1 {
+    fail('bam')
+  }
+
+  $dhcp_network_name = $dhcp_iface_settings['in_networks'][0]
+  $dhcp_network      = $::network::params::inventory_networks[$dhcp_network_name]
+
+  unless 'dns_servers' in $dhcp_network {
+    fail('bim')
+  }
+
+  $dns_servers = $dhcp_network['dns_servers']
+
 
   include '::roles::puppetserver'
+
+  class {'::roles::pxeserver::params':
+    no_dhcp_interfaces => [ $dhcp_iface ],
+  }
   include '::roles::pxeserver'
 
 }

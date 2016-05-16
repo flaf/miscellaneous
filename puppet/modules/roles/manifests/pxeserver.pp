@@ -1,5 +1,8 @@
 class roles::pxeserver {
 
+  include '::roles::pxeserver::params'
+  $no_dhcp_interfaces = $::roles::pxeserver::params::no_dhcp_interfaces
+
   # This present role include the role "generic".
   include '::roles::generic'
 
@@ -70,6 +73,7 @@ class roles::pxeserver {
 
   class { '::pxeserver::params':
     dhcp_confs             => $dhcp_confs,
+    no_dhcp_interfaces     => $no_dhcp_interfaces,
     apt_proxy              => $apt_proxy,
     puppet_collection      => $::repository::puppet::params::collection,
     pinning_puppet_version => $::repository::puppet::params::pinning_agent_version,
