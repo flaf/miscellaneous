@@ -8,7 +8,7 @@ network::params::inventory_networks:
     cidr_address: '195.221.97.1/24'
     gateway: '195.221.97.1'
     dns_servers: [ '195.221.98.7', '195.221.98.9' ]
-    ntp_servers: [ 'hades.crdp.ac-versailles.fr' ]
+    ntp_servers: [ '195.221.97.69' ]
     admin_email: '%{alias("_admin_email_")}'
   freebox_lan:
     comment: [ 'LAN behind the Freebox (dhcp).' ]
