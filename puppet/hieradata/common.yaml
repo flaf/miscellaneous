@@ -9,7 +9,7 @@ network::params::inventory_networks:
     gateway: '195.221.97.1'
     dns_servers: [ '195.221.98.7', '195.221.98.9' ]
     ntp_servers: [ 'hades.crdp.ac-versailles.fr' ]
-    admin_email: '%{alias("admin_email")}'
+    admin_email: '%{alias("_admin_email_")}'
   freebox_lan:
     comment: [ 'LAN behind the Freebox (dhcp).' ]
     vlan_id: '1000'

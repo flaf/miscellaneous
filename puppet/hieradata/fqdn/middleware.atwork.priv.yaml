@@ -2,6 +2,7 @@
 enc_included_classes:
   - [ 'flaf', 'roles::mcomiddleware' ]
 enc_datacenter: 'vboxwork'
+enc_groups: [ 'middleware' ]
 
 network::params::ifaces:
   eth0:
@@ -9,7 +10,5 @@ network::params::ifaces:
     macaddress: '08:00:27:00:00:a3'
     inet:
       method: 'dhcp'
-
-mcomiddleware::params::admin_pwd: 'cabc9a78a76267c799fac322150a01c6'
 
 
