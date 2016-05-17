@@ -489,6 +489,36 @@ exported with the tag equal to the value of the
 
 
 
+# The `network::basic_router` class
+
+This class configure a basic router. In clear, the IPv4
+forwarding is enabled.
+
+
+## Usage
+
+Here is an example:
+
+```puppet
+class { '::network::basic_router::params':
+  masqueraded_networks => [ '172.31.0.0/16', '10.0.0.0/8' ],
+}
+
+include '::network::basic_router'
+```
+
+
+## Parameter of `network::basic_router::params`
+
+`masqueraded_networks` is the only parameter of this class.
+It allows to set masquerading for some IP networks. You must
+provide the CIDR address like in the example above. The
+default value of this parameter is `[]` (an empty array). In
+this case, there is no masquerading.
+
+
+
+
 # The `::network::dump_cidr` function
 
 Here is an example:
