@@ -11,7 +11,7 @@ network::params::ifaces:
     inet:
       method: 'dhcp'
   eth1:
-    in_networks: [ 'freebox_lan2' ]
+    in_networks: [ 'tricky_net' ]
     macaddress: '08:00:27:00:00:a1'
     inet:
       method: 'static'

@@ -19,16 +19,16 @@ network::params::inventory_networks:
     dns_servers: [ '192.168.0.254' ]
     ntp_servers: [ '192.168.0.1' ]
     admin_email: '%{alias("_admin_email_")}'
-  freebox_lan2:
-    comment: [ 'LAN2 behind the Freebox (no dhcp).' ]
+  tricky_net:
+    comment: [ 'Tricky network to allow access in private network.' ]
     vlan_id: '1000'
-    vlan_name: 'freebox_lan2'
+    vlan_name: 'freebox_lan'
     cidr_address: '10.0.0.0/8'
     admin_email: '%{alias("_admin_email_")}'
   vbox_adm:
     comment: [ 'Private LAN in VBox for administration (dhcp).' ]
     vlan_id: '1001'
-    vlan_name: 'vbx_adm'
+    vlan_name: 'priv'
     datacenters: [ 'vboxhome', 'vboxwork' ]
     cidr_address: '172.31.0.0/16'
     gateway: '172.31.0.1'
