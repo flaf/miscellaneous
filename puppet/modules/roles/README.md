@@ -10,6 +10,9 @@ List of roles provided:
 * [The role `mcomiddleware`](README-mcomiddleware.md)
 * The role `mcomiddleforge` which is the addition of the
   roles `mcomiddleware` and `puppetforge`
-* The role `pxeserver` which has no parameter
+* [The role `pxeserver`](README-pxeserver.md)
+* The role `puppetrouter` which has no parameter. It defines
+  the addition of roles `puppetserver` and `pxeserver`. See
+  the code to have more explanations.
 
 
