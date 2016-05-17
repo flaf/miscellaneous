@@ -38,7 +38,7 @@ class { '::pxeserver::params':
   no_dhcp_interfaces     => [ 'eth0' ],
   ip_reservations        => $ip_reservations,
   host_records           => $host_records,
-  resolv_file            => '/etc/resolv-dnsmasq.conf',
+  backend_dns            => [ '8.8.8.8', '8.8.4.4' ],
   apt_proxy              => 'http://172.31.10.10:3142',
   puppet_collection      => 'PC1',
   pinning_puppet_version => '1.3.0-*',
@@ -88,7 +88,16 @@ DNS server forwards the DNS requests to the DNS servers
 set in the local file `/etc/resolv.conf` via the
 `nameserver` instructions.
 
-The `resolv_file` parameter allows to set the `resolv-file`
+The `backend_dns` parameter allows dnsmasq to use another
+DNS servers that the DNS mentioned in `/etc/resolv.conf`
+(via the `nameserver` instruction). The default value of
+this parameter is `[]`. In this case, dnsmasq uses the DNS
+servers mentioned in `/etc/resolv.conf` (this is the default
+behavior of dnsmasq). But if this parameter is not empty, in
+this case dnsmasq uses the DNS servers mentioned in this
+parameter.
+
+to set the `resolv-file`
 instruction in the dnsmasq configuration, ie the DNS to
 forward the requests. The default value of this parameter is
 `''` (an empty string) which means that the parameter is not
