@@ -6,7 +6,7 @@ class pxeserver {
   $no_dhcp_interfaces     = ::homemade::getvar("${params}::no_dhcp_interfaces", $title)
   $ip_reservations        = ::homemade::getvar("${params}::ip_reservations", $title)
   $host_records           = ::homemade::getvar("${params}::host_records", $title)
-  $resolv_file            = ::homemade::getvar("${params}::resolv_file", $title)
+  $backend_dns            = ::homemade::getvar("${params}::backend_dns", $title)
   $puppet_collection      = ::homemade::getvar("${params}::puppet_collection", $title)
   $pinning_puppet_version = ::homemade::getvar("${params}::pinning_puppet_version", $title)
   $puppet_server          = ::homemade::getvar("${params}::puppet_server", $title)
@@ -23,6 +23,14 @@ class pxeserver {
   $my_family               = $facts['os']['distro']['id'].downcase
   $my_ip                   = $facts['networking']['ip']
   $disable_dns             = $host_records.empty
+
+  # If $backend_dns is empty, dnsmasq uses /etc/resolv.conf
+  # as backend DNS. If not, it uses /etc/resolv-dnsmasq.conf
+  # which contains the DNS servers in $backend_dns.
+  $use_resolv_conf         = $backend_dns.size ? {
+    0       => true,
+    default => false,
+  }
 
   # Check that distribs are in provided distribs.
   $pxe_entries.each |$id, $settings| {
@@ -127,9 +135,25 @@ class pxeserver {
                     'no_dhcp_interfaces' => $no_dhcp_interfaces,
                     'domain'             => $::domain,
                     'disable_dns'        => $disable_dns,
-                    'resolv_file'        => $resolv_file,
+                    'use_resolv_conf'    => $use_resolv_conf,
                    }
                   ),
+  }
+
+  unless $use_resolv_conf {
+
+    file { '/etc/resolv-dnsmasq.conf':
+      ensure  => present,
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0644',
+      notify  => Service['dnsmasq'],
+      require => Package['dnsmasq'],
+      content => epp('pxeserver/resolv-dnsmasq.conf.epp',
+                     { 'backend_dns' => $backend_dns }
+                    ),
+    }
+
   }
 
   file { "/etc/dnsmasq.d/reservations.conf":

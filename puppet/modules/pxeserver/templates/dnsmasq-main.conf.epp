@@ -3,7 +3,7 @@
   $no_dhcp_interfaces,
   $domain,
   $disable_dns,
-  $resolv_file
+  $use_resolv_conf,
 | -%>
 ### This file is managed by Puppet, don't edit it. ###
 
@@ -12,8 +12,8 @@
 port=0
 
 <%- } -%>
-<%- unless $resolv_file.empty { -%>
-resolv-file = <%= $resolv_file %>
+<%- unless $use_resolv_conf { -%>
+resolv-file=/etc/resolv-dnsmasq.conf
 
 <%- } -%>
 # Domain sent by the DHCP server (if enabled).

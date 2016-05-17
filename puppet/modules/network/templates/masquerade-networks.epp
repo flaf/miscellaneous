@@ -1,0 +1,18 @@
+<%- |$masqueraded_networks| -%>
+#!/bin/sh
+
+### This file is managed by Puppet, don't edit it. ###
+
+# Do nothing, except when called with IFACE == '--all', ie
+# only when all interfaces are UP.
+[ "$IFACE" != '--all' ] && exit 0
+
+# Cleaning.
+iptables -F
+
+# Masquerading.
+<%- $masqueraded_networks.each |$a_network| { -%>
+iptables -t nat -A POSTROUTING -s '<%= $a_network %>' -j MASQUERADE
+<%- } -%>
+
+

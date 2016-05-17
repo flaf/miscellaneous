@@ -4,7 +4,7 @@ class pxeserver::params (
   String                                              $apt_proxy,
   Hash[String[1], Array[String[1], 2, 2]]             $ip_reservations,
   Array[Array[String[1], 2]]                          $host_records,
-  String                                              $resolv_file,
+  Array[String[1]]                                    $backend_dns,
   Optional[ String[1] ]                               $puppet_collection,
   Optional[ String[1] ]                               $pinning_puppet_version,
   Optional[ String[1] ]                               $puppet_server,

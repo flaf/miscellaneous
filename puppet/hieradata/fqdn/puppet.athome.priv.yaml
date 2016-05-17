@@ -18,8 +18,6 @@ network::params::ifaces:
       options:
         address: '10.0.0.1'
         netmask: '__default__'
-        post-up_puppet_suffix_a: 'echo 1 > /proc/sys/net/ipv4/ip_forward'
-        post-up_puppet_suffix_b: 'iptables -F && iptables -t nat -A POSTROUTING -s 10.0.0.0/8 -j MASQUERADE'
   eth2:
     in_networks: [ 'vbox_adm' ]
     macaddress: '08:00:27:00:00:a2'
@@ -28,7 +26,6 @@ network::params::ifaces:
       options:
         address: '172.31.0.1'
         netmask: '__default__'
-        post-up: 'iptables -t nat -A POSTROUTING -s 172.31.0.0/16 -j MASQUERADE'
 
 pxeserver::params::host_records:
   - [ '%{::fqdn}',              '%{::hostname}', '172.31.0.1' ]

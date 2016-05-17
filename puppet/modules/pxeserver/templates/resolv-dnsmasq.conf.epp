@@ -1,0 +1,7 @@
+<%- |$backend_dns| -%>
+### This file is managed by Puppet, don't edit it. ###
+
+<%- $backend_dns.each |$a_dns| { -%>
+nameserver <%= $a_dns %>
+<%- } -%>
+
