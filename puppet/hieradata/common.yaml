@@ -1,5 +1,15 @@
 ---
 network::params::inventory_networks:
+  net97:
+    comment: [ 'Historical "97" network at lss1.' ]
+    vlan_id: '97'
+    vlan_name: 'vlan97'
+    datacenters: [ 'lss1' ]
+    cidr_address: '195.221.97.1/24'
+    gateway: '195.221.97.1'
+    dns_servers: [ '195.221.98.7', '195.221.98.9' ]
+    ntp_servers: [ 'hades.crdp.ac-versailles.fr' ]
+    admin_email: '%{alias("admin_email")}'
   freebox_lan:
     comment: [ 'LAN behind the Freebox (dhcp).' ]
     vlan_id: '1000'

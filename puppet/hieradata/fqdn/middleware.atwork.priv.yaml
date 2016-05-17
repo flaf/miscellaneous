@@ -3,12 +3,10 @@ enc_included_classes:
   - [ 'flaf', 'roles::mcomiddleware' ]
 enc_datacenter: 'vboxwork'
 
-network::params::restart: true
-
 network::params::ifaces:
   eth0:
     in_networks: [ 'vbox_adm' ]
-    macaddress: '08:00:27:6e:21:02'
+    macaddress: '08:00:27:00:00:a3'
     inet:
       method: 'dhcp'
 
