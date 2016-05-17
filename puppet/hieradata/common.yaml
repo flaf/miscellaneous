@@ -24,12 +24,12 @@ network::params::inventory_networks:
     vlan_id: '1001'
     vlan_name: 'priv'
     datacenters: [ 'vboxhome', 'vboxwork' ]
-    cidr_address: '172.31.0.0/16'
-    gateway: '172.31.0.1'
-    ntp_servers: [ '172.31.0.1' ]
-    dns_servers: [ '172.31.0.1' ]
+    cidr_address: '172.16.0.0/16'
+    gateway: '172.16.0.1'
+    ntp_servers: [ '172.16.0.1' ]
+    dns_servers: [ '172.16.0.1' ]
     apt_proxy: 'http://192.168.0.1:3142'
-    dhcp_range: [ '172.31.200.10', '172.31.200.20' ]
+    dhcp_range: [ '172.16.200.10', '172.16.200.20' ]
     admin_email: '%{alias("_admin_email_")}'
 
 _admin_email_: 'admin@flaf.fr'

@@ -16,7 +16,7 @@ network::params::ifaces:
     inet:
       method: 'static'
       options:
-        address: '172.31.0.1'
+        address: '172.16.0.1'
         netmask: '__default__'
 
 
