@@ -58,18 +58,16 @@ unix_accounts::params::users:
     password: '%{alias("_root_unix_pwd_")}'
     fqdn_in_prompt: true
     ssh_authorized_keys:
-      - 'root@router.athome.priv'
-      - 'root@router.atwork.priv'
       - 'francois@flpc.athome.priv'
+      - 'francois@dtic-flaf.atwork.priv'
 
   flaf:
     ensure: 'present'
     password: '%{alias("_flaf_unix_pwd_")}'
     is_sudo: true
     ssh_authorized_keys:
-      - 'root@router.athome.priv'
-      - 'root@router.atwork.priv'
       - 'francois@flpc.athome.priv'
+      - 'francois@dtic-flaf.atwork.priv'
 
 puppetagent::params::ca_server: 'puppet.%{::domain}'
 repository::puppet::params::collection: 'PC1'
@@ -94,27 +92,6 @@ snmp::params::snmpv3_accounts:
     privproto: 'aes' # optional and default is 'aes'
     privpass: 'YYYYYYYYYYYYYYYYYYYYYY'
     view: 'monitoring' # optional and default is 'monitoring'
-  #test:
-  #  name: 'security'
-  #  authproto: 'sha'
-  #  authpass: 'xxxxxxxxxxxxxxxxxxxxx'
-  #  privproto: 'aes'
-  #  privpass: 'YYYYYYYYYYYYYYYYYYYYYY'
-  #  view: 'monitoring'
-#snmp::params::communities:
-#  jrds:
-#    name: 'xxxx'
-#    access:
-#      - source: 'localhost'
-#        view: 'monitoring' # optional and default is 'monitorng'
-#      - source: '172.31.0.182'
-#        view: 'monitoring' # optional and default is 'monitorng'
-#  jrds2:
-#    name: 'yyy'
-#    access:
-#      - source: '172.30.240.182'
-#        view: 'monitoring'
-
 
 
 ### Long values below ###
