@@ -28,7 +28,9 @@ pxeserver::params::host_records:
   - [ 'ceph-node3.%{::domain}', 'ceph-node3',    '172.31.10.3' ]
 
 pxeserver::params::ip_reservations:
-  '08:00:27:00:00:a3': [ '172.31.0.2',  'middleware' ]
+  #'08:00:27:00:00:a0' => eth0 puppet
+  #'08:00:27:00:00:a1' => eth1 puppet
+  '08:00:27:00:00:b0': [ '172.31.0.2',  'middleware' ]
   '08:00:27:00:00:c1': [ '172.31.10.1', 'ceph-node1' ]
   '08:00:27:00:00:c2': [ '172.31.10.2', 'ceph-node2' ]
   '08:00:27:00:00:c3': [ '172.31.10.3', 'ceph-node3' ]

@@ -11,16 +11,8 @@ network::params::ifaces:
     inet:
       method: 'dhcp'
   eth1:
-    in_networks: [ 'tricky_net' ]
-    macaddress: '08:00:27:00:00:a1'
-    inet:
-      method: 'static'
-      options:
-        address: '10.0.0.1'
-        netmask: '__default__'
-  eth2:
     in_networks: [ 'vbox_adm' ]
-    macaddress: '08:00:27:00:00:a2'
+    macaddress: '08:00:27:00:00:a1'
     inet:
       method: 'static'
       options:
