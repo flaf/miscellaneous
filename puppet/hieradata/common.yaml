@@ -31,6 +31,13 @@ network::params::inventory_networks:
     apt_proxy: 'http://192.168.0.1:3142'
     dhcp_range: [ '172.16.200.10', '172.16.200.20' ]
     admin_email: '%{alias("_admin_email_")}'
+  vbox_ceph_priv:
+    comment: [ 'Private LAN in VBox dedicated to a ceph cluster network.' ]
+    vlan_id: '1002'
+    vlan_name: 'ceph-priv'
+    datacenters: [ 'vboxhome', 'vboxwork' ]
+    cidr_address: '10.0.0.0/24'
+    admin_email: '%{alias("_admin_email_")}'
 
 _admin_email_: 'admin@flaf.fr'
 
