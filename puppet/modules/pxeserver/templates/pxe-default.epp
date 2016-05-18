@@ -29,6 +29,18 @@ MENU AUTOBOOT AUTOMATIC LOCAL BOOT in # second{,s}...
 MENU COLOR tabmsg      37;40    #80ffffff #00000000 std
 MENU COLOR timeout_msg 31;41    #90ffff00 #00000000 std
 
+LABEL warning
+    MENU LABEL README PLEASE...
+    TEXT HELP
+    Warning, if you have strange errors of this kind "bad miror...",
+    check the RAM of you machine. For instance, with Ubuntu Trusty
+    a PXE installation is impossible with only 256MB of RAM. You
+    need 512MB.
+    ENDTEXT
+
+MENU SEPARATOR
+
+
 LABEL local
     menu label Local boot
     localboot 0
