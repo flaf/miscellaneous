@@ -23,6 +23,7 @@ pxeserver::params::host_records:
   - [ '%{::fqdn}',              '%{::hostname}', '172.16.0.1'  ]
   - [ 'pxe.%{::domain}',        'pxe',           '172.16.0.1'  ]
   - [ 'middleware.%{::domain}', 'middleware',    '172.16.0.2'  ]
+  - [ 'test.%{::domain}',       'test',          '172.16.5.1'  ]
   - [ 'ceph-node1.%{::domain}', 'ceph-node1',    '172.16.10.1' ]
   - [ 'ceph-node2.%{::domain}', 'ceph-node2',    '172.16.10.2' ]
   - [ 'ceph-node3.%{::domain}', 'ceph-node3',    '172.16.10.3' ]
@@ -31,6 +32,7 @@ pxeserver::params::ip_reservations:
   #'08:00:27:00:00:a0' => eth0 puppet
   #'08:00:27:00:00:a1' => eth1 puppet
   '08:00:27:00:00:b0': [ '172.16.0.2',  'middleware' ]
+  '08:00:27:00:00:b1': [ '172.16.5.1',  'test'       ]
   '08:00:27:00:00:c1': [ '172.16.10.1', 'ceph-node1' ]
   '08:00:27:00:00:c2': [ '172.16.10.2', 'ceph-node2' ]
   '08:00:27:00:00:c3': [ '172.16.10.3', 'ceph-node3' ]
