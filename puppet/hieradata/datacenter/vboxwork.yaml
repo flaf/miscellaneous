@@ -1,0 +1,5 @@
+---
+network::params::inventory_networks:
+  vbox_adm:
+    apt_proxy: 'http://195.221.97.69:3142'
+
