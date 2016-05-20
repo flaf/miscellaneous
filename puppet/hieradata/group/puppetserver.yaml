@@ -20,13 +20,13 @@ mcollective::client::params::public_key: "%{alias('_mcollective_client_public_ke
 mcollective::client::params::private_key: "%{alias('_mcollective_client_private_key_')}"
 
 pxeserver::params::host_records:
-  - [ '%{::fqdn}',              '%{::hostname}', '172.16.0.1'  ]
-  - [ 'pxe.%{::domain}',        'pxe',           '172.16.0.1'  ]
-  - [ 'middleware.%{::domain}', 'middleware',    '172.16.0.2'  ]
-  - [ 'test.%{::domain}',       'test',          '172.16.5.1'  ]
-  - [ 'ceph01.%{::domain}',     'ceph01',        '172.16.10.1' ]
-  - [ 'ceph02.%{::domain}',     'ceph02',        '172.16.10.2' ]
-  - [ 'ceph03.%{::domain}',     'ceph03',        '172.16.10.3' ]
+  '%{::fqdn}':              [ '%{::hostname}', '172.16.0.1'  ]
+  'pxe.%{::domain}':        [ 'pxe',           '172.16.0.1'  ]
+  'middleware.%{::domain}': [ 'middleware',    '172.16.0.2'  ]
+  'test.%{::domain}':       [ 'test',          '172.16.5.1'  ]
+  'ceph01.%{::domain}':     [ 'ceph01',        '172.16.10.1' ]
+  'ceph02.%{::domain}':     [ 'ceph02',        '172.16.10.2' ]
+  'ceph03.%{::domain}':     [ 'ceph03',        '172.16.10.3' ]
 
 # No DHCP when it's commented.
 pxeserver::params::ip_reservations:

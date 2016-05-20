@@ -1,7 +1,7 @@
 <%- |$host_records| -%>
 ### This file is managed by Puppet, don't edit it. ###
 
-<%- $host_records.each |$host_record| { -%>
-host-record=<%= $host_record.join(',') %>
+<%- $host_records.each |$key, $value| { -%>
+host-record=<%= $key %>,<%= $value.join(',') %>
 <%- } -%>
 

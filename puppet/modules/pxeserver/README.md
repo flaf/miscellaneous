@@ -27,11 +27,11 @@ $ip_reservations = {
   '9e:72:c8:38:38:2c' => [ '172.31.25.26', 'poller-2' ],
 }
 
-$host_records = [
-  [ 'nfs-1.dom.tld',    'nfs-1',    '192.168.13.50' ],
-  [ 'poller-1.dom.tld', 'poller-1', '172.31.25.25'  ],
-  [ 'poller-2.dom.tld', 'poller-2', '172.31.25.26'  ],
-]
+$host_records = {
+  'nfs-1.dom.tld'    => [ 'nfs-1',    '192.168.13.50' ],
+  'poller-1.dom.tld' => [ 'poller-1', '172.31.25.25'  ],
+  'poller-2.dom.tld' => [ 'poller-2', '172.31.25.26'  ],
+}
 
 class { '::pxeserver::params':
   dhcp_confs             => $dhcp_confs,
@@ -80,13 +80,15 @@ above but can be the empty hash `{}` which its default
 value, ie no IP reservation.
 
 The `host_records` parameter allows to set several
-`host-record=<name>,<name>,...,<IP-address>` instructions
-in the dnsmask configuration. The default value this
-parameter is `[]` ie no host record at all. In this case,
-the DNS service is completely disabled. If enabled, the
-DNS server forwards the DNS requests to the DNS servers
+`host-record=<name1>,<name2>,...,<IP-address>` instructions
+in the dnsmask configuration (a key of the hash
+`host_records` is the value of `<name1>`). The default value
+this parameter is `{}` ie no host record at all. In this
+case, the DNS service is completely disabled. If enabled,
+the DNS server forwards the DNS requests to the DNS servers
 set in the local file `/etc/resolv.conf` via the
-`nameserver` instructions.
+`nameserver` instructions, unless the parameter
+`backend_dns` is set.
 
 The `backend_dns` parameter allows dnsmasq to use another
 DNS servers that the DNS mentioned in `/etc/resolv.conf`
@@ -96,12 +98,6 @@ servers mentioned in `/etc/resolv.conf` (this is the default
 behavior of dnsmasq). But if this parameter is not empty, in
 this case dnsmasq uses the DNS servers mentioned in this
 parameter.
-
-to set the `resolv-file`
-instruction in the dnsmasq configuration, ie the DNS to
-forward the requests. The default value of this parameter is
-`''` (an empty string) which means that the parameter is not
-handled at all (no `resolv-file` instruction is set).
 
 The `apt_proxy` parameter allows to set a APT proxy
 in the preseed files. If not set, its default value

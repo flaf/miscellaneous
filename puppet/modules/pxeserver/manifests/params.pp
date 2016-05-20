@@ -3,7 +3,7 @@ class pxeserver::params (
   Array[String[1]]                                    $no_dhcp_interfaces,
   String                                              $apt_proxy,
   Hash[String[1], Array[String[1], 2, 2]]             $ip_reservations,
-  Array[Array[String[1], 2]]                          $host_records,
+  Hash[String[1], Array[String[1], 1]]                $host_records,
   Array[String[1]]                                    $backend_dns,
   Optional[ String[1] ]                               $puppet_collection,
   Optional[ String[1] ]                               $pinning_puppet_version,

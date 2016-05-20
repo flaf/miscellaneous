@@ -5,7 +5,7 @@ function pxeserver::data {
     pxeserver::params::no_dhcp_interfaces      => [],
     pxeserver::params::apt_proxy               => '',
     pxeserver::params::ip_reservations         => {},
-    pxeserver::params::host_records            => [],
+    pxeserver::params::host_records            => {},
     pxeserver::params::backend_dns             => [],
     pxeserver::params::puppet_collection       => undef,
     pxeserver::params::pinning_puppet_version  => undef,
