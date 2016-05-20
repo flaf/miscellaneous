@@ -20,7 +20,7 @@ class { '::puppetserver::params':
   puppetdb_memory        => '1g',
   profile                => 'autonomous',
   modules_repository     => 'http://puppetforge.domain.tld',
-  strict_variables       => true,
+  strict                 => 'error',
   puppetdb_name          => 'puppet',
   puppetdb_user          => 'puppet',
   puppetdb_pwd           => '123456',
@@ -74,11 +74,11 @@ url: for instance `http://mypuppetforge.domain.tld:8080`
 (with the protocol, ie http or https, and the port if
 different of 80).
 
-The `strict_variables` parameter is the value of the option
-`strict_variables` in the `puppet.conf` file. The possible
-values are `true`, `false` and `undef` (the default). When
-the value is `undef`, the option is just not present in the
-file `puppet.conf` and, in this case, the default value from
+The `strict` parameter is the value of the option `strict`
+in the `puppet.conf` file. The possible values are `'off'`,
+`'warning'`, `'error'` and `undef` (the default). When the
+value is `undef`, the option is just not present in the file
+`puppet.conf` and, in this case, the default value from
 Puppet software is set.
 
 The `puppetdb_name`, `puppetdb_user` and `puppetdb_pwd`
@@ -207,14 +207,6 @@ been restarted.
 * The `check-puppet-module.puppet` should list files in
   a module and check is each file is present in the file
   `checksums.json`.
-
-* In the template `puppet.conf.epp`, a default value is
-  given for two parameter in the lambda function (`modules_repository`
-  and `strict_variables`). **Normally it's not necessary** because
-  the type of this parameters is `Optional[...]` which means "ok if
-  the value is undef" (different of "missing key is ok).
-  But it's a regression of Puppet version 4.4.0 and it will be fixed
-  in Puppet 4.4.1 (https://tickets.puppetlabs.com/browse/PUP-6064)
 
 * Make a schema with puppetserver, puppetdb and postresql.
 

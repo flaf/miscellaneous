@@ -5,7 +5,7 @@ class puppetserver {
   $puppetdb_memory        = $::puppetserver::params::puppetdb_memory
   $profile                = $::puppetserver::params::profile
   $modules_repository     = $::puppetserver::params::modules_repository
-  $strict_variables       = $::puppetserver::params::strict_variables
+  $strict                 = $::puppetserver::params::strict
   $puppetdb_name          = $::puppetserver::params::puppetdb_name
   $puppetdb_user          = $::puppetserver::params::puppetdb_user
   $puppetdb_pwd           = $::puppetserver::params::puppetdb_pwd
