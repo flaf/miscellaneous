@@ -14,6 +14,11 @@ function pxeserver::data {
     pxeserver::params::puppet_apt_url          => undef,
     pxeserver::params::puppet_apt_key          => undef,
     pxeserver::params::supported_distributions => [ 'trusty' ],
+
+    # Merging policy.
+    lookup_options => {
+      pxeserver::params::host_records => { merge => 'deep', },
+    },
   }
 
 }

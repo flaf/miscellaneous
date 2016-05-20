@@ -19,4 +19,7 @@ network::params::ifaces:
         address: '172.16.0.1'
         netmask: '__default__'
 
+pxeserver::params::host_records:
+  'apt.%{::domain}': [ 'apt', '192.168.0.1' ]
+
 
