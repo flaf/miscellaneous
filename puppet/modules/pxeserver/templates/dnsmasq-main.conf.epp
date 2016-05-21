@@ -28,8 +28,12 @@ no-dhcp-interface=<%= $interface %>
 <%- $dhcp_confs.each |$tag, $settings| { -%>
 # <%= $settings['netname'] %> (<%= $tag %>)
 dhcp-range=set:<%= $tag %>,<%= $settings['range'].join(',') %>,12h
+<%- if 'router' in $settings { -%>
 dhcp-option=tag:<%= $tag %>,option:router,<%= $settings['router'] %>
+<%- } -%>
+<%- if 'dns-server' in $settings { -%>
 dhcp-option=tag:<%= $tag %>,option:dns-server,<%= $settings['dns-server'].join(',') %>
+<%- } -%>
 dhcp-boot=tag:<%= $tag %>,pxelinux.0
 
 <%- } -%>
