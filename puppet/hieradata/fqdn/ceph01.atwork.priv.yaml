@@ -1,0 +1,21 @@
+---
+enc_included_classes:
+  - [ 'flaf', 'roles::generic' ]
+enc_datacenter: 'vboxwork'
+
+network::params::ifaces:
+  eth0:
+    in_networks: [ 'vbox_adm' ]
+    macaddress: '08:00:27:00:00:c1'
+    inet:
+      method: 'dhcp'
+  eth1:
+    in_networks: [ 'vbox_ceph_priv' ]
+    macaddress: '08:00:27:00:00:ca'
+    inet:
+      method: 'static'
+      options:
+        address: '10.0.0.1'
+        netmask: '__default__'
+
+
