@@ -67,7 +67,7 @@ class roles::pxeserver {
         'router'     => $settings['gateway'],
         'dns-server' => $settings['dns_servers'],
         'netname'    => $netname,
-      }
+      }.filter |$key, $value| { $value !~ Undef }
     }
 
   }
