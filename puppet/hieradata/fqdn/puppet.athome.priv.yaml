@@ -18,6 +18,14 @@ network::params::ifaces:
       options:
         address: '172.16.0.1'
         netmask: '__default__'
+  eth2:
+    in_networks: [ 'vbox_priv' ]
+    macaddress: '08:00:27:00:00:a2'
+    inet:
+      method: 'static'
+      options:
+        address: '10.0.0.1'
+        netmask: '__default__'
 
 pxeserver::params::host_records:
   'apt.%{::domain}': [ 'apt', '192.168.0.1' ]

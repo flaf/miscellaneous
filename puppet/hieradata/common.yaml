@@ -31,10 +31,10 @@ network::params::inventory_networks:
     dhcp_range: [ '172.16.200.10', '172.16.200.20' ]
     apt_proxy: 'http://apt.%{::domain}:3142'
     admin_email: '%{alias("_admin_email_")}'
-  vbox_ceph_priv:
-    comment: [ 'Private LAN in VBox dedicated to a ceph cluster network.' ]
+  vbox_priv:
+    comment: [ 'Private LAN n2 in VBox (dhcp wihout gateway and dns).' ]
     vlan_id: '1002'
-    vlan_name: 'ceph-priv'
+    vlan_name: 'priv2'
     datacenters: [ 'vboxhome', 'vboxwork' ]
     cidr_address: '10.0.0.0/24'
     dhcp_range: [ '10.0.0.210', '10.0.0.220' ]
