@@ -13,9 +13,6 @@ network::params::ifaces:
     in_networks: [ 'vbox_ceph_priv' ]
     macaddress: '08:00:27:00:00:cc'
     inet:
-      method: 'static'
-      options:
-        address: '10.0.0.3'
-        netmask: '__default__'
+      method: 'dhcp'
 
 
