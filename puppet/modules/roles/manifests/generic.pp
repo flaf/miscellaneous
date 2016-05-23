@@ -69,7 +69,7 @@ class roles::generic {
       #####################
       '::unix_accounts': {
 
-        # We wabt to manage root at first.
+        # We want to manage root at first.
         class { '::unix_accounts::params':
           rootstage => 'basis',
         }
@@ -197,6 +197,19 @@ class roles::generic {
           require => [ Class['::repository::mco'],
                        Class['::repository::puppet'],
                      ],
+        }
+
+        include '::roles::mcomiddleware::params'
+        $::mcollective::server::params::collectives.each |$a_collective| {
+          unless $a_collective in $::roles::mcomiddleware::params::exchanges {
+            @("END"/L$).fail
+              ${title}: sorry, `${a_collective}` is a value of the \
+              `collectives` parameter of the MCollective service but \
+              the only collectives currently authorized are \
+              ${::roles::mcomiddleware::params::exchanges} ie \
+              all the exchanges defined in the middleware server.
+              |- END
+          }
         }
 
       }
