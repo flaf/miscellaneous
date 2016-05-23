@@ -1,0 +1,109 @@
+---
+repository::ceph::params::codename: 'infernalis'
+repository::ceph::params::pinning_version: '9.2.1-*'
+
+mcollective::server::params::collectives: [ 'ceph' ]
+
+ceph::clusters_conf:
+  ceph:
+    global_options:
+      fsid: 'f875b4c1-535a-4f17-9883-2793079d410a'
+      cluster_network: '10.0.0.0/24'
+      public_network: '172.16.0.0/16'
+      auth_cluster_required: 'cephx'
+      auth_service_required: 'cephx'
+      auth_client_required: 'cephx'
+      filestore_xattr_use_omap: 'true'
+      osd_pool_default_size: '3'
+      osd_pool_default_min_size: '1'
+      osd_pool_default_pg_num: '64'
+      osd_pool_default_pgp_num: '64'
+      osd_crush_chooseleaf_type: '1'
+      osd_crush_update_on_start: 'false'
+      osd_journal_size: '0'
+      osd_max_backfills: '1'
+      osd_recovery_max_active: '1'
+      osd_client_op_priority: '63'
+      osd_recovery_op_priority: '1'
+      osd_op_threads: '4'
+      mds_cache_size: '1000000'
+      osd_scrub_begin_hour: '3'
+      osd_scrub_end_hour: '5'
+      mon_allow_pool_delete: 'false'
+      mon_osd_down_out_subtree_limit: 'host'
+      mon_osd_min_down_reporters: '4' # set to (#OSDs per node) + 1 is a good idea
+    monitors:
+      ceph01:
+        id: 'ceph01'
+        address: '172.16.10.1'
+      ceph02:
+        id: 'ceph02'
+        address: '172.16.10.2'
+      ceph03:
+        id: 'ceph03'
+        address: '172.16.10.3'
+    keyrings:
+      admin:
+        key: '%{alias("_admin_ceph_key_")}'
+        properties:
+        - 'caps mon = "allow *"'
+        - 'caps osd = "allow *"'
+        - 'caps mds = "allow"'
+      cephfs:
+        key: '%{alias("_cephfs_ceph_key_")}'
+        properties:
+        - 'caps mon = "allow r"'
+        - 'caps osd = "allow class-read object_prefix rbd_children, allow rwx pool=cephfsdata"'
+        - 'caps mds = "allow"'
+      radosgw.gateway:
+        key: '%{alias("_radosgw_ceph_key_")}'
+        radosgw_host: 'radosgw'
+        rgw_dns_name: 'radosgw.%{::domain}'
+        properties:
+        - 'caps mon = "allow rwx"'
+        - 'caps osd = "allow rwx"'
+
+# Each member of this ceph group must have the IP of monitors
+# in its /etc/hosts file.
+network::hosts::params::entries:
+  '172.16.10.1': [ 'ceph01.%{::domain}', 'ceph01' ]
+  '172.16.10.2': [ 'ceph02.%{::domain}', 'ceph02' ]
+  '172.16.10.3': [ 'ceph03.%{::domain}', 'ceph03' ]
+
+_admin_ceph_key_: >
+  ENC[PKCS7,MIIBmQYJKoZIhvcNAQcDoIIBijCCAYYCAQAxggEhMIIBHQIBADAFMAACAQEw
+  DQYJKoZIhvcNAQEBBQAEggEAVK71dfn4Q/wNQH6eE1an3ZlJ9SdjtufkJAjs
+  pSzSSH+rFZ8H6ict8dRHg9QbphmFesufBaAevho4GXriOmcle+Rg/z2/PlUe
+  2Nm6jIvOVHi+/y6BGJTHH69jKYSWdMU5HmZ4YNIwYfNLCtK9eR1xmsjNpbWL
+  y3t59RjrjWltsiWuB7fIJgKmcBUUE9H4B9/ahcUmBcwAf521yOd3NKGE3YAC
+  tYUGhM6NuaFLjOG4ZBOu7Lw1aDDizTGjxegpuIyHsIJZagbaltoIdIZj5jCM
+  kt9kqTdm2BPz3JWNOGVGW32eCf8NkciV1aqzCe+AAXGsNDqBsMdAuHCJHouA
+  LFgNRDBcBgkqhkiG9w0BBwEwHQYJYIZIAWUDBAEqBBA1ctfYaqrN0mkGxoYk
+  dEKDgDCPHtVwhl8S1Pja/uh+VrfFtu5fgj2u6MfBKgexwlOKmL3C0yotRLLB
+  7lA/kULVbsc=]
+
+_cephfs_ceph_key_: >
+  ENC[PKCS7,MIIBmQYJKoZIhvcNAQcDoIIBijCCAYYCAQAxggEhMIIBHQIBADAFMAACAQEw
+  DQYJKoZIhvcNAQEBBQAEggEAxZeH4jJud7EeZQ+M+Il0QAL9HvibMQ/et5GH
+  PE0h/PjzMtg7Ge7m9dc4JfKEZVJAfZXHy+sRkGKNlGCwe85B4mhcUudxG64/
+  +e9K2qHyuMp3b+pT1g+4haW7ExROdT5tKJwWk+nWjEEGB1hbxI7iLuZtnf5d
+  tdVtAcFpLSD642rRUdxwYj9QZ4f3HxNf4I3O/tlO4LxdFSOVNHn9ybg0uyas
+  LK7UEF2iNUFmcQSD0FzGkaviK4fb7rOhdmoiPM+cgohdDVobaRVOrAhi/z+p
+  bxKUiK4TFoPg2VEnsoHHh8BVGOdU/s9huovHXR/+GeVADxp5/7lF8+HiZgmB
+  D601yTBcBgkqhkiG9w0BBwEwHQYJYIZIAWUDBAEqBBAetmvBuizqP1JEvRaO
+  HQIggDCY0WYP+Shg7sdB+n4qjeCCy4pd5BXBtgubha9lGivg0mJ4K7LKN2Vn
+  VzgUhh4lkvM=]
+
+_radosgw_ceph_key_: >
+  ENC[PKCS7,MIIBmQYJKoZIhvcNAQcDoIIBijCCAYYCAQAxggEhMIIBHQIBADAFMAACAQEw
+  DQYJKoZIhvcNAQEBBQAEggEAJhGlBZLZ32/l+i80G3IVli1JgoA+eATezpXE
+  i+W6yUS/6O3ikiFUHcdcbCbezSpMRKRlGHfnNgcF+mkA4hZEE7WBo6wkJCAT
+  HIsvhKTgO6Qt8vZGS6jT4249tlH6L/sSfrEHd8jTASZWf+k6HKnrfWGeV1Wl
+  fhk4nuXF/QNs5ufociR/HDzZEFWcOYx+uJO3MUENretM2Zwx82Idg6CvYZZO
+  j8ClOGqPVvjUwYSjNO4QTXz35tr0l5K1hOWSzx7CmexSONxUKVmBC67ouPIC
+  TNkqs3FjCpW0HFckA8WsSE298Bq/Ng+elK7iQHy5AMqxlCFCUs4Sr5BshhkA
+  KMGbBjBcBgkqhkiG9w0BBwEwHQYJYIZIAWUDBAEqBBCXTc/Hhx5xwsWeCE90
+  r0jugDCs+a3/pH5NQdw/0+ZToZHeBkG2sPBe00v5xeddGRP/oGQp8n13eu8Y
+  XK+/rzMNMYM=]
+
+
