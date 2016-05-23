@@ -14,7 +14,7 @@ network::params::ifaces:
     inet:
       method: 'dhcp'
   eth1:
-    in_networks: [ 'vbox_ceph_priv' ]
+    in_networks: [ 'vbox_priv' ]
     macaddress: '08:00:27:00:00:ca'
     inet:
       method: 'dhcp'
