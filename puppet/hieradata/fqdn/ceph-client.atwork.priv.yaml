@@ -1,0 +1,19 @@
+---
+enc_included_classes:
+  - [ 'flaf', 'roles::generic' ]
+  - [ 'flaf', '::ceph' ]
+enc_groups: [ 'ceph' ]
+enc_datacenter: 'vboxwork'
+
+ceph::is_clientnode: true
+ceph::client_accounts:
+  ceph: [ 'cephfs' ]
+
+network::params::ifaces:
+  eth0:
+    in_networks: [ 'vbox_adm' ]
+    macaddress: '08:00:27:00:00:c4'
+    inet:
+      method: 'dhcp'
+
+
