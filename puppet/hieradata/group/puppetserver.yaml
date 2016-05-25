@@ -21,30 +21,32 @@ mcollective::client::params::private_key: "%{alias('_mcollective_client_private_
 
 pxeserver::params::host_records:
   # Basis
-  '%{::fqdn}':              [ '%{::hostname}', '172.16.0.1'  ]
-  'pxe.%{::domain}':        [ 'pxe',           '172.16.0.1'  ]
-  'middleware.%{::domain}': [ 'middleware',    '172.16.0.2'  ]
-  'test.%{::domain}':       [ 'test',          '172.16.5.1'  ]
+  '%{::fqdn}':               [ '%{::hostname}', '172.16.0.1'  ]
+  'pxe.%{::domain}':         [ 'pxe',           '172.16.0.1'  ]
+  'middleware.%{::domain}':  [ 'middleware',    '172.16.0.2'  ]
+  'test.%{::domain}':        [ 'test',          '172.16.5.1'  ]
   # Ceph labs
-  'ceph01.%{::domain}':     [ 'ceph01',        '172.16.10.1' ]
-  'ceph02.%{::domain}':     [ 'ceph02',        '172.16.10.2' ]
-  'ceph03.%{::domain}':     [ 'ceph03',        '172.16.10.3' ]
+  'ceph01.%{::domain}':      [ 'ceph01',        '172.16.10.1' ]
+  'ceph02.%{::domain}':      [ 'ceph02',        '172.16.10.2' ]
+  'ceph03.%{::domain}':      [ 'ceph03',        '172.16.10.3' ]
+  'ceph-client.%{::domain}': [ 'ceph-client',   '172.16.10.4' ]
 
 # No DHCP when it's commented.
 pxeserver::params::ip_reservations:
   # Basis
-  '08:00:27:00:00:a0': [ '192.168.0.252', 'puppet'     ] # eth0 (useless)
-  '08:00:27:00:00:a1': [ '172.16.0.1',    'puppet'     ] # eth1 (useless)
-  '08:00:27:00:00:a2': [ '10.0.0.1',      'puppet'     ] # eth2 (useless)
-  '08:00:27:00:00:b0': [ '172.16.0.2',    'middleware' ] # eth0
-  '08:00:27:00:00:b1': [ '172.16.5.1',    'test'       ] # eth0
+  '08:00:27:00:00:a0': [ '192.168.0.252', 'puppet'      ] # eth0 (useless)
+  '08:00:27:00:00:a1': [ '172.16.0.1',    'puppet'      ] # eth1 (useless)
+  '08:00:27:00:00:a2': [ '10.0.0.1',      'puppet'      ] # eth2 (useless)
+  '08:00:27:00:00:b0': [ '172.16.0.2',    'middleware'  ] # eth0
+  '08:00:27:00:00:b1': [ '172.16.5.1',    'test'        ] # eth0
   # Ceph labs
-  '08:00:27:00:00:c1': [ '172.16.10.1',   'ceph01'     ] # eth0
-  '08:00:27:00:00:ca': [ '10.0.0.11',     'ceph01'     ] # eth1
-  '08:00:27:00:00:c2': [ '172.16.10.2',   'ceph02'     ] # eth0
-  '08:00:27:00:00:cb': [ '10.0.0.12',     'ceph02'     ] # eth1
-  '08:00:27:00:00:c3': [ '172.16.10.3',   'ceph03'     ] # eth0
-  '08:00:27:00:00:cc': [ '10.0.0.13',     'ceph03'     ] # eth1
+  '08:00:27:00:00:c1': [ '172.16.10.1',   'ceph01'      ] # eth0
+  '08:00:27:00:00:ca': [ '10.0.0.11',     'ceph01'      ] # eth1
+  '08:00:27:00:00:c2': [ '172.16.10.2',   'ceph02'      ] # eth0
+  '08:00:27:00:00:cb': [ '10.0.0.12',     'ceph02'      ] # eth1
+  '08:00:27:00:00:c3': [ '172.16.10.3',   'ceph03'      ] # eth0
+  '08:00:27:00:00:cc': [ '10.0.0.13',     'ceph03'      ] # eth1
+  '08:00:27:00:00:c4': [ '172.16.10.4',   'ceph-client' ] # eth0
 
 
 
