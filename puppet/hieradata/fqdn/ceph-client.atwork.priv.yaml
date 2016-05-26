@@ -5,8 +5,8 @@ enc_included_classes:
 enc_groups: [ 'ceph' ]
 enc_datacenter: 'vboxwork'
 
-ceph::is_clientnode: true
-ceph::client_accounts:
+ceph::params::is_clientnode: true
+ceph::params::client_accounts:
   ceph: [ 'cephfs' ]
 
 network::params::ifaces:

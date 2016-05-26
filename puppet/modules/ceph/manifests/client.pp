@@ -8,7 +8,6 @@ define ceph::client (
   Boolean                                           $is_clientnode,
 ) {
 
-  require '::ceph::common::ceph_dir'
   require '::ceph::client::packages'
 
   # Maybe the current node is a server too. In these cases,

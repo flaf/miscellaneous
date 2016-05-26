@@ -4,7 +4,7 @@ repository::ceph::params::pinning_version: '9.2.1-*'
 
 mcollective::server::params::collectives: [ 'ceph' ]
 
-ceph::clusters_conf:
+ceph::params::clusters_conf:
   ceph:
     global_options:
       fsid: 'f875b4c1-535a-4f17-9883-2793079d410a'

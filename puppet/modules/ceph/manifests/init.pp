@@ -1,16 +1,23 @@
-class ceph (
-  Hash[String[1], Hash[String[1], Data, 1], 1] $clusters_conf,
-  Hash[String[1], Array[String[1]]]            $client_accounts,
-  Boolean                                      $is_clusternode,
-  Boolean                                      $is_clientnode,
-  Array[String[1], 1]                          $supported_distributions,
-) {
+class ceph {
 
-  ::homemade::is_supported_distrib($supported_distributions, $title)
+  include '::ceph::params'
+  $clusters_conf   = $::ceph::params::clusters_conf
+  $client_accounts = $::ceph::params::client_accounts
+  $is_clusternode  = $::ceph::params::is_clusternode
+  $is_clientnode   = $::ceph::params::is_clientnode
 
-  # check the parameters.
-  ::ceph::check_clusters_conf($clusters_conf)
-  ::ceph::check_client_accounts($client_accounts, $clusters_conf)
+  ensure_packages( [ 'ceph' ], { ensure => present, } )
+
+  file { '/etc/ceph':
+    ensure  => directory,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0755',
+    recurse => true,
+    purge   => true,
+    force   => true,
+    require => Package['ceph'],
+  }
 
   if $is_clientnode {
 
@@ -23,11 +30,9 @@ class ceph (
       }
 
       $all_keyrings    = $clusters_conf[$cluster_name]['keyrings']
-
-      # Filter keyrings only from $client_accounts.
       $client_keyrings = $all_keyrings.filter |$account, $properties| {
-        $accounts_array.member($account)
-      }
+                           $account in $accounts_array
+                         }
 
       ::ceph::client { $cluster_name:
         cluster_name    => $cluster_name,

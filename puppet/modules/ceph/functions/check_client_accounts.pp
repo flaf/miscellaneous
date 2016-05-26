@@ -1,6 +1,6 @@
 function ceph::check_client_accounts (
-  Hash[String[1], Array[String[1]]]            $client_accounts,
-  Hash[String[1], Hash[String[1], Data, 1], 1] $clusters_conf,
+  Hash[String[1], Array[String[1]]]     $client_accounts,
+  Hash[String[1], Ceph::ClusterConf, 1] $clusters_conf,
 ) {
 
   $client_accounts.each |$cluster_name, $accounts| {

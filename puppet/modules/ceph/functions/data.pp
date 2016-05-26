@@ -7,11 +7,11 @@ function ceph::data {
   $supported_distribs = ['trusty', 'jessie'];
 
   {
-    ceph::clusters_conf           => $clusters_conf,
-    ceph::client_accounts         => $client_accounts,
-    ceph::is_clusternode          => $is_clusternode,
-    ceph::is_clientnode           => $is_clientnode,
-    ceph::supported_distributions => $supported_distribs,
+    ceph::params::clusters_conf           => $clusters_conf,
+    ceph::params::client_accounts         => $client_accounts,
+    ceph::params::is_clusternode          => $is_clusternode,
+    ceph::params::is_clientnode           => $is_clientnode,
+    ceph::params::supported_distributions => $supported_distribs,
   }
 
 }

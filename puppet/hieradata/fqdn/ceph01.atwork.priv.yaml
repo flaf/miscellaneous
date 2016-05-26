@@ -5,7 +5,7 @@ enc_included_classes:
 enc_groups: [ 'ceph' ]
 enc_datacenter: 'vboxwork'
 
-ceph::is_clusternode: true
+ceph::params::is_clusternode: true
 
 network::params::ifaces:
   eth0:
