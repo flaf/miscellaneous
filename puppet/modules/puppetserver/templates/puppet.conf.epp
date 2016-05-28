@@ -43,6 +43,7 @@ storeconfigs_backend = puppetdb
 thin_storeconfigs    = false
 async_storeconfigs   = false
 ca_ttl               = 10y
+reports              = puppetdb
 
 # With this parameter set to true, we are able to use the
 # `$::server_facts` global variable (fact) in the puppet
