@@ -186,6 +186,28 @@ find "$backupdir" -maxdepth 1 -type f -name 'etc_*.tar.gz.nc' -mtime +365 -delet
 ```
 
 
+# Get all last reports
+
+To have the last reports of all nodes in puppetdb, you can launch
+this command:
+
+```sh
+# Launch a noop puppet run on all nodes.
+mco puppet runall 5 --noop
+
+# Generate the report file.
+puppet apply -e 'include puppetserver::get_reports'
+
+# By default, the reports file are put in /root/reports readable via:
+less -r /root/reports # the -r option is needed to read colors
+
+# If you want, you can set the path of the reports file via:
+puppet apply -e 'class { "puppetserver::get_reports": file => "/tmp/reports" }'
+less -r /tmp/reports
+```
+
+
+
 
 # A security point
 

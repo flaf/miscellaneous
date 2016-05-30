@@ -1,0 +1,62 @@
+<%- |$reports| -%>
+<%-
+  # Escape character ie '^[' (Ctrl-v-escape with vim).
+  $escape         = sprintf('%c', 27)
+  $red            = "${escape}[1;31m"
+  $green          = "${escape}[1;32m"
+  $yellow         = "${escape}[1;33m"
+  $magenta        = "${escape}[1;35m"
+  $cyan           = "${escape}[1;36m"
+  $reset          = "${escape}[00m"
+  $defaut_metrics = { 'total_events' => 'N/A', 'failures' => 'N/A' }
+-%>
+<%- $reports.each |$index, $a_report| { -%>
+<%-
+    $data = $a_report.dig('metrics', 'data').lest || { [] }
+
+    $metric = $defaut_metrics + $data.reduce({}) |$memo, $a_metric| {
+      case [ $a_metric['category'], $a_metric['name'] ] {
+        ['events', 'failure']: { $memo + { 'failures'     => $a_metric['value'] } }
+        ['events', 'total'  ]: { $memo + { 'total_events' => $a_metric['value'] } }
+        [default,   default ]: { $memo                                            }
+      }
+    }
+
+    $total_events = case $metric['total_events'] {
+      0:       { "${green}total_events: ${metric['total_events']}${reset}"    }
+      default: { "${red}total_events: ${metric['total_events']}${reset}"  }
+    }
+
+    $failures = case $metric['failures'] {
+      0:       { "${green}failures:     ${metric['failures']}${reset}"    }
+      default: { "${red}failures:     ${metric['failures']}${reset}"      }
+    }
+
+    $show_log = case [ $metric['total_events'], $metric['failures'] ] {
+      [0, 0]:             { false }
+      [default, default]: { true  }
+    }
+-%>
+### Node number <%= $index %> ###
+certname:     <%= $cyan %><%= $a_report['certname'] %><%= $reset %>
+receive_time: <%= $a_report['receive_time'] %>
+noop:         <%= $a_report['noop'] %>
+<%= $total_events %>
+<%= $failures %>
+<%- if $show_log  { -%>
+log:
+  <%- $a_report['logs']['data'].each |$log| { -%>
+    <%-
+      $log_level = case $log['level'] {
+        'warning': { "${yellow}${log['level']}:${reset}" }
+        'err':     { "${red}${log['level']}:${reset}" }
+        default:   { "${log['level']}:" }
+      }
+    -%>
+  <%= $log_level %> <%= $log['source'] %> <%= $log['message'] %>
+  <%- } -%>
+<%- } -%>
+
+<%- } -%>
+
+
