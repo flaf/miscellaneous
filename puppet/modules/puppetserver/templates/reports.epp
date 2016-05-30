@@ -23,13 +23,13 @@
     }
 
     $total_events = case $metric['total_events'] {
-      0:       { "${green}total_events: ${metric['total_events']}${reset}"    }
-      default: { "${red}total_events: ${metric['total_events']}${reset}"  }
+      0:       { "${green}total_events: ${metric['total_events']}${reset}" }
+      default: { "${red}total_events: ${metric['total_events']}${reset}"   }
     }
 
     $failures = case $metric['failures'] {
-      0:       { "${green}failures:     ${metric['failures']}${reset}"    }
-      default: { "${red}failures:     ${metric['failures']}${reset}"      }
+      0:       { "${green}failures:     ${metric['failures']}${reset}" }
+      default: { "${red}failures:     ${metric['failures']}${reset}"   }
     }
 
     $show_log = case [ $metric['total_events'], $metric['failures'] ] {
@@ -48,9 +48,10 @@ log:
   <%- $a_report['logs']['data'].each |$log| { -%>
     <%-
       $log_level = case $log['level'] {
-        'warning': { "${yellow}${log['level']}:${reset}" }
-        'err':     { "${red}${log['level']}:${reset}" }
-        default:   { "${log['level']}:" }
+        'notice':  { "${magenta}${log['level']}:${reset}" }
+        'warning': {  "${yellow}${log['level']}:${reset}" }
+        'err':     {     "${red}${log['level']}:${reset}" }
+        default:   {           "${log['level']}:"         }
       }
     -%>
   <%= $log_level %> <%= $log['source'] %> <%= $log['message'] %>
