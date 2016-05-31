@@ -112,8 +112,18 @@ alias dist-upgrade='sudo apt-get update && sudo apt-get dist-upgrade --no-remove
 alias upgrade='sudo apt-get update && sudo apt-get upgrade --no-remove'
 alias ssu='sudo su -'
 alias ssup='sudo su -p'
+
+# The size (number of lines) of "history" output.
 HISTSIZE='5000'
-HISTFILESIZE='5000'
+
+# The size (number of lines) of the file ".bash_history".
+# The file is truncated _during_ the assignment of the
+# variable HISTFILESIZE (see bash(1)). So the first
+# assignment in .bashrc is disabled by Puppet.
+HISTFILESIZE='50000'
+
+# No identical and consecutive commands in .bash_history.
+# A command which starts with a space is not put in the .bash_history.
 HISTCONTROL='ignoredups:ignorespace'
 
 

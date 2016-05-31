@@ -149,6 +149,13 @@ define unix_accounts::user (
       require => User[$login],
     }
 
+    file_line { "edit-bashrc-of-${login}-HISTFILESIZE":
+      path    => "${home}/.bashrc",
+      line    => "#HISTFILESIZE=2000 # Edited by Puppet.",
+      match   => '#?[[:space:]]*HISTFILESIZE=.*$',
+      require => User[$login],
+    }
+
     $is_sudo_or_root = $login ? {
       'root'  => true,
       default => $is_sudo,
