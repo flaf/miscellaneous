@@ -1,5 +1,6 @@
 class ceph::params (
   Hash[String[1], Ceph::ClusterConf, 1] $clusters_conf,
+  Ceph::NodeType                        $nodetype,
   Hash[String[1], Array[String[1]]]     $client_accounts,
   Boolean                               $is_clusternode,
   Boolean                               $is_clientnode,

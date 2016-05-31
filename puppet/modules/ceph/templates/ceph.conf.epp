@@ -1,21 +1,20 @@
-<%- |
+<%-|
   $cluster_name,
-  $global_options,
-  $monitors, $keyrings,
-  $is_clusternode,
-  $is_clientnode,
-| -%>
+  $cluster_conf,
+  $nodetype,
+|-%>
 <%-
+  $global_options = $cluster_conf['global_options']
+  $monitors       = $cluster_conf['monitors']
+
   # Aesthetic: $max_length is the size of the biggest string
   # among the names of the global options.
   $max_length = $global_options.keys.map |$option_name| {
     size($option_name)
-  }.reduce |$memo, $entry| {
-    max($memo, $entry)
-  }
+  }.reduce |$memo, $entry| { max($memo, $entry) }
 -%>
 ### This file is managed by Puppet, don't edit it. ###
-<%- if $is_clusternode { -%>
+<%- if $nodetype == 'clusternode' { -%>
 
 [global]
   <%- $global_options.each |$option, $value| { -%>
@@ -29,19 +28,23 @@
   mon addr = <%= $params['address'] %>
 
 <%- } -%>
-<%- $keyrings.each |$id, $params| { -%>
-  <%- if $is_clientnode and $id =~ /^radosgw/ { -%>
+<%- if $nodetype == 'radosgw' and 'rgw_instances' in $cluster_conf { -%>
+  <%- $$cluster_conf['rgw_instances'].each |$id, $params| { -%>
+    <%- if $::hostname = $params['hosts'] {
+          $port = $params.dig('port').lest || { 8080 }
+    -%>
 [client.<%= $id %>]
-  host               = <%= $params['radosgw_host'] %>
+  host               = <%= $::hostname %>
   keyring            = /etc/ceph/<%= $cluster_name %>.client.<%= $id %>.keyring
   rgw socket path    = ""
   log file           = /var/log/radosgw/<%= $cluster_name %>.client.<%= $id %>.log
-  rgw frontends      = civetweb port=80
+  rgw frontends      = civetweb port=<%= $port %>
   rgw print continue = false
-  <%- if $params.has_key('rgw_dns_name') { -%>
+      <%- if $params.has_key('rgw_dns_name') { -%>
   rgw dns name       = <%= $params['rgw_dns_name'] %>
-  <%- } -%>
+      <%- } -%>
 
+    <%- } -%>
   <%- } -%>
 <%- } -%>
 

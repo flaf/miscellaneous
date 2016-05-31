@@ -1,4 +1,4 @@
-class ceph::cluster::scripts {
+class ceph::clusterscripts {
 
 
   $udev_content = @(END)
