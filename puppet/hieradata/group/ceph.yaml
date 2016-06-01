@@ -1,6 +1,9 @@
 ---
 repository::ceph::params::codename: 'jewel'
-repository::ceph::params::pinning_version: '9.2.1-*'
+#repository::ceph::params::codename: 'infernalis'
+repository::ceph::params::pinning_version: '10.2.1-*'
+#repository::ceph::params::pinning_version: '9.2.1-*'
+
 
 mcollective::server::params::collectives: [ 'ceph' ]
 
