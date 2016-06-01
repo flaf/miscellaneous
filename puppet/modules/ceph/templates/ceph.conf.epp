@@ -29,7 +29,7 @@
 
 <%- } -%>
 <%- if $nodetype == 'radosgw' and 'rgw_instances' in $cluster_conf { -%>
-  <%- $$cluster_conf['rgw_instances'].each |$id, $params| { -%>
+  <%- $cluster_conf['rgw_instances'].each |$id, $params| { -%>
     <%- if $::hostname in $params['hosts'] {
           $port = $params.dig('port').lest || { 8080 }
     -%>

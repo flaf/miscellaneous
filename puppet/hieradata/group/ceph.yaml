@@ -45,24 +45,25 @@ ceph::params::cluster_conf:
     admin:
       key: '%{alias("_admin_ceph_key_")}'
       properties:
-      - 'caps mon = "allow *"'
-      - 'caps osd = "allow *"'
-      - 'caps mds = "allow"'
+        - 'caps mon = "allow *"'
+        - 'caps osd = "allow *"'
+        - 'caps mds = "allow"'
     cephfs:
       key: '%{alias("_cephfs_ceph_key_")}'
       properties:
-      - 'caps mon = "allow r"'
-      - 'caps osd = "allow class-read object_prefix rbd_children, allow rwx pool=cephfsdata"'
-      - 'caps mds = "allow"'
+        - 'caps mon = "allow r"'
+        - 'caps osd = "allow class-read object_prefix rbd_children, allow rwx pool=cephfsdata"'
+        - 'caps mds = "allow"'
     radosgw.gateway:
       key: '%{alias("_radosgw_ceph_key_")}'
       properties:
-      - 'caps mon = "allow rwx"'
-      - 'caps osd = "allow rwx"'
+        - 'caps mon = "allow rwx"'
+        - 'caps osd = "allow rwx"'
   rgw_instances:
-    hosts: [ 'radosgw' ]
-    keyring: 'radosgw.gateway'
-    rgw_dns_name: 'radosgw.%{::domain}'
+    radosgw.gateway:
+      hosts: [ 'radosgw' ]
+      keyring: 'radosgw.gateway'
+      rgw_dns_name: 'radosgw.%{::domain}'
 
 
 # Each member of this ceph group must have the IP of monitors

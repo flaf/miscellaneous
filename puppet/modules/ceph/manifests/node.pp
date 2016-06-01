@@ -7,13 +7,13 @@ define ceph::node (
 
   # Check if $nodetype and $client_accounts are consistent.
   case [$nodetype == 'client', $client_accounts] {
-    [true,  Undef] {
+    [true,  Undef]: {
       @("END"/L).fail
         ${title}: the type of the node is `client` but the parameter \
         `client_accounts` is undef which is forbidden in this case.
         |- END
     }
-    [true, NotUndef] {
+    [true, NotUndef]: {
       $client_accounts.each |$a_account| {
         unless $a_account in $cluster_conf['keyrings'] {
           @("END"/L).fail
@@ -24,7 +24,7 @@ define ceph::node (
         }
       }
     }
-    [false, NotUndef] {
+    [false, NotUndef]: {
       @("END"/L).fail
         ${title}: the type of the node is not `client` but the parameter \
         `client_accounts` is not undef which is forbidden in this case.
@@ -34,14 +34,14 @@ define ceph::node (
 
   # Check parameters when $nodetype == 'radosgw'.
   case [$nodetype == 'radosgw', 'rgw_instances' in $cluster_conf] {
-    [true, false] {
+    [true, false]: {
       @("END"/L).fail
         ${title}: the type of the node is `radosgw` but the parameter \
         `cluster_conf` has no `rgw_instances` key which is mandatory \
         in this case.
         |- END
     }
-    [true, true] {
+    [true, true]: {
       if $cluster_conf['rgw_instances'].filter |$name, $params| {
         $::hostname in $params['hosts']
       }.empty {
