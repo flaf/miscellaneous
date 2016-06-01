@@ -1,3 +1,3 @@
-type Ceph::NodeType = Enum[ 'clusternode', 'client', 'radosgw' ]
+type Ceph::NodeType = Enum[ 'clusternode', 'clientnode', 'radosgw' ]
 
 

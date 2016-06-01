@@ -6,10 +6,10 @@ define ceph::node (
 ) {
 
   # Check if $nodetype and $client_accounts are consistent.
-  case [$nodetype == 'client', $client_accounts] {
+  case [$nodetype == 'clientnode', $client_accounts] {
     [true,  Undef]: {
       @("END"/L).fail
-        ${title}: the type of the node is `client` but the parameter \
+        ${title}: the type of the node is `clientnode` but the parameter \
         `client_accounts` is undef which is forbidden in this case.
         |- END
     }
@@ -17,7 +17,7 @@ define ceph::node (
       $client_accounts.each |$a_account| {
         unless $a_account in $cluster_conf['keyrings'] {
           @("END"/L).fail
-            ${title}: the type of the node is `client` but its ceph \
+            ${title}: the type of the node is `clientnode` but its ceph \
             account `${a_account}` is not present in the keyrings of \
             the `cluster_conf` parameter.
             |- END
@@ -26,7 +26,7 @@ define ceph::node (
     }
     [false, NotUndef]: {
       @("END"/L).fail
-        ${title}: the type of the node is not `client` but the parameter \
+        ${title}: the type of the node is not `clientnode` but the parameter \
         `client_accounts` is not undef which is forbidden in this case.
         |- END
     }
@@ -126,7 +126,7 @@ define ceph::node (
                     ),
     }
 
-    # For a client node, we add the .secret keyrings (with
+    # For a clientnode node, we add the .secret keyrings (with
     # only the key).
     if $nodetype == 'clientnode' {
       $key = $params['key']
