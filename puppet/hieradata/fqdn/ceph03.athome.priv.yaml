@@ -1,11 +1,10 @@
 ---
 enc_included_classes:
-  - [ 'flaf', 'roles::generic' ]
-  - [ 'flaf', '::ceph' ]
+  - [ 'flaf', 'roles::ceph' ]
 enc_groups: [ 'ceph' ]
 enc_datacenter: 'vboxhome'
 
-ceph::params::is_clusternode: true
+ceph::params::nodetype: 'clusternode'
 
 network::params::ifaces:
   eth0:

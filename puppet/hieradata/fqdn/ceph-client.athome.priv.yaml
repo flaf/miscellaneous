@@ -1,13 +1,11 @@
 ---
 enc_included_classes:
-  - [ 'flaf', 'roles::generic' ]
-  - [ 'flaf', '::ceph' ]
+  - [ 'flaf', 'roles::ceph' ]
 enc_groups: [ 'ceph' ]
 enc_datacenter: 'vboxhome'
 
-ceph::params::is_clientnode: true
-ceph::params::client_accounts:
-  ceph: [ 'cephfs' ]
+ceph::params::nodetype: 'clientnode'
+ceph::params::client_accounts: [ 'cephfs' ]
 
 network::params::ifaces:
   eth0:
