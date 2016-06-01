@@ -66,13 +66,6 @@ ceph::params::cluster_conf:
       rgw_dns_name: 'radosgw.%{::domain}'
 
 
-# Each member of this ceph group must have the IP of monitors
-# in its /etc/hosts file.
-network::hosts::params::entries:
-  '172.16.10.1': [ 'ceph01.%{::domain}', 'ceph01' ]
-  '172.16.10.2': [ 'ceph02.%{::domain}', 'ceph02' ]
-  '172.16.10.3': [ 'ceph03.%{::domain}', 'ceph03' ]
-
 _admin_ceph_key_: >
   ENC[PKCS7,MIIBmQYJKoZIhvcNAQcDoIIBijCCAYYCAQAxggEhMIIBHQIBADAFMAACAQEw
   DQYJKoZIhvcNAQEBBQAEggEAVK71dfn4Q/wNQH6eE1an3ZlJ9SdjtufkJAjs
