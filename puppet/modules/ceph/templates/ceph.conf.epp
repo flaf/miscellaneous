@@ -30,7 +30,7 @@
 <%- } -%>
 <%- if $nodetype == 'radosgw' and 'rgw_instances' in $cluster_conf { -%>
   <%- $$cluster_conf['rgw_instances'].each |$id, $params| { -%>
-    <%- if $::hostname = $params['hosts'] {
+    <%- if $::hostname in $params['hosts'] {
           $port = $params.dig('port').lest || { 8080 }
     -%>
 [client.<%= $id %>]
@@ -40,7 +40,7 @@
   log file           = /var/log/radosgw/<%= $cluster_name %>.client.<%= $id %>.log
   rgw frontends      = civetweb port=<%= $port %>
   rgw print continue = false
-      <%- if $params.has_key('rgw_dns_name') { -%>
+      <%- if 'rgw_dns_name' in $params { -%>
   rgw dns name       = <%= $params['rgw_dns_name'] %>
       <%- } -%>
 
