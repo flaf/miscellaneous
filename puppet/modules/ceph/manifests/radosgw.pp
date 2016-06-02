@@ -5,8 +5,8 @@ define ceph::radosgw (
 
   file { "/var/lib/ceph/radosgw/${cluster_name}-${instance_name}":
     ensure  => directory,
-    owner   => 'root',
-    group   => 'root',
+    owner   => 'ceph',
+    group   => 'ceph',
     mode    => '0755',
     recurse => false,
     purge   => false,
@@ -17,9 +17,9 @@ define ceph::radosgw (
   # To have a start of radosgw at boot.
   file { "/var/lib/ceph/radosgw/${cluster_name}-${instance_name}/done":
     ensure  => present,
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0755',
+    owner   => 'ceph',
+    group   => 'ceph',
+    mode    => '0644',
     content => "# Managed by Puppet.\n",
     before  => Exec["radosgw-${cluster_name}-${instance_name}"],
   }

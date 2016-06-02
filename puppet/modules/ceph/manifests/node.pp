@@ -59,9 +59,9 @@ define ceph::node (
   # Configuration of the cluster file `$cluster.conf`.
   file { "/etc/ceph/${cluster_name}.conf":
     ensure  => present,
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0644',
+    owner   => 'ceph',
+    group   => 'ceph',
+    mode    => '0640',
     content => epp('ceph/ceph.conf.epp',
                    {
                      'cluster_name' => $cluster_name,
@@ -103,13 +103,12 @@ define ceph::node (
 
     [$owner, $group, $mode] = case $nodetype {
       'clientnode': {
-        [ $params.dig('owner').lest || { 'root' },
-          $params.dig('group').lest || { 'root' },
+        [ $params.dig('owner').lest || { 'ceph' },
+          $params.dig('group').lest || { 'ceph' },
           $params.dig('mode').lest  || { '0600' },
         ]
       }
-      'radosgw': { ['ceph', 'ceph', '0600'] }
-      default:   { ['root', 'root', '0600'] }
+      default: { ['ceph', 'ceph', '0600'] }
     }
 
     file { "/etc/ceph/${cluster_name}.client.${account}.keyring":
