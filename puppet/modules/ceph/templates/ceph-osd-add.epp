@@ -207,9 +207,11 @@ then
     echo "Daemon osd not started."
 else
     # Start the osd daemon.
-    stop ceph-osd cluster="$cluster" id="$id"
+    #stop ceph-osd cluster="$cluster" id="$id"
+    service ceph-osd stop cluster="$cluster" id="$id"
     sleep 0.5
-    start ceph-osd cluster="$cluster" id="$id"
+    #start ceph-osd cluster="$cluster" id="$id"
+    service ceph-osd start cluster="$cluster" id="$id"
 fi
 
 

@@ -118,7 +118,8 @@ fi
 
 
 ceph osd out "$ID" --cluster "$CLUSTER"; sleep 1
-stop ceph-osd id="$ID" cluster="$CLUSTER"; sleep 1
+#stop ceph-osd id="$ID" cluster="$CLUSTER"; sleep 1
+service ceph-osd stop id="$ID" cluster="$CLUSTER"; sleep 1
 ceph osd crush remove osd."$ID" --cluster "$CLUSTER"; sleep 1
 ceph auth del osd."$ID" --cluster "$CLUSTER";sleep 1
 ceph osd rm "$ID" --cluster "$CLUSTER"; sleep 1

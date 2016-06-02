@@ -121,9 +121,11 @@ then
     echo "Daemon monitor not started."
 else
     # Start the monitor daemon.
-    stop ceph-mon cluster="$cluster" id="$id"
+    #stop ceph-mon cluster="$cluster" id="$id"
+    service ceph-mon stop cluster="$cluster" id="$id"
     sleep 0.5
-    start ceph-mon cluster="$cluster" id="$id"
+    #start ceph-mon cluster="$cluster" id="$id"
+    service ceph-mon start cluster="$cluster" id="$id"
 fi
 
 

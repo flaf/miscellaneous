@@ -139,9 +139,11 @@ then
     echo "Daemon mds not started."
 else
     # Start the mds daemon.
-    stop ceph-mds cluster="$cluster" id="$mds_id"
+    #stop ceph-mds cluster="$cluster" id="$mds_id"
+    service ceph-mds stop cluster="$cluster" id="$mds_id"
     sleep 0.5
-    start ceph-mds cluster="$cluster" id="$mds_id"
+    #start ceph-mds cluster="$cluster" id="$mds_id"
+    service ceph-mds start cluster="$cluster" id="$mds_id"
 fi
 
 
