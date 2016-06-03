@@ -1,6 +1,6 @@
 {
   "name": "flaf-roles",
-  "version": "0.5.9",
+  "version": "0.5.10",
   "author": "flaf",
   "summary": "Module to implement roles, ie very top level classes",
   "license": "Apache-2.0",
@@ -10,7 +10,7 @@
   "data_provider": "function",
   "dependencies": [
     {"name":"flaf-unix_accounts","version_requirement":"1.0.6"},
-    {"name":"flaf-network","version_requirement":"0.8.0"},
+    {"name":"flaf-network","version_requirement":"0.8.1"},
     {"name":"flaf-basic_ntp","version_requirement":"0.1.2"},
     {"name":"flaf-repository","version_requirement":"0.5.2"},
     {"name":"flaf-raid","version_requirement":"0.2.0"},
@@ -22,7 +22,7 @@
     {"name":"flaf-puppetagent","version_requirement":"0.2.5"},
     {"name":"flaf-mcollective","version_requirement":"0.3.4"},
     {"name":"flaf-snmp","version_requirement":"0.3.1"},
-    {"name":"flaf-mcomiddleware","version_requirement":"0.2.0"},
+    {"name":"flaf-mcomiddleware","version_requirement":"0.2.1"},
     {"name":"flaf-puppetserver","version_requirement":"0.5.1"},
     {"name":"flaf-puppetforge","version_requirement":"0.4.1"},
     {"name":"flaf-pxeserver","version_requirement":"0.4.6"}
