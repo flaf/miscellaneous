@@ -5,6 +5,7 @@ class ceph {
   $cluster_name    = ::homemade::getvar("${params}::cluster_name", $title)
   $cluster_conf    = ::homemade::getvar("${params}::cluster_conf", $title)
   $nodetype        = ::homemade::getvar("${params}::nodetype", $title)
+  # the variable $client_accounts can be undef.
   $client_accounts = getvar("${params}::client_accounts")
 
   ::ceph::node { $cluster_name:
