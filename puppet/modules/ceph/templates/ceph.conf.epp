@@ -37,7 +37,7 @@
   host               = <%= $::hostname %>
   keyring            = /etc/ceph/<%= $cluster_name %>.client.<%= $id %>.keyring
   rgw socket path    = ""
-  log file           = /var/log/radosgw/<%= $cluster_name %>.client.<%= $id %>.log
+  log file           = /var/log/ceph/<%= $cluster_name %>.client.<%= $id %>.log
   rgw frontends      = civetweb port=<%= $port %>
   rgw print continue = false
       <%- if 'rgw_dns_name' in $params { -%>

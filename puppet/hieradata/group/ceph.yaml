@@ -65,18 +65,18 @@ ceph::params::cluster_conf:
         mon: [ 'allow r' ]
         osd:
           - 'allow rwx pool=.rgw.root'
-          - 'allow rwx pool=.rgw.control'
-          - 'allow rwx pool=.rgw'
-          - 'allow rwx pool=.rgw.gc'
-          - 'allow rwx pool=.log'
-          - 'allow rwx pool=.users.uid'
-          - 'allow rwx pool=.users.email'
-          - 'allow rwx pool=.users'
-          - 'allow rwx pool=.rgw.buckets.index'
-          - 'allow rwx pool=.rgw.buckets'
+          - 'allow rwx pool=default.rgw.control'
+          - 'allow rwx pool=default.rgw.data.root'
+          - 'allow rwx pool=default.rgw.gc'
+          - 'allow rwx pool=default.rgw.log'
+          - 'allow rwx pool=default.rgw.users.uid'
+          - 'allow rwx pool=default.rgw.users.email'
+          - 'allow rwx pool=default.rgw.users.keys'
+          - 'allow rwx pool=default.rgw.meta'
+          - 'allow rwx pool=default.rgw.buckets.index'
   rgw_instances:
     radosgw.gateway:
-      hosts: [ 'radosgw' ]
+      hosts: [ 'ceph-rgw' ]
       keyring: 'radosgw.gateway'
       rgw_dns_name: 'radosgw.%{::domain}'
 
