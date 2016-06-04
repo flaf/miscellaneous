@@ -27,7 +27,9 @@ define ceph::node (
     [false, NotUndef]: {
       @("END"/L).fail
         ${title}: the type of the node is not `clientnode` but the parameter \
-        `client_accounts` is not undef which is forbidden in this case.
+        `client_accounts` is provided (ie not undef) which is forbidden in \
+        this case (if the node is not a client node, the `client_accounts` \
+        parameter must be undef).
         |- END
     }
   }
