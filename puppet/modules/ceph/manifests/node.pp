@@ -44,14 +44,24 @@ define ceph::node (
         |- END
     }
     [true, true]: {
-      if $cluster_conf['rgw_instances'].filter |$name, $params| {
+      $own_rgw_instances = $cluster_conf['rgw_instances'].filter |$name, $params| {
         $::hostname in $params['hosts']
-      }.empty {
+      }
+      if $own_rgw_instances.empty {
         @("END"/L).fail
           ${title}: the type of the node is `radosgw` but there is no \
           rados gateway instance which is set for the current host \
-          (ie ${::hostname}).
+          (ie ${::hostname}) in the `cluster_conf` parameter.
           |- END
+      }
+      $own_rgw_instances.each |$instance_name, $params| {
+        unless $params['keyring'] in $cluster_conf['keyrings'] {
+          @("END"/L).fail
+            ${title}: the type of the node is `radosgw` but the keyring \
+            `${params['keyring']}` is not present among the keyring files \
+            of the `cluster_conf` parameter.
+            |- END
+        }
       }
     }
   }
