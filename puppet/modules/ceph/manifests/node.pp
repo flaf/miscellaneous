@@ -120,9 +120,9 @@ define ceph::node (
       mode    => $mode,
       content => epp('ceph/ceph.client.keyring.epp',
                      {
-                      'account'    => $account,
-                      'key'        => $params['key'],
-                      'properties' => $params['properties'],
+                      'account'      => $account,
+                      'key'          => $params['key'],
+                      'capabilities' => $params['capabilities'],
                      }
                     ),
     }

@@ -30,6 +30,7 @@ pxeserver::params::host_records:
   'ceph02.%{::domain}':      [ 'ceph02',        '172.16.10.2' ]
   'ceph03.%{::domain}':      [ 'ceph03',        '172.16.10.3' ]
   'ceph-client.%{::domain}': [ 'ceph-client',   '172.16.10.4' ]
+  'ceph-rgw.%{::domain}':    [ 'ceph-rgw',      '172.16.10.5' ]
 
 # No DHCP when it's commented.
 pxeserver::params::ip_reservations:
@@ -47,6 +48,7 @@ pxeserver::params::ip_reservations:
   '08:00:27:00:00:c3': [ '172.16.10.3',   'ceph03'      ] # eth0
   '08:00:27:00:00:cc': [ '10.0.0.13',     'ceph03'      ] # eth1
   '08:00:27:00:00:c4': [ '172.16.10.4',   'ceph-client' ] # eth0
+  '08:00:27:00:00:c5': [ '172.16.10.5',   'ceph-rgw'    ] # eth0
 
 
 

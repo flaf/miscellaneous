@@ -1,10 +1,10 @@
-<%- |$account, $key, $properties| -%>
+<%- |$account, $key, $capabilities| -%>
 ### This file is managed by Puppet, don't edit it ###
 
 [client.<%= $account %>]
   key = <%= $key %>
-<%- $properties.each |$line| { -%>
-  <%= $line %>
+<%- $capabilities.each |$subsystem, $caps| { -%>
+  caps <%= $subsystem %> = "<%= $caps.join(', ') %>"
 <%- } -%>
 
 

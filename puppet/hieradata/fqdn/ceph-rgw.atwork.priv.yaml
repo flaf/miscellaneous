@@ -1,0 +1,16 @@
+---
+enc_included_classes:
+  - [ 'flaf', 'roles::ceph' ]
+enc_groups: [ 'ceph' ]
+enc_datacenter: 'vboxwork'
+
+ceph::params::nodetype: 'radosgw'
+
+network::params::ifaces:
+  eth0:
+    in_networks: [ 'vbox_adm' ]
+    macaddress: '08:00:27:00:00:c5'
+    inet:
+      method: 'dhcp'
+
+
