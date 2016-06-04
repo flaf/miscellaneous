@@ -34,6 +34,21 @@ define ceph::node (
     }
   }
 
+  # Check the keyrings in 'rgw_instances' if the key exists in $cluster_conf.
+  if 'rgw_instances' in $cluster_conf {
+    $cluster_conf['rgw_instances'].each |$instance, $params| {
+      $keyring_name = $params['keyring']
+      unless $keyring_name in $cluster_conf['keyrings'] {
+        @("END"/L).fail
+          ${title}: there is something wrong with the key `rgw_instances` \
+          of the parameter `cluster_conf`. The radosgw instance \
+          `${instance}` has a keyring `${keyring_name}` which is not present \
+          among the keyrings of the `cluster_conf` parameter.
+          |- END
+      }
+    }
+  }
+
   # Check parameters when $nodetype == 'radosgw'.
   case [$nodetype == 'radosgw', 'rgw_instances' in $cluster_conf] {
     [true, false]: {
@@ -53,15 +68,6 @@ define ceph::node (
           rados gateway instance which is set for the current host \
           (ie ${::hostname}) in the `cluster_conf` parameter.
           |- END
-      }
-      $own_rgw_instances.each |$instance_name, $params| {
-        unless $params['keyring'] in $cluster_conf['keyrings'] {
-          @("END"/L).fail
-            ${title}: the type of the node is `radosgw` but the keyring \
-            `${params['keyring']}` is not present among the keyring files \
-            of the `cluster_conf` parameter.
-            |- END
-        }
       }
     }
   }
