@@ -32,6 +32,7 @@ class roles::ceph {
       notify  => Exec['restart-snmpd'],
     }
 
+    # Yes, it's a dirty hack.
     exec { 'restart-snmpd':
       command     => 'service snmpd restart',
       path        => '/usr/sbin:/usr/bin:/sbin:/bin',

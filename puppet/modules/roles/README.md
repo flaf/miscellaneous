@@ -14,5 +14,6 @@ List of roles provided:
 * The role `puppetrouter` which has no parameter. It defines
   the addition of roles `puppetserver` and `pxeserver`. See
   the code to have more explanations.
+* The role `ceph` which has no parameter.
 
 
