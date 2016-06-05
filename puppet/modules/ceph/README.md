@@ -214,11 +214,11 @@ To be readable, here is the value of the important
 `cluster_conf` parameter in yaml format:
 
 ```yaml
-# The fsid can be generated with:
+# a) The fsid can be generated with:
 #
 #     apt-get install uuid-runtime && uuidgen
 #
-# The key of a ceph account can be generated with:
+# b) The key of a ceph account can be generated with:
 #
 #     apt-get install ceph-common && ceph-authtool --gen-print-key
 #
@@ -289,7 +289,7 @@ cluster_conf:
           - 'allow rwx pool=default.rgw.users.keys'
           - 'allow rwx pool=default.rgw.meta'
           - 'allow rwx pool=default.rgw.buckets.index'
-    radosgw.gateway2: # An radodgw account which can create needed pools himself.
+    radosgw.gateway2: # A radodgw account which can create needed pools directly himself.
       key: 'AQACnlNXjMTSGRAAt6tEwVYW15Kqxf/UShFgYw=='
       capabilities:
         mon: [ 'allow rwx' ]
@@ -333,297 +333,73 @@ ceph::node { 'ceph':
 ```
 
 
+## Parameter of the `ceph::node` defined resource
+
+The `cluster_name` parameter set the name of the Ceph
+cluster. The default value of this parameter is the title of
+the resource.
+
+The `clusters_conf` parameter is a hash with the structure
+above. Concerning the exact structure of this hash, see the
+files `ceph/types/*.pp` for more details.
+
+For the `keyrings` key in the `clusters_conf` parameter, its
+subkeys must be the short hostname of the monitor hosts.
+It's recommended to use the short hostname too for the `id`
+but it's not mandatory. For each keyring, it's possible to
+set the optional subkeys `owner`, `group`, `mode` to set the
+Unix rights of the keyring file in the client nodes.
+
+The `nodetype` parameter can be only equal to these three
+strings: `'clusternode'`, `'clientnode'` or `'radosgw'`.
+
+The `client_accounts` parameter is:
+
+- mandatory only if `nodetype == 'clientnode'`,
+- must be let undefined if `nodetype != 'clientnode'`.
+
+It's an array of the keyrings available in the
+`cluster_conf` parameter (a keyring not present in the
+`cluster_conf` parameter is not accepted).
+
+- In a cluster node, all keyrings of the cluster are
+  installed in the `/etc/ceph/` directory,
+- but in a client node, only keyrings in the `client_accounts`
+  parameter are installed in the `/etc/ceph/` directory.
+
+For instance, in a simple client node, normally you should
+never have the keyring of the `admin` account.
 
 
-# Usage
+# The class `ceph`
+
+This class is just a wrapper which declare only one `define`
+resource `ceph::node`
+
+
+## Usage
 
 Here is an example:
 
 ```puppet
-$ceph_global_conf = {
-  'fsid'                           => 'f875b4c1-535a-4f17-9883-2793079d410a',
-  'cluster_network'                => '192.168.22.0/24',
-  'public_network'                 => '10.0.2.0/24',
-  'auth_cluster_required'          => 'cephx',
-  'auth_service_required'          => 'cephx',
-  'auth_client_required'           => 'cephx',
-  'filestore_xattr_use_omap'       => 'true',
-  'osd_pool_default_size'          => '2',
-  'osd_pool_default_min_size'      => '1',
-  'osd_pool_default_pg_num'        => '64',
-  'osd_pool_default_pgp_num'       => '64',
-  'osd_crush_chooseleaf_type'      => '1',
-  'osd_crush_update_on_start'      => 'false',
-  'osd_journal_size'               => '0',
-  'osd_max_backfills'              => '1',
-  'osd_recovery_max_active'        => '1',
-  'osd_client_op_priority'         => '63',
-  'osd_recovery_op_priority'       => '1',
-  'osd_op_threads'                 => '4',
-  'mds_cache_size'                 => '1000000',
-  'osd_scrub_begin_hour'           => '3',
-  'osd_scrub_end_hour'             => '5',
-  'mon_allow_pool_delete'          => 'false',
-  'mon_osd_down_out_subtree_limit' => 'host',
-  'mon_osd_min_down_reporters'     => '4', # set to (#OSDs per node) + 1 is a good idea
+class { 'ceph::params':
+  cluster_name    => 'ceph',
+  cluster_conf    => $cluster_conf, # with the same value as above
+  nodetype        => 'clientnode',
+  client_accounts => [ 'cephfs' ],
 }
 
-# To generate a key, you can use with this command:
-#
-#     apt-get install ceph-common && ceph-authtool --gen-print-key
-#
-$ceph_keyrings = {
-  'admin' => {
-    'key'        => 'AQBzfhRW3FU7BRAA75c8O7ZcJRwNMHrhLtSA3Q==',
-    'properties' =>  [
-      'caps mon = "allow *"',
-      'caps osd = "allow *"',
-      'caps mds = "allow"',
-    ],
-  },
-  'cephfs' => {
-    'key'        => 'AQB1fhRWkM5tFxAADYKzOgTbDZw9LEMgbPw4yw==',
-    'properties' =>  [
-      'caps mon = "allow r"',
-      'caps osd = "allow class-read object_prefix rbd_children, allow rwx pool=cephfsdata"',
-      'caps mds = "allow"',
-    ],
-  },
-  'radosgw.gw1' => {
-    'key'           => 'AQDofhRWBh/ZBBAAtaRA4J9VHl7srhYyxo5pig==',
-    'radosgw_host'  => 'radosgw-1',
-    'rgw_dns_name'  => 'rgw.domain.tld',
-    'properties'    =>  [
-      'caps mon = "allow rwx"',
-      'caps osd = "allow rwx"',
-    ],
-  },
-  'radosgw.gw2' => {
-    'key'           => 'AQDyfhRWdN50ARAATcfy7itnU1KyUKoX+XNi8g==',
-    'radosgw_host'  => 'radosgw-2',
-    'rgw_dns_name'  => 'rgw.domain.tld',
-    'properties'    =>  [
-      'caps mon = "allow rwx"',
-      'caps osd = "allow rwx"',
-    ],
-  },
-  'cinder' => {
-    'key'           => 'AQDzfhRWjOwnIRAA9OV8cFbwnLyQElQl2jPy6g==',
-    'owner'         => 'cinder',
-    'group'         => 'cinder',
-    'mode'          => '0640',
-    'properties'    =>  [
-      'caps mon = "allow r"',
-      'caps osd = "allow class-read object_prefix rbd_children, allow rwx pool=volumes"',
-    ],
-  },
-}
-
-$clusters_conf = {
-  'ceph'      => {
-    'global_options' => $ceph_global_conf,
-    'keyrings'       => $ceph_keyrings,
-    # Below, 'mon-1', 'mon-2' and 'mon-3' must be the real short hostname
-    # of the monitor servers.
-    'monitors'       => { 'mon-1' => {'id' => 'ceph01', 'address' => '10.0.2.150'},
-                          'mon-2' => {'id' => 'ceph02', 'address' => '10.0.2.151'},
-                          'mon-3' => {'id' => 'ceph03', 'address' => '10.0.2.152'},
-                        },
-  },
-  'cluster-a' => {
-    # Another cluster...
-  },
-}
-
-$client_accounts = {
-  'ceph'      => [ 'cinder', 'cephfs', ],
-  'cluster-a' => [ ... ],
-}
-
-class { '::ceph':
-  clusters_conf   => $clusters_conf,
-  client_accounts => $client_accounts,
-  is_clusternode  => true,
-  is_clientnode   => true,
-}
+include 'ceph'
 ```
 
-The `clusters_conf` parameter is a hash where each key
-is the name of a cluster and its value is the configuration
-of this cluster (generally the hash has just one key
-for just one cluster whose name is `ceph`). Like in the
-example above, the configuration of a cluster **must** have:
 
-* the `global_options` key,
-* the `keyrings` key,
-* and the `monitors` key.
+## Parameters of the `ceph::params` class
 
-In a keyring, the mandatory keys are:
-
-* `key` (you can use `ceph-authtool --gen-print-key` to generate a value),
-* and `properties`.
-
-`owner`, `group`  and `mode` are optional with the default
-values `root`, `root` and `0600`.
-
-Keyrings whose name begins with `radosgw` are special
-because the `radosgw_host` key is mandatory too in this case
-and the value must be the short hostname of the radosgw
-server which will use this keyring. With a radosgw keyring,
-the key `rgw_dns_name` is optional (necessary when you use a
-S3 bucket with this syntax
-`<bucket-name>.<value-of-rgw_dns_name>` which should be
-avoided because the syntax `<fqdn>/<bucket-name>` is better).
-
-The `client_accounts` parameter is useful for a client
-node (it can be empty `{}` for a cluster node). This
-parameter contains the keyrings of Ceph accounts which
-will be installed in the client node in `/etc/ceph/`.
-This parameter is a hash with this form:
-
-```puppet
-$client_accounts = {
-  '<cluster-X>' => [ '<a-account1-from-cluster-X>', '<a-account2-from-cluster-X>' ],
-  '<cluster-X>' => [ '<a-account1-from-cluster-Y>', '<a-account2-from-cluster-Y>' ],
-  # etc...
-}
-```
-
-In this context too, a radosgw account (ie a account whose
-name matches the regex `/^radosgw/`) is special because it
-triggers on the client node the installation of the S3 http
-service (ie the `radosgw` service).
-
-The `is_clusternode` and `is_clientnode` parameters are
-boolean which tell if the node is a cluster node or a
-client node or both. Depending on the case (cluster node
-or client node), the packages installed are a little
-different. Of course, in a client node there will be no
-osd or mon daemon but another important difference is:
-
-* in a cluster node, all keyrings of the cluster are installed
-in the `/etc/ceph/` directory;
-* in a client node, only keyrings in the `client_accounts`
-parameter are installed in the `/etc/ceph/` directory. For
-instance, in a simple client node, normally you should never
-have the keyring of the `admin` account.
-
-
-
-
-# Data binding
-
-There is no default hiera lookup in this module. Just
-the classical mechanisms of data binding are used. Here
-is the default values of the parameters:
-
-* `clusters_conf => undef` so you must provide the clusters
-configuration yourself,
-* `client_accounts => {}` ie no client account by default,
-* `is_clusternode => false`,
-* `is_clientnode => false`.
-
-Here is a hiera configuration equivalent to the call in the
-`Usage` section above.
-
-First, in a yaml file shared by all the nodes (ie the cluster
-nodes **and** the client nodes), you can put:
-
-```yaml
-# The $clusters_conf parameter.
-ceph::clusters_conf:
-
-  ceph:
-
-    global_options:
-      fsid: 'f875b4c1-535a-4f17-9883-2793079d410a'
-      cluster_network: '192.168.22.0/24'
-      public_network: '10.0.2.0/24'
-      auth_cluster_required: 'cephx'
-      auth_service_required: 'cephx'
-      auth_client_required: 'cephx'
-      filestore_xattr_use_omap: 'true'
-      osd_pool_default_size: '2'
-      osd_pool_default_min_size: '1'
-      osd_pool_default_pg_num: '64'
-      osd_pool_default_pgp_num: '64'
-      osd_crush_chooseleaf_type: '1'
-      osd_crush_update_on_start: 'false',
-      osd_journal_size: '0'
-      osd_max_backfills: '1'
-      osd_recovery_max_active: '1'
-      osd_client_op_priority: '63'
-      osd_recovery_op_priority: '1'
-      osd_op_threads: '4'
-      mds_cache_size: '1000000'
-      osd_scrub_begin_hour: '3'
-      osd_scrub_end_hour: '5'
-      mon_allow_pool_delete: 'false'
-      mon_osd_down_out_subtree_limit: 'host'
-      mon_osd_min_down_reporters: '4' # set to (#OSDs per node) + 1 is a good idea
-
-    monitors:
-      mon-1:
-        id: 'ceph01'
-        address: '10.0.2.150'
-      mon-2:
-        id: 'ceph02'
-        address: '10.0.2.151'
-      mon-3:
-        id: 'ceph03'
-        address: '10.0.2.152'
-
-    keyrings:
-      admin:
-        key: 'AQBzfhRW3FU7BRAA75c8O7ZcJRwNMHrhLtSA3Q=='
-        properties:
-        - 'caps mon = "allow *"'
-        - 'caps osd = "allow *"'
-        - 'caps mds = "allow"'
-      cephfs:
-        key: 'AQB1fhRWkM5tFxAADYKzOgTbDZw9LEMgbPw4yw=='
-        properties:
-        - 'caps mon = "allow r"'
-        - 'caps osd = "allow class-read object_prefix rbd_children, allow rwx pool=cephfsdata"'
-        - 'caps mds = "allow"'
-      radosgw.gw1:
-        key: 'AQDofhRWBh/ZBBAAtaRA4J9VHl7srhYyxo5pig=='
-        radosgw_host: 'radosgw-1'
-        rgw_dns_name: 'rgw.domain.tld'
-        properties:
-        - 'caps mon = "allow rwx"'
-        - 'caps osd = "allow rwx"'
-      radosgw.gw2:
-        key: 'AQDyfhRWdN50ARAATcfy7itnU1KyUKoX+XNi8g=='
-        radosgw_host: 'radosgw-2'
-        rgw_dns_name: 'rgw.domain.tld'
-        properties:
-        - 'caps mon = "allow rwx"'
-        - 'caps osd = "allow rwx"'
-      cinder:
-        key: 'AQDzfhRWjOwnIRAA9OV8cFbwnLyQElQl2jPy6g=='
-        owner: 'cinder'
-        group: 'cinder'
-        mode: '0640'
-        properties:
-        - 'caps mon = "allow r"'
-        - 'caps osd = "allow class-read object_prefix rbd_children, allow rwx pool=volumes"'
-```
-
-And in the yaml file of the specific node (ie in `$fqdn.yaml`)
-you can put:
-
-```yaml
-# The node will be a client node of the cluster and will use specific
-# ceph accounts.
-ceph::is_clientnode: true
-ceph::client_accounts:
-  ceph: [ 'cinder', 'cephfs' ]
-
-# But the node will be a cluster node too.
-ceph::is_clusternode: true
-```
-
+All its parameters have the same meaning as the parameters
+of the `ceph::node` resource. The `cluster_name` parameter
+has a default value which is `'ceph'`. The other parameters
+have no default value (in fact it's `undef`) and must be
+provided explicitly.
 
 
 
