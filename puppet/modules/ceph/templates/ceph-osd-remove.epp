@@ -5,9 +5,9 @@ SCRIPT_NAME="${0##*/}"
 export LC_ALL='C'
 export PATH='/usr/sbin:/usr/bin:/sbin:/bin'
 
-SYNOPSIS="[--cluster <cluster>] --id <id>"
-SHORT_OPTIONS='h,c:,i:'
-LONG_OPTIONS='help,cluster:,id:'
+SYNOPSIS="[--force] [--cluster <cluster>] --id <id>"
+SHORT_OPTIONS='h,f,c:,i:'
+LONG_OPTIONS='help,force,cluster:,id:'
 
 print_help () {
     cat <<EOF
@@ -29,10 +29,16 @@ unset TEMP
 
 # Default values.
 CLUSTER='ceph'
+FORCE='false'
 
 while true
 do
     case "$1" in
+
+        --force|-f)
+            FORCE='true'
+            shift 1
+        ;;
 
         --cluster|-c)
             CLUSTER="$2"
@@ -65,55 +71,64 @@ then
     exit 1
 fi
 
-if ! which bc >/dev/null
+# If "force" is true (this is not the default), some checks are skipped.
+if ! "$FORCE"
 then
-    printf "Sorry the bc command is not available.\n" >&2
-    printf "Script aborted...\n" >&2
-    exit 1
-fi
 
-weight=$(ceph osd tree --cluster "$CLUSTER" | grep " osd.$ID " | awk '{print $2}')
+    if ! which bc >/dev/null
+    then
+        printf "Sorry the bc command is not available.\n" >&2
+        printf "Script aborted...\n" >&2
+        exit 1
+    fi
 
-if ! printf "%s\n" "$weight" | grep -Eq '[\.0-9]+'
-then
-    printf "The \`ceph osd tree --cluster %s' command doesn't allow to retrieve the weight" "$CLUSTER" >&2
-    printf " of the OSD osd.%s. Are you really sure this OSD exists in the cluster %s?\n" "$ID" "$CLUSTER" >&2
-    exit 1
-fi
+    weight=$(ceph osd tree --cluster "$CLUSTER" | grep " osd.$ID " | awk '{print $2}')
 
-if [ "$(echo $weight == 0 | bc 2>/dev/null)" != 1 ]
-then
-    printf "The test to check if osd.%s has a weight equal to 0 failed.\n" "$ID" >&2
-    printf "Before to remove this OSD, set its weight to zero and wait for the end of the data balancing.\n" >&2
-    printf "Script aborted...\n" >&2
-    exit 1
-fi
+    if ! printf "%s\n" "$weight" | grep -Eq '[\.0-9]+'
+    then
+        printf "The \`ceph osd tree --cluster %s' command doesn't allow to retrieve the weight" "$CLUSTER" >&2
+        printf " of the OSD osd.%s. Are you really sure this OSD exists in the cluster %s?\n" "$ID" "$CLUSTER" >&2
+        exit 1
+    fi
 
-n=$(ps aux | grep 'cep[h]-osd' | grep -c -- "--cluster=$CLUSTER -i $ID")
+    if [ "$(echo $weight == 0 | bc 2>/dev/null)" != 1 ]
+    then
+        printf "The test to check if osd.%s has a weight equal to 0 failed.\n" "$ID" >&2
+        printf "Before to remove this OSD, set its weight to zero and wait for the end of the data balancing.\n" >&2
+        pritnf "Or you can use the --force option.\n" >&2
+        printf "Script aborted...\n" >&2
+        exit 1
+    fi
 
-if [ "$n" = 0 ]
-then
-    printf "No running process of the OSD osd.%s has been found on this host" "$ID" >&2
-    printf " for the cluster %s.\n" "$CLUSTER" >&2
-    printf "This command must be launched in the host where this OSD is running.\n" >&2
-    printf "Script aborted...\n" >&2
-    exit 1
-fi
+    n=$(ps aux | grep 'cep[h]-osd' | grep -c -- "--cluster=$CLUSTER -i $ID")
 
-if [ 1 -lt "$n" ]
-then
-    printf "There is something wrong because it seems to have multiple processes " >&2
-    printf "of the daemon osd.%s in the cluster %s. Check the output of \`ps aux'.\n" "$ID" "$CLUSTER" >&2
-    printf "Script aborted...\n" >&2
-    exit 1
-fi
+    if [ "$n" = 0 ]
+    then
+        printf "No running process of the OSD osd.%s has been found on this host" "$ID" >&2
+        printf " for the cluster %s.\n" "$CLUSTER" >&2
+        printf "This command must be launched in the host where this OSD is running.\n" >&2
+        pritnf "Or you can use the --force option.\n" >&2
+        printf "Script aborted...\n" >&2
+        exit 1
+    fi
 
-if [ ! -d "/var/lib/ceph/osd/$CLUSTER-$ID" ]
-then
-    printf "There is something wrong because the directory" >&2
-    printf " \`/var/lib/ceph/osd/%s-%s' doesn't exist.\n" "$CLUSTER" "$ID" >&2
-    printf "Script aborted...\n" >&2
-    exit 1
+    if [ 1 -lt "$n" ]
+    then
+        printf "There is something wrong because it seems to have multiple processes " >&2
+        printf "of the daemon osd.%s in the cluster %s. Check the output of \`ps aux'.\n" "$ID" "$CLUSTER" >&2
+        pritnf "Or you can use the --force option.\n" >&2
+        printf "Script aborted...\n" >&2
+        exit 1
+    fi
+
+    if [ ! -d "/var/lib/ceph/osd/$CLUSTER-$ID" ]
+    then
+        printf "There is something wrong because the directory" >&2
+        printf " \`/var/lib/ceph/osd/%s-%s' doesn't exist.\n" "$CLUSTER" "$ID" >&2
+        printf "Script aborted...\n" >&2
+        exit 1
+    fi
+
 fi
 
 
