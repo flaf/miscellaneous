@@ -8,10 +8,10 @@ This module allows to manage:
 
 
 
-# Warning 1: you must create the cluster yourself
+# Warning: you must create the cluster yourself
 
 This module manages installation and configuration of files
-but no cluster will be up after a run puppet. After a puppet
+but no cluster will be up after a puppet run. After a puppet
 run on each node of the cluster, you have to create and launch
 the daemons yourself.
 
@@ -20,13 +20,13 @@ the daemons yourself.
 
 If you have dedicated disks for monitors or OSDs, you must
 create partitions via `gdisk` and you must format these
-partitions on each node. With `gdisk`, you have to create a
-part-label for each partition and you have to follow this
-policy:
+partitions on each node. With `gdisk`, you have to create
+GPT partitions with a part-label for each partition. You
+have to follow this policy:
 
-- `mon-<id>` for dedicated partitions of monitors,
-- `osd-<id>` for dedicated partitions of OSDs,
-- `osd-<id>-journal` for dedicated partitions of OSD journals.
+- part-label `mon-<id>` for dedicated partitions of monitors,
+- part-label `osd-<id>` for dedicated partitions of OSDs,
+- part-label `osd-<id>-journal` for dedicated partitions of OSD journals.
 
 With the scripts to create mon, OSD, mds etc. (see below),
 you'll use the symlinks in `/dev/disk/by-partlabel/` which
@@ -36,11 +36,11 @@ will be added in the file `/etc/fstab`.
 the third concerning the OSD journals is absolutely required
 because there is a udev rule to force the owner to `ceph` to
 any device whose partlabel has this form `osd-*-journal`
-(absolutely needed with OSD daemons).
+(absolutely needed with OSD daemons, see below).
 
 
 It is highly recommended to use XFS as filesystem of the
-OSDs and monitors working directory:
+OSDs and monitors working directories:
 
 ```sh
 # Typically:
@@ -48,8 +48,12 @@ OSDs and monitors working directory:
 #  - /dev/sdb1 == /dev/disk/by-partlabel/osd-0-journal is used for the journal
 #  - /dev/sdb2 == /dev/disk/by-partlabel/osd-0 is the working directory.
 #
-# Or, better, the journal is in a raw partition in another
-# disk (ideally a SSD).
+# If the OSD journal and the OSD working directory are 2
+# partitions of the same disk, it's better to put the
+# journal in the first partition.
+#
+# But the "must-have" is to put the journal in a raw
+# partition of another disk, ideally a SSD.
 #
 mkfs.xfs -f -L mon-ceph01 /dev/disk/by-partlabel/mon-ceph01
 mkfs.xfs -f -L mon-ceph02 /dev/disk/by-partlabel/mon-ceph02
@@ -64,8 +68,8 @@ Keep in mind these points:
 
 * It's generally the monitor with the minimal IP address
 which is the leader.
-* For the ID of monitors and mds, don't use a numeric IDs
-but systematically **alphanumeric** IDs. In fact, the best
+* For the ID of monitors and mds, don't use a numeric ID
+but systematically **alphanumeric** ID. In fact, the best
 choice is to use the current short hostname as ID. For
 instance `mon.ceph01`, `mds.ceph02` etc.
 
@@ -141,7 +145,7 @@ ceph auth add client.foo2 -i /etc/ceph/ceph.client.foo2.keyring
 
 ## Creation of Cephfs (if needed)
 
-First, creation of the mds daemon with `ceph-mds-add`. For
+First, creation of the mds daemons with `ceph-mds-add`. For
 the ID, you should use the short hostname of the current
 host:
 
@@ -154,8 +158,9 @@ ceph-mds-add --id ceph02 # on ceph02
 Second, the creation of the cephfs filesystem:
 
 ```sh
-# Be careful to the create the right pool which match with
-# the rights of the ceph account.
+# Be careful to create the right pools which match with the
+# rights of the ceph account used to mount cephfs in the
+# client side.
 ceph osd pool create cephfsdata     $pg_num_data
 ceph osd pool create cephfsmetadata $pg_num_metadata
 ceph fs new cephfs cephfsmetadata cephfsdata
@@ -166,7 +171,7 @@ ceph -s # the line fsmap should be present.
 ```
 
 
-# Warning 2 : journals have to be a GPT partition with a specific partlabel
+# Warning: journals have to be a GPT partition with a specific partlabel
 
 If the journal is not a standard file in the OSD working
 directory but a symlink to a raw partition, the partition
@@ -186,7 +191,7 @@ with `osd-$id` as part-label and `osd-$id` as fs-label.
 GPT partition with `osd-$id-journal` as part-label.
 
 
-# Warning 3 : you must configure the `/etc/hosts` correctly
+# Warning: you must configure the `/etc/hosts` correctly
 
 For each node of the cluster and for each client of the
 cluster, it's recommended to configure the `/etc/hosts`
@@ -200,25 +205,29 @@ file to have:
 ```
 
 This module doesn't manage the `/etc/hosts` file and you
-should configure this file with another puppet class, with
-a role class for instance (or manually).
+should configure this file with another puppet class, for
+instance with a "role" class (or manually).
 
 
 # The `ceph::node` defined resource
 
-Be careful, this is not a class but a `define` resource.
+Be careful, this is not a class but a `define` resource. So
+this kind of resource can be declared several times, one
+time per cluster (for a `ceph` cluster and a `test` cluster
+etc).
 
 ## Usage
 
-To be readable, here is the value of the important
-`cluster_conf` parameter in yaml format:
+To be readable, here is the value of the very important
+`cluster_conf` parameter in yaml format (less readable if
+printed in puppet code):
 
 ```yaml
-# a) The fsid can be generated with:
+# a) The fsid of the clust can be generated with this command:
 #
 #     apt-get install uuid-runtime && uuidgen
 #
-# b) The key of a ceph account can be generated with:
+# b) The key of a ceph account can be generated with this command:
 #
 #     apt-get install ceph-common && ceph-authtool --gen-print-key
 #
@@ -305,27 +314,27 @@ cluster_conf:
       rgw_dns_name: 'store.%{::domain}'
 ```
 
-Here is an example where `$cluster_conf` has the value
-from the yaml file above:
+Here is examples where `$cluster_conf` has the value from
+the yaml file above:
 
 ```puppet
 # The case of a "cluster" node.
 ceph::node { 'ceph':
-  cluster_name => 'ceph',
+  cluster_name => 'ceph', # optional
   cluster_conf => $cluster_conf,
   nodetype     => 'clusternode',
 }
 
 # The case of a "radosgw" node.
 ceph::node { 'ceph':
-  cluster_name => 'ceph',
+  cluster_name => 'ceph', # optional
   cluster_conf => $cluster_conf,
   nodetype     => 'radosgw',
 }
 
 # The case of a "client" node.
 ceph::node { 'ceph':
-  cluster_name => 'ceph',
+  cluster_name => 'ceph', # optional
   cluster_conf => $cluster_conf,
   nodetype     => 'clientnode',
   client_accounts => [ 'cephfs' ],
@@ -333,22 +342,22 @@ ceph::node { 'ceph':
 ```
 
 
-## Parameter of the `ceph::node` defined resource
+## Parameters of the `ceph::node` defined resource
 
 The `cluster_name` parameter set the name of the Ceph
 cluster. The default value of this parameter is the title of
-the resource.
+the resource, so this parameter is optional.
 
 The `clusters_conf` parameter is a hash with the structure
 above. Concerning the exact structure of this hash, see the
 files `ceph/types/*.pp` for more details.
-
-For the `keyrings` key in the `clusters_conf` parameter, its
+For the `monitors` key in the `clusters_conf` parameter, its
 subkeys must be the short hostname of the monitor hosts.
 It's recommended to use the short hostname too for the `id`
-but it's not mandatory. For each keyring, it's possible to
-set the optional subkeys `owner`, `group`, `mode` to set the
-Unix rights of the keyring file in the client nodes.
+but it's not mandatory. For each keyring in the `keyrings`
+key, it's possible to set the optional subkeys `owner`,
+`group`, `mode` to set the Unix rights of the keyring file
+in the client nodes.
 
 The `nodetype` parameter can be only equal to these three
 strings: `'clusternode'`, `'clientnode'` or `'radosgw'`.
@@ -373,8 +382,8 @@ never have the keyring of the `admin` account.
 
 # The class `ceph`
 
-This class is just a wrapper which declare only one `define`
-resource `ceph::node`
+This class is just a wrapper which declares only one resource
+`ceph::node`
 
 
 ## Usage
