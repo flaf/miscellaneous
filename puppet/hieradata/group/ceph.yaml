@@ -26,6 +26,7 @@ ceph::params::cluster_conf:
     osd_recovery_op_priority: '1'
     osd_op_threads: '4'
     mds_cache_size: '1000000'
+    '#mds_standby_replay': 'true # too many logs from the "standby-replay" mds'
     osd_scrub_begin_hour: '3'
     osd_scrub_end_hour: '5'
     mon_allow_pool_delete: 'false'
