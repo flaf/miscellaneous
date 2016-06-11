@@ -1,19 +1,41 @@
 function moo::data {
 
+  $moobot_conf = {
+    'main' => {
+      'shared_root_path'    => '/mnt/moodle',
+      'first_guid'          => 5000,
+      'default_version_tag' => 'latest',
+    },
+    'docker' => {
+      'db_adm_user'         => 'mooadm',
+      'default_desired_num' => 2,
+      'smtp_port'           => 25,
+    },
+    'database' => {
+      'name' => 'moobot',
+      'user' => 'moobot',
+    },
+    'haproxy' => {
+      'template'    => '/opt/moobot/templates/haproxy.conf.j2',
+      'reload_cmd'  => '/opt/moobot/bin/haproxy_graceful_reload',
+      'stats_login' => 'admin',
+    },
+  }
+
+  $ha_log_format = '%{+Q}o\ %{-Q}b\ %{-Q}ci\ -\ -\ [%T]\ %r\ %ST\ %B\ %hrl'
+                     .regsubst('%{', '%{literal("%")}{', 'G')
+
+
   if !defined(Class['::network::params']) { include '::network::params' }
 
   # By default, we let docker choose the DNS addresses and
   # the docker network will have this value below.
   $docker_dns                 = []
-  $docker_bridge_cidr_address = '172.17.0.1/16'
+  $docker_bridge_cidr_address = '172.19.0.1/24'
 
-  $interfaces                 = $::network::params::interfaces
-  $inventory_networks         = $::network::params::inventory_networks
-  $ha_log_server              = ::network::get_param($interfaces, $inventory_networks,
-                                                      'log_server', undef)
-  $ha_log_format              = '%{+Q}o\ %{-Q}b\ %{-Q}ci\ -\ -\ [%T]\ %r\ %ST\ %B\ %hrl'
-  $smtp_relay                 = $::network::params::smtp_relay
-  $smtp_port                  = $::network::params::smtp_port
+
+
+
 
 ### Part below too complicated for too little gain.
 ### We remove this part.
@@ -74,29 +96,8 @@ function moo::data {
   $replicaset = $::mongodb::params::replset;
 
   {
-    moo::params::shared_root_path             => '/mnt/moodle',
-    moo::params::first_guid                   => 5000,
-    moo::params::default_version_tag          => 'latest',
-    moo::params::lb                           => undef,
-    moo::params::moodle_db_host               => undef,
-    moo::params::moodle_db_adm_user           => 'mooadm',
-    moo::params::moodle_db_adm_pwd            => undef,
-    moo::params::moodle_db_pfx                => undef,
-    moo::params::docker_repository            => undef,
-    moo::params::default_desired_num          => 2,
-    moo::params::moobot_db_host               => undef,
-    moo::params::moobot_db_pwd                => undef,
-    moo::params::memcached_servers            => undef,
-    moo::params::ha_template                  => '/opt/moobot/templates/haproxy.conf.j2',
-    moo::params::ha_reload_cmd                => '/opt/moobot/bin/haproxy_graceful_reload',
-    moo::params::ha_stats_login               => 'admin',
-    moo::params::ha_stats_pwd                 => undef,
-    moo::params::ha_log_server                => $ha_log_server,
+    moo::params::moobot_conf                  => $moobot_conf,
     moo::params::ha_log_format                => $ha_log_format,
-    moo::params::smtp_relay                   => $smtp_relay,
-    moo::params::smtp_port                    => $smtp_port,
-    moo::params::mongodb_servers              => undef,
-    moo::params::replicaset                   => $replicaset,
     moo::params::captain_mysql_rootpwd        => undef,
     moo::params::docker_iface                 => undef,
     moo::params::docker_gateway               => undef,
