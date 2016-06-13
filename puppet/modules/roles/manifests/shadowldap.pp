@@ -9,7 +9,7 @@ class roles::shadowldap {
   include '::roles::generic'
   include '::keepalived_vip'
 
-  $packages = [ 'slapd', 'ldap-utils', 'git', 'openssl', 'ca-certificate' ]
+  $packages = [ 'slapd', 'ldap-utils', 'git', 'openssl', 'ca-certificates' ]
   ensure_packages( $packages, { ensure => present } )
 
   file_line { 'edit-etc-default-slapd':
