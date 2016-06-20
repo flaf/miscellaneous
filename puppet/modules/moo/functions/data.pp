@@ -132,6 +132,12 @@ function moo::data {
 
 
     moo::cargo::params::supported_distributions => [ 'trusty' ],
+
+    # Merging policy.
+    lookup_options => {
+       mcollective::server::params::collectives => { merge => 'unique', },
+    },
+
   }
 
 }
