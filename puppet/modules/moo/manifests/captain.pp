@@ -4,19 +4,16 @@ class moo::captain (
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
-  if !defined(Class['::moo::params']) { include '::moo::params' }
-  $mysql_rootpwd   = $::moo::params::captain_mysql_rootpwd
-  $mysql_moobotpwd = $::moo::params::moobot_db_pwd
+  include '::moo::captain::params'
 
-  [
-    'mysql_rootpwd',
-    'mysql_moobotpwd',
-  ].each |$var_name| {
-    ::homemade::fail_if_undef( getvar($var_name), "moo::params::${var_name}",
-                               $title )
+  $moobot_conf     = $::moo::captain::moobot_conf
+  $mysql_rootpwd   = $::moo::captain::params::mysql_rootpwd
+  $mysql_moobotpwd = $::moo::captain::moobot_conf['database']['password']
+
+  class { '::moo::common':
+    moobot_conf => $moobot_conf,
   }
 
-  require '::moo::common'
   ensure_packages( [ 'mysql-server' ], { ensure => present } )
 
   file { '/root/init-moobot-database.sql':

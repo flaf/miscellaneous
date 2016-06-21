@@ -10,6 +10,8 @@ class moo::cargo (
   $docker_iface               = $::moo::cargo::params::docker_iface
   $docker_bridge_cidr_address = $::moo::cargo::params::docker_bridge_cidr_address
   $docker_dns                 = $::moo::cargo::params::docker_dns
+  $docker_gateway             = $::moo::cargo::params::docker_gateway
+  $iptables_allow_dns         = $::moo::cargo::params::iptables_allow_dns
   $ceph_account               = $::moo::cargo::params::ceph_account
   $ceph_client_mountpoint     = $::moo::cargo::params::ceph_client_mountpoint
   $ceph_mount_on_the_fly      = $::moo::cargo::params::ceph_mount_on_the_fly
@@ -17,73 +19,45 @@ class moo::cargo (
   $backups_retention          = $::moo::cargo::params::backups_retention
   $backups_moodles_per_day    = $::moo::cargo::params::backups_moodles_per_day
   $make_backups               = $::moo::cargo::params::make_backups
+
+  # Just for convenience.
   $shared_root_path           = $moobot_conf['main']['shared_root_path']
 
-
-
-
-
-  $iptables_allow_dns         = $::moo::params::iptables_allow_dns_final
-  $docker_gateway             = $::moo::params::docker_gateway_final
-
-  ::homemade::fail_if_undef( $docker_iface, "moo::params::docker_iface", $title )
-
-  if $::moo::params::docker_iface_not_among_interfaces {
-    regsubst(@("END"), '\n', ' ', 'G').fail
-      $title: sorry, problem with the parameter docker_iface. The
-      interface `$docker_iface` is not defined among the interfaces
-      of the host.
-      |- END
-  }
-
-  if $docker_gateway =~ Undef {
-    regsubst(@("END"), '\n', ' ', 'G').fail
-      $title: sorry, problem with the parameter docker_iface. No
-      gateway has been found for the interface docker_iface=`$docker_iface`.
-      |- END
-  }
-
   # WARNING: finally, it's probably better to use the
-  # package from Ubuntu repositories.
+  # package from Ubuntu repositories. From Ubuntu
+  # repositories, the name of the package is different.
   #
-  #require '::repository::docker'
+  #     require '::repository::docker'
+  #     $docker_packages = ['docker-engine', 'aufs-tools']
 
-  require '::moo::common'
+  # Without the package 'cgroup-lite', it just doesn't work.
+  $docker_packages = ['docker.io', 'aufs-tools', 'cgroup-lite']
+
+  ensure_packages($docker_packages, { ensure => present })
+
+  class { '::moo::common':
+    moobot_conf => $moobot_conf,
+  }
+
   include '::moo::dockerapi'
 
   file_line { 'set-dockertable-name':
     path   => '/etc/iproute2/rt_tables',
     line   => "10    dockertable",
-    before  => [ Package['docker.io'],
-                 File['/etc/network/if-up.d/docker0-up']
-               ],
-  }
-
-  file { '/etc/default/docker':
-    ensure  => present,
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0644',
-    #before  => Package['docker-engine'],
-    before  => Package['docker.io'],
-    notify  => Service['docker'],
-    content => epp('moo/default_docker.epp',
-                   {
-                    'docker_bridge_cidr_address' => $docker_bridge_cidr_address,
-                    'docker_dns'                 => $docker_dns,
-                   }
-                  )
+    before  => File['/etc/network/if-up.d/docker0-up'],
   }
 
   # Packages needed in the script /etc/network/if-up.d/docker0-up.
-  ensure_packages( [ 'ipcalc', 'gawk' ], { ensure => present } )
+  ensure_packages(
+    [ 'ipcalc', 'gawk' ],
+    { ensure => present, before => File['/etc/network/if-up.d/docker0-up'], }
+  )
+
   file { '/etc/network/if-up.d/docker0-up':
     ensure  => present,
     owner   => 'root',
     group   => 'root',
     mode    => '0755',
-    #before  => Package['docker-engine'],
-    before  => [ Package['docker.io'], Package['ipcalc'], Package['gawk'] ],
     notify  => Exec['set-iptables-rules'],
     content => epp('moo/docker0-up.epp',
                    {
@@ -105,38 +79,36 @@ class moo::cargo (
     require     => File['/etc/network/if-up.d/docker0-up'],
   }
 
-  # From Ubuntu repositories, the name of the package
-  # is different.
-  #
-  #ensure_packages( [
-  #                   'docker-engine',
-  #                   'aufs-tools',
-  #                 ],
-  #                 {
-  #                   ensure => present,
-  #                 }
-  #               )
-  ensure_packages( [
-                     'docker.io',
-                     'aufs-tools',
-                     'cgroup-lite', # without this package, it doesn't work.
-                   ],
+  file { '/etc/default/docker':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    notify  => Service['docker'],
+    require => Package['docker.io'],
+    content => epp('moo/default_docker.epp',
                    {
-                     ensure => present,
+                    'docker_bridge_cidr_address' => $docker_bridge_cidr_address,
+                    'docker_dns'                 => $docker_dns,
                    }
-                 )
+                  )
+  }
 
   # On Trusty, docker has a "status" command but the exit
   # code is 0 even if docker is not running. The custom
   # command uses pgrep in the "procps" package.
-  ensure_packages( [ 'procps' ], { ensure => present } )
+  ensure_packages(
+    [ 'procps' ],
+    { ensure => present, before => Service['docker'], }
+  )
+
   service { 'docker':
     ensure     => running,
     hasstatus  => false,
     status     => 'test "$(pgrep -c docker)" != 0',
     hasrestart => true,
     enable     => true,
-    require    => [ File['/etc/default/docker'], Package['procps'] ],
+    require    => File['/etc/default/docker'],
   }
 
   file { $shared_root_path:
@@ -150,18 +122,16 @@ class moo::cargo (
   $c      = $ceph_account
   $climnt = $ceph_client_mountpoint
 
-  # With "present", the entry is added in /etc/fstab.
-  # With "mounted", the entry is added in /etc/fstab and the
-  # device is mounted immediately. But at this time, we can't
-  # know if the ceph packages are already installed.
+  # With "ensure => present", the entry is added in
+  # /etc/fstab. With "ensure => mounted", the entry is added
+  # in /etc/fstab and the device is mounted immediately.
+  # But at this time, we can't know if the ceph packages are
+  # already installed.
   mount { $shared_root_path:
-    #ensure   => mounted,
     ensure   => present,
-    device   => "id=$c,keyring=/etc/ceph/ceph.client.$c.keyring,client_mountpoint=${climnt}",
+    device   => "id=$c,client_mountpoint=${climnt},keyring=/etc/ceph/ceph.client.$c.keyring",
     fstype   => 'fuse.ceph',
-    #
-    # ceph-fuse doesn't support the remount option.
-    remounts => false,
+    remounts => false, # ceph-fuse doesn't support the remount option.
     #
     # Be careful, because despite of "ensure => present" (ie
     # normally just set /etc/fstab, if options are changed I
@@ -172,7 +142,7 @@ class moo::cargo (
     #      /!\ WARNING /!\
     #
     #      Don't change mount options or only when no docker
-    #      is started and the server but just reboot the
+    #      is started in the server but just reboot the
     #      server after the puppet run
     #
     options  => 'noatime,nonempty,defaults,_netdev',
@@ -217,12 +187,10 @@ class moo::cargo (
 
   # Packages needed for this script.
   ensure_packages(
-                   [
-                     'jq',
-                     'python',
-                     'mysql-client',
-                     'rsync',
-                   ], { ensure => present } )
+    [ 'jq', 'python', 'mysql-client', 'rsync' ],
+    { ensure => present, before => File['/usr/local/sbin/moobackup.puppet'] }
+  )
+
   file { '/usr/local/sbin/moobackup.puppet':
     ensure  => present,
     owner   => 'root',

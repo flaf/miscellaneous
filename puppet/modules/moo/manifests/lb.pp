@@ -23,7 +23,12 @@ class moo::lb (
   # deprecated.
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
-  require '::moo::common'
+
+  $moobot_conf = $::moo::lb::params::moobot_conf
+
+  class { '::moo::common':
+    moobot_conf => $moobot_conf,
+  }
 
   # The package "netcat-openbsd" is useful to send requests
   # to the haproxy socket file.
