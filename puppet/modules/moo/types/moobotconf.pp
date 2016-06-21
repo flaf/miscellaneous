@@ -36,6 +36,7 @@ type Moo::MoobotConf = Struct[{
     'stats_login'         => String[1],
     'stats_password'      => String[1],
     'log_server'          => String[1],
+    'log_format'          => String[1],
   }],
 }]
 

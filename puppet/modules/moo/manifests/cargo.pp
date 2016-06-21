@@ -1,18 +1,27 @@
-class moo::cargo {
+class moo::cargo (
+  Array[String[1], 1] $supported_distributions,
+) {
 
-  if !defined(Class['::moo::params']) { include '::moo::params' }
+  ::homemade::is_supported_distrib($supported_distributions, $title)
 
-  $shared_root_path           = $::moo::params::shared_root_path
-  $docker_iface               = $::moo::params::docker_iface
-  $docker_bridge_cidr_address = $::moo::params::docker_bridge_cidr_address
-  $docker_dns                 = $::moo::params::docker_dns
-  $ceph_account               = $::moo::params::ceph_account
-  $ceph_client_mountpoint     = $::moo::params::ceph_client_mountpoint
-  $ceph_mount_on_the_fly      = $::moo::params::ceph_mount_on_the_fly
-  $backups_dir                = $::moo::params::backups_dir
-  $backups_retention          = $::moo::params::backups_retention
-  $backups_moodles_per_day    = $::moo::params::backups_moodles_per_day
-  $make_backups               = $::moo::params::make_backups
+  include '::moo::cargo::params'
+
+  $moobot_conf                = $::moo::cargo::params::moobot_conf
+  $docker_iface               = $::moo::cargo::params::docker_iface
+  $docker_bridge_cidr_address = $::moo::cargo::params::docker_bridge_cidr_address
+  $docker_dns                 = $::moo::cargo::params::docker_dns
+  $ceph_account               = $::moo::cargo::params::ceph_account
+  $ceph_client_mountpoint     = $::moo::cargo::params::ceph_client_mountpoint
+  $ceph_mount_on_the_fly      = $::moo::cargo::params::ceph_mount_on_the_fly
+  $backups_dir                = $::moo::cargo::params::backups_dir
+  $backups_retention          = $::moo::cargo::params::backups_retention
+  $backups_moodles_per_day    = $::moo::cargo::params::backups_moodles_per_day
+  $make_backups               = $::moo::cargo::params::make_backups
+  $shared_root_path           = $moobot_conf['main']['shared_root_path']
+
+
+
+
 
   $iptables_allow_dns         = $::moo::params::iptables_allow_dns_final
   $docker_gateway             = $::moo::params::docker_gateway_final

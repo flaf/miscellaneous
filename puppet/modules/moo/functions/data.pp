@@ -19,19 +19,25 @@ function moo::data {
       'template'    => '/opt/moobot/templates/haproxy.conf.j2',
       'reload_cmd'  => '/opt/moobot/bin/haproxy_graceful_reload',
       'stats_login' => 'admin',
+      'log_format'  => '%{+Q}o\ %{-Q}b\ %{-Q}ci\ -\ -\ [%T]\ %r\ %ST\ %B\ %hrl'
+                         .regsubst('%{', '%{literal("%")}{', 'G'),
     },
   }
 
-  $ha_log_format = '%{+Q}o\ %{-Q}b\ %{-Q}ci\ -\ -\ [%T]\ %r\ %ST\ %B\ %hrl'
-                     .regsubst('%{', '%{literal("%")}{', 'G')
+  # Warning: docker_bridge_cidr_address is the value of the
+  # --bip option (from "docker daemon" in the
+  # /etc/default/docker file). A value like '172.17.0.0/16'
+  # is incorrect because the part before the '/' must be the
+  # IP address of the docker0 interface.
+  $docker_bridge_cidr_address = '172.19.0.1/24'
+
+  $docker_dns = []
+
 
 
   if !defined(Class['::network::params']) { include '::network::params' }
 
-  # By default, we let docker choose the DNS addresses and
-  # the docker network will have this value below.
-  $docker_dns                 = []
-  $docker_bridge_cidr_address = '172.19.0.1/24'
+  # By default, we let docker choose the DNS addresses.
 
 
 
@@ -96,27 +102,26 @@ function moo::data {
   $replicaset = $::mongodb::params::replset;
 
   {
-    moo::params::moobot_conf                  => $moobot_conf,
-    moo::params::ha_log_format                => $ha_log_format,
+    moo::cargo::params::moobot_conf                => $moobot_conf,
+    moo::cargo::params::docker_iface               => undef,
+    moo::cargo::params::docker_bridge_cidr_address => $docker_bridge_cidr_address,
+    moo::cargo::params::docker_dns                 => $docker_dns,
+    moo::cargo::params::ceph_account               => 'cephfs',
+    moo::cargo::params::ceph_client_mountpoint     => '/moodle',
+    moo::cargo::params::ceph_mount_on_the_fly      => false,
+    moo::cargo::params::backups_dir                => '/backups',
+    moo::cargo::params::backups_retention          => 2,
+    moo::cargo::params::backups_moodles_per_day    => 2,
+    moo::cargo::params::make_backups               => false,
+    moo::cargo::supported_distributions            => [ 'trusty' ],
+
+
+
+
+
     moo::params::captain_mysql_rootpwd        => undef,
-    moo::params::docker_iface                 => undef,
     moo::params::docker_gateway               => undef,
-    # Warning: docker_bridge_cidr_address is the value of
-    # the --bip option (from "docker daemon" in the
-    # /etc/default/docker file). A value like
-    # '172.17.0.0/16' is incorrect because the part before
-    # the '/' must be the IP address of the docker0
-    # interface.
-    moo::params::docker_bridge_cidr_address   => $docker_bridge_cidr_address,
-    moo::params::docker_dns                   => $docker_dns,
     moo::params::iptables_allow_dns           => undef,
-    moo::params::ceph_account                 => 'cephfs',
-    moo::params::ceph_client_mountpoint       => '/moodle',
-    moo::params::ceph_mount_on_the_fly        => false,
-    moo::params::backups_dir                  => '/backups',
-    moo::params::backups_retention            => 2,
-    moo::params::backups_moodles_per_day      => 2,
-    moo::params::make_backups                 => false,
 
 
     moo::captain::supported_distributions => [ 'trusty' ],
@@ -135,7 +140,7 @@ function moo::data {
 
     # Merging policy.
     lookup_options => {
-       mcollective::server::params::collectives => { merge => 'unique', },
+       moo::cargo::params::moobot_conf => { merge => 'deep', },
     },
 
   }

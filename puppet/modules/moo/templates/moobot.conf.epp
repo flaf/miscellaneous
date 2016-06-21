@@ -1,65 +1,43 @@
-<%- |
-  $shared_root_path,
-  $first_guid,
-  $default_version_tag,
-  $lb,
-  $moodle_db_host,
-  $moodle_db_adm_user,
-  $moodle_db_adm_pwd,
-  $moodle_db_pfx,
-  $docker_repository,
-  $default_desired_num,
-  $moobot_db_host,
-  $moobot_db_pwd,
-  $memcached_servers,
-  $ha_template,
-  $ha_reload_cmd,
-  $ha_stats_login,
-  $ha_stats_pwd,
-  $ha_log_server,
-  $smtp_relay,
-  $smtp_port,
-  $mongodb_servers,
-  $replicaset,
-| -%>
+<%- |Moo::MoobotConf $moobot_conf| -%>
 ### This file is managed by Puppet, don't edit It. ###
 
 [main]
-shared_root_path = <%= $shared_root_path %>
-first_guid = <%= $first_guid %>
-default_version_tag = <%= $default_version_tag %>
+shared_root_path = <%= $moobot_conf['main']['shared_root_path'] %>
+first_guid = <%= $moobot_conf['main']['first_guid'] %>
+default_version_tag = <%= $moobot_conf['main']['default_version_tag'] %>
 
 [jobs]
-update_lb = <%= $lb.join(',') %>
+update_lb = <%= $moobot_conf['jobs']['update_lb'].join(',') %>
 
 [docker]
-db_host = <%= $moodle_db_host %>
-db_adm_user = <%= $moodle_db_adm_user %>
-db_adm_password = <%= $moodle_db_adm_pwd %>
-db_pfx = <%= $moodle_db_pfx %>
-repository = <%= $docker_repository %>
-default_desired_num = <%= $default_desired_num %>
-smtp_relay = <%= $smtp_relay %>
-smtp_port = <%= $smtp_port %>
+db_host = <%= $moobot_conf['docker']['db_host'] %>
+db_adm_user = <%= $moobot_conf['docker']['db_adm_user'] %>
+db_adm_password = <%= $moobot_conf['docker']['db_adm_password'] %>
+db_pfx = <%= $moobot_conf['docker']['db_pfx'] %>
+repository = <%= $moobot_conf['docker']['repository'] %>
+default_desired_num = <%= $moobot_conf['docker']['default_desired_num'] %>
+smtp_relay = <%= $moobot_conf['docker']['smtp_relay'] %>
+smtp_port = <%= $moobot_conf['docker']['smtp_port'] %>
 
 [database]
-host = <%= $moobot_db_host %>
-name = moobot
-user = moobot
-password = <%= $moobot_db_pwd %>
+host = <%= $moobot_conf['database']['host'] %>
+name = <%= $moobot_conf['database']['name'] %>
+user = <%= $moobot_conf['database']['user'] %>
+password = <%= $moobot_conf['database']['password'] %>
 
 [memcached]
-servers = <%= $memcached_servers.join(',') %>
+servers = <%= $moobot_conf['memcached']['servers'].join(',') %>
 
 [mongodb]
-servers = mongodb://<%= $mongodb_servers.join(',') %>
-replicaset = <%= $replicaset %>
+servers = mongodb://<%= $moobot_conf['mongodb']['servers'].join(',') %>
+replicaset = <%= $moobot_conf['mongodb']['replicaset'] %>
 
 [haproxy]
-template = <%= $ha_template %>
-reload_cmd = <%= $ha_reload_cmd %>
-stats_login = <%= $ha_stats_login %>
-stats_password = <%= $ha_stats_pwd %>
-log_server = <%= $ha_log_server %>
+template = <%= $moobot_conf['haproxy']['template'] %>
+reload_cmd = <%= $moobot_conf['haproxy']['reload_cmd'] %>
+stats_login = <%= $moobot_conf['haproxy']['stats_login'] %>
+stats_password = <%= $moobot_conf['haproxy']['stats_password'] %>
+log_server = <%= $moobot_conf['haproxy']['log_server'] %>
+log_format = <%= $moobot_conf['haproxy']['log_format'] %>
 
 
