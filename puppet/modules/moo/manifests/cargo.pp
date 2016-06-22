@@ -43,7 +43,7 @@ class moo::cargo (
 
   file_line { 'set-dockertable-name':
     path   => '/etc/iproute2/rt_tables',
-    line   => "10    dockertable",
+    line   => '10    dockertable',
     before  => File['/etc/network/if-up.d/docker0-up'],
   }
 
