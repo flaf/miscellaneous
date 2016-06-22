@@ -1,6 +1,6 @@
 class moo::cargo::params (
   Moo::MoobotConf  $moobot_conf,
-  String[1]        $docker_iface = undef,
+  String[1]        $docker_iface,
   String[1]        $docker_bridge_cidr_address,
   Array[String[1]] $docker_dns,
   String[1]        $docker_gateway,
