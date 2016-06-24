@@ -24,7 +24,8 @@ function roles::data {
 
   {
     roles::mcomiddleware::params::exchanges => $default_exchanges,
-    lookup_options                          => {
+
+    lookup_options => {
       roles::mcomiddleware::params::exchanges => { merge => 'unique' },
     },
   }
