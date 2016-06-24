@@ -1,8 +1,24 @@
-class roles::cargo {
+class roles::moobotnode {
 
-  include '::roles::ceph'
+  include '::roles::moobotnode::params'
+  $nodetype = $::roles::moobotnode::params::nodetype
 
-  class { '::moo::cargo':
+  include '::moo::common::params'
+  $moobot_conf = $::moo::common::params::moobot_conf,
+
+  case $nodetype {
+
+    'cargo': {
+      include '::roles::ceph'
+    }
+
+    default: {
+    }
+
+  }
+
+  class { "::moo::${nodetype}":
+    moobot_conf => $moobot_conf_completed,
   }
 
 }
