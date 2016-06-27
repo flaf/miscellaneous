@@ -59,14 +59,14 @@ function moo::data {
     # to haproxy >= 1.5 to have feature concerning the log
     # format.
 
-    moo::common::params::moobot_conf => $moobot_conf,
+    moo::params::moobot_conf => $moobot_conf,
 
     # Merging policy.
     lookup_options => {
        moo::cargo::params::moobot_conf   => { merge => 'deep', },
        moo::captain::params::moobot_conf => { merge => 'deep', },
        moo::lb::params::moobot_conf      => { merge => 'deep', },
-       moo::common::params::moobot_conf  => { merge => 'deep', },
+       moo::params::moobot_conf          => { merge => 'deep', },
     },
 
   }

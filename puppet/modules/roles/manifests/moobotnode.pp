@@ -3,20 +3,35 @@ class roles::moobotnode {
   include '::roles::moobotnode::params'
   $nodetype = $::roles::moobotnode::params::nodetype
 
-  include '::moo::common::params'
-  $moobot_conf = $::moo::common::params::moobot_conf,
+  include '::network::params'
+
+  $interfaces         = $::network::params::interfaces
+  $inventory_networks = $::network::params::inventory_networks
+  $smtp_relay         = $::network::params::smtp_relay
+  $smtp_port          = $::network::params::smtp_port
+
+  include '::moo::params'
+  $moobot_tmp = $::moo::params::moobot_conf
+
+  $docker_conf  = $moobot_tmp['docker'] +
+    { 'smtp_relay' => $smtp_relay,
+      'smtp_port'  => $smtp_port,
+    }
+
+  # The moobot is completed.
+  $moobot_conf = $moobot_tmp + ( { 'docker' => $docker_conf } )
 
   case $nodetype {
 
     'cargo': {
 
-      $docker_dns                 = $::facts['networking']['ip']
+      $primary_address            = $::facts['networking']['ip']
       $iptables_allow_dns         = true
       $docker_iface               = lookup('moo::cargo::params::docker_iface')
       $docker_bridge_cidr_address = lookup('moo::cargo::params::docker_bridge_cidr_address')
 
       class { '::network::resolv_conf::params':
-        local_resolver_interface      => $docker_dns,
+        local_resolver_interface      => [ $primary_address ],
         local_resolver_access_control => [ [$docker_bridge_cidr_address, 'allow'] ],
       }
 
@@ -25,11 +40,6 @@ class roles::moobotnode {
       }
 
       include '::roles::ceph'
-
-      include '::network::params'
-
-      $interfaces         = $::network::params::interfaces
-      $inventory_networks = $::network::params::inventory_networks
 
       unless $docker_iface in $interfaces {
         @("END"/L).fail
@@ -48,8 +58,8 @@ class roles::moobotnode {
         undef
       )
 
-      include '::ceph::node::params'
-      $ceph_account = $::ceph::node::client_accounts[0]
+      include '::ceph::params'
+      $ceph_account = $::ceph::client_accounts[0]
 
       $make_backups = $::hostname ? {
         /^cargo01/ => true,
@@ -58,7 +68,7 @@ class roles::moobotnode {
 
       class { 'moo::cargo::params':
         moobot_conf             => $moobot_conf,
-        docker_dns              => $docker_dns,
+        docker_dns              => [ $primary_address ],
         docker_gateway          => $docker_gateway,
         iptables_allow_dns      => $iptables_allow_dns,
         ceph_account            => $ceph_account,
@@ -86,7 +96,11 @@ class roles::moobotnode {
 
   }
 
-  include "::moo::${nodetype}"
+  include '::repository::moobot'
+
+  class { "::moo::${nodetype}":
+    require => Class['::repository::moobot']
+  }
 
 }
 

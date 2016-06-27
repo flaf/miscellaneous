@@ -6,9 +6,9 @@ class moo::captain (
 
   include '::moo::captain::params'
 
-  $moobot_conf     = $::moo::captain::moobot_conf
+  $moobot_conf     = $::moo::captain::params::moobot_conf
   $mysql_rootpwd   = $::moo::captain::params::mysql_rootpwd
-  $mysql_moobotpwd = $::moo::captain::moobot_conf['database']['password']
+  $mysql_moobotpwd = $moobot_conf['database']['password']
 
   class { '::moo::common':
     moobot_conf => $moobot_conf,

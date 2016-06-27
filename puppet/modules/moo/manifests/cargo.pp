@@ -48,10 +48,7 @@ class moo::cargo (
   }
 
   # Packages needed in the script /etc/network/if-up.d/docker0-up.
-  ensure_packages(
-    [ 'ipcalc', 'gawk' ],
-    { ensure => present, before => File['/etc/network/if-up.d/docker0-up'], }
-  )
+  ensure_packages( [ 'ipcalc', 'gawk' ], { ensure => present } )
 
   file { '/etc/network/if-up.d/docker0-up':
     ensure  => present,
@@ -59,6 +56,7 @@ class moo::cargo (
     group   => 'root',
     mode    => '0755',
     notify  => Exec['set-iptables-rules'],
+    require => [ Package['ipcalc'], Package['gawk'] ],
     content => epp('moo/docker0-up.epp',
                    {
                     'docker_bridge_cidr_address' => $docker_bridge_cidr_address,

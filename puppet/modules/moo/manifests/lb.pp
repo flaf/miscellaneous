@@ -34,12 +34,23 @@ class moo::lb (
   # to the haproxy socket file.
   ensure_packages( [ 'haproxy', 'netcat-openbsd' ], { ensure => present } )
 
+  # The content is not managed (it's managed by moobot),
+  # only the UniX permissions.
+  file { '/etc/haproxy/haproxy.cfg':
+    ensure => present,
+    owner   => 'haproxy',
+    group   => 'haproxy',
+    mode    => '0640',
+    require => Package['haproxy'],
+    notify  => Service['haproxy'],
+  }
+
   service { 'haproxy':
     ensure     => running,
     hasstatus  => true,
     hasrestart => true,
     enable     => true,
-    require    => Package['haproxy'],
+    require    => [ Package['haproxy'], File['/etc/haproxy/haproxy.cfg'] ],
   }
 
   # Now, we need to redirect http to https with a basic
