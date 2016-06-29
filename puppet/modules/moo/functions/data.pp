@@ -51,6 +51,7 @@ function moo::data {
 
     moo::captain::params::moobot_conf     => $moobot_conf,
     moo::captain::params::mysql_rootpwd   => undef,
+    moo::captain::params::backup_cmd      => '/opt/moobot/maintenance/dump_captain_database 100',
     moo::captain::supported_distributions => [ 'trusty' ],
 
     moo::lb::params::moobot_conf     => $moobot_conf,

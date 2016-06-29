@@ -80,18 +80,29 @@ class roles::moobotnode {
     }
 
     'lb': {
+
       include 'roles::generic'
       include '::keepalived_vip'
+
       class { "moo::${nodetype}::params":
         moobot_conf => $moobot_conf,
       }
+
     }
 
     'captain': {
+
+      # To monitor the "backup" cron task.
+      $default_backup_cmd = ::moo::data()['moo::captain::params::backup_cmd']
+      $backup_cmd         = "/usr/bin/save-cron-status --name dump-captain-db ${default_backup_cmd}"
+
       include 'roles::generic'
+
       class { "moo::${nodetype}::params":
         moobot_conf => $moobot_conf,
+        backup_cmd  => $backup_cmd,
       }
+
     }
 
   }

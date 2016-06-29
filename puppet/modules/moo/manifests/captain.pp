@@ -8,6 +8,7 @@ class moo::captain (
 
   $moobot_conf     = $::moo::captain::params::moobot_conf
   $mysql_rootpwd   = $::moo::captain::params::mysql_rootpwd
+  $backup_cmd      = $::moo::captain::params::backup_cmd
   $mysql_moobotpwd = $moobot_conf['database']['password']
 
   class { '::moo::common':
@@ -80,6 +81,15 @@ class moo::captain (
     hasstatus  => true,
     hasrestart => true,
     require    => File['/etc/mysql/conf.d/99-custom.cnf'],
+  }
+
+  cron { 'cron-backup-captain-db':
+    ensure  => present,
+    user    => 'root',
+    command => $backup_cmd,
+    hour    => 1,
+    minute  => 0,
+    require => Class['::moo::common'],
   }
 
 }
