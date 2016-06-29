@@ -375,3 +375,37 @@ python /opt/moobot/bin/lb.py --force --verbose --debug
 ```
 
 
+# Example of `rsnapshot.conf` to backup
+
+
+This is a example for Debian Squeeze:
+
+```conf
+config_version  1.2
+snapshot_root   /data/rsnapshot/elea/
+cmd_cp      /bin/cp
+cmd_rm      /bin/rm
+cmd_rsync   /usr/bin/rsync
+cmd_ssh /usr/bin/ssh
+cmd_logger  /usr/bin/logger
+cmd_du      /usr/bin/du
+cmd_rsnapshot_diff  /usr/bin/rsnapshot-diff
+interval    daily   100
+verbose     2
+loglevel    3
+lockfile    /var/run/rsnapshot.pid
+rsync_short_args    -a
+rsync_long_args --delete --numeric-ids --relative --delete-excluded --ignore-existing
+ssh_args    -p 22 -o Compression=no -x -T
+backup  root@IP_CARGO01:/mnt/moodle/ filedir/
+backup_script   /usr/bin/scp -o Compression=no root@IP_CARGO01:'/backups/*/sqldump/*$(/bin/date "+%Y-%m-%d")*.gz' .  sqldump/
+backup_script   /usr/bin/scp -o Compression=no root@IP_CAPTAIN:'/root/dump_captain_database/*$(/bin/date "+%Y-%m-%d")*.gz' .  captaindb/
+```
+
+
+
+
+
+
+
+
