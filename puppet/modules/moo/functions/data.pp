@@ -23,6 +23,11 @@ function moo::data {
       'log_format'  => '%{+Q}o\ %{-Q}b\ %{-Q}ci\ -\ -\ [%T]\ %r\ %ST\ %B\ %hrl'
                          .regsubst('%{', '%{literal("%")}{', 'G'),
     },
+    'backup'  => {
+      'path'         => '/backups',
+      'exceptions'   => '^(dev[0-9]+|test)$',
+      'db_retention' => 10,
+    },
   }
 
   # Warning: docker_bridge_cidr_address is the value of the
@@ -43,9 +48,7 @@ function moo::data {
     moo::cargo::params::ceph_account               => 'cephfs',
     moo::cargo::params::ceph_client_mountpoint     => '/moodle',
     moo::cargo::params::ceph_mount_on_the_fly      => false,
-    moo::cargo::params::backups_dir                => '/backups',
-    moo::cargo::params::backups_retention          => 2,
-    moo::cargo::params::backups_moodles_per_day    => 2,
+    moo::cargo::params::backup_cmd                 => '/opt/moobot/maintenance/dump_moodle_database',
     moo::cargo::params::make_backups               => false,
     moo::cargo::supported_distributions            => [ 'trusty' ],
 

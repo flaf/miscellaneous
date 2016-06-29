@@ -15,9 +15,7 @@ class moo::cargo (
   $ceph_account               = $::moo::cargo::params::ceph_account
   $ceph_client_mountpoint     = $::moo::cargo::params::ceph_client_mountpoint
   $ceph_mount_on_the_fly      = $::moo::cargo::params::ceph_mount_on_the_fly
-  $backups_dir                = $::moo::cargo::params::backups_dir
-  $backups_retention          = $::moo::cargo::params::backups_retention
-  $backups_moodles_per_day    = $::moo::cargo::params::backups_moodles_per_day
+  $backup_cmd                 = $::moo::cargo::params::backup_cmd
   $make_backups               = $::moo::cargo::params::make_backups
 
   # Just for convenience.
@@ -183,44 +181,48 @@ class moo::cargo (
     special => 'reboot',
   }
 
-  # Packages needed for this script.
-  ensure_packages(
-    [ 'jq', 'python', 'mysql-client', 'rsync' ],
-    { ensure => present, before => File['/usr/local/sbin/moobackup.puppet'] }
-  )
+  # Packages needed for the backup script (cron below).
+  ensure_packages(['jq', 'python', 'mysql-client', 'rsync'], { ensure => present })
 
-  file { '/usr/local/sbin/moobackup.puppet':
-    ensure  => present,
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0755',
-    content => epp('moo/moobackup.puppet.epp',
-                   {
-                    'backups_dir'       => $backups_dir,
-                    'backups_retention' => $backups_retention,
-                    'shared_root_path'  => $shared_root_path,
-                   },
-                  ),
-  }
-
-  file { '/usr/local/sbin/moobackup-cron.puppet':
-    ensure  => present,
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0755',
-    content => epp('moo/moobackup-cron.puppet.epp', {}),
-    require => File['/usr/local/sbin/moobackup.puppet'],
-  }
+  # Unused now.
+  #
+  #file { '/usr/local/sbin/moobackup.puppet':
+  #  ensure  => present,
+  #  owner   => 'root',
+  #  group   => 'root',
+  #  mode    => '0755',
+  #  content => epp('moo/moobackup.puppet.epp',
+  #                 {
+  #                  'backups_dir'       => $backups_dir,
+  #                  'backups_retention' => $backups_retention,
+  #                  'shared_root_path'  => $shared_root_path,
+  #                 },
+  #                ),
+  #}
+  #
+  #file { '/usr/local/sbin/moobackup-cron.puppet':
+  #  ensure  => present,
+  #  owner   => 'root',
+  #  group   => 'root',
+  #  mode    => '0755',
+  #  content => epp('moo/moobackup-cron.puppet.epp', {}),
+  #  require => File['/usr/local/sbin/moobackup.puppet'],
+  #}
 
   if $make_backups {
 
     cron { 'cron-backups-moodles':
       ensure  => $present,
       user    => 'root',
-      command => "/usr/local/sbin/moobackup-cron.puppet ${backups_moodles_per_day}",
-      hour    => 2,
+      command => $backup_cmd,
+      hour    => 3,
       minute  => 0,
-      require => File['/usr/local/sbin/moobackup-cron.puppet'],
+      require => [
+                   Package['jq'],
+                   Package['python'],
+                   Package['mysql-client'],
+                   Package['rsync']
+                 ],
     }
 
   }

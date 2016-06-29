@@ -38,6 +38,11 @@ type Moo::MoobotConf = Struct[{
     'log_server'          => String[1],
     'log_format'          => String[1],
   }],
+  'backup'    => Struct[{
+    'path'                => String[1],
+    'exceptions'          => String[1],
+    'db_retention'        => Integer[1],
+  }],
 }]
 
 
