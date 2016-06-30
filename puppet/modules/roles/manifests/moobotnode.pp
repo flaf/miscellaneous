@@ -33,6 +33,7 @@ class roles::moobotnode {
       # To monitor the "backup" cron task.
       $default_backup_cmd = ::moo::data()['moo::cargo::params::backup_cmd']
       $backup_cmd         = "/usr/bin/save-cron-status --name backup-moodles -- ${default_backup_cmd}"
+      $rsync_filedir_cmd  = "/usr/bin/save-cron-status --name rsync-filedirs -- ${default_backup_cmd} --no-mysqldump"
 
       class { '::network::resolv_conf::params':
         local_resolver_interface      => [ $primary_address ],
@@ -65,9 +66,26 @@ class roles::moobotnode {
       include '::ceph::params'
       $ceph_account = $::ceph::client_accounts[0]
 
-      $make_backups = $::hostname ? {
-        /^cargo01/ => true,
-        default    => false,
+      case $::hostname {
+
+        /^cargo01/: {
+          $make_backups = true
+        }
+
+        default: {
+          $make_backups = false
+          # No backup in cargoXY with XY != '01' but a rsync
+          # of the filedir sometimes.
+          cron { 'rsync-filedir':
+            ensure  => present,
+            user    => 'root',
+            command => $rsync_filedir_cmd,
+            hour    => 20 + fqdn_rand(4), # ie 20, 21, 22 or 23.
+            minute  => fqdn_rand(60),
+            weekday => fqdn_rand(7),
+            require => Class["::moo::${nodetype}"],
+          }
+        }
       }
 
       class { 'moo::cargo::params':
