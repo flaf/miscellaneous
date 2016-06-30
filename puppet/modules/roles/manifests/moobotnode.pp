@@ -30,6 +30,10 @@ class roles::moobotnode {
       $docker_iface               = lookup('moo::cargo::params::docker_iface')
       $docker_bridge_cidr_address = lookup('moo::cargo::params::docker_bridge_cidr_address')
 
+      # To monitor the "backup" cron task.
+      $default_backup_cmd = ::moo::data()['moo::cargo::params::backup_cmd']
+      $backup_cmd         = "/usr/bin/save-cron-status --name dump-moodles-db ${default_backup_cmd}"
+
       class { '::network::resolv_conf::params':
         local_resolver_interface      => [ $primary_address ],
         local_resolver_access_control => [ [$docker_bridge_cidr_address, 'allow'] ],
@@ -72,8 +76,7 @@ class roles::moobotnode {
         docker_gateway          => $docker_gateway,
         iptables_allow_dns      => $iptables_allow_dns,
         ceph_account            => $ceph_account,
-        backups_retention       => 60,
-        backups_moodles_per_day => 13,
+        backup_cmd              => $backup_cmd,
         make_backups            => $make_backups,
       }
 

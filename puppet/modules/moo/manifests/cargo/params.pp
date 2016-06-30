@@ -8,9 +8,7 @@ class moo::cargo::params (
   String[1]        $ceph_account,
   String[1]        $ceph_client_mountpoint,
   Boolean          $ceph_mount_on_the_fly,
-  String[1]        $backups_dir,
-  Integer[1]       $backups_retention,
-  Integer[1]       $backups_moodles_per_day,
+  String[1]        $backup_cmd,
   Boolean          $make_backups,
 ) {
 
