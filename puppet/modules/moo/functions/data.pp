@@ -24,9 +24,10 @@ function moo::data {
                          .regsubst('%{', '%{literal("%")}{', 'G'),
     },
     'backup'  => {
-      'path'         => '/backups',
-      'exceptions'   => '^(dev[0-9]+|test)$',
-      'db_retention' => 10,
+      'path'              => '/backups',
+      'exceptions'        => '^(dev[0-9]+|test)$',
+      'db_retention'      => 10,
+      'filedir_retention' => 10,
     },
   }
 
@@ -48,7 +49,7 @@ function moo::data {
     moo::cargo::params::ceph_account               => 'cephfs',
     moo::cargo::params::ceph_client_mountpoint     => '/moodle',
     moo::cargo::params::ceph_mount_on_the_fly      => false,
-    moo::cargo::params::backup_cmd                 => '/opt/moobot/maintenance/dump_moodle_database',
+    moo::cargo::params::backup_cmd                 => '/opt/moobot/maintenance/backup_moodle',
     moo::cargo::params::make_backups               => false,
     moo::cargo::supported_distributions            => [ 'trusty' ],
 

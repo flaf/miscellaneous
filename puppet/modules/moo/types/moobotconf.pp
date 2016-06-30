@@ -42,6 +42,7 @@ type Moo::MoobotConf = Struct[{
     'path'                => String[1],
     'exceptions'          => String[1],
     'db_retention'        => Integer[1],
+    'filedir_retention'   => Integer[1],
   }],
 }]
 

@@ -44,5 +44,6 @@ log_format = <%= $moobot_conf['haproxy']['log_format'] %>
 path = <%= $moobot_conf['backup']['path'] %>
 exceptions = <%= $moobot_conf['backup']['exceptions'] %>
 db_retention = <%= $moobot_conf['backup']['db_retention'] %>
+filedir_retention = <%= $moobot_conf['backup']['filedir_retention'] %>
 
 

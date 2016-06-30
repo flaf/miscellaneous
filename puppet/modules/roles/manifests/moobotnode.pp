@@ -32,7 +32,7 @@ class roles::moobotnode {
 
       # To monitor the "backup" cron task.
       $default_backup_cmd = ::moo::data()['moo::cargo::params::backup_cmd']
-      $backup_cmd         = "/usr/bin/save-cron-status --name dump-moodles-db -- ${default_backup_cmd}"
+      $backup_cmd         = "/usr/bin/save-cron-status --name backup-moodles -- ${default_backup_cmd}"
 
       class { '::network::resolv_conf::params':
         local_resolver_interface      => [ $primary_address ],
