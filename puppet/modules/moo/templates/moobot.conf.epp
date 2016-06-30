@@ -40,4 +40,9 @@ stats_password = <%= $moobot_conf['haproxy']['stats_password'] %>
 log_server = <%= $moobot_conf['haproxy']['log_server'] %>
 log_format = <%= $moobot_conf['haproxy']['log_format'] %>
 
+[backup]
+path = <%= $moobot_conf['backup']['path'] %>
+exceptions = <%= $moobot_conf['backup']['exceptions'] %>
+db_retention = <%= $moobot_conf['backup']['db_retention'] %>
+
 
