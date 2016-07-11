@@ -33,7 +33,7 @@ class roles::moobotnode {
       # To monitor the "backup" cron task.
       $default_backup_cmd = ::moo::data()['moo::cargo::params::backup_cmd']
       $backup_cmd         = ::roles::wrap_cron_mon($default_backup_cmd, 'backup-moodles')
-      $rsync_filedir_cmd  = ::roles::wrap_cron_mon("${default_backup_cmd} --no-mysqldump", 'rsync-filedirs')
+      $rsync_filedir_cmd  = ::roles::wrap_cron_mon("${default_backup_cmd} --no-sqldump", 'rsync-filedirs')
 
       class { '::network::resolv_conf::params':
         local_resolver_interface      => [ $primary_address ],
