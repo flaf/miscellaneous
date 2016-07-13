@@ -1,4 +1,4 @@
-class puppetserver::get_ipadresses {
+class puppetserver::get_ipaddresses {
 
   $query     = 'facts{ name = "ipaddress" }'
   $big_array = puppetdb_query($query)
