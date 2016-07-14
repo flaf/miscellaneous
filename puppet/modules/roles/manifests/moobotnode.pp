@@ -74,15 +74,16 @@ class roles::moobotnode {
 
         default: {
           $make_backups = false
+          $seed         = 'cargo-cron-rsync-filedir'
           # No backup in cargoXY with XY != '01' but a rsync
           # of the filedir sometimes.
           cron { 'rsync-filedir':
             ensure  => present,
             user    => 'root',
             command => $rsync_filedir_cmd,
-            hour    => 20 + fqdn_rand(4), # ie 20, 21, 22 or 23.
-            minute  => fqdn_rand(60),
-            weekday => fqdn_rand(7),
+            hour    => 20 + fqdn_rand(4, $seed), # ie 20, 21, 22 or 23.
+            minute  => fqdn_rand(60, $seed),
+            weekday => fqdn_rand(7, $seed),
             require => Class["::moo::${nodetype}"],
           }
         }

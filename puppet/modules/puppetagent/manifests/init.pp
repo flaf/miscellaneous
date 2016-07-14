@@ -106,6 +106,9 @@ class puppetagent {
     require    => Service['puppet'],
   }
 
+  # seed for the fqdn_rand() function.
+  $seed = 'cron-puppet-run'
+
   case $cron {
 
     'per-day': {
@@ -115,7 +118,7 @@ class puppetagent {
 
     'per-week': {
       $ensure_cron = 'present'
-      $weekday     = fqdn_rand(7)
+      $weekday     = fqdn_rand(7, $seed)
     }
 
     'disabled': {
@@ -162,8 +165,8 @@ class puppetagent {
     ensure  => $ensure_cron,
     user    => 'root',
     command => $cron_bin,
-    hour    => fqdn_rand(24),
-    minute  => fqdn_rand(60),
+    hour    => fqdn_rand(24, $seed),
+    minute  => fqdn_rand(60, $seed),
     weekday => $weekday,
     require => File[$cron_bin],
   }
