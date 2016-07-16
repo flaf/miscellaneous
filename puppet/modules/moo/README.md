@@ -8,22 +8,23 @@ This module implements the management of:
 
 in a moodle platform.
 
-The classes related to these types of server have several
-common parameters because the same configuration file
-`/opt/moobot/etc/moobot.conf` is managed on these servers.
-Even if for instance, sometimes, a specific parameter can
-be useless and not relevant in a cargo server but relevant
-and crucial in a captain server etc.
+The classes related to these types of server have a common
+parameter `mootbo_conf` to configure the same file
+`/opt/moobot/etc/moobot.conf` which is managed on these
+servers.
+
+
 
 
 # The data type `Moo::MoobotConf`
 
 Before to see examples, it's better to explain the structure
-of the **common** parameter `moobot_conf` which is present
-in the 4 public classes of this module: `moo::cargo::params`,
-`moo::captain::params`, `moo::lb::params` and the special
-class `moo::params` (see below). The type of this parameter
-is `Moo::MoobotConf` and here is an example below in yaml
+of the **common** (and important) parameter `moobot_conf`
+which is present in the 4 public classes of this module:
+`moo::cargo::params`, `moo::captain::params`,
+`moo::lb::params` and the special class `moo::params` (see
+below). The type of this parameter is the custom type
+`Moo::MoobotConf` and here is an example below in yaml
 format.
 
 If a key as the comment `optional`, in this case the key is
@@ -31,9 +32,9 @@ optional and its default value is the value set in the
 example below. If not, there is no default value and the
 user must define this key explicitly.
 
-For each class `moo::cargo`, `moo::captain`, `moo::lb` and
-`moo::params`, the default merging policy of this parameter
-is `deep`.
+For each class `moo::cargo::params`, `moo::captain::params`,
+`moo::lb::params` and `moo::params`, **the default merging
+policy of this parameter is `deep`**.
 
 ```yaml
 moo::params::moobot_conf:
@@ -41,7 +42,9 @@ moo::params::moobot_conf:
   main:
     # Optional. The directory where the filedirs of the
     # moodle dockers are put. Each docker will have a binded
-    # volume in this directory for its filedir.
+    # volume in this directory for its filedir (in fact, the
+    # volume directory is a subdirectory of the
+    # shared_root_path directory).
     shared_root_path: '/mnt/moodle'
 
     # Optional. The minimal uid used to chown the filedirs
@@ -49,27 +52,30 @@ moo::params::moobot_conf:
     first_guid: 5000
 
     # Optional. The tag of the docker image used by moobot
-    # by default to run a docker of a moodle if the
-    # version_tag field is not set in the captain database
-    # for this moodle.
+    # by default to run a moodle docker if the version_tag
+    # field of this moodle is not set in the captain
+    # database.
     default_version_tag: 'latest'
 
   jobs:
-    # The address of the haproxy load balancers (fqdns, IP
-    # addresses etc).
-    update_lb: [ 'lb1', 'lb2' ]
+    # The fqdn of the haproxy load balancers used by the
+    # cargo servers to put jobs in the captain database in
+    # the `jobs` table.
+    update_lb: [ 'lb1.domain.tld', 'lb2.domain.tld' ]
 
   docker:
     # The fqdn, the address etc. of the MySQL server used by
-    # the moodles. No default value.
+    # the moodles.
     db_host: '192.168.20.50'
 
-    # Optional. The user used by the captain server to
+    # Optional. The MySQL user used by the captain server to
     # connect to the MySQL server and create dedicated
-    # moodle databases.
+    # moodle databases. This MySQL user must be created
+    # before (with the correct password) in the moodle MySQL
+    # server
     db_adm_user: 'mooadm'
 
-    # The password of the MySQL user above. No default value.
+    # The password of the MySQL user above.
     db_adm_password: 'xxxx...xxx'
 
     # Prefix of the dedicated moodle databases created by
@@ -81,7 +87,10 @@ moo::params::moobot_conf:
     repository: 'lovely_elea'
 
     # Optional. The number of moodle dockers that should be
-    # instancied in all cargos cluster.
+    # instancied in all cargos cluster for instance if you
+    # set this value to 2 and if you have 2 cargo servers, A
+    # moodle "M" will have 2 docker instances, one per cargo
+    # server.
     default_desired_num: 2
 
     # The fqdn, IP address etc. of the smtp server used by
@@ -101,30 +110,30 @@ moo::params::moobot_conf:
 
     # Optional. The name of the captain database and the
     # MySQL username able to modify this database. In fact,
-    # these keys are not settable and the 'moobot' value is
-    # the only possible value.
+    # these keys are not changeable and the 'moobot' value
+    # is the only possible value.
     name: 'moobot'
     user: 'moobot'
 
     # The MySQL password of the `moobot` MySQL user used by
-    # moobot programms to connect to the `moobot` database
+    # moobot program to connect to the `moobot` database
     # in captain.
-    password: '%{alias("_moobot_db_pwd_")}'
+    password: 'xxx...xxx'
 
   memcached:
     # The addresses of the memcached servers used by the
-    # moodles.
+    # moodles. Be careful to the specific syntax.
     servers:
       - 'tcp:://memcached01:11211'
       - 'tcp:://memcached02:11211'
 
   mongodb:
     # The fqdns, IP addresses etc. of the mongodb servers
-    # used by the moodles.
+    # used by the moodles with the port value.
     servers:
-      - 'mongodb01:27017'
-      - 'mongodb02:27017'
-      - 'mongodb03:27017'
+      - 'mongodb01.domain.tld:27017'
+      - 'mongodb02.domain.tld:27017'
+      - 'mongodb03.domain.tld:27017'
 
     # The replicatset used by the mongodb servers.
     replicaset: 'mongodbmoodle'
@@ -133,7 +142,7 @@ moo::params::moobot_conf:
     # Optional. The path of the haproxy template of the
     # moobot package and the path of the command to reload
     # the haproxy daemon. In fact, these keys are not
-    # settable and the values below are the only possible
+    # changeable and the values below are the only possible
     # values.
     template: '/opt/moobot/templates/haproxy.conf.j2'
     reload_cmd: '/opt/moobot/bin/haproxy_graceful_reload'
@@ -151,6 +160,15 @@ moo::params::moobot_conf:
     log_server: 'log-server.domain.tld'
 
     # Optional. The format of the haproxy logs.
+    #
+    # Warning, in fact the below value is not the real
+    # default value because %{...} is the syntax to use
+    # hiera interpolation. In fact, the real default value
+    # of this parameter is the value below where each % is
+    # replaced by %{literal('%')}. You can test it, it gives
+    # a completely unreadable value. However, and it the
+    # most important, the final default value retrieved by
+    # Puppet is exactly the value below.
     log_format: '%{+Q}o\ %{-Q}b\ %{-Q}ci\ -\ -\ [%T]\ %r\ %ST\ %B\ %hrl'
 
   backup:
@@ -175,7 +193,9 @@ The class `moo::params` do nothing and its goal is just to
 be able to put the value of the `moobot_conf` parameter in
 one place in hiera, with the key `moo::params::moobot_conf`,
 and then retrieve its value in the puppet code and use it
-for the other classes (see example below).
+for the other classes (see examples below).
+
+
 
 
 # Cargo server
@@ -183,14 +203,6 @@ for the other classes (see example below).
 ## Usage
 
 Here is an example:
-
-The first group of parameters below are common parameters
-for each public class (`cargo`, `captain` and `lb`). This
-group of parameters are used to fill the configuration file
-`/opt/moobot/etc/moobot.conf`. No explanation is given for
-these parameter, unless exception mentioned and the comments
-put directly in this code. If not noticed, for these common
-parameters, the default value is the value set below.
 
 ```puppet
 # Here, we retrieve the value of moobot_conf via the hiera key
@@ -240,19 +252,18 @@ container. The default value of this parameter is
 `172.19.0.1/16`.
 
 The parameter `docker_gateway` is the IP address of the
-gateway used by the host to redirect traffic from the docker0
-interface (ie from the containers).
+gateway used by the host to redirect traffic from the
+docker0 interface (ie from the containers).
 
-In the example above, we have `docker_bridge_cidr_address` equal
-to `172.19.0.1/24`, so the IP of the `docker0` interface is
-`172.19.0.1` (ie the part before the `/`). Here is a schema to
-understand some network parameters:
+In the example above, we have `docker_bridge_cidr_address`
+equal to `172.19.0.1/24`, so the IP of the `docker0`
+interface is `172.19.0.1` (ie the part before the `/`). Here
+is a schema to understand some network parameters:
 
 ```
-                            IP forwarding
-  docker   ==>   docker0    =============> docker_iface ===> gateway docker_gateway ie 192.168.24.254
-containers     (172.19.0.1)                  (bond0.24)       gateway specific for the traffic from
-                                                                            docker0
+                            IP forwarding                    gateway docker_gateway ie 192.168.24.254
+  docker  ====>  docker0    =============> docker_iface ===>  gateway specific for the traffic from
+containers     (172.19.0.1)                  (bond0.24)                     docker0
 ```
 
 This is not the gateway of the docker containers (which is
@@ -263,7 +274,7 @@ instance, when a docker container pings Google, it uses its
 gateway (given by `docker_bridge_cidr_address`) and the
 packet comes in the `docker0` interface. Then the packet is
 forwarded to the `docker_iface` interface (parameter
-described above) and, then, the packet is sent via the
+described above) and, then the packet is sent via the
 gateway given by the present `docker_gateway` parameter. In
 fact, the packets from the docker containers use its own
 routing table (called `dockertable`) which is defined in the
@@ -282,10 +293,11 @@ servers used by the docker containers.
 The parameter `iptables_allow_dns` is a boolean. If `true`,
 it defines iptables rules in the file
 `/etc/network/if-up.d/docker0-up` to allow docker containers
-to make DNS requests to a local DNS server on the current
-host. It's interesting only if there is a local DNS server
-installed on the host. The default value of this character
-is `false`.
+to make DNS requests to a **local** DNS server on the
+current host (because by default a docker container can't
+contact host processes). It's interesting only if there is a
+local DNS server installed on the host. The default value of
+this character is `false`.
 
 The parameter `ceph_account` is the name of the ceph account
 used by the cargo server to mount the ceph file system. In
@@ -320,7 +332,7 @@ value of this parameter is `/opt/moobot/maintenance/backup_moodle`.
 The parameter `make_backups` is a boolean. If set to `true`,
 the backups via the cron task will be enabled, if set to
 `false` the cron task is just removed and there will be no
-backups of the moodles at all. The default of this parameter
+backup of the moodles at all. The default of this parameter
 is `false` (ie no backups enabled).
 
 
@@ -361,7 +373,7 @@ database. The default value of this parameter is
 `/opt/moobot/maintenance/dump_captain_database 100` where
 100 is the retention. With 100, the captain server keeps old
 SQL dumps of the database with a mtime less or equal to 100
-days. SQL dumps are put in a subdirectory of the /root/
+days. SQL dumps are put in a subdirectory of the `/root/`
 directory.
 
 
@@ -373,6 +385,8 @@ via the command (as root):
 ```sh
 mysql -u root -h localhost --password='' < init-moobot-database.sql
 ```
+
+
 
 
 # Load balancer server

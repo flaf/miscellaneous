@@ -1,6 +1,6 @@
 {
   "name": "flaf-moo",
-  "version": "0.5.5",
+  "version": "0.5.6",
   "author": "flaf",
   "summary": "Module to manage servers of a moodle plateform",
   "license": "Apache-2.0",
