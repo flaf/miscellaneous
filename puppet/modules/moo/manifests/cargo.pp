@@ -103,7 +103,28 @@ class moo::cargo (
     hasstatus  => false,
     status     => 'test "$(pgrep -c docker)" != 0',
     hasrestart => true,
-    enable     => true,
+    #
+    # It's very special but, with docker in Trusty (and
+    # Jessie too), when the docker daemon starts (for
+    # instance at boot), it creates _automatically_ the
+    # binded volumes directories of the containers, _even_
+    # _if_ the containers have already the status "exited".
+    # A typical example is after a reboot: before the reboot
+    # the containers were "running" containers but after the
+    # reboot they became "exited" containers. But generally,
+    # the docker daemon starts before the cephfs mount. So
+    # the volumes directories are automatically created in
+    # the root partition and, then, hidden by the cephfs
+    # mount. To avoid this, we disable the docker daemon
+    # which will be launched by the @reboot cron (see
+    # below). The @reboot cron will ensure that the cephfs
+    # mount is well mounted and _then_ will start the docker
+    # daemon.
+    #
+    # So yes, it's special, we want to have a docker service
+    # running but disable.
+    #
+    enable     => false,
     require    => File['/etc/default/docker'],
   }
 

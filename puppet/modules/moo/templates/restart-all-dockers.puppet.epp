@@ -11,8 +11,54 @@ tag="$script_name[$pid]"
 shared_root_path="<%= $shared_root_path %>"
 
 
+#####################################
+### The mount of shared_root_path ###
+#####################################
 c=0
-while [ "$(pgrep -c docker)" = 0 ]
+while ! mountpoint -q "$shared_root_path"
+do
+
+    logger -t "$tag" "pending the mount of $shared_root_path."
+
+    sleep 1
+    c=$((c+1))
+
+    if [ "$c" = "60" ]
+    then
+        logger -t "$tag" "Sorry, $shared_root_path not yet mounted. Script aborted."
+        exit 1
+    fi
+
+done
+
+logger -t "$tag" "Ok, $shared_root_path is mounted, next step..."
+sleep 1
+
+
+######################################
+### The start of the docker daemon ###
+######################################
+
+if [ "$(pgrep -c docker)" = '0' ]
+then
+    logger -t "$tag" "Ok, no docker daemon started, next step..."
+else
+    logger -t "$tag" "The docker daemon seems to be already started. This is not normal."
+    logger -t "$tag" "Only the current script should be responsible for starting the docker daemon."
+    logger -t "$tag" "Script aborted."
+    exit 1
+fi
+
+if service docker start
+then
+    sleep 1
+else
+    logger -t "$tag" "Sorry, problem during the start of the docker daemon. Script aborted."
+    exit 1
+fi
+
+c=0
+while [ "$(pgrep -c docker)" = '0' ]
 do
 
     logger -t "$tag" "pending the start of docker daemon."
@@ -27,35 +73,35 @@ do
     fi
 done
 
-c=0
-while ! mountpoint -q "$shared_root_path"
-do
-
-    logger -t "$tag" "pending the mount of $shared_root_path."
-
-    sleep 1
-    c=$((c+1))
-
-    if [ "$c" = "60" ]
-    then
-        logger -t "$tag" "Sorry, $shared_root_path never mounted. Script aborted."
-        exit 1
-    fi
-
-done
-
-logger -t "$tag" "docker daemon is started and $shared_root_path is mounted."
-
-sleep $((RANDOM % 20 + 10))
-
-# Remove all containers.
-docker stop $(docker ps --all --quiet)
+# Remove all (old) containers. After a reboot, there are
+# containers in the "exited" status.
+docker stop $(docker ps --all --quiet) # just in case, should never be useful...
 sleep 1
 docker rm $(docker ps --all --quiet)
 
-sleep 1
+logger -t "$tag" "Ok, the docker daemon is started and no more remaining container, next step..."
 
-# Restart all.
+
+######################
+### A random pause ###
+######################
+
+# A random sleep to try to avoid to have cargos servers
+# which start simultaneously the dockers (for instance after
+# a power outage). The simultaneous start of a "foo" docker
+# in multiple cargos can be a problem especially if it's the
+# first docker instance of the moodle "foo" (ie the "foo"
+# database of not yet populated).
+
+pause=$((RANDOM % 60 + 5))
+logger -t "$tag" "Pause of ${pause}s before the start all docker containers..."
+sleep "$pause"
+
+
+###############################
+### Start of all containers ###
+###############################
+
 if cargo-py-wrapper.puppet
 then
     logger -t "$tag" "All dockers containers has been successfully restarted."
