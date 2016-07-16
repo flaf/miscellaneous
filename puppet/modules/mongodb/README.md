@@ -277,6 +277,12 @@ moogo:PRIMARY> cfg
 moogo:PRIMARY> rs.reconfig(cfg)
 ```
 
+**Remark:** if you want to upgrade and reboot a member which
+is the primary, the procedure above can be useful too to
+force a new election of the primary member to another node
+To do that, just set the highest priority to another member.
+
+
 It's possible to connect to mongo directly with a specific
 user on a specific base on a specific host. For instance:
 
