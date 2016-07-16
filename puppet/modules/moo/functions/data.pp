@@ -25,7 +25,7 @@ function moo::data {
     },
     'backup'  => {
       'path'              => '/backups',
-      'exceptions'        => '^(dev[0-9]+|test)$',
+      'exceptions'        => '^(dev[0-9]+|test|backup)$',
       'db_retention'      => 10,
       'filedir_retention' => 10,
     },

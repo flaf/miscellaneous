@@ -19,8 +19,8 @@ type Moo::MoobotConf = Struct[{
   }],
   'database'  => Struct[{
     'host'                => String[1],
-    'name'                => String[1],
-    'user'                => String[1],
+    'name'                => Enum['moobot'],
+    'user'                => Enum['moobot'],
     'password'            => String[1],
   }],
   'memcached' => Struct[{
@@ -31,8 +31,8 @@ type Moo::MoobotConf = Struct[{
     'replicaset'          => String[1],
   }],
   'haproxy'   => Struct[{
-    'template'            => String[1],
-    'reload_cmd'          => String[1],
+    'template'            => Enum['/opt/moobot/templates/haproxy.conf.j2'],
+    'reload_cmd'          => Enum['/opt/moobot/bin/haproxy_graceful_reload'],
     'stats_login'         => String[1],
     'stats_password'      => String[1],
     'log_server'          => String[1],
