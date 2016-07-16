@@ -62,7 +62,7 @@ class repository::ceph (
     #
     apt::pin { 'ceph':
       explanation => 'To ensure the version of the ceph packages.',
-      packages    => '/^(ceph|ceph-.*|libceph.*|python-ceph.*|python-rados|python-rbd|librados.*)$/',
+      packages    => '/^(ceph|ceph-.*|libceph.*|librados.*|librbd[1-9]|librgw[1-9]|python-ceph.*|python-rados|python-rbd)$/',
       version     => $pinning_version,
       priority    => 990,
     }
