@@ -225,7 +225,7 @@ moogo:PRIMARY>
 And check that everything is fine:
 
 ```sh
-moogo:PRIMARY> rs.status()
+moogo:PRIMARY> rs.status() # Check the "health" value (should be 1) in the "members" array
 moogo:PRIMARY> show dbs
 moogo:PRIMARY> show users
 ```
