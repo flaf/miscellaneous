@@ -43,6 +43,11 @@ d-i mirror/http/proxy string <%= $apt_proxy %>
 # Suite to install.
 d-i mirror/suite string <%= $distrib %>
 
+# To add specific mirrors from "local0" to "local10"
+# and to add specific public gpg keys (warning: not tested).
+#d-i apt-setup/local0/repository string http://myserver.domain.priv/ubuntu stable main
+#d-i apt-setup/local0/key        string http://myserver.domain.priv/key.gpg
+
 
 # ------------- #
 # Account setup #
