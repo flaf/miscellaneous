@@ -133,6 +133,7 @@ class pxeserver::params (
       'skip_boot_loader'           => false,
       'partman_early_command_file' => 'nothing',
       'late_command_file'          => 'nothing',
+      'install_puppet'             => false,
     },
 
     'xenial-all-in-sda-preseed-without-puppet' => {
@@ -144,6 +145,7 @@ class pxeserver::params (
       'skip_boot_loader'           => false,
       'partman_early_command_file' => 'nothing',
       'late_command_file'          => 'nothing',
+      'install_puppet'             => false,
     },
 
     'jessie-all-in-sda-preseed-without-puppet' => {
@@ -155,6 +157,7 @@ class pxeserver::params (
       'skip_boot_loader'           => false,
       'partman_early_command_file' => 'nothing',
       'late_command_file'          => 'nothing',
+      'install_puppet'             => false,
       'insert_end'                 => 'MENU END',
     },
 
