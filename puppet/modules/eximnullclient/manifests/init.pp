@@ -6,6 +6,12 @@ class eximnullclient {
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
+  ensure_packges( [
+                   'exim4-daemon-light',
+                   'heirloom-mailx',
+                  ], { ensure => present }
+                )
+
 }
 
 
