@@ -1,6 +1,6 @@
 {
   "name": "flaf-eximnullclient",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "flaf",
   "summary": "Module to install and configure a null client",
   "license": "Apache-2.0",
