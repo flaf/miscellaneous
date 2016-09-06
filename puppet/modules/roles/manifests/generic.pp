@@ -2,9 +2,9 @@ class roles::generic {
 
   include '::roles::generic::params'
 
-  $supported_classes = $::roles::generic::params::supported_classes
-  $excluded_classes  = $::roles::generic::params::excluded_classes
-  $included_classes  = $::roles::generic::params::included_classes
+  $authorized_classes = $::roles::generic::params::authorized_classes
+  $excluded_classes   = $::roles::generic::params::excluded_classes
+  $included_classes   = $::roles::generic::params::included_classes
 
   # Checks concerning the ENC variables $::datacenter and
   # $::datacenters.
@@ -31,28 +31,28 @@ class roles::generic {
   }
 
   # All classes in $excluded_classes must belong to the
-  # $supported_classes array. The goal is to avoid a case
+  # $authorized_classes array. The goal is to avoid a case
   # where the user wants to exclude a class but he makes a
   # misprint in its name and the real class is not excluded.
   $excluded_classes.each |$a_class| {
-    unless $a_class in $supported_classes {
+    unless $a_class in $authorized_classes {
       @("END"/L).fail
         ${title}: you want to exclude the class `${a_class}` from the \
         module `${title}` but this class does not belong to the list of \
-        classes supported by this module. Are you sure you have not made \
+        classes authorized by this module. Are you sure you have not made \
         a misprint?
         |- END
     }
   }
 
   # We check that all classes in $included_classes are in
-  # $supported_classes.
+  # $authorized_classes.
   $included_classes.each |$a_class| {
-    unless $a_class in $supported_classes {
+    unless $a_class in $authorized_classes {
       @("END"/L).fail
         ${title}: you want to include the class `${a_class}` from the \
         module `${title}` but this class does not belong to the list of \
-        classes supported by this module. Are you sure you have not made \
+        classes authorized by this module. Are you sure you have not made \
         a misprint?
         |- END
     }
