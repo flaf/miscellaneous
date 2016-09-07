@@ -1,0 +1,89 @@
+<%-|
+  Array[String[1], 1]         $dc_other_hostnames,
+  Array[String[1], 1]         $dc_local_interfaces,
+  String[1]                   $dc_readhost,
+  Eximnullclient::DcSmarthost $dc_smarthost,
+|-%>
+<%-
+  $dc_smarthost_str = $dc_readhost.map |$item| {
+    $address = $item['address']
+    $port    = $item['port'];
+    "[${address}]::${port}"
+  }.join(' ; ')
+-%>
+### This file is managed by Puppet, don't edit it.    ###
+### Configuration to have a basic null client server. ###
+
+# satellite means "mail sent by smarthost; no local local mail".
+dc_eximconfig_configtype='satellite'
+
+# List of hosts to which all outgoing mail is passed to and
+# that takes care of delivering it. The syntax of one element
+# of the list is:
+#
+#   [address]::port
+#
+dc_smarthost='<%= $dc_smarthost_str %>'
+
+# This is the list of domains for which this machine should
+# consider itself the final destination.
+dc_other_hostnames='<%= $dc_other_hostnames.join(" ; ") %>'
+
+# List of IP addresses the Exim daemon should listen on. If
+# this is left empty Exim listens on all interfaces.
+dc_local_interfaces='<%= $dc_local_interfaces.join(" ; ") %>'
+
+# For "smarthost" and "satellite", it is possible to hide
+# the local mailname in the headers of outgoing mail and
+# replace it with this value instead, using rewriting. For
+# “satellite” only, this value is also the host to send
+# local mail to.
+dc_readhost='<%= $dc_readhost %>'
+
+# This is a list of domains for which we accept mail from
+# anywhere on the Internet but which are not delivered
+# locally, e.g. because this machine serves as secondary MX
+# for these domains. Sets MAIN_RELAY_TO_DOMAINS.
+dc_relay_domains=''
+
+# Boolean option to activate some option to minimize DNS
+# lookups, if set to "true" a macro DC_minimaldns is
+# defined. If true, the macro DC_minimaldns is set to 1, and
+# the macro MAIN_HARDCODE_PRIMARY_HOSTNAME is set to the
+# appropriately post-processes output of hostname --fqdn.
+dc_minimaldns='false'
+
+# A list of machines for which we serve as smarthost. Please
+# note that 127.0.0.1 and ::1 are always permitted to relay
+# since /usr/lib/sendmail is available any way and relay
+# control doesn't make sense here. Sets macro
+# MAIN_RELAY_NETS.
+dc_relay_nets=''
+
+# Unix permissions of config files.
+CFILEMODE='644'
+
+# Config files are split in /etc/exim4/conf.d.
+dc_use_split_config='true'
+
+# Boolean option that controls whether the local mailname in
+# the headers of outgoing mail should be hidden. (Only
+# effective for "smarthost" and "satellite". Sets macro
+# HIDE_MAILNAME.
+dc_hide_mailname=''
+
+# Internal use only Boolean option that is set by the
+# maintainer scripts after adding the contents of
+# /etc/mailname to the dc_other_hostnames list. This is a
+# transition helper since it wouldn't otherwise be possible
+# to see whether that domain name has been removed from
+# dc_other_hostnames on purpose. This is not used by
+# update-exim4.conf, and no macro is set.
+dc_mailname_in_oh='true'
+
+# Name of the default transport for local mail delivery.
+# Defaults to mail_spool if unset, use maildir_home for
+# delivery to ~/Maildir/. Sets macro LOCAL_DELIVERY.
+dc_localdelivery='mail_spool'
+
+
