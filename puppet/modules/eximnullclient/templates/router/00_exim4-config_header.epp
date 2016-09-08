@@ -1,0 +1,20 @@
+<%-| String $redirect_local_mails |-%>
+### This file is managed by Puppet, don't edit it. ###
+
+######################################################################
+#                      ROUTERS CONFIGURATION                         #
+#               Specifies how addresses are handled                  #
+######################################################################
+#     THE ORDER IN WHICH THE ROUTERS ARE DEFINED IS IMPORTANT!       #
+# An address is passed to each router in turn until it is accepted.  #
+######################################################################
+
+begin routers
+
+<%- if $redirect_local_mails =~ String[1] { -%>
+domains_virtual_others:
+  driver = redirect
+  data   = ${lookup{@$domain}lsearch{/etc/exim4/aliases.virtual}}
+
+<%- } -%>
+

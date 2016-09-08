@@ -5,7 +5,7 @@
   Eximnullclient::DcSmarthost $dc_smarthost,
 |-%>
 <%-
-  $dc_smarthost_str = $dc_readhost.map |$item| {
+  $dc_smarthost_str = $dc_smarthost.map |$item| {
     $address = $item['address']
     $port    = $item['port'];
     "[${address}]::${port}"
@@ -36,7 +36,7 @@ dc_local_interfaces='<%= $dc_local_interfaces.join(" ; ") %>'
 # For "smarthost" and "satellite", it is possible to hide
 # the local mailname in the headers of outgoing mail and
 # replace it with this value instead, using rewriting. For
-# “satellite” only, this value is also the host to send
+# "satellite" only, this value is also the host to send
 # local mail to.
 dc_readhost='<%= $dc_readhost %>'
 

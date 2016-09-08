@@ -1,0 +1,13 @@
+<%-|
+  String[1] $fqdn,
+  String    $redirect_local_mails,
+|-%>
+### This file is managed by Puppet, don't edit it. ###
+
+<%- if $redirect_local_mails =~ String[1] { -%>
+@<%= $fqdn %>:    <%= $redirect_local_mails %>
+<%- } else { -%>
+# Redirection of local mails not set. File not used by Exim.
+<%- } -%>
+
+

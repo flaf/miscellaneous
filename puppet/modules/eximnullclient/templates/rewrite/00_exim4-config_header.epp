@@ -1,0 +1,15 @@
+<%-| Boolean $prune_from |-%>
+### This file is managed by Puppet, don't edit it. ###
+
+######################################################################
+#                      REWRITE CONFIGURATION                         #
+######################################################################
+
+begin rewrite
+
+<%- if $prune_from { -%>
+# Rewrite the From: header.
+^(.*)@(.*) "$1@$2" wf
+
+<%- } -%>
+
