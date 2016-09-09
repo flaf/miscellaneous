@@ -1,12 +1,14 @@
 function repository::data {
 
-  case $::operatingsystem {
+  $distro_id = $::facts["os"]["distro"]["id"].downcase()
 
-    'Debian': {
+  case $distro_id {
+
+    'debian': {
       $distrib_url = 'http://ftp.fr.debian.org/debian/'
      }
 
-    'Ubuntu': {
+    'ubuntu': {
       $distrib_url = 'http://fr.archive.ubuntu.com/ubuntu'
      }
 
@@ -82,6 +84,11 @@ function repository::data {
     repository::docker::params::src             => false,
     repository::docker::params::pinning_version => undef,
    "repository::docker::params::${sd}"          => [ 'trusty', 'jessie' ],
+
+    repository::gitlab::params::url             => "http://packages.gitlab.com/gitlab/gitlab-ce/${distro_id}/",
+    repository::gitlab::params::src             => false,
+    repository::gitlab::params::pinning_version => undef,
+   "repository::gitlab::params::${sd}"          => [ 'trusty' ],
 
   }
 
