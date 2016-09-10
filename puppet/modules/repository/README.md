@@ -161,6 +161,35 @@ by the official Ceph repository.
 
 
 
+# The `repository::gitlab` class
+
+## Usage
+
+Here is an example:
+
+```puppet
+$distro_id = $::facts["os"]["distro"]["id"].downcase()
+
+class { '::repository::gitlab::params':
+  url             => "http://packages.gitlab.com/gitlab/gitlab-ce/${distro_id}/",
+  src             => false,
+  pinning_version => '8.10.8-*',
+}
+
+include '::repository::gitlab'
+```
+
+## Parameters and default values
+
+Only `url` and `src` parameters have default values which
+are the values used above. The `pinning_version` has not
+relevant default value (it's `undef`) and you must provide
+a relevant value explicitly. The string value `'none'` is
+special and means "no pinning".
+
+
+
+
 # The `repository::docker` class
 
 ## Usage

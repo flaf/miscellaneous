@@ -113,8 +113,15 @@ Here is the commands:
 # Should be already installed.
 apt-get install lsb-release
 
-KEY='47B320EB4C7C375AA9DAE1A01054B7A24BD6EC30'
+# Key which expires in 2019-02-11.
+KEY=$(echo 8735 F5AF 62A9 9A62 8EC1  3377 B8F9 99C0 07BB 6C57 | tr -d ' ')
 apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys "$KEY"
+#
+# Or you can just do:
+#
+#   wget http://apt.puppetlabs.com/pubkey.gpg -O - | apt-key add -
+#
+
 COLLECTION='PC1'
 distrib=$(lsb_release -sc)
 collection=$(echo $COLLECTION | tr '[:upper:]' '[:lower:]')
