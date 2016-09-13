@@ -45,6 +45,14 @@ class gitlab {
     require     => File['/etc/gitlab/gitlab.rb'],
   }
 
+  file { '/usr/local/sbin/backup-gitlab':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0750',
+    content => epp( 'gitlab/backup-gitlab.epp', {} ),
+  }
+
 }
 
 

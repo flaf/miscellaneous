@@ -1,0 +1,84 @@
+<%-||-%>
+#!/bin/sh
+
+# TODO:
+#   - rename with the .puppet extension
+#   - retention?
+
+
+### This file is managed by Puppet. Please don't edit it. ###
+
+set -e
+
+export PATH='/usr/sbin:/usr/bin:/sbin:/bin'
+export LC_ALL='C'
+
+gitlabbackupdir='/var/opt/gitlab/backups'
+backupdir='/localbackup'
+pattern_tar_file='/[0-9]+_gitlab_backup.tar$'
+
+script_name="${0##*/}"
+pid="$$"
+tag="$script_name[$pid]"
+
+my_logger () {
+    logger -t "$tag" -- "$1"
+    printf -- '%s\n' "$1"
+}
+
+end () {
+    exit_code="$?"
+    if [ "$exit_code" != "0" ]
+    then
+        my_logger "Script arborted after an error during the execution."
+        exit "$exit_code"
+    fi
+}
+
+trap end EXIT
+
+# Cleaning...
+my_logger "Cleaning of $gitlabbackupdir directory."
+rm -f "$gitlabbackupdir/"*_gitlab_backup.tar
+
+# The argument "CRON=1" seems to limit the output. It's
+# mentioned in the documentation here:
+#
+#   https://docs.gitlab.com/ce/raketasks/backup_restore.html#for-omnibus-installations
+#
+my_logger 'The command `gitlab-rake gitlab:backup:create` is started.'
+gitlab-rake gitlab:backup:create CRON=1
+my_logger 'The command `gitlab-rake gitlab:backup:create` is finished successfully.'
+
+tarfile=$(find "$gitlabbackupdir" -type f)
+n=$(printf '%s\n' "$tarfile" | wc -l)
+
+if [ "$n" != 1 ]
+then
+    my_logger "Problem, the $gitlabbackupdir directory should contain only one file (the backup file)."
+    exit 1
+fi
+
+if ! printf '%s\n' "$tarfile" | grep -Eq "$pattern_tar_file"
+then
+    my_logger "Problem, the $gitlabbackupdir directory doesn't contain the tar backup file."
+    exit 2
+fi
+
+date=$(date '+%Y-%m-%d-%Hh%M-%S')
+targetdir="$backupdir/${date}"
+
+mkdir -p "$targetdir"
+chmod 700 "$targetdir"
+
+my_logger "The backup file is compressed and put in $targetdir."
+gzip -9 "$tarfile"
+mv "${tarfile}.gz" "$targetdir"
+
+
+my_logger "Backup of /etc/gitlab/."
+tar -zcvf "$targetdir/etcgitlab_${date}.tar.gz" -C /etc/gitlab/ .
+
+my_logger "Complete backup of Gitlab successfully."
+
+
