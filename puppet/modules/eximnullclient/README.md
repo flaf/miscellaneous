@@ -23,7 +23,7 @@ class { '::eximnullclient::params':
 include '::eximnullclient'
 ```
 
-# Parameter
+# Parameters
 
 The `dc_smarthost` parameter in a non-empty list of
 smarthosts used by Exim to send mails. This parameter must

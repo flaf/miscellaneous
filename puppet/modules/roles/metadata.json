@@ -1,6 +1,6 @@
 {
   "name": "flaf-roles",
-  "version": "0.9.3",
+  "version": "0.9.5",
   "author": "flaf",
   "summary": "Module to implement roles, ie very top level classes",
   "license": "Apache-2.0",
@@ -28,7 +28,8 @@
     {"name":"flaf-pxeserver","version_requirement":"0.4.7"},
     {"name":"flaf-ceph","version_requirement":"0.2.0"},
     {"name":"flaf-moo","version_requirement":"0.5.7"},
-    {"name":"flaf-eximnullclient","version_requirement":"0.2.0"},
+    {"name":"flaf-eximnullclient","version_requirement":"0.2.1"},
+    {"name":"flaf-gitlab","version_requirement":"0.1.1"},
     {"name":"olecam-keepalived_vip","version_requirement":"0.3.4"}
   ]
 }

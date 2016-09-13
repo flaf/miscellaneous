@@ -1,8 +1,8 @@
 {
-  "name": "flaf-eximnullclient",
-  "version": "0.2.1",
+  "name": "flaf-gitlab",
+  "version": "0.1.1",
   "author": "flaf",
-  "summary": "Module to install and configure a null client",
+  "summary": "Module to install and configure a Gitlab server",
   "license": "Apache-2.0",
   "source": "",
   "project_page": null,

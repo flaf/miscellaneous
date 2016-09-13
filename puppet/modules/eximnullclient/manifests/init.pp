@@ -1,19 +1,20 @@
 class eximnullclient {
 
-  $params = '::eximnullclient::params'
-  include $params
+  include '::eximnullclient::params'
 
-  $dc_smarthost            = ::homemade::getvar("${params}::dc_smarthost", $title)
-  $redirect_local_mails    = ::homemade::getvar("${params}::redirect_local_mails", $title)
-  $prune_from              = ::homemade::getvar("${params}::prune_from", $title)
-  $supported_distributions = ::homemade::getvar("${params}::supported_distributions", $title)
+  [
+   $dc_smarthost,
+   $redirect_local_mails,
+   $prune_from,
+   $supported_distributions,
+  ] = Class['::eximnullclient::params']
+
+  ::homemade::is_supported_distrib($supported_distributions, $title)
 
   $fqdn                = $::facts.dig("networking", "fqdn")
   $dc_other_hostnames  = [ $fqdn ]
   $dc_local_interfaces = [ '127.0.0.1', '::1' ]
   $dc_readhost         = $fqdn
-
-  ::homemade::is_supported_distrib($supported_distributions, $title)
 
   ensure_packages( [
                     'exim4-daemon-light',
