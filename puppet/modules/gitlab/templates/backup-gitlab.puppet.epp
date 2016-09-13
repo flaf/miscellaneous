@@ -1,10 +1,9 @@
-<%-||-%>
+<%-|
+  String[1]  $gitlabbackupdir,
+  String[1]  $localbackupdir,
+  Integer[1] $backup_retention,
+|-%>
 #!/bin/sh
-
-# TODO:
-#   - rename with the .puppet extension
-#   - retention?
-
 
 ### This file is managed by Puppet. Please don't edit it. ###
 
@@ -13,12 +12,15 @@ set -e
 export PATH='/usr/sbin:/usr/bin:/sbin:/bin'
 export LC_ALL='C'
 
-gitlabbackupdir='/var/opt/gitlab/backups'
-backupdir='/localbackup'
-pattern_tar_file='/[0-9]+_gitlab_backup.tar$'
+gitlabbackupdir='<%= $gitlabbackupdir %>'
+localbackupdir='<%= $localbackupdir %>'
+backup_retention='<%= $backup_retention %>'
+regex_tar_file='/[0-9]+_gitlab_backup.tar$'
+pattern_tar_file='*_gitlab_backup.tar'
 
 script_name="${0##*/}"
 pid="$$"
+pid_file="/var/run/${script_name}.pid"
 tag="$script_name[$pid]"
 
 my_logger () {
@@ -26,8 +28,19 @@ my_logger () {
     printf -- '%s\n' "$1"
 }
 
+if [ -e "$pid_file" ]
+then
+    other_pid=$(cat "$pid_file")
+    my_logger "Another instance of this script is probably running currently (process ID ${other_pid})." >&2
+    my_logger "Script aborted."                                                                          >&2
+    exit 1
+fi
+
 end () {
+    # Must be in the first line of this function to retrieve
+    # the exit code of the current script just before the trap.
     exit_code="$?"
+    rm -f "$pid_file"
     if [ "$exit_code" != "0" ]
     then
         my_logger "Script arborted after an error during the execution."
@@ -37,9 +50,12 @@ end () {
 
 trap end EXIT
 
+# Creation of the pid file.
+printf '%s\n' "$pid" > "$pid_file"
+
 # Cleaning...
 my_logger "Cleaning of $gitlabbackupdir directory."
-rm -f "$gitlabbackupdir/"*_gitlab_backup.tar
+find "$gitlabbackupdir/" -type f -name "$pattern_tar_file" -delete
 
 # The argument "CRON=1" seems to limit the output. It's
 # mentioned in the documentation here:
@@ -59,14 +75,14 @@ then
     exit 1
 fi
 
-if ! printf '%s\n' "$tarfile" | grep -Eq "$pattern_tar_file"
+if ! printf '%s\n' "$tarfile" | grep -Eq "$regex_tar_file"
 then
     my_logger "Problem, the $gitlabbackupdir directory doesn't contain the tar backup file."
     exit 2
 fi
 
 date=$(date '+%Y-%m-%d-%Hh%M-%S')
-targetdir="$backupdir/${date}"
+targetdir="$localbackupdir/${date}"
 
 mkdir -p "$targetdir"
 chmod 700 "$targetdir"
@@ -77,7 +93,15 @@ mv "${tarfile}.gz" "$targetdir"
 
 
 my_logger "Backup of /etc/gitlab/."
-tar -zcvf "$targetdir/etcgitlab_${date}.tar.gz" -C /etc/gitlab/ .
+tar -zcf "$targetdir/etcgitlab.tar.gz" -C /etc/gitlab/ .
+
+# Set the Unix rights.
+find "$targetdir" -type f -exec chown root:root '{}' '+'
+find "$targetdir" -type f -exec chmod 600 '{}' '+'
+
+# Retention.
+my_logger "Check the retention in $localbackupdir which is set to $backup_retention."
+find "$localbackupdir" -maxdepth 1 -mindepth 1 -type d -mtime "+$backup_retention" -exec rm -r '{}' '+'
 
 my_logger "Complete backup of Gitlab successfully."
 
