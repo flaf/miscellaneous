@@ -11,9 +11,14 @@ class gitlab {
     $backup_cron_minute,
     $supported_distributions,
     # In the params class but not as parameter.
-    $gitlabbackupdir,
-    $localbackupdir,
-    $backupcmd,
+    $gitlab_backup_dir,
+    $local_backup_dir,
+    $backup_cmd,
+    $etcgitlab_targz,
+    $suffix_tar_file,
+    $regex_tar_file,
+    $pattern_tar_file,
+    $gitlab_secret_file,
   ] = Class['::gitlab::params']
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
@@ -53,7 +58,7 @@ class gitlab {
     require     => File['/etc/gitlab/gitlab.rb'],
   }
 
-  file { $localbackupdir:
+  file { $local_backup_dir:
     ensure  => directory,
     owner   => 'root',
     group   => 'root',
@@ -61,17 +66,20 @@ class gitlab {
     require => Exec['gitlab-ctl-reconfigure'],
   }
 
-  file { $backupcmd:
+  file { $backup_cmd:
     ensure  => present,
     owner   => 'root',
     group   => 'root',
     mode    => '0750',
-    require => File[$localbackupdir],
-    content => epp( 'gitlab/backup-gitlab.puppet.epp',
+    require => File[$local_backup_dir],
+    content => epp( 'gitlab/gitlab-backup.puppet.epp',
                     {
-                      'gitlabbackupdir'  => $gitlabbackupdir,
-                      'localbackupdir'   => $localbackupdir,
-                      'backup_retention' => $backup_retention,
+                      'gitlab_backup_dir' => $gitlab_backup_dir,
+                      'local_backup_dir'  => $local_backup_dir,
+                      'backup_retention'  => $backup_retention,
+                      'etcgitlab_targz'   => $etcgitlab_targz,
+                      'regex_tar_file'    => $regex_tar_file,
+                      'pattern_tar_file'  => $pattern_tar_file,
                     }
                   ),
   }
@@ -79,11 +87,29 @@ class gitlab {
   cron { 'backup-gitlab-cron':
     ensure  => present,
     user    => 'root',
-    command => [$backup_cron_wrapper, "${backupcmd} >/dev/null"].join(' '),
+    command => [$backup_cron_wrapper, "${backup_cmd} >/dev/null"].join(' '),
     hour    => $backup_cron_hour,
     minute  => $backup_cron_minute,
     weekday => '*',
-    require => File[$backupcmd],
+    require => File[$backup_cmd],
+  }
+
+  file { '/usr/local/sbin/gitlab-restore.puppet':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0750',
+    require => Cron['backup-gitlab-cron'],
+    content => epp( 'gitlab/gitlab-restore.puppet.epp',
+                    {
+                      'gitlab_backup_dir'  => $gitlab_backup_dir,
+                      'local_backup_dir'   => $local_backup_dir,
+                      'suffix_tar_file'    => $suffix_tar_file,
+                      'regex_tar_file'     => $regex_tar_file,
+                      'etcgitlab_targz'    => $etcgitlab_targz,
+                      'gitlab_secret_file' => $gitlab_secret_file,
+                    }
+                  ),
   }
 
 }

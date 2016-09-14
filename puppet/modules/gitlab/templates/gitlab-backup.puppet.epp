@@ -1,7 +1,10 @@
 <%-|
-  String[1]  $gitlabbackupdir,
-  String[1]  $localbackupdir,
+  String[1]  $gitlab_backup_dir,
+  String[1]  $local_backup_dir,
   Integer[1] $backup_retention,
+  String[1]  $etcgitlab_targz,
+  String[1]  $regex_tar_file,
+  String[1]  $pattern_tar_file,
 |-%>
 #!/bin/sh
 
@@ -12,11 +15,12 @@ set -e
 export PATH='/usr/sbin:/usr/bin:/sbin:/bin'
 export LC_ALL='C'
 
-gitlabbackupdir='<%= $gitlabbackupdir %>'
-localbackupdir='<%= $localbackupdir %>'
+gitlab_backup_dir='<%= $gitlab_backup_dir %>'
+local_backup_dir='<%= $local_backup_dir %>'
 backup_retention='<%= $backup_retention %>'
-regex_tar_file='/[0-9]+_gitlab_backup.tar$'
-pattern_tar_file='*_gitlab_backup.tar'
+etcgitlab_targz='<%= $etcgitlab_targz %>'
+regex_tar_file='<%= $regex_tar_file %>'
+pattern_tar_file='<%= $pattern_tar_file %>'
 
 script_name="${0##*/}"
 pid="$$"
@@ -54,8 +58,16 @@ trap end EXIT
 printf '%s\n' "$pid" > "$pid_file"
 
 # Cleaning...
-my_logger "Cleaning of $gitlabbackupdir directory."
-find "$gitlabbackupdir/" -type f -name "$pattern_tar_file" -delete
+my_logger "Cleaning of $gitlab_backup_dir directory."
+find "$gitlab_backup_dir/" -type f -name "$pattern_tar_file" -delete
+
+content=$(find "$gitlab_backup_dir" -maxdepth 1 -mindepth 1)
+
+if [ -n "$content" ]
+then
+    my_logger "Problem, the $gitlab_backup_dir directory must be empty before a backup."
+    exit 1
+fi
 
 # The argument "CRON=1" seems to limit the output. It's
 # mentioned in the documentation here:
@@ -66,23 +78,32 @@ my_logger 'The command `gitlab-rake gitlab:backup:create` is started.'
 gitlab-rake gitlab:backup:create CRON=1
 my_logger 'The command `gitlab-rake gitlab:backup:create` is finished successfully.'
 
-tarfile=$(find "$gitlabbackupdir" -type f)
+tarfile=$(find "$gitlab_backup_dir" -maxdepth 1 -mindepth 1)
+
+if [ -z "$tarfile" ]
+then
+    my_logger "Problem, the $gitlab_backup_dir directory doesn't contain any backup file."
+    exit 1
+fi
+
+# $tarfile is not empty so we can count the number of files
+# found.
 n=$(printf '%s\n' "$tarfile" | wc -l)
 
 if [ "$n" != 1 ]
 then
-    my_logger "Problem, the $gitlabbackupdir directory should contain only one file (the backup file)."
+    my_logger "Problem, the $gitlab_backup_dir directory should contain only one file, the backup file."
     exit 1
 fi
 
-if ! printf '%s\n' "$tarfile" | grep -Eq "$regex_tar_file"
+if ! printf '%s\n' "$tarfile" | grep -Eq "/${regex_tar_file}\$"
 then
-    my_logger "Problem, the $gitlabbackupdir directory doesn't contain the tar backup file."
+    my_logger "Problem, the $gitlab_backup_dir directory doesn't contain the tar backup file."
     exit 2
 fi
 
 date=$(date '+%Y-%m-%d-%Hh%M-%S')
-targetdir="$localbackupdir/${date}"
+targetdir="$local_backup_dir/${date}"
 
 mkdir -p "$targetdir"
 chmod 700 "$targetdir"
@@ -93,15 +114,15 @@ mv "${tarfile}.gz" "$targetdir"
 
 
 my_logger "Backup of /etc/gitlab/."
-tar -zcf "$targetdir/etcgitlab.tar.gz" -C /etc/gitlab/ .
+tar -zcf "$targetdir/$etcgitlab_targz" -C /etc/gitlab/ .
 
 # Set the Unix rights.
 find "$targetdir" -type f -exec chown root:root '{}' '+'
 find "$targetdir" -type f -exec chmod 600 '{}' '+'
 
 # Retention.
-my_logger "Check the retention in $localbackupdir which is set to $backup_retention."
-find "$localbackupdir" -maxdepth 1 -mindepth 1 -type d -mtime "+$backup_retention" -exec rm -r '{}' '+'
+my_logger "Check the retention in $local_backup_dir which is set to $backup_retention."
+find "$local_backup_dir" -maxdepth 1 -mindepth 1 -type d -mtime "+$backup_retention" -exec rm -r '{}' '+'
 
 my_logger "Complete backup of Gitlab successfully."
 
