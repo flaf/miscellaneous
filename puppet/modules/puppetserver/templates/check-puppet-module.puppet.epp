@@ -9,7 +9,6 @@ forge_url=$(puppet config print --section=main module_repository)
 red='\033[1;31m'
 green='\033[1;32m'
 reset='\033[00m'
-c=0
 
 # Example:
 #
@@ -19,24 +18,77 @@ print_param () {
     printf "%-18s => %b%s%b\n" "$1" "$3" "$2" "$reset"
 }
 
-for d in "$@"
-do
-
-    c=$((c + 1))
-
-    # Title (cosmetic)
-    title="| $d |"
+# Print a pretty title.
+print_title () {
+    local title n line
+    title="| $1 |"
     n=$(printf "$title" | wc --chars)
     line=$(printf "%${n}s" '' | tr ' ' '-' | sed -r 's/^./+/;s/.$/+/')
     printf '\n'
     printf '         %s\n' "$line"
     printf '(#%+2s) => %s\n' "$c" "$title"
     printf '         %s\n' "$line"
+}
+
+
+### The options. ###
+
+# Default values.
+filter_name='.*'
+quiet='false'
+brief='false'
+
+SCRIPT_NAME=${0##*/}
+if ! TEMP=$(getopt -o "q,b" -l "filter-name:,quiet,brief" -n "$SCRIPT_NAME" -- "$@")
+then
+    echo "Syntax error with $SCRIPT_NAME command."
+    exit 3
+fi
+
+eval set -- "$TEMP"
+unset TEMP
+
+while true
+do
+    case "$1" in
+
+        --filter-name)
+            filter_name="$2"
+            shift 2
+        ;;
+
+        --quiet|-q)
+            quiet='true'
+            shift 1
+        ;;
+
+        --brief|-b)
+            brief='true'
+            shift 1
+        ;;
+
+        --)
+            shift 1
+            break
+        ;;
+
+    esac
+done
+### End of the handle of the options. ###
+
+
+
+c=0
+for d in "$@"
+do
 
     if [ ! -d "$d" ]
     then
-        printf "%bSorry, %s isn't a directory.%b\n" "$red" "$d" "$reset"
-        printf '\n'
+        if ! "$quiet"
+        then
+            printf "%bSorry, %s isn't a directory.%b\n" "$red" "$d" "$reset"
+            printf '\n'
+        fi
         continue
     fi
 
@@ -46,8 +98,11 @@ do
 
     if [ ! -e "$d/metadata.json" ]
     then
-        printf "%bSorry, no metadata.json in %s.%b\n" "$red" "$d" "$reset"
-        printf '\n'
+        if ! "$quiet"
+        then
+            printf "%bSorry, no metadata.json in %s.%b\n" "$red" "$d" "$reset"
+            printf '\n'
+        fi
         continue
     fi
 
@@ -63,6 +118,12 @@ do
     fi
 
     name=$(cat "$d/metadata.json" | jq --raw-output '.["name"]')
+
+    printf '%s\n' "$name" | grep -Eq "$filter_name" || continue
+
+    # All "continue" instructions are done, we can increment c.
+    c=$((c + 1))
+
     version=$(cat "$d/metadata.json" | jq --raw-output '.["version"]')
     available_version=$(curl --silent "$forge_url/v3/modules/$name" | jq --raw-output '.["current_release"]["version"]')
 
@@ -78,13 +139,22 @@ do
       version_color="$green"
     fi
 
-    print_param "full name" "$name" "$reset"
-    print_param "metadata.json" "present" "$reset"
-    print_param "checksums.json" "$checksums_file" "$checksums_color"
-    print_param "version" "$version" "$reset"
-    print_param "available version" "$available_version" "$version_color"
-    printf "\n"
-    "$checksums" && printf "Checksums of the files...\n" && (cd /tmp && puppet module changes "$d")
+    if "$brief"
+    then
+        print_param "module full name" "$name" "$reset"
+        print_param "version" "$version" "$reset"
+        print_param "available version" "$available_version" "$version_color"
+    else
+        print_title "$d"
+        print_param "full name" "$name" "$reset"
+        print_param "metadata.json" "present" "$reset"
+        print_param "checksums.json" "$checksums_file" "$checksums_color"
+        print_param "version" "$version" "$reset"
+        print_param "available version" "$available_version" "$version_color"
+    fi
+
+    "$checksums" && (o=$(cd /tmp && puppet module changes "$d" 2>&1); print_param "checksums" "$o" "$reset")
+    printf '\n'
 
 done
 
