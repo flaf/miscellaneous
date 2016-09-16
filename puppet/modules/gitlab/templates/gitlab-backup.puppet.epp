@@ -99,7 +99,13 @@ fi
 if ! printf '%s\n' "$tarfile" | grep -Eq "/${regex_tar_file}\$"
 then
     my_logger "Problem, the $gitlab_backup_dir directory doesn't contain the tar backup file."
-    exit 2
+    exit 1
+fi
+
+if [ 'application/x-tar' != $(file --brief --mime-type "$tarfile") ]
+then
+    my_logger "Problem, the $tarfile which doesn't seems to be a valid tar file."
+    exit 1
 fi
 
 date=$(date '+%Y-%m-%d-%Hh%M-%S')
