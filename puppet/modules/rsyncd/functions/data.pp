@@ -1,7 +1,9 @@
 function rsyncd::data {
 
   {
-    gitlab::params::supported_distributions => ['trusty', 'jessie'],
+    rsyncd::params::modules                 => {},
+    rsyncd::params::users                   => {},
+    rsyncd::params::supported_distributions => ['trusty', 'jessie'],
   }
 
 }

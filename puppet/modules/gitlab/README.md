@@ -86,6 +86,11 @@ sudo gitlab-backup.puppet
 configurations of your GitLab server. If needed, make a
 manual backup before the restore.
 
+**Remark:** if it's a new server, first you have to install
+the server via a Puppet run and then you have to populate
+the `/localbackup/` directory with some backups following a
+tree like below (see the `tree` command).
+
 You have to use the `gitlab-restore.puppet` command as root.
 Here is an example:
 
@@ -118,5 +123,39 @@ Normally, it's not required but it's probably better to
 reboot the server.
 
 
+# The first install (where there is no backup to restore)
+
+After the first Puppet run, you have to visit the home page
+of the server and set the password of the local `root`
+account, which will be the local administrator account of
+GitLab.
+
+With the `root` account, go to `Profile Settings` and update
+the `Email` field. **Warning**, this address must be unique
+(just unique as string, because GitLab is unable to see if
+2 different addresses are equivalent or not). For instance,
+it can't be the same address as the address of a LDAP
+account.
+
+With the `root` account, go to `Admin Area` => `Settings`
+(in the cogwheel) and uncheck the box of the option `Sign-up
+enabled`. Don't forget to save.
+
+With the `root` account, go to `Admin Area` => `Appearance`
+(in the cogwheel) and in this page:
+
+* Set `Danelab Git Repository` in the field `Title`.
+* Put this content (this is markdown) in the field `Description`:
+
+```
+The Gitlab repository of *Dane* from Versailles (France)
+
+*Dane* is [Délégation Académique au Numérique Éducatif](http://www.dane.ac-versailles.fr)
+```
+
+* Put this [logo](pictures/danelab.png) in the field `Logo`.
+* Put this [picture](pictures/dane.png) in the field `Header logo`.
+
+Don't forget to save.
 
 

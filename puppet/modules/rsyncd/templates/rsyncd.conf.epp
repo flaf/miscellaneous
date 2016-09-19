@@ -1,0 +1,32 @@
+<%-|
+  Rsyncd::Modules $modules,
+  String[1]       $secret_file,
+|-%>
+### This file is managed by Puppet. Please don't edit it. ###
+
+<%- $modules.each |$module_name, $settings| { -%>
+  <%-
+    $new_settings = ('auth_users' in $settings) ? {
+      true  => $settings + { 'secrets_file' => $secret_file },
+      false => $settings,
+    }
+    # Aesthetic: $max_length is the size of the biggest string
+    # among the names of properties.
+    $max_length = $new_settings.keys.map |$a_property| {
+      size($a_property)
+    }.reduce |$memo, $entry| { max($memo, $entry) }
+  -%>
+[<%= $module_name -%>]
+  <%- $new_settings.each |$property, $value| { -%>
+    <%-
+      $property_cleaned = $property.regsubst('_', ' ', 'G')
+      $value_cleaned    = ($value =~ Array) ? {
+        true  => $value.join(','),
+        false => $value,
+      }
+    -%>
+    <%= $property_cleaned.::homemade::ljust($max_length, ' ') %> = <%= $value_cleaned %>
+  <%- } -%>
+
+<%- } -%>
+

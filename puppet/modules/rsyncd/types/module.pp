@@ -8,7 +8,6 @@ type Rsyncd::Module = Struct[
     'gid'                    => String[1],
     Optional['exclude']      => String[1],
     Optional['auth_users']   => Array[String[1], 1],
-    Optional['secrets_file'] => String[1],
     Optional['hosts_allow']  => Array[String[1], 1],
   }
 ]

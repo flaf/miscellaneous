@@ -1,100 +1,60 @@
 class rsyncd {
 
-  include '::gitlab::params'
+  include '::rsyncd::params'
 
   [
-    # TODO
-  ] = Class['::rsync::params']
+    $modules,
+    $users,
+    $secret_file,
+    $supported_distributions,
+  ] = Class['::rsyncd::params']
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
+  ::rsyncd::check_params($modules, $users, $title)
 
-  ensure_packages(['rsyncd'], { ensure => present })
+  ensure_packages(['rsync'], { ensure => present })
 
-  exec { 'save-default-gitlab.rb':
-    path    => '/usr/sbin:/usr/bin:/sbin:/bin',
-    command => 'cp -a /etc/gitlab/gitlab.rb /etc/gitlab/gitlab.rb.origin',
-    user    => 'root',
-    group   => 'root',
-    unless  => 'test -f /etc/gitlab/gitlab.rb.origin',
-    require => Package['gitlab-ce'],
+  file_line { 'edit-etc-default-rsync':
+    path    => '/etc/default/rsync',
+    line    => 'RSYNC_ENABLE=true # Line edited by Puppet, do not touch it.',
+    match   => '^RSYNC_ENABLE=.*$',
+    require => Package['rsync'],
+    notify  => Service['rsync'],
   }
 
-  file { '/etc/gitlab/gitlab.rb':
+  file { '/etc/rsyncd.conf':
     ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    require => Package['rsync'],
+    notify  => Service['rsync'],
+    content => epp('rsyncd/rsyncd.conf.epp',
+                   {
+                     'modules'     => $modules,
+                     'secret_file' => $secret_file,
+                   }
+                  ),
+  }
+
+  $ensure_secret_file = $users.empty ? {
+    true  => 'absent',
+    false => 'present',
+  }
+
+  file { $secret_file:
+    ensure  => $ensure_secret_file,
     owner   => 'root',
     group   => 'root',
     mode    => '0600',
-    require => Exec['save-default-gitlab.rb'],
-    notify  => Exec['gitlab-ctl-reconfigure'],
-    content => epp( 'gitlab/gitlab.rb.epp',
-                    {
-                      'external_url' => $external_url,
-                      'ldap_conf'    => $ldap_conf,
-                    },
-                  ),
+    require => Package['rsync'],
+    notify  => Service['rsync'],
+    content => epp('rsyncd/rsyncd.secret.epp', { 'users' => $users }),
   }
 
-  exec { 'gitlab-ctl-reconfigure':
-    path        => '/usr/sbin:/usr/bin:/sbin:/bin',
-    command     => 'gitlab-ctl reconfigure',
-    user        => 'root',
-    group       => 'root',
-    refreshonly => true,
-    require     => File['/etc/gitlab/gitlab.rb'],
-  }
-
-  file { $local_backup_dir:
-    ensure  => directory,
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0700',
-    require => Exec['gitlab-ctl-reconfigure'],
-  }
-
-  file { $backup_cmd:
-    ensure  => present,
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0750',
-    require => File[$local_backup_dir],
-    content => epp( 'gitlab/gitlab-backup.puppet.epp',
-                    {
-                      'gitlab_backup_dir' => $gitlab_backup_dir,
-                      'local_backup_dir'  => $local_backup_dir,
-                      'backup_retention'  => $backup_retention,
-                      'etcgitlab_targz'   => $etcgitlab_targz,
-                      'regex_tar_file'    => $regex_tar_file,
-                      'pattern_tar_file'  => $pattern_tar_file,
-                    }
-                  ),
-  }
-
-  cron { 'backup-gitlab-cron':
-    ensure  => present,
-    user    => 'root',
-    command => [$backup_cron_wrapper, "${backup_cmd} >/dev/null"].join(' '),
-    hour    => $backup_cron_hour,
-    minute  => $backup_cron_minute,
-    weekday => '*',
-    require => File[$backup_cmd],
-  }
-
-  file { '/usr/local/sbin/gitlab-restore.puppet':
-    ensure  => present,
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0750',
-    require => Cron['backup-gitlab-cron'],
-    content => epp( 'gitlab/gitlab-restore.puppet.epp',
-                    {
-                      'gitlab_backup_dir'  => $gitlab_backup_dir,
-                      'local_backup_dir'   => $local_backup_dir,
-                      'suffix_tar_file'    => $suffix_tar_file,
-                      'regex_tar_file'     => $regex_tar_file,
-                      'etcgitlab_targz'    => $etcgitlab_targz,
-                      'gitlab_secret_file' => $gitlab_secret_file,
-                    }
-                  ),
+  service { 'rsync':
+    ensure     => running,
+    hasrestart => true,
   }
 
 }
