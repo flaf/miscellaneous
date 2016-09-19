@@ -9,6 +9,8 @@ function gitlab::data {
     gitlab::params::backup_cron_wrapper     => '',
     gitlab::params::backup_cron_hour        => 3,
     gitlab::params::backup_cron_minute      => 0,
+    gitlab::params::ssl_cert                => '',
+    gitlab::params::ssl_key                 => '',
     gitlab::params::supported_distributions => ['trusty'],
   }
 

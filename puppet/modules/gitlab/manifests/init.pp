@@ -9,6 +9,8 @@ class gitlab {
     $backup_cron_wrapper,
     $backup_cron_hour,
     $backup_cron_minute,
+    $ssl_cert,
+    $ssl_key,
     $supported_distributions,
     # In the params class but not as parameter.
     $gitlab_backup_dir,
@@ -22,6 +24,33 @@ class gitlab {
   ] = Class['::gitlab::params']
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
+
+  # Check that $ssl_cert and $ssl_key are not empty if
+  # the external url is a https url. And we set the $ssl
+  # boolean.
+  if $external_url =~ /^https/ {
+
+    $ssl        = true
+    $ssl_ensure = 'present'
+
+    if $ssl_cert.empty or $ssl_key.empty {
+      @("END"/L$).fail
+        Class ${title}: the external url is a https url but one of the \
+        two parameters `\${ssl_key}` or `\${ssl_cert}` is empty which is \
+        not allowed.
+        |-END
+    }
+
+  } else {
+
+    $ssl        = false
+    $ssl_ensure = 'absent'
+
+  }
+
+  # The fqdn without the 'https://' or 'http://' part.
+  $fqdn_cert = $external_url.regsubst('^https?://', '').regsubst('/.*$', '')
+
 
   ensure_packages(['gitlab-ce'], { ensure => present })
 
@@ -44,9 +73,39 @@ class gitlab {
     content => epp( 'gitlab/gitlab.rb.epp',
                     {
                       'external_url' => $external_url,
+                      'ssl'          => $ssl,
                       'ldap_conf'    => $ldap_conf,
                     },
                   ),
+  }
+
+  file { '/etc/gitlab/ssl':
+    ensure  => directory,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0700',
+    require => File['/etc/gitlab/gitlab.rb'],
+    notify  => Exec['gitlab-ctl-reconfigure'],
+  }
+
+  file { "/etc/gitlab/ssl/${fqdn_cert}.crt":
+    ensure  => $ssl_ensure,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    content => $ssl_cert,
+    require => File['/etc/gitlab/gitlab.rb'],
+    notify  => Exec['gitlab-ctl-reconfigure'],
+  }
+
+  file { "/etc/gitlab/ssl/${fqdn_cert}.key":
+    ensure  => $ssl_ensure,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0600',
+    content => $ssl_key,
+    require => File['/etc/gitlab/gitlab.rb'],
+    notify  => Exec['gitlab-ctl-reconfigure'],
   }
 
   exec { 'gitlab-ctl-reconfigure':

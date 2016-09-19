@@ -49,12 +49,14 @@ The `modules` parameter are all the rsync-modules set in the
 `/etc/rsyncd.conf` file. To know the exact structure of this
 parameter, see the files `module.pp` [here](types/module.pp)
 and `modules.pp` [here](types/modules.pp). The default value
-of this parameter is `{}`.
+of this parameter is `{}`. The default merge policy of this
+parameter is `deep`.
 
 The `users` parameter set the rsync users (in
 `/etc/rsyncd.secret`) allowed to use a specific
 rsync-module. All users set in each rsync-module must be
 present in the `users` parameter. If not, there will be an
-error. The default value of this parameter is `{}`.
+error. The default value of this parameter is `{}`. The
+default merge policy of this parameter is `deep`.
 
 

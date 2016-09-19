@@ -1,10 +1,14 @@
 <%-|
   String[1]        $external_url,
+  Boolean          $ssl,
   Gitlab::LdapConf $ldap_conf,
 |-%>
 ### This file is managed by Puppet. Please don't edit it. ###
 
 external_url '<%= $external_url %>'
+<%- if $ssl { -%>
+nginx['redirect_http_to_https'] = true
+<%- } -%>
 
 <%- unless $ldap_conf == 'none' { -%>
 gitlab_rails['ldap_enabled'] = true

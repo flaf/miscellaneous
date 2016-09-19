@@ -23,12 +23,14 @@ $ldap_conf = {
 }
 
 class { '::gitlab::params':
-  external_url        => "http://${fqdn}",
+  external_url        => "https://${fqdn}",
   ldap_conf           => $ldap_conf,
   backup_retention    => 10,
   backup_cron_wrapper => '',
   backup_cron_hour    => 3,
   backup_cron_minute  => 0,
+  ssl_cert            => '...', # The content of the ssl certificate.
+  ssl_key             => '...', # The content of the ssl private key.
 }
 
 include '::gitlab'
@@ -39,7 +41,17 @@ include '::gitlab'
 
 The `external_url` parameter sets the `external_url` option
 in the `/etc/gitlab/gitlab.rb` configuration file. The
-default value of this parameter is `$::facts['networking']['fqdn']`.
+default value of this parameter is `http://$::facts['networking']['fqdn']`
+A "https" external url is possible but in this case, you have
+to provide values for the `ssl_key` and `ssl_cert` parameters.
+
+The `ssl_key` and `ssl_cert` parameters are respectively the
+content of the ssl private key and the content of the ssl
+certificate used if the external url is a "https" url. The
+default value of these parameters is `''` (an empty string)
+which is valid only if the external url is a "http" url. If
+it's a "https" url, the value of these parameters must be
+non-empty.
 
 The `ldap_conf` parameter allows LDAP authentication and sets
 the `gitlab_rails['ldap_servers']` option in the
@@ -135,7 +147,7 @@ the `Email` field. **Warning**, this address must be unique
 (just unique as string, because GitLab is unable to see if
 2 different addresses are equivalent or not). For instance,
 it can't be the same address as the address of a LDAP
-account.
+account. Don't forget to save.
 
 With the `root` account, go to `Admin Area` => `Settings`
 (in the cogwheel) and uncheck the box of the option `Sign-up
