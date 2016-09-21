@@ -69,7 +69,7 @@ class gitlab {
     group   => 'root',
     mode    => '0600',
     require => Exec['save-default-gitlab.rb'],
-    notify  => Exec['gitlab-ctl-reconfigure'],
+    notify  => Exec['gitlab-ctl-reconfigure-restart'],
     content => epp( 'gitlab/gitlab.rb.epp',
                     {
                       'external_url' => $external_url,
@@ -85,7 +85,7 @@ class gitlab {
     group   => 'root',
     mode    => '0700',
     require => File['/etc/gitlab/gitlab.rb'],
-    notify  => Exec['gitlab-ctl-reconfigure'],
+    notify  => Exec['gitlab-ctl-reconfigure-restart'],
   }
 
   file { "/etc/gitlab/ssl/${fqdn_cert}.crt":
@@ -95,7 +95,7 @@ class gitlab {
     mode    => '0644',
     content => $ssl_cert,
     require => File['/etc/gitlab/gitlab.rb'],
-    notify  => Exec['gitlab-ctl-reconfigure'],
+    notify  => Exec['gitlab-ctl-reconfigure-restart'],
   }
 
   file { "/etc/gitlab/ssl/${fqdn_cert}.key":
@@ -105,12 +105,12 @@ class gitlab {
     mode    => '0600',
     content => $ssl_key,
     require => File['/etc/gitlab/gitlab.rb'],
-    notify  => Exec['gitlab-ctl-reconfigure'],
+    notify  => Exec['gitlab-ctl-reconfigure-restart'],
   }
 
-  exec { 'gitlab-ctl-reconfigure':
+  exec { 'gitlab-ctl-reconfigure-restart':
     path        => '/usr/sbin:/usr/bin:/sbin:/bin',
-    command     => 'gitlab-ctl reconfigure',
+    command     => 'gitlab-ctl reconfigure && sleep 2 && gitlab-ctl restart',
     user        => 'root',
     group       => 'root',
     refreshonly => true,
@@ -122,7 +122,7 @@ class gitlab {
     owner   => 'root',
     group   => 'root',
     mode    => '0700',
-    require => Exec['gitlab-ctl-reconfigure'],
+    require => Exec['gitlab-ctl-reconfigure-restart'],
   }
 
   file { $backup_cmd:
