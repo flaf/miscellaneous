@@ -61,7 +61,7 @@ unix_accounts::params::users:
 puppetagent::params::ca_server: 'puppet.%{::domain}'
 puppetagent::params::cron: 'disabled'
 repository::puppet::params::collection: 'PC1'
-repository::puppet::params::pinning_agent_version: '1.6.2-*'
+repository::puppet::params::pinning_agent_version: '1.7.0-*'
 repository::puppet::params::pinning_server_version: '2.6.0-*'
 
 mcollective::server::params::private_key: '%{alias("_mcollective_server_private_key_")}'
