@@ -122,6 +122,11 @@ mv "${tarfile}.gz" "$targetdir"
 my_logger "Backup of /etc/gitlab/."
 tar -zcf "$targetdir/$etcgitlab_targz" -C /etc/gitlab/ .
 
+# Put the version of the package gitlab-ce in a file
+# because a backup depends on the package version.
+current_version=$(dpkg -s gitlab-ce | grep '^Version:' | awk '{print $2}')
+touch "$targetdir/gitlab-ce_$current_version"
+
 # Set the Unix rights.
 find "$targetdir" -type f -exec chown root:root '{}' '+'
 find "$targetdir" -type f -exec chmod 600 '{}' '+'

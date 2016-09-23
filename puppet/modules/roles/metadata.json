@@ -1,6 +1,6 @@
 {
   "name": "flaf-roles",
-  "version": "0.9.15",
+  "version": "0.9.17",
   "author": "flaf",
   "summary": "Module to implement roles, ie very top level classes",
   "license": "Apache-2.0",
@@ -12,14 +12,14 @@
     {"name":"flaf-unix_accounts","version_requirement":"1.0.6"},
     {"name":"flaf-network","version_requirement":"0.8.1"},
     {"name":"flaf-basic_ntp","version_requirement":"0.1.2"},
-    {"name":"flaf-repository","version_requirement":"0.6.0"},
+    {"name":"flaf-repository","version_requirement":"0.6.1"},
     {"name":"flaf-raid","version_requirement":"0.2.0"},
     {"name":"flaf-basic_ssh","version_requirement":"0.3.1"},
     {"name":"flaf-basic_packages","version_requirement":"0.2.1"},
     {"name":"flaf-keyboard","version_requirement":"0.2.1"},
     {"name":"flaf-locale","version_requirement":"0.2.1"},
     {"name":"flaf-timezone","version_requirement":"0.2.1"},
-    {"name":"flaf-puppetagent","version_requirement":"0.2.7"},
+    {"name":"flaf-puppetagent","version_requirement":"0.2.8"},
     {"name":"flaf-mcollective","version_requirement":"0.3.4"},
     {"name":"flaf-snmp","version_requirement":"0.3.1"},
     {"name":"flaf-mcomiddleware","version_requirement":"0.2.1"},
@@ -29,7 +29,7 @@
     {"name":"flaf-ceph","version_requirement":"0.2.2"},
     {"name":"flaf-moo","version_requirement":"0.5.7"},
     {"name":"flaf-eximnullclient","version_requirement":"0.2.1"},
-    {"name":"flaf-gitlab","version_requirement":"0.2.5"},
+    {"name":"flaf-gitlab","version_requirement":"0.2.7"},
     {"name":"flaf-rsyncd","version_requirement":"0.1.2"},
     {"name":"olecam-keepalived_vip","version_requirement":"0.3.4"}
   ]

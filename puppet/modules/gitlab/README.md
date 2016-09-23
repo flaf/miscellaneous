@@ -25,7 +25,7 @@ $ldap_conf = {
 class { '::gitlab::params':
   external_url        => "https://${fqdn}",
   ldap_conf           => $ldap_conf,
-  backup_retention    => 10,
+  backup_retention    => 2,
   backup_cron_wrapper => '',
   backup_cron_hour    => 3,
   backup_cron_minute  => 0,
@@ -70,7 +70,7 @@ directory. These backups are **local** to the GitLab server.
 The `backup_retention` sets the retention of the backups.
 Every day, all local backups older than `backup_retention`
 **days** are removed. The default value of this parameter
-is `10`.
+is `2`.
 
 The `backup_cron_wrapper` parameter allows to add a wrapper
 command in the command of the backup cron. It can be useful

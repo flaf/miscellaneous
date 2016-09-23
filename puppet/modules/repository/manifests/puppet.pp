@@ -33,8 +33,8 @@ class repository::puppet (
       |- END
   }
 
-  # GPG Key which expires in 2019-02-11.
-  $key         = '8735F5AF62A99A628EC13377B8F999C007BB6C57'
+  # PGP key which expires in 2019-02-11.
+  $key         = '6F6B15509CF8E59E6E469F327F438280EF8D349F'
   $collec_down = $collection.downcase
   $collec_up   = $collection.upcase
   $codename    = $::facts['lsbdistcodename']

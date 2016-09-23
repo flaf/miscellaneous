@@ -114,7 +114,7 @@ Here is the commands:
 apt-get install lsb-release
 
 # Key which expires in 2019-02-11.
-KEY=$(echo 8735 F5AF 62A9 9A62 8EC1  3377 B8F9 99C0 07BB 6C57 | tr -d ' ')
+KEY=$(echo 6F6B 1550 9CF8 E59E 6E46  9F32 7F43 8280 EF8D 349F | tr -d ' ')
 apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys "$KEY"
 #
 # Or you can just do:
