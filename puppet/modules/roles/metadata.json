@@ -1,6 +1,6 @@
 {
   "name": "flaf-roles",
-  "version": "0.9.17",
+  "version": "0.9.18",
   "author": "flaf",
   "summary": "Module to implement roles, ie very top level classes",
   "license": "Apache-2.0",
@@ -24,7 +24,7 @@
     {"name":"flaf-snmp","version_requirement":"0.3.1"},
     {"name":"flaf-mcomiddleware","version_requirement":"0.2.1"},
     {"name":"flaf-puppetserver","version_requirement":"0.5.4"},
-    {"name":"flaf-puppetforge","version_requirement":"0.4.1"},
+    {"name":"flaf-puppetforge","version_requirement":"0.4.2"},
     {"name":"flaf-pxeserver","version_requirement":"0.4.7"},
     {"name":"flaf-ceph","version_requirement":"0.2.2"},
     {"name":"flaf-moo","version_requirement":"0.5.7"},

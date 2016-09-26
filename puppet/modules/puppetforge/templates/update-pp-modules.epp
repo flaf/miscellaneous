@@ -60,6 +60,8 @@ restart_puppetforge () {
 while true
 do
 
+    need_restart='false'
+
     # Get modules.
     while read # See the input of this read at the end of this loop below.
     do
@@ -93,7 +95,6 @@ do
         name=$(cat metadata.json | jq --raw-output '.name')
 
         # We remove old modules.
-        need_restart='false'
         for module_release in "$modulesdir/$name-"*".tar.gz"
         do
             [ "$module_release" = "$modulesdir/$name-*.tar.gz" ] && continue
@@ -105,8 +106,6 @@ do
                 need_restart='true'
             fi
         done
-
-        "$need_restart" && restart_puppetforge
 
         for tag in $tags
         do
@@ -199,11 +198,13 @@ EOF
 
             rm -rf "$modulesdir/$full_name"
             rm -rf "/tmp/$repo_name"
-            restart_puppetforge
+            need_restart='true'
             printf "[%s] Module stored. Next if it exists...\n" "$full_name"
         done
 
     done <"$giturlsfile"
+
+    "$need_restart" && restart_puppetforge
 
     sleep "$pause"
 
