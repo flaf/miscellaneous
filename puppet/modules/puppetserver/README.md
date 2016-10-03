@@ -153,6 +153,9 @@ To decrypt the file `etc_${date}.tar.gz.nc`, you have to
 launch the command `mcrypt -d "etc_${date}.tar.gz.nc"` and
 you have to give the password `mcrypt_pwd`.
 
+**Remark:** if the server if an autonomous server, so with a
+Puppetdb service, the puppetdb is saved in `/etc/puppetdb-backup/`.
+
 The `authorized_backup_keys` parameter allows to set ssh
 public keys which will be put in the `~/.ssh/authorized_keys`
 file of the Unix account `ppbackup`. Indeed, this account

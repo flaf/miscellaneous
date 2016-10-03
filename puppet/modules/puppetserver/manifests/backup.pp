@@ -1,7 +1,12 @@
 class puppetserver::backup {
 
-  $mcrypt_pwd             = $::puppetserver::mcrypt_pwd
-  $authorized_backup_keys = $::puppetserver::authorized_backup_keys
+  [
+    $mcrypt_pwd,
+    $authorized_backup_keys,
+    $puppetdb_name,
+    $puppetdb_user,
+    $profile,
+  ] = Class['::puppetserver']
 
 
   ::ppbackup::mcrypt_user { 'root':
@@ -24,9 +29,16 @@ class puppetserver::backup {
     owner   => 'root',
     group   => 'root',
     mode    => '0750',
-    source  => 'puppet:///modules/puppetserver/save-etc.puppet',
+    content  => epp('puppetserver/save-etc.puppet.epp',
+                    {
+                      'puppetdb_name' => $puppetdb_name,
+                      'puppetdb_user' => $puppetdb_user,
+                      'profile'       => $profile,
+                    }
+                   ),
     before  => Cron['save-etc-cron'],
   }
+
 
   cron { 'save-etc-cron':
     ensure  => present,

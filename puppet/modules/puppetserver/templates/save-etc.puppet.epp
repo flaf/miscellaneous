@@ -1,3 +1,8 @@
+<%-|
+  String[1] $puppetdb_name,
+  String[1] $puppetdb_user,
+  String[1] $profile,
+|-%>
 #!/bin/sh
 
 set -e
@@ -42,6 +47,23 @@ then
     echo "Script aborted."                                               >&2
     exit 1
 fi
+<%- if $profile == 'autonomous' { -%>
+
+# Backup of the Puppetdb.
+puppetdb_backup_dir='/etc/puppetdb-backup'
+if [ ! -d "$puppetdb_backup_dir" ]
+then
+    mkdir "$puppetdb_backup_dir"
+    chown root:root "$puppetdb_backup_dir"
+    chmod 700 "$puppetdb_backup_dir"
+fi
+
+puppetdb_user="<%= $puppetdb_user %>"
+puppetdb_name="<%= $puppetdb_name %>"
+puppetdb_gz="$puppetdb_backup_dir/puppetdb.sql.gz"
+pg_dump --host=localhost --username "$puppetdb_user" "$puppetdb_name" | gzip -9 --force > "$puppetdb_gz"
+chmod 600 "$puppetdb_gz"
+<%- } -%>
 
 tar -zcf "$targzfile" /etc 2>/dev/null
 mcrypt --config "$config" --quiet "$targzfile"
