@@ -2,6 +2,7 @@
   String[1]        $external_url,
   Boolean          $ssl,
   Gitlab::LdapConf $ldap_conf,
+  Array[String[1]] $custom_nginx_config,
 |-%>
 ### This file is managed by Puppet. Please don't edit it. ###
 
@@ -37,6 +38,10 @@ gitlab_rails['ldap_servers'] = YAML.load <<-'EOS'
     admin_group: ''
     sync_ssh_keys: false
 EOS
+
+<%- } -%>
+<%- unless $custom_nginx_config.empty { -%>
+nginx['custom_nginx_config'] = 'include /etc/gitlab/nginx-custom.conf;'
 
 <%- } -%>
 

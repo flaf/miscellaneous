@@ -1,13 +1,14 @@
 class gitlab::params (
   Pattern[/^https?:\/\//] $external_url,
-  Gitlab::LdapConf        $ldap_conf,
-  Integer[1]              $backup_retention,
-  String                  $backup_cron_wrapper,
-  Integer                 $backup_cron_hour,
-  Integer                 $backup_cron_minute,
-  String                  $ssl_cert,
-  String                  $ssl_key,
-  Array[String[1], 1]     $supported_distributions,
+  Gitlab::LdapConf    $ldap_conf,
+  Array[String[1]]    $custom_nginx_config,
+  Integer[1]          $backup_retention,
+  String              $backup_cron_wrapper,
+  Integer             $backup_cron_hour,
+  Integer             $backup_cron_minute,
+  String              $ssl_cert,
+  String              $ssl_key,
+  Array[String[1], 1] $supported_distributions,
 ) {
 
   $gitlab_backup_dir  = '/var/opt/gitlab/backups'

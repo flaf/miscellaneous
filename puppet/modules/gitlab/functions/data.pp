@@ -5,6 +5,7 @@ function gitlab::data {
   {
     gitlab::params::external_url            => "http://${fqdn}",
     gitlab::params::ldap_conf               => 'none',
+    gitlab::params::custom_nginx_config     => [],
     gitlab::params::backup_retention        => 2,
     gitlab::params::backup_cron_wrapper     => '',
     gitlab::params::backup_cron_hour        => 3,

@@ -5,6 +5,7 @@ class gitlab {
   [
     $external_url,
     $ldap_conf,
+    $custom_nginx_config,
     $backup_retention,
     $backup_cron_wrapper,
     $backup_cron_hour,
@@ -72,9 +73,10 @@ class gitlab {
     notify  => Exec['gitlab-ctl-reconfigure-restart'],
     content => epp( 'gitlab/gitlab.rb.epp',
                     {
-                      'external_url' => $external_url,
-                      'ssl'          => $ssl,
-                      'ldap_conf'    => $ldap_conf,
+                      'external_url'        => $external_url,
+                      'ssl'                 => $ssl,
+                      'ldap_conf'           => $ldap_conf,
+                      'custom_nginx_config' => $custom_nginx_config,
                     },
                   ),
   }
@@ -104,6 +106,25 @@ class gitlab {
     group   => 'root',
     mode    => '0600',
     content => $ssl_key,
+    require => File['/etc/gitlab/gitlab.rb'],
+    notify  => Exec['gitlab-ctl-reconfigure-restart'],
+  }
+
+  $ensure_nginx_custom_conf = $custom_nginx_config.empty ? {
+    true  => 'absent',
+    false => 'present'
+  }
+
+  file { '/etc/gitlab/nginx-custom.conf':
+    ensure  => $ensure_nginx_custom_conf,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    content => epp( 'gitlab/nginx-custom.conf.epp',
+                    {
+                      'custom_nginx_config' => $custom_nginx_config,
+                    },
+                  ),
     require => File['/etc/gitlab/gitlab.rb'],
     notify  => Exec['gitlab-ctl-reconfigure-restart'],
   }

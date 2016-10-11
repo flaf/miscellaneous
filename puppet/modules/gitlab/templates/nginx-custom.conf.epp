@@ -1,0 +1,8 @@
+<%-| Array[String[1]] $custom_nginx_config |-%>
+### This file is managed by Puppet, so don't edit manually. ###
+
+<%- $custom_nginx_config.each |$line| { -%>
+<%= $line %>
+<%- } -%>
+
+
