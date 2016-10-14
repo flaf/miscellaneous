@@ -57,6 +57,41 @@ trap end EXIT
 # Creation of the pid file.
 printf '%s\n' "$pid" > "$pid_file"
 
+if ! TEMP=$(getopt -o "" -l "sleep-before-remove:,remove-old-backups" -n "$script_name" -- "$@")
+then
+    echo "Syntax error with $script_name command."
+    exit 3
+fi
+
+eval set -- "$TEMP"
+unset TEMP
+
+# Default values.
+sleep_before_remove=0
+remove_old_backups=false
+
+while true
+do
+    case "$1" in
+
+        --sleep-before-remove)
+            sleep_before_remove="$2"
+            shift 2
+        ;;
+
+        --remove-old-backups)
+            remove_old_backups=true
+            shift 1
+        ;;
+
+        --)
+            shift 1
+            break
+        ;;
+
+    esac
+done
+
 # Cleaning...
 my_logger "Cleaning of $gitlab_backup_dir directory."
 find "$gitlab_backup_dir/" -type f -name "$pattern_tar_file" -delete
@@ -137,9 +172,20 @@ touch "$targetdir/gitlab-ce_$current_version"
 find "$targetdir" -type f -exec chown root:root '{}' '+'
 find "$targetdir" -type f -exec chmod 600 '{}' '+'
 
-# Retention.
-my_logger "Check the retention in $local_backup_dir which is set to $backup_retention."
-find "$local_backup_dir" -maxdepth 1 -mindepth 1 -type d -mtime "+$backup_retention" -exec rm -r '{}' '+'
+if "$remove_old_backups"
+then
+    if [ "$sleep_before_remove" != '0' ]
+    then
+        # Make a pause to avoid the case where a previous backup
+        # directory has a mtime which is slightly lower than to the
+        # retention $backup_retention.
+        my_logger "Pause before to check the retention in $local_backup_dir."
+        sleep "$sleep_before_remove"
+    fi
+    # Retention.
+    my_logger "Check the retention in $local_backup_dir which is set to $backup_retention."
+    find "$local_backup_dir" -maxdepth 1 -mindepth 1 -type d -mtime "+$backup_retention" -exec rm -r '{}' '+'
+fi
 
 my_logger "Complete backup of Gitlab successfully."
 

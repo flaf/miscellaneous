@@ -167,7 +167,7 @@ class gitlab {
   cron { 'backup-gitlab-cron':
     ensure  => present,
     user    => 'root',
-    command => [$backup_cron_wrapper, "${backup_cmd} >/dev/null"].join(' '),
+    command => [$backup_cron_wrapper, "${backup_cmd} --remove-old-backups --sleep-before-remove=1200 >/dev/null"].join(' '),
     hour    => $backup_cron_hour,
     minute  => $backup_cron_minute,
     weekday => '*',
