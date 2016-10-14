@@ -114,9 +114,15 @@ targetdir="$local_backup_dir/${date}"
 mkdir -p "$targetdir"
 chmod 700 "$targetdir"
 
-my_logger "The backup file is compressed and put in $targetdir."
-gzip -9 "$tarfile"
-mv "${tarfile}.gz" "$targetdir"
+# The tar file is in fact an archive of compressed files, so
+# the gzip command is useless (almost no space is gained).
+#
+#my_logger "The backup file is compressed and put in $targetdir."
+#gzip -9 "$tarfile"
+#mv "${tarfile}.gz" "$targetdir"
+
+my_logger "The backup file is put in $targetdir."
+mv "$tarfile" "$targetdir"
 
 
 my_logger "Backup of /etc/gitlab/."

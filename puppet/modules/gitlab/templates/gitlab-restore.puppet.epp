@@ -47,10 +47,10 @@ then
     exit 1
 fi
 
-targz_file=$(find "$local_backup_dir" -type f -regextype posix-extended \
-            -regex "^${local_backup_dir}/.*/${timestamp}${suffix_tar_file}\.gz$")
+tar_file=$(find "$local_backup_dir" -type f -regextype posix-extended \
+          -regex "^${local_backup_dir}/.*/${timestamp}${suffix_tar_file}$")
 
-if [ -z "$targz_file" ]
+if [ -z "$tar_file" ]
 then
     printf 'Sorry, no backup with the timestamp %s found in %s.\n' \
         "$timestamp" "$local_backup_dir" >&2
@@ -58,9 +58,9 @@ then
     exit 1
 fi
 
-# $targz_file is not empty so we can count the number of
+# $tar_file is not empty so we can count the number of
 # files found.
-n=$(printf '%s\n' "$targz_file" | wc -l)
+n=$(printf '%s\n' "$tar_file" | wc -l)
 
 if [ "$n" != '1' ]
 then
@@ -71,29 +71,35 @@ then
     exit 1
 fi
 
-source_backup_dir="${targz_file%/*}"
+source_backup_dir="${tar_file%/*}"
 etcgitlab_targz="${source_backup_dir}/${etcgitlab_targz}"
 
 if [ ! -f "$etcgitlab_targz" ]
 then
     printf 'There is something wrong.\n' >&2
     printf 'The backup file %s has no associated file %s.\n' \
-        "$targz_file" "$etcgitlab_targz" >&2
+        "$tar_file" "$etcgitlab_targz"   >&2
     printf 'Script aborted.\n'           >&2
     exit 1
 fi
 
-for f in "$targz_file" "$etcgitlab_targz"
-do
-    mtype=$(file --brief --mime-type "$f")
-    if [ "$mtype" != 'application/gzip' ]
-    then
-        printf 'There is something wrong.\n'                >&2
-        printf '%s does not seem to be a gzip file.\n' "$f" >&2
-        printf 'Script aborted.\n'                          >&2
-        exit 1
-    fi
-done
+mtype=$(file --brief --mime-type "$etcgitlab_targz")
+if [ "$mtype" != 'application/gzip' ]
+then
+    printf 'There is something wrong.\n'                              >&2
+    printf '%s does not seem to be a gzip file.\n' "$etcgitlab_targz" >&2
+    printf 'Script aborted.\n'                                        >&2
+    exit 1
+fi
+
+mtype=$(file --brief --mime-type "$tar_file")
+if [ "$mtype" != 'application/x-tar' ]
+then
+    printf 'There is something wrong.\n'                      >&2
+    printf '%s does not seem to be a tar file.\n' "$tar_file" >&2
+    printf 'Script aborted.\n'                                >&2
+    exit 1
+fi
 
 foo=$(find "$gitlab_backup_dir" -maxdepth 1 -mindepth 1)
 
@@ -113,7 +119,7 @@ fi
 ########################
 
 printf 'The files used to restore the GitLab server will be:\n'
-printf '    i) %s\n' "$targz_file"
+printf '    i) %s\n' "$tar_file"
 printf '   ii) %s\n' "$etcgitlab_targz"
 printf '\n'
 printf 'You can ensure that:\n'
@@ -161,14 +167,12 @@ rm -r "$tmp_dir"
 ###########################
 # 2. The gitlab tar file. #
 ###########################
-cp -a "$targz_file" "$gitlab_backup_dir"
+cp -a "$tar_file" "$gitlab_backup_dir"
 
-# backup_file is the name of the file without the .gz extension.
-backup_file="$gitlab_backup_dir/${targz_file##*/}"
-backup_file="${backup_file%.gz}"
+# backup_file is the absolute name of the file.
+backup_file="$gitlab_backup_dir/${tar_file##*/}"
 
 # After that, the back_file is ready.
-gunzip "${backup_file}.gz"
 chown 'git:git' "$backup_file"
 chmod '0600' "$backup_file"
 
