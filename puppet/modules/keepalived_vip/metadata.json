@@ -1,0 +1,18 @@
+{
+  "name": "olecam-keepalived_vip",
+  "version": "0.3.4",
+  "author": "olecam",
+  "summary": "Module to manage a VIP via Keepalived",
+  "license": "Apache-2.0",
+  "source": "",
+  "project_page": null,
+  "issues_url": null,
+  "data_provider": "function",
+  "dependencies": [
+    {"name":"puppetlabs-stdlib","version_requirement":">= 4.12.0"},
+    {"name":"arioch-keepalived","version_requirement":"1.2.4"},
+    {"name":"flaf-homemade","version_requirement":">= 0.1.7"}
+  ]
+}
+
+

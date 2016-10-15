@@ -1,0 +1,23 @@
+<%- |Array[String[1], 1] $all_vips| -%>
+#!/bin/sh
+
+### This file is managed by Puppet, don't edit it. ###
+
+export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+export LC_ALL='C'
+
+VIPS='<%= $all_vips.join(' ') %>'
+exit_code='0' # All is OK by default.
+
+for IP in $VIPS
+do
+    if ! ip address show | grep -E '[[:space:]]*inet6?' | grep -q --fixed-strings " $IP/"
+    then
+        echo "Problem: IP address $IP is not present."
+        exit_code=1
+    fi
+done
+
+exit "$exit_code"
+
+
