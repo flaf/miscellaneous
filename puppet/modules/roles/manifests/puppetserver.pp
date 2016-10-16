@@ -20,8 +20,8 @@ class roles::puppetserver {
   include '::roles::generic'
   ##################################
 
-
-
+  # The pinnings of some packages of a Puppet server are needed too.
+  include '::repository::puppetserver'
 
   ###################################
   ### The puppetserver management ###
@@ -69,7 +69,10 @@ class roles::puppetserver {
   include '::repository::puppet'
 
   class { '::puppetserver':
-    require => Class['::repository::puppet'],
+    require => [
+                 Class['::repository::puppet'],
+                 Class['::repository::puppetserver'],
+               ],
   }
   ###################################
 

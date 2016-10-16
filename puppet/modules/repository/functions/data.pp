@@ -37,8 +37,12 @@ function repository::data {
     repository::puppet::params::src                    => false,
     repository::puppet::params::collection             => undef,
     repository::puppet::params::pinning_agent_version  => undef,
-    repository::puppet::params::pinning_server_version => undef,
    "repository::puppet::params::${sd}"                 => [ 'trusty', 'jessie' ],
+
+    repository::puppetserver::params::pinning_puppetserver_version     => undef,
+    repository::puppetserver::params::pinning_puppetdb_version         => undef,
+    repository::puppetserver::params::pinning_puppetdb_termini_version => undef,
+   "repository::puppetserver::params::${sd}"                           => [ 'trusty', 'jessie' ],
 
     repository::postgresql::params::url    => 'http://apt.postgresql.org/pub/repos/apt/',
     repository::postgresql::params::src    => false,

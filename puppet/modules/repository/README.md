@@ -69,7 +69,6 @@ class { '::repository::puppet::params':
   src                    => false,
   collection             => 'PC1',
   pinning_agent_version  => '1.3.0-*', # Don't forget the joker.
-  pinning_server_version => '2.2.0-*', # Don't forget the joker.
 }
 
 include '::repository::puppet'
@@ -84,22 +83,63 @@ The `src` parameter is a boolean to tell if you
 want to include the `deb-src` line or not in the
 `sources.list.d/`. Its default value is `false`.
 
-The `collection` gives the name of the collection
-which will be used. The `pinning_agent_version` and
-`pinning_server_version` parameters give the version
-of the `puppet-agent` package and the `puppetserver` package
-which will be pinned in the APT configuration. For the
-`pinning_agent_version` and
-`pinning_server_version` parameters, the special
-string value `'none'` means "no pinning". These 3 parameters
-the default value is `undef` and you have to provide a value
+The `collection` parameter gives the name of the collection
+which will be used. The `pinning_agent_version` parameter
+gives the version of the `puppet-agent` package which will
+be pinned in the APT configuration. For the
+`pinning_agent_version` parameter, the special string value
+`'none'` means "no pinning". For these 2 parameters the
+default value is `undef` and you have to provide a value
 explicitly. For instance in hiera with something like that:
 
 ```yaml
 repository::puppet::params::collection: 'PC1'
 repository::puppet::params::pinning_agent_version: '1.3.0-*'
-repository::puppet::params::pinning_server_version: '2.2.0-*'
 ```
+
+
+
+
+# The `::repository::puppetserver` class
+
+## Usage
+
+Here is an example:
+
+```puppet
+# The class repository::puppetserver doesn't manage the
+# Puppetlabs repository in the sources.list.d directory.
+# This is the function of the repository::puppet class.
+include '::repository::puppet'
+
+# The class repository::puppetserver only manages pinnings
+# of some packages used by a Puppet server.
+class { '::repository::puppetserver::params':
+  pinning_puppetserver_version     => '2.6.0-*', # Don't forget the joker.
+  pinning_puppetdb_version         => '4.2.2-*', # Don't forget the joker.
+  pinning_puppetdb_termini_version => '4.2.2-*', # Don't forget the joker.
+}
+
+include '::repository::puppetserver'
+```
+
+## Parameters
+
+**Warning :** this class only manages pinnings of some
+packages used by a Puppet server. It doesn't manage the
+Puppetlabs repository in the `sources.list.d` directory
+which is managed by the `repository::puppet` class. So,
+normally, for a Puppet server, you should apply the class
+`repository::puppet` **and** the class
+`repository::puppetserver` together.
+
+The parameters `pinning_puppetserver_version`,
+`pinning_puppetdb_version` and
+`pinning_puppetdb_termini_version` pin the version of these
+packages respectively: `puppetserver`, `puppetdb` and
+`puppetdb-termini`. The special string value `'none'` means
+"no pinning". For these 3 parameters the default value is
+`undef` and you have to provide a value explicitly.
 
 
 

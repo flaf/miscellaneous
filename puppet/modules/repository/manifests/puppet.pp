@@ -8,7 +8,6 @@ class repository::puppet (
   $src                    = $::repository::puppet::params::src
   $collection             = $::repository::puppet::params::collection
   $pinning_agent_version  = $::repository::puppet::params::pinning_agent_version
-  $pinning_server_version = $::repository::puppet::params::pinning_server_version
 
   if $collection =~ Undef {
     regsubst(@("END"), '\n', ' ', 'G').fail
@@ -21,14 +20,6 @@ class repository::puppet (
     regsubst(@("END"), '\n', ' ', 'G').fail
       $title: sorry the parameter
       `repository::params::puppet_pinning_agent_version` is undefined.
-      You must define it explicitly.
-      |- END
-  }
-
-  if $pinning_server_version =~ Undef {
-    regsubst(@("END"), '\n', ' ', 'G').fail
-      $title: sorry the parameter
-      `repository::params::puppet_pinning_server_version` is undefined.
       You must define it explicitly.
       |- END
   }
@@ -62,18 +53,6 @@ class repository::puppet (
       explanation => 'To ensure the version of the puppet-agent package.',
       packages    => 'puppet-agent',
       version     => $pinning_agent_version,
-      priority    => 990,
-    }
-
-  }
-
-  if $pinning_server_version != 'none' {
-
-    # About pinning => `man apt_preferences`.
-    apt::pin { 'puppetserver':
-      explanation => 'To ensure the version of the puppetserver package.',
-      packages    => 'puppetserver',
-      version     => $pinning_server_version,
       priority    => 990,
     }
 
