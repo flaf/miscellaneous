@@ -438,16 +438,12 @@ class puppetserver::puppetconf {
   # launched at each start of the puppetserver service.
   if $profile == 'client' {
 
-    # Be careful, break a long line of strings with backslash works only
-    # with double quotes (ie "...") not with simple quotes (ie '...').
-    $bootstrap_cfg   = "${puppetlabs_path}/puppetserver/bootstrap.cfg"
-    $line_enable_ca  = "puppetlabs.services.ca.certificate-authority-\
-service/certificate-authority-service"
-    $line_disable_ca = "puppetlabs.services.ca.certificate-authority-\
-disabled-service/certificate-authority-disabled-service"
+    $ca_cfg          = "${puppetlabs_path}/puppetserver/services.d/ca.cfg"
+    $line_enable_ca  = 'puppetlabs.services.ca.certificate-authority-service/certificate-authority-service'
+    $line_disable_ca = 'puppetlabs.services.ca.certificate-authority-disabled-service/certificate-authority-disabled-service'
 
     file_line { 'comment-line-enable-CA-service':
-      path    => $bootstrap_cfg,
+      path    => $ca_cfg,
       line    => "#${line_enable_ca} # Edited by Puppet.",
       match   => "^#?[[:space:]]*${line_enable_ca}[[:space:]]*.*$",
       before  => Service['puppetserver'],
@@ -455,7 +451,7 @@ disabled-service/certificate-authority-disabled-service"
     }
 
     file_line { 'uncomment-line-disable-CA-service':
-      path    => $bootstrap_cfg,
+      path    => $ca_cfg,
       line    => "${line_disable_ca} # Edited by Puppet.",
       match   => "^#?[[:space:]]*${line_disable_ca}[[:space:]]*.*$",
       before  => Service['puppetserver'],
