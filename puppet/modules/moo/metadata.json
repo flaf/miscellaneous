@@ -1,6 +1,6 @@
 {
   "name": "flaf-moo",
-  "version": "0.5.7",
+  "version": "0.5.8",
   "author": "flaf",
   "summary": "Module to manage servers of a moodle plateform",
   "license": "Apache-2.0",
@@ -9,7 +9,7 @@
   "issues_url": null,
   "data_provider": "function",
   "dependencies": [
-    {"name":"puppetlabs-stdlib","version_requirement":">= 4.12.0"},
+    {"name":"puppetlabs-stdlib","version_requirement":">= 4.13.1"},
     {"name":"flaf-homemade","version_requirement":">= 0.1.7"}
   ]
 }

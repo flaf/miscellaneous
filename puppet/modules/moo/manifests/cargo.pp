@@ -233,7 +233,7 @@ class moo::cargo (
   if $make_backups {
 
     cron { 'cron-backups-moodles':
-      ensure  => $present,
+      ensure  => present,
       user    => 'root',
       command => $backup_cmd,
       hour    => 3,
