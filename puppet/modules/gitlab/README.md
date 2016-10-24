@@ -135,6 +135,60 @@ Normally, it's not required but it's probably better to
 reboot the server.
 
 
+# An upgrade of gitlab-ce
+
+It's simple because, in brief, you just need to upgrade the
+`gitlab-ce` package:
+
+```sh
+# Put a kind of "maintenance" page in Gitlab.
+sudo gitlab-ctl deploy-page up
+
+# Before an upgrade, it's more careful to make a local
+# backup, that's obvious.
+sudo gitlab-backup.puppet
+
+# Upgrade of the gitlab-ce package.
+#
+# WARNING:
+#
+# * Before an upgrade, you mustn't stop Gitlab with something
+#   like `sudo gitlab-ctl stop` because the upgrade will fail
+#   in this case. In clear:
+#
+#   BEFORE AN UPGRADE, ALL THE GITLAB SERVICES MUST BE UP.
+#
+# * Personally, I make upgrades from version a.b.c to version
+#   a.x.y only with x = b or x = b + 1 (regardless of the
+#   values of c and y)
+sudo apt-get update && sudo apt-get install gitlab-ce
+
+# After an upgrade, a restart of Gitlab is explicitly
+# requested.
+sudo gitlab-ctl restart
+
+# We remove the "maintenance" page.
+sudo gitlab-ctl deploy-page down
+```
+
+Now the Gitlab should be available.
+
+During an upgrade, a backup is made automatically in
+`/var/opt/gitlab/backups/`. If all is OK, you have to empty
+this directory because the backup script set by this Puppet
+module requires that this directory is empty:
+
+```sh
+sudo find /var/opt/gitlab/backups/ -maxdepth 1 -mindepth 1 -type f -name '*.tar' -delete
+```
+
+That should be enough but I prefer launch a reboot:
+
+```sh
+sudo reboot
+```
+
+
 # The first install (where there is no backup to restore)
 
 After the first Puppet run, you have to visit the home page
