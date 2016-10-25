@@ -182,7 +182,7 @@ module requires that this directory is empty:
 sudo find /var/opt/gitlab/backups/ -maxdepth 1 -mindepth 1 -type f -name '*.tar' -delete
 ```
 
-That should be enough but I prefer launch a reboot:
+That should be enough but I prefer to launch a reboot:
 
 ```sh
 sudo reboot
