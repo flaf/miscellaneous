@@ -10,6 +10,10 @@ Content-Type: text/html
         <title>Erreur 503</title>
         <style>
         @import url('https://fonts.googleapis.com/css?family=Luckiest+Guy');
+          body {
+            background: url('https://communaute.elea.ac-versailles.fr/theme/vital/pix/503.jpg') no-repeat fixed;
+            background-size: cover;
+          }
           h1, h2 {
             font-family: 'Luckiest Guy';
             color: #718DA3;
