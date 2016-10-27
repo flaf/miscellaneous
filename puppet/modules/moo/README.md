@@ -420,3 +420,23 @@ python /opt/moobot/bin/lb.py --force --verbose --debug
 ```
 
 
+
+
+# Generate a new version of 503.html
+
+If you want to generate a new version of the file
+`503.html`, because the source `503-clean.html` has changed
+or because the image `503.jpg` has changed, you have to
+launch this command :
+
+```sh
+cd files/
+
+# We start from the cleaned version.
+rm 503.html && cp 503-clean.htm 503.html
+
+# Embed the base64 code of the image in the html code.
+printf 's|url(503.jpg)|url(data:image/jpeg;base64,%s)|' "$(base64 503.jpg | tr -d '\n')" | sed -f- -i 503.html
+```
+
+

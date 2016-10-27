@@ -45,6 +45,16 @@ class moo::lb (
     notify  => Service['haproxy'],
   }
 
+  file { '/etc/haproxy/errors/503.http':
+    ensure => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    source  => 'puppet:///modules/moo/503.html',
+    require => Package['haproxy'],
+    notify  => Service['haproxy'],
+  }
+
   service { 'haproxy':
     ensure     => running,
     hasstatus  => true,
