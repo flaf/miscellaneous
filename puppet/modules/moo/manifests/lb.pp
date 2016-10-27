@@ -50,7 +50,7 @@ class moo::lb (
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    source  => 'puppet:///modules/moo/503.html',
+    source  => 'puppet:///modules/moo/503.http',
     require => Package['haproxy'],
     notify  => Service['haproxy'],
   }
