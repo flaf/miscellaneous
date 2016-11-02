@@ -61,10 +61,10 @@ unix_accounts::params::users:
 puppetagent::params::ca_server: 'puppet.%{::domain}'
 puppetagent::params::cron: 'disabled'
 repository::puppet::params::collection: 'PC1'
-repository::puppet::params::pinning_agent_version: '1.7.1-*'
+repository::puppet::params::pinning_agent_version: '1.8.0-*'
 repository::puppetserver::params::pinning_puppetserver_version: '2.6.0-*'
-repository::puppetserver::params::pinning_puppetdb_version: '4.2.2-*'
-repository::puppetserver::params::pinning_puppetdb_termini_version: '4.2.2-*'
+repository::puppetserver::params::pinning_puppetdb_version: '4.2.4-*'
+repository::puppetserver::params::pinning_puppetdb_termini_version: '4.2.4-*'
 
 mcollective::server::params::private_key: '%{alias("_mcollective_server_private_key_")}'
 mcollective::server::params::public_key: '%{alias("_mcollective_server_public_key_")}'
