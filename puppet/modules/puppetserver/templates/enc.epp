@@ -5,6 +5,9 @@
 
 require 'yaml'
 
+# The maximum number of groups.
+MAX_GROUPS = <%= $max_groups %>
+
 # The absolute path of the directory which contains the ENC script.
 ENV_DIR = File.expand_path(File.dirname(__FILE__))
 
@@ -20,9 +23,10 @@ output = '{
 }
 '
 
-# Search for the yaml file in hieradata.
+# Search for the $fqdn.yaml file in hieradata. Exactly only
+# one file must exist (not 0 or 2 etc).
 files_array = Dir.glob("#{ENV_DIR}/*/hieradata/fqdn/#{fqdn}.yaml")
-if files_array.length != 1
+unless files_array.length == 1
   if files_array.length == 0
     puts "Sorry, in hieradata, the file `#{fqdn}.yaml' " \
          "is absent in all environment directories."
@@ -34,106 +38,127 @@ if files_array.length != 1
   exit(1)
 end
 
-# There is just one fqdn.yaml file in hieradata.
+# There is just one $fqdn.yaml file in hieradata.
 yaml_file = files_array[0]
 
 # Get the environment variable.
 regex_end = "/hieradata/fqdn/#{fqdn}.yaml"
 environment = yaml_file.sub(/^#{ENV_DIR}\//, '').sub(/#{regex_end}$/, '')
 
-# Get the list of all datacenters if available in
-# hieradata/datacenter/*.yaml.
+# Get the list of all datacenters in hieradata/datacenter/.
+# The list must be non empty. A test is made below.
 datacenters_array = Dir.glob("#{ENV_DIR}/#{environment}/hieradata/datacenter/*.yaml")
 datacenters_array = datacenters_array.map!{ |x| x.sub(/^.*\//, '').sub( /\.yaml/, '') }
 
 # Search for keys which match /^enc_/ in the yaml file to
-# define the global paramters.
+# define the ENC global paramters.
 hash = YAML.load_file(yaml_file)
 
-# If the yaml file is empty, hash is nil.
-# Then, we convert nil to an empty hash.
-if hash.is_a?(NilClass)
-  hash = {}
-end
+# If the yaml file is empty, hash is nil. Then, we convert
+# nil to an empty hash.
+if hash.is_a?(NilClass) then hash = {} end
 
-if not hash.is_a?(Hash)
+unless hash.is_a?(Hash)
   puts "Sorry, in hieradata, the file `#{fqdn}.yaml' " \
        "exists but has a bad yaml syntax."
   exit(1)
 end
 
-# If 'enc_groups' key is not present we add it with the
-# empty array value. See the remark about groups below.
-if not hash.has_key?('enc_groups')
-  hash['enc_groups'] = []
+# The "enc_datacenter" key (with a string value) is required.
+unless hash.has_key?('enc_datacenter') and hash['enc_datacenter'].is_a?(String)
+  puts "Sorry, in hieradata, the file `#{fqdn}.yaml' must have " \
+       "a key `enc_datacenter' and its value must be a string."
+  exit(1)
 end
 
+# If 'enc_groups' key is not present, we add it with the
+# empty array value.
+unless hash.has_key?('enc_groups') then hash['enc_groups'] = [] end
+
+# The "datacenter" variable will be updated via the key
+# "enc_datacenter" in the loop below.
 datacenter = nil
 parameters = ''
 
-hash.each do |key, value|
+# Only keys which start with "enc_" are handled.
+hash.select { |key, value| key =~ /^enc_/ }.each do |key, value|
 
-  if key =~ /^enc_/
+  key = key.sub(/^enc_/, '')
 
-    key = key.sub(/^enc_/, '')
-
-    # Handle when the value is a string or a number.
-    if value.is_a?(String) or value.is_a?(Numeric)
-      if value.is_a?(Numeric) then value = value.to_s() end
-      value = value.gsub('"', '\\"') # Escape " in value.
-      parameters += "\"#{key}\": \"#{value}\",\n    "
-      if key == 'datacenter'
-        datacenter = value
-      end
-    end
-
-    # Handle when the value is a array.
-    if value.is_a?(Array)
-      parameters += "\"#{key}\": #{value.to_s()},\n    "
-      c = 0
-      # == Remark about groups ==
-      #
-      # Specific handle if key == "groups'.
-      # To avoid a ton of warnings in logs like this:
-      #
-      #     [puppet-server] Scope(Class[main]) Could not look up
-      #     qualified variable '::groups_2'
-      #
-      # we fill the array to a size of <%= $max_groups %> with consecutive
-      # 'NOT_AVAILABLE' elements which represent a dummy group.
-      # It's just to avoid warnings above. If a groups_N variable
-      # is not defined, there are warnings in logs. If the groups_N
-      # variable is defined to a dummy file, there is no warning.
-      #
-      if key == 'groups'
-        if <%= $max_groups %> - value.size > 0
-          value = value + [ 'NOT_AVAILABLE' ]*(<%= $max_groups %> - value.size)
-        end
-      end
-      for e in value
-        if e.is_a?(String) or e.is_a?(Numeric)
-          if e.is_a?(Numeric) then e = e.to_s() end
-          e = e.gsub('"', '\\"') # Escape " in e.
-          parameters += "\"#{key}_#{c}\": \"#{e}\",\n    "
-          c += 1
-        end
-      end
-    end
-
+  # Handle when the value is a string or a number.
+  if value.is_a?(String) or value.is_a?(Numeric)
+    if value.is_a?(Numeric) then value = value.to_s() end
+    value = value.gsub('"', '\\"') # Escape " in value.
+    parameters += "\"#{key}\": \"#{value}\",\n    "
+    if key == 'datacenter' then datacenter = value end
   end
 
+  # Handle when the value is a array.
+  if value.is_a?(Array)
+
+    # The "groups" key is specal because we want to add
+    # automatically some groups "dir/common" when it's
+    # needed (when there is a group "dir/foo").
+    if key == 'groups'
+      additional_common_groups = value.map do |e|
+        split = e.split('/')
+        if split.size > 1 and split[0] != '' then split[0] + '/common' end
+      end
+      .compact # To remove nil element.
+      .uniq    # To avoid duplicated "dir/common".
+      value += additional_common_groups
+    end
+    parameters += "\"#{key}\": #{value.to_s()},\n    "
+
+    # == Remark about groups ==
+    #
+    # Specific handle if key == "groups'.
+    # To avoid a ton of warnings in logs like this:
+    #
+    #     [puppet-server] Scope(Class[main]) Could not look up
+    #     qualified variable '::groups_2'
+    #
+    # we fill the array to a size of MAX_GROUPS with consecutive
+    # 'NOT_AVAILABLE' elements which represent a dummy group.
+    # It's just to avoid warnings above. If a groups_N variable
+    # is not defined, there are warnings in logs. If the groups_N
+    # variable is defined to a dummy file, there is no warning.
+    #
+    if key == 'groups'
+      if MAX_GROUPS - value.size > 0
+        value = value + [ 'NOT_AVAILABLE' ]*(MAX_GROUPS - value.size)
+      end
+    end
+
+    # When the value of the key "foo" is an array, we want
+    # to define the keys "foo_0", "foo_1" etc. where "foo_0"
+    # is associated with the first value of the array,
+    # "foo_1" the second value of the array etc.
+    c = 0
+    value.select { |e| e.is_a?(String) or e.is_a?(Numeric) }.each do |e|
+      if e.is_a?(Numeric) then e = e.to_s() end
+      e = e.gsub('"', '\\"') # Escape " in e.
+      parameters += "\"#{key}_#{c}\": \"#{e}\",\n    "
+      c += 1
+    end
+
+  end # End of handle when the value is a array.
+
 end
 
-# datacenters is put in parameters.
-if datacenters_array.empty? and not datacenter.nil?
-  datacenters = [ datacenter ].to_s
-else
-  datacenters = datacenters_array.to_s
+unless datacenters_array.include?(datacenter)
+  puts "Sorry, in hieradata, the file `datacenter/#{datacenter}.yaml' " \
+       "doesn't exist whereas the file `#{fqdn}.yaml' contains the " \
+       "key `enc_datacenter' with the valu '#{datacenter}'. " \
+       "If it's correct, the file `datacenter/#{datacenter}.yaml' " \
+       "must exist, even an empty yaml file."
+  exit(1)
 end
+
+datacenters = datacenters_array.to_s
 parameters += "\"datacenters\": #{datacenters},\n"
 
 parameters = parameters.strip()
-
 output = output.sub('###environment###', environment)
 output = output.sub('###parameters###', parameters)
 puts output
