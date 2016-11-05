@@ -116,7 +116,7 @@ pinning is completely ignored by the classical command
 The `max_groups` parameter is an integer greater or equal to
 1. It's the maximum number of groups to which a node belongs
 in the data hierarchy (in the file `hiera.yaml`. The default
-value of this parameter is `5`.
+value of this parameter is `10`.
 
 The `groups_from_master` parameter is an array of non-empty
 strings (but the array can be empty). The default value of

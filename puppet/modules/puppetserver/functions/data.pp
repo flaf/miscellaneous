@@ -11,7 +11,7 @@ function puppetserver::data {
   $puppetdb_pwd            = undef
   $puppetdb_certwhitelist  = [ $::fqdn ]
   $modules_versions        = {} # no pinning by default
-  $max_groups              = 5
+  $max_groups              = 10
   $groups_from_master      = []
   $mcrypt_pwd              = undef
   $authorized_backup_keys  = {}
