@@ -5,7 +5,7 @@
 
 require 'yaml'
 
-# The maximum number of groups.
+# The maximum number of hiera groups allowed.
 MAX_GROUPS = <%= $max_groups %>
 
 # The absolute path of the directory which contains the ENC script.
@@ -41,14 +41,15 @@ end
 # There is just one $fqdn.yaml file in hieradata.
 yaml_file = files_array[0]
 
-# Get the environment variable.
+# Get the environment variable via the path of the fqdn.yaml
+# file.
 regex_end = "/hieradata/fqdn/#{fqdn}.yaml"
 environment = yaml_file.sub(/^#{ENV_DIR}\//, '').sub(/#{regex_end}$/, '')
 
 # Get the list of all datacenters in hieradata/datacenter/.
 # The list must be non empty. A test is made below.
 datacenters_array = Dir.glob("#{ENV_DIR}/#{environment}/hieradata/datacenter/*.yaml")
-datacenters_array = datacenters_array.map!{ |x| x.sub(/^.*\//, '').sub( /\.yaml/, '') }
+                   .map { |x| x.sub(/^.*\//, '').sub( /\.yaml/, '') }
 
 # Search for keys which match /^enc_/ in the yaml file to
 # define the ENC global paramters.
@@ -107,6 +108,12 @@ hash.select { |key, value| key =~ /^enc_/ }.each do |key, value|
       .compact # To remove nil element.
       .uniq    # To avoid duplicated "dir/common".
       value += additional_common_groups
+
+      if value.size > MAX_GROUPS
+        puts "Sorry, the host #{fqdn} belongs to #{value.size} " \
+          "hiera-groups and the maximum allowed is #{MAX_GROUPS}."
+        exit(1)
+      end
     end
     parameters += "\"#{key}\": #{value.to_s()},\n    "
 
@@ -149,7 +156,7 @@ end
 unless datacenters_array.include?(datacenter)
   puts "Sorry, in hieradata, the file `datacenter/#{datacenter}.yaml' " \
        "doesn't exist whereas the file `#{fqdn}.yaml' contains the " \
-       "key `enc_datacenter' with the valu '#{datacenter}'. " \
+       "key `enc_datacenter' with the value `#{datacenter}'. " \
        "If it's correct, the file `datacenter/#{datacenter}.yaml' " \
        "must exist, even an empty yaml file."
   exit(1)
