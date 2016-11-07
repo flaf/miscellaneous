@@ -31,7 +31,7 @@ class puppetserver::puppetconf {
 
   [
     $profile,
-    $memory,
+    $puppet_memory,
     $modules_repository,
     $strict,
     $modules_versions,
@@ -69,7 +69,7 @@ class puppetserver::puppetconf {
                  )
 
   # Set the memory for the JVM which runs the puppetserver.
-  $java_args ="-Xms${memory} -Xmx${memory} -XX:MaxPermSize=256m"
+  $java_args ="-Xms${puppet_memory} -Xmx${puppet_memory} -XX:MaxPermSize=256m"
 
   file_line { 'set-memory-to-puppetserver-jvm':
     path   => '/etc/default/puppetserver',

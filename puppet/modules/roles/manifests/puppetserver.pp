@@ -53,8 +53,19 @@ class roles::puppetserver {
 
   }
 
+  # For a `client` puppetserver, the $datacenters global
+  # variable is required.
+  unless $::datacenters =~ Array[String[1], 1] {
+    @("END"/L$).fail
+      ${title}: sorry you must define the ENC variable \
+      \$::datacenters as a non-empty array of non-empty \
+      strings.
+      |- END
+  }
+
   class { '::puppetserver::params':
     authorized_backup_keys => $authorized_backup_keys,
+    datacenters            => $datacenters,
   }
 
   # Repository Postgresql needed only for a "autonomous"

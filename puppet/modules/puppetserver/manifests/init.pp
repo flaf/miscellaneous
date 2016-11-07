@@ -36,6 +36,7 @@ class puppetserver {
     ::homemade::fail_if_undef($datacenters, 'puppetserver::params::datacenters', $title, @("END"/L))
       On a puppetserver with the `client` profile, you must \
       provide a value for the `datacenters` parameter.
+      |- END
   }
 
   # The mcrypt password is mandatory.

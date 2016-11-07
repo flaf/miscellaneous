@@ -30,6 +30,7 @@ class { '::puppetserver::params':
                               'author-modB' => '0.4.0',
                             },
   max_groups             => 3,
+  datacenters            => undef,
   groups_from_master     => [],
   mcrypt_pwd             => 'abcdef',
   authorized_backup_keys => $pubkeys,
@@ -117,6 +118,20 @@ The `max_groups` parameter is an integer greater or equal to
 1. It's the maximum number of groups to which a node belongs
 in the data hierarchy (in the file `hiera.yaml`. The default
 value of this parameter is `10`.
+
+The `datacenters` parameter is required only when the
+profile of the puppetserver is `client` and must be, in this
+case, a non-empty array of non-empty strings (the list of
+all datacenters in the hierarchy). Regardless of the profile
+defined, the ENC script defines the `datacenter` (the name
+of the datacenter of the current node) and the `datacenters`
+(the list of all datacenters in the hierarchy) global
+variables:
+* With an `autonomous` puppetserver, the `datacenters` global
+  variable is defined via the filename `datacenter/*.yaml` in
+  the hierarchy (without the `yaml` extension).
+* With a `client` puppetserver, this global variable is defined
+  via the `datacenters` parameter of the class `puppetserver::params`.
 
 The `groups_from_master` parameter is an array of non-empty
 strings (but the array can be empty). The default value of
