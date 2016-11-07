@@ -12,6 +12,7 @@ function puppetserver::data {
   $puppetdb_certwhitelist  = [ $::fqdn ]
   $modules_versions        = {} # no pinning by default
   $max_groups              = 10
+  $datacenters             = undef
   $groups_from_master      = []
   $mcrypt_pwd              = undef
   $authorized_backup_keys  = {}
@@ -30,6 +31,7 @@ function puppetserver::data {
     puppetserver::params::puppetdb_certwhitelist => $puppetdb_certwhitelist,
     puppetserver::params::modules_versions       => $modules_versions,
     puppetserver::params::max_groups             => $max_groups,
+    puppetserver::params::datacenters            => $datacenters,
     puppetserver::params::groups_from_master     => $groups_from_master,
     puppetserver::params::mcrypt_pwd             => $mcrypt_pwd,
     puppetserver::params::authorized_backup_keys => $authorized_backup_keys,

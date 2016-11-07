@@ -1,4 +1,8 @@
-<%- |$max_groups| -%>
+<%-|
+  Integer[1]            $max_groups,
+  Puppetserver::Profile $profile,
+  Array[String[1], 1]   $datacenters,
+|-%>
 #!/opt/puppetlabs/puppet/bin/ruby
 
 ### This file is managed by Puppet, don't edit it.
@@ -46,10 +50,17 @@ yaml_file = files_array[0]
 regex_end = "/hieradata/fqdn/#{fqdn}.yaml"
 environment = yaml_file.sub(/^#{ENV_DIR}\//, '').sub(/#{regex_end}$/, '')
 
+<%- if $profile == 'autonomous' { -%>
 # Get the list of all datacenters in hieradata/datacenter/.
 # The list must be non empty. A test is made below.
 datacenters_array = Dir.glob("#{ENV_DIR}/#{environment}/hieradata/datacenter/*.yaml")
                    .map { |x| x.sub(/^.*\//, '').sub( /\.yaml/, '') }
+<%- } else { -%>
+# This puppetserver is a puppetserver with the "client"
+# profile and the list of datacenters are provided
+# explicitly by its "autonomous" puppetserver.
+datacenters_array = <%= String($datacenters) %>
+<%- } -%>
 
 # Search for keys which match /^enc_/ in the yaml file to
 # define the ENC global paramters.

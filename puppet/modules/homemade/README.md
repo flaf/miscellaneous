@@ -135,9 +135,11 @@ Here is a typical example:
 ```puppet
 class foo {
 
-  $var = $::foo::params::var
+  $var1 = $::foo::params::var1
+  $var2 = $::foo::params::var2
 
-  ::homemade::fail_if_undef($var, 'foo::params::var', $title)
+  ::homemade::fail_if_undef($var1, 'foo::params::var1', $title)
+  ::homemade::fail_if_undef($var2, 'foo::params::var2', $title, 'Specific and additional message...')
 
 }
 ```
@@ -147,6 +149,11 @@ friendly error message given the name of the current class
 (with the `$title` parameter) and the name of the variable
 (the second parameter). If `$var` is not `undef`, the
 function does absolutely nothing.
+
+The last parameter of this function is a specific and
+additional message if needed. This last parameter is not
+required and its default value is an empty string (ie no
+additional message).
 
 
 

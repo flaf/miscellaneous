@@ -27,18 +27,23 @@ class puppetserver::puppetconf {
   # requests will fail, the report might not send properly
   # at the end, but it totally works".
 
-  $profile            = $::puppetserver::profile
-  $memory             = $::puppetserver::puppet_memory
-  $modules_repository = $::puppetserver::modules_repository
-  $strict             = $::puppetserver::strict
-  $modules_versions   = $::puppetserver::modules_versions
-  $max_groups         = $::puppetserver::max_groups
-  $groups_from_master = $::puppetserver::groups_from_master
+  include '::puppetserver::params'
 
-  $puppetlabs_path   = $::puppetserver::puppetlabs_path
-  $puppet_path       = $::puppetserver::puppet_path
-  $ssldir            = $::puppetserver::ssldir
-  $puppet_bin_dir    = $::puppetserver::puppet_bin_dir
+  [
+    $profile,
+    $memory,
+    $modules_repository,
+    $strict,
+    $modules_versions,
+    $max_groups,
+    $datacenters,
+    $groups_from_master,
+    # In the params class but not as parameter.
+    $puppetlabs_path,
+    $puppet_path,
+    $ssldir,
+    $puppet_bin_dir,
+  ] = Class['::puppetserver::params']
 
   if $profile == 'autonomous' {
     $notify_puppetserver = undef
@@ -269,7 +274,11 @@ class puppetserver::puppetconf {
     group   => 'root',
     mode    => '0755',
     content => epp('puppetserver/enc.epp',
-                   { 'max_groups' => $max_groups, }
+                   {
+                    'max_groups'  => $max_groups,
+                    'profile'     => $profile,
+                    'datacenters' => $datacenters,
+                   }
                   ),
     before  => Service['puppetserver'],
     # No need to restart the puppetserver here.
