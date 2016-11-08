@@ -32,12 +32,12 @@ output = '{
 files_array = Dir.glob("#{ENV_DIR}/*/hieradata/fqdn/#{fqdn}.yaml")
 unless files_array.length == 1
   if files_array.length == 0
-    puts "Sorry, in hieradata, the file `#{fqdn}.yaml' " \
-         "is absent in all environment directories."
+    STDERR.puts "Sorry, in hieradata, the file `#{fqdn}.yaml' " \
+                "is absent in all environment directories."
   end
   if files_array.length > 1
-    puts "Sorry, in hieradata, the file `#{fqdn}.yaml' " \
-         "is duplicated in multiple environment directories."
+    STDERR.puts "Sorry, in hieradata, the file `#{fqdn}.yaml' " \
+                "is duplicated in multiple environment directories."
   end
   exit(1)
 end
@@ -71,15 +71,15 @@ hash = YAML.load_file(yaml_file)
 if hash.is_a?(NilClass) then hash = {} end
 
 unless hash.is_a?(Hash)
-  puts "Sorry, in hieradata, the file `#{fqdn}.yaml' " \
-       "exists but has a bad yaml syntax."
+  STDERR.puts "Sorry, in hieradata, the file `#{fqdn}.yaml' " \
+              "exists but has a bad yaml syntax."
   exit(1)
 end
 
 # The "enc_datacenter" key (with a string value) is required.
 unless hash.has_key?('enc_datacenter') and hash['enc_datacenter'].is_a?(String)
-  puts "Sorry, in hieradata, the file `#{fqdn}.yaml' must have " \
-       "a key `enc_datacenter' and its value must be a string."
+  STDERR.puts "Sorry, in hieradata, the file `#{fqdn}.yaml' must have " \
+              "a key `enc_datacenter' and its value must be a string."
   exit(1)
 end
 
@@ -112,17 +112,31 @@ hash.select { |key, value| key =~ /^enc_/ }.each do |key, value|
     # automatically some groups "dir/common" when it's
     # needed (when there is a group "dir/foo").
     if key == 'groups'
+
+      # TODO: test if there are duplicated groups in value.
+
       additional_common_groups = value.map do |e|
         split = e.split('/')
-        if split.size > 1 and split[0] != '' then split[0] + '/common' end
+        if split.size > 1 and split[0] != ''
+          split[0] + '/common'
+        else
+          nil
+        end
       end
       .compact # To remove nil element.
-      .uniq    # To avoid duplicated "dir/common".
-      value += additional_common_groups
+      .uniq    # To avoid duplicated "dir/common" if the
+               # array "value" already contains "dir/a" and
+               # "dir/b" (for instance).
+
+      additional_common_groups.each do |a_group|
+        unless value.include?(a_group)
+          value.push(a_group)
+        end
+      end
 
       if value.size > MAX_GROUPS
-        puts "Sorry, the host #{fqdn} belongs to #{value.size} " \
-          "hiera-groups and the maximum allowed is #{MAX_GROUPS}."
+        STDERR.puts "Sorry, the host #{fqdn} belongs to #{value.size} " \
+                    "hiera-groups and the maximum allowed is #{MAX_GROUPS}."
         exit(1)
       end
     end
@@ -165,11 +179,11 @@ hash.select { |key, value| key =~ /^enc_/ }.each do |key, value|
 end
 
 unless datacenters_array.include?(datacenter)
-  puts "Sorry, in hieradata, the file `datacenter/#{datacenter}.yaml' " \
-       "doesn't exist whereas the file `#{fqdn}.yaml' contains the " \
-       "key `enc_datacenter' with the value `#{datacenter}'. " \
-       "If it's correct, the file `datacenter/#{datacenter}.yaml' " \
-       "must exist, even an empty yaml file."
+  STDERR.puts "Sorry, in hieradata, the file `datacenter/#{datacenter}.yaml' " \
+              "doesn't exist whereas the file `#{fqdn}.yaml' contains the " \
+              "key `enc_datacenter' with the value `#{datacenter}'. " \
+              "If it's correct, the file `datacenter/#{datacenter}.yaml' " \
+              "must exist, even an empty yaml file."
   exit(1)
 end
 
