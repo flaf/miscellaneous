@@ -113,7 +113,11 @@ hash.select { |key, value| key =~ /^enc_/ }.each do |key, value|
     # needed (when there is a group "dir/foo").
     if key == 'groups'
 
-      # TODO: test if there are duplicated groups in value.
+      if value.uniq.length != value.length
+        STDERR.puts "Sorry, there are duplicated groups in the enc_groups " \
+                    "key in the `#{fqdn}.yaml' file."
+        exit(1)
+      end
 
       additional_common_groups = value.map do |e|
         split = e.split('/')
@@ -128,6 +132,10 @@ hash.select { |key, value| key =~ /^enc_/ }.each do |key, value|
                # array "value" already contains "dir/a" and
                # "dir/b" (for instance).
 
+      # Add addtional common groups in "value" only if not
+      # already present in "value". For instance, if value
+      # is equal to [ "foo/common" ], it's useless to add
+      # the group "foo/commonce" again.
       additional_common_groups.each do |a_group|
         unless value.include?(a_group)
           value.push(a_group)
