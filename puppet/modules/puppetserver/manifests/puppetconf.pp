@@ -231,8 +231,8 @@ class puppetserver::puppetconf {
 
     # All the directories which must be created before to
     # create yaml-group files from the master below.
-    $gfm_dirs = $groups_from_master.reduce([$gfm_root]) |$memo, $entry| {
-      $dir = dirname($entry)
+    $gfm_dirs = $groups_from_master.reduce([$gfm_root]) |$memo, $a_group| {
+      $dir = dirname("${gfm_root}/${a_group}.yaml")
       case $dir in $memo {
         true:  { $memo          }
         false: { $memo + [$dir] }
