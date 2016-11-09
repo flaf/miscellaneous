@@ -223,9 +223,24 @@ class puppetserver::puppetconf {
       }
     }
 
+    # The root directory. But maybe another directories must
+    # be created. For instance, if the 'foo/mysql' hiera
+    # group belongs to the array $groups_from_master, we
+    # have to create the directory "$gfm_dir/foo" too, etc.
+    $gfm_root = "${production_path}/hieradata-group-from-master"
 
-    # The "hieradata-group-from-master" directory and its files below.
-    file { "${production_path}/hieradata-group-from-master":
+    # All the directories which must be created before to
+    # create yaml-group files from the master below.
+    $gfm_dirs = $groups_from_master.reduce([$gfm_root]) |$memo, $entry| {
+      $dir = dirname($entry)
+      case $dir in $memo {
+        true:  { $memo          }
+        false: { $memo + [$dir] }
+      }
+    }
+
+    # The "hieradata-group-from-master" directories and its files below.
+    file { $gfm_dirs:
       ensure  => directory,
       owner   => 'root',
       group   => 'root',
@@ -238,7 +253,7 @@ class puppetserver::puppetconf {
     }
 
     $groups_from_master.each |$a_group| {
-      file { "${production_path}/hieradata-group-from-master/${a_group}.yaml":
+      file { "${gfm_root}/${a_group}.yaml":
         ensure  => present,
         owner   => 'root',
         group   => 'root',

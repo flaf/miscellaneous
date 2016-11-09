@@ -119,18 +119,26 @@ hash.select { |key, value| key =~ /^enc_/ }.each do |key, value|
         exit(1)
       end
 
-      additional_common_groups = value.map do |e|
-        split = e.split('/')
-        if split.size > 1 and split[0] != ''
-          split[0] + '/common'
-        else
-          nil
+      additional_common_groups = value.select { |e| e.include?('/') }.map do |e|
+        unless e.count('/') == 1
+          STDERR.puts "Sorry, the group `#{e}' is not valid in the " \
+                      "`#{fqdn}.yaml' file. A group can contain only " \
+                      "0 or 1 slash character (max depth is 1)."
+          exit(1)
         end
+        if e[0] == '/' or e[-1] == '/'
+          STDERR.puts "Sorry, the group `#{e}' is not valid in the " \
+                      "`#{fqdn}.yaml' file. The first and the last " \
+                      "character in the group name can't be a slash."
+          exit(1)
+        end
+
+        # The name of the group is OK.
+        e.split('/')[0] + '/common'
       end
-      .compact # To remove nil element.
-      .uniq    # To avoid duplicated "dir/common" if the
-               # array "value" already contains "dir/a" and
-               # "dir/b" (for instance).
+      .uniq # To avoid duplicated "dir/common" if the
+            # array "value" already contains "dir/a" and
+            # "dir/b" (for instance).
 
       # Add addtional common groups in "value" only if not
       # already present in "value". For instance, if value
@@ -198,9 +206,21 @@ end
 datacenters = datacenters_array.to_s
 parameters += "\"datacenters\": #{datacenters},\n"
 
-parameters = parameters.strip()
-output = output.sub('###environment###', environment)
-output = output.sub('###parameters###', parameters)
+parameters.strip!
+
+output.sub!('###environment###', environment)
+output.sub!('###parameters###', parameters)
+
+# Just a little tick to allow interpolation with
+# %{datacenter} or %{::datacenter} in the enc_*
+# keys in the yaml file fqdn.yaml.
+#
+# It's just an exception because, with enc_* keys,
+# there is no hiera interpolation. This present
+# ENC script does'nt use the hiera mechanism.
+output.gsub!('%{datacenter}', datacenter)
+output.gsub!('%{::datacenter}', datacenter)
+
 puts output
 exit(0)
 
