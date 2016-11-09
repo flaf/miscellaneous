@@ -134,11 +134,21 @@ hash.select { |key, value| key =~ /^enc_/ }.each do |key, value|
         end
 
         # The name of the group is OK.
-        e.split('/')[0] + '/common'
+        additional_group = e.split('/')[0] + '/common'
+
+        if File.file?("#{ENV_DIR}/#{environment}/hieradata/group/#{additional_group}.yaml")
+          # The yaml file exists, we can add the group.
+          additional_group
+        else
+          # The yaml file doesn't exist, we don't add the group.
+          nil
+        end
+
       end
-      .uniq # To avoid duplicated "dir/common" if the
-            # array "value" already contains "dir/a" and
-            # "dir/b" (for instance).
+      .compact # To remove nil elements.
+      .uniq    # To avoid duplicated "dir/common" if the
+               # array "value" already contains "dir/a" and
+               # "dir/b" (for instance).
 
       # Add addtional common groups in "value" only if not
       # already present in "value". For instance, if value
