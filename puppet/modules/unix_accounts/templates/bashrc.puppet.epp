@@ -85,7 +85,7 @@ do
     path="${path}:${p}"
 done
 
-# Don't forge to remove the first character ":".
+# Don't forget to remove the first character ":".
 export PATH="${path#:}"
 
 # Cleaning...
