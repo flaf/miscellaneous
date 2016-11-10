@@ -82,7 +82,7 @@ paths='
 
 for p in $paths
 do
-    path="${path}:${p}"
+    [ -d "$p" ] && path="${path}:${p}"
 done
 
 # Don't forget to remove the first character ":".
