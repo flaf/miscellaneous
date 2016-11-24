@@ -1,0 +1,164 @@
+<%-|
+  Boolean   $cron_enabled,
+  String[1] $file_flag_puppet_cron,
+|-%>
+#!/bin/sh
+
+### This file is managed by Puppet. Don't edit it. ###
+
+set -e
+export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+export LC_ALL='C'
+
+# Some path files.
+SCRIPT_NAME="${0##*/}"
+PREF_FILE='/etc/apt/preferences.d/puppet-agent.pref'
+UPGRADE_SCRIPT='/root/upgrade-puppet-agent'
+UPGRADE_LOG="${UPGRADE_SCRIPT}.log"
+CRON_FILE='/etc/cron.d/upgrade-puppet-agent'
+
+print_help () {
+    cat <<EOF
+The syntax is:
+    $SCRIPT_NAME --help
+    $SCRIPT_NAME [--pause-max=<seconds>] --version=<version>
+
+EOF
+}
+
+if ! TEMP=$(getopt -o "h,p:,v:" -l "help,pause-max:,version:" -n "$SCRIPT_NAME" -- "$@")
+then
+    echo "Syntax error with $SCRIPT_NAME command." >&2
+    exit 1
+fi
+
+eval set -- "$TEMP"
+
+# Some default values.
+PAUSE_MAX='300'
+
+while true
+do
+    case "$1" in
+
+        -p|--pause-max)
+            PAUSE_MAX="$2"
+            shift 2
+        ;;
+
+        -v|--version)
+            VERSION="$2"
+            shift 2
+        ;;
+
+        --help|-h)
+            print_help
+            exit 0
+        ;;
+
+        --)
+            shift 1
+            break
+        ;;
+
+    esac
+
+done
+
+if [ -z "$VERSION" ]
+then
+    printf "Sorry, the --version option is required.\n" >&2
+    exit 1
+fi
+
+if ! printf '%s\n' "$VERSION" | grep -qE '^[0-9][-*\.0-9]*$'
+then
+    printf "Sorry, the value of --version option can contain only these characters:\n" >&2
+    printf "    0 1 2 3 4 5 6 7 8 9 . - *\n"                                           >&2
+    printf "and the first character must be an integer.\n"                             >&2
+    exit 1
+fi
+
+if ! printf '%s\n' "$PAUSE_MAX" | grep -qE '^[1-9][0-9]+$'
+then
+    printf "Sorry, the value of --pause-max option must be an integer (> 9).\n" >&2
+    exit 1
+fi
+
+cat >"$UPGRADE_SCRIPT" <<'EOF'
+#!/bin/bash
+
+set -x
+set -e
+export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+export LC_ALL='C'
+export DEBIAN_FRONTEND='noninteractive'
+
+printf "Starting: %s.\n" "$(date)"
+
+# We have to remove the cron file now to avoid multiple
+# executions of this current script.
+rm '___CRON_FILE___'
+
+<%- if $cron_enabled { -%>
+cron_enabled=true
+<%- } else { -%>
+cron_enabled=false
+<%- } -%>
+file_flag_puppet_cron='<%= $file_flag_puppet_cron %>'
+
+if "$cron_enabled" && [ ! -e "$file_flag_puppet_cron" ]
+then
+    printf "No upgrade of puppet-agent because the puppet run is currently enabled via cron.\n"
+    exit 1
+fi
+
+if service puppet status >/dev/null 2>&1
+then
+    printf "No upgrade of puppet-agent when the puppet service is running.\n"
+    exit 1
+fi
+
+
+sleep $((RANDOM % ___PAUSE_MAX___))
+
+if [ -e '___PREF_FILE___' ]
+then
+    has_pinning=true
+    sed -r -i -e 's/^Pin:[[:space:]]+version[[:space:]].*$/Pin: version ___VERSION___/' \
+        '___PREF_FILE___'
+else
+    has_pinning=false
+fi
+
+timeout --signal TERM --kill-after 120s 360s apt-get update
+
+if "$has_pinning"
+then
+    timeout --signal TERM --kill-after 120s 360s apt-get install --no-remove -y 'puppet-agent'
+else
+    timeout --signal TERM --kill-after 120s 360s apt-get install --no-remove -y 'puppet-agent'='___VERSION___'
+fi
+
+printf "End: %s.\n" "$(date)"
+printf "All seems to be OK.\n"
+
+EOF
+
+# $PREF_FILE contain "/" so a pipe is used as delimiter.
+sed -i -e "s|___VERSION___|$VERSION|g"     \
+       -e "s|___PAUSE_MAX___|$PAUSE_MAX|g" \
+       -e "s|___PREF_FILE___|$PREF_FILE|g" \
+       -e "s|___CRON_FILE___|$CRON_FILE|g" \
+       "$UPGRADE_SCRIPT"
+
+chmod u+x "$UPGRADE_SCRIPT"
+
+
+cat >"$CRON_FILE" <<EOF
+# The script $UPGRADE_SCRIPT will remove this cron file immediately.
+#
+* * * * * root  $UPGRADE_SCRIPT >$UPGRADE_LOG 2>&1; rm $UPGRADE_SCRIPT
+EOF
+
+

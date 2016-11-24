@@ -2,19 +2,23 @@ class puppetagent {
 
   include '::puppetagent::params'
 
-  $service_enabled   = $::puppetagent::params::service_enabled
-  $runinterval       = $::puppetagent::params::runinterval
-  $server            = $::puppetagent::params::server
-  $ca_server         = $::puppetagent::params::ca_server
-  $cron              = $::puppetagent::params::cron
-  $puppetconf_path   = $::puppetagent::params::puppetconf_path
-  $manage_puppetconf = $::puppetagent::params::manage_puppetconf
-  $ssldir            = $::puppetagent::params::ssldir
-  $bindir            = $::puppetagent::params::bindir
-  $etcdir            = $::puppetagent::params::etcdir
+  [
+    $service_enabled,
+    $runinterval,
+    $server,
+    $ca_server,
+    $cron,
+    $puppetconf_path,
+    $manage_puppetconf,
+    $ssldir,
+    $bindir,
+    $etcdir,
+    $supported_distributions,
+    # It's not a parameter but an internal value.
+    $file_flag_puppet_cron,
+  ] = Class['::puppetagent::params']
 
-  # It's not a parameter but an internal value.
-  $file_flag_puppet_cron = $::puppetagent::params::file_flag_puppet_cron
+  ::homemade::is_supported_distrib($supported_distributions, $title)
 
   ensure_packages(['puppet-agent'], { ensure => present, })
 
@@ -112,18 +116,21 @@ class puppetagent {
   case $cron {
 
     'per-day': {
-      $ensure_cron = 'present'
-      $weekday     = '*' # [i] See remark below.
+      $ensure_cron  = 'present'
+      $cron_enabled = true
+      $weekday      = '*' # [i] See remark below.
     }
 
     'per-week': {
-      $ensure_cron = 'present'
-      $weekday     = fqdn_rand(7, $seed)
+      $ensure_cron  = 'present'
+      $cron_enabled = true
+      $weekday      = fqdn_rand(7, $seed)
     }
 
     'disabled': {
-      $ensure_cron = 'absent'
-      $weekday     = undef # Value useless in this case.
+      $ensure_cron  = 'absent'
+      $cron_enabled = false
+      $weekday      = undef # Value useless in this case.
     }
 
   }
@@ -169,6 +176,19 @@ class puppetagent {
     minute  => fqdn_rand(60, $seed),
     weekday => $weekday,
     require => File[$cron_bin],
+  }
+
+  file { '/usr/local/sbin/upgrade-puppet-agent.puppet':
+    ensure => present,
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0750',
+    content => epp( 'puppetagent/upgrade-puppet-agent.puppet.epp',
+                    {
+                      'cron_enabled'          => $cron_enabled,
+                      'file_flag_puppet_cron' => $file_flag_puppet_cron,
+                    }
+                  ),
   }
 
 }
