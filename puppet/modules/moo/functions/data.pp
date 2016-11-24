@@ -58,7 +58,8 @@ function moo::data {
     moo::captain::params::backup_cmd      => '/opt/moobot/maintenance/dump_captain_database 100',
     moo::captain::supported_distributions => [ 'trusty' ],
 
-    moo::lb::params::moobot_conf     => $moobot_conf,
+    moo::lb::params::moobot_conf         => $moobot_conf,
+    moo::lb::params::redirect_http2https => false,
     moo::lb::supported_distributions => [ 'jessie' ],
     # lb available for Jessie not for Trusty because we need
     # to haproxy >= 1.5 to have feature concerning the log

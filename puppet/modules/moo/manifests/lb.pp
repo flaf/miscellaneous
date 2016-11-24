@@ -24,7 +24,12 @@ class moo::lb (
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
-  $moobot_conf = $::moo::lb::params::moobot_conf
+  include '::moo::lb::params'
+
+  [
+   $moobot_conf,
+   $redirect_http2https,
+  ] = Class['::moo::lb::params']
 
   class { '::moo::common':
     moobot_conf => $moobot_conf,
@@ -89,11 +94,22 @@ class moo::lb (
     notify  => Service['nginx']
   }
 
+  case $redirect_http2https {
+    true: {
+      $ensure_nginx = 'running'
+      $enable_nginx = true
+    }
+    false: {
+      $ensure_nginx = 'stopped'
+      $enable_nginx = false
+    }
+  }
+
   service { 'nginx':
-    ensure     => running,
+    ensure     => $ensure_nginx,
     hasstatus  => true,
     hasrestart => true,
-    enable     => true,
+    enable     => $enable_nginx,
     require    => File['/etc/nginx/sites-available/default'],
   }
 

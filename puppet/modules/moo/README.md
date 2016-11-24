@@ -400,7 +400,8 @@ include '::moo::params'
 $moobot_conf = $::moo::params::moobot_conf
 
 class { '::moo::lb::params':
-  moobot_conf => $moobot_conf,
+  moobot_conf         => $moobot_conf,
+  redirect_http2https => false,
 }
 
 include '::moo::lb'
@@ -408,6 +409,13 @@ include '::moo::lb'
 
 The `moobot_conf` parameter is explained above and it's the
 only parameter of the class `moo::lb::params`.
+
+The `redirect_http2https` parameter is a boolean. If set to
+`true` a nginx server which listens to the port 8000 will
+offer a simple http => https redirection. If set to `false`,
+all the nginx configuration will be managed but the nginx
+server will be stopped and disabled. The default value of
+this parameter is `false`.
 
 
 ## Post-installation in lb
