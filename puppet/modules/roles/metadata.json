@@ -1,6 +1,6 @@
 {
   "name": "flaf-roles",
-  "version": "0.10.3",
+  "version": "0.10.4",
   "author": "flaf",
   "summary": "Module to implement roles, ie very top level classes",
   "license": "Apache-2.0",
@@ -18,7 +18,7 @@
     {"name":"flaf-basic_packages","version_requirement":"0.2.1"},
     {"name":"flaf-keyboard","version_requirement":"0.2.1"},
     {"name":"flaf-locale","version_requirement":"0.2.1"},
-    {"name":"flaf-timezone","version_requirement":"0.2.1"},
+    {"name":"flaf-timezone","version_requirement":"0.3.0"},
     {"name":"flaf-puppetagent","version_requirement":"0.2.9"},
     {"name":"flaf-mcollective","version_requirement":"0.3.4"},
     {"name":"flaf-snmp","version_requirement":"0.3.1"},
