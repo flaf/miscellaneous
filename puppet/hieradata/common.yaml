@@ -61,8 +61,8 @@ unix_accounts::params::users:
 puppetagent::params::ca_server: 'puppet.%{::domain}'
 puppetagent::params::cron: 'disabled'
 repository::puppet::params::collection: 'PC1'
-repository::puppet::params::pinning_agent_version: '1.8.0-*'
-repository::puppetserver::params::pinning_puppetserver_version: '2.7.0-*'
+repository::puppet::params::pinning_agent_version: '1.8.1-*'
+repository::puppetserver::params::pinning_puppetserver_version: '2.7.1-*'
 repository::puppetserver::params::pinning_puppetdb_version: '4.3.0-*'
 repository::puppetserver::params::pinning_puppetdb_termini_version: '4.3.0-*'
 
