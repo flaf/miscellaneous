@@ -40,4 +40,8 @@ ln -fs "/usr/share/zoneinfo/${timezone}" /etc/localtime
 dpkg-reconfigure --frontend="noninteractive" tzdata
 ```
 
+# TODO
+
+* Update the module when the bug on Xenial will be fixed.
+
 
