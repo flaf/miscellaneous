@@ -5,3 +5,7 @@ puppet/modules/postfix/
 puppet/modules/test/
 puppet/modules/test2/
 .vagrant/
+
+# Pas de fichier .pyc
+*.pyc
+
