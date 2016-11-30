@@ -30,7 +30,10 @@ function roles::data {
   case $::is_proxmox {
 
     true: {
-      $included_classes = $authorized_classes
+      # In fact, set the proxmox repository is useless (and
+      # crashes an simple "apt-get update") if we have no
+      # license.
+      $included_classes = $authorized_classes - [ '::repository::proxmox' ]
       $excluded_classes = [ '::network::hosts', '::eximnullclient' ]
     }
 
