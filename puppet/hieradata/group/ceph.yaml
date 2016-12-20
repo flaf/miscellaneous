@@ -1,6 +1,6 @@
 ---
 repository::ceph::params::codename: 'jewel'
-repository::ceph::params::pinning_version: '10.2.4-*'
+repository::ceph::params::pinning_version: '10.2.5-*'
 repository::ceph::params::url: 'http://eu.ceph.com'
 
 mcollective::server::params::collectives: [ 'ceph' ]
