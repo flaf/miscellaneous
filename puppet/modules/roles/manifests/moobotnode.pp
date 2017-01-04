@@ -105,13 +105,16 @@ class roles::moobotnode {
 
       include 'roles::generic'
 
+      # (i) No longer the case. Now, the VIP is checked via SNMP directly.
+      #
       # We want to be able to monitor if the VIP(s) is (are) present.
-      $default_cron_check_cmd = ::keepalived_vip::data()['keepalived_vip::params::cron_check_cmd']
-      $cron_check_cmd         = ::roles::wrap_cron_mon($default_cron_check_cmd, 'check-vip')
+      #$default_cron_check_cmd = ::keepalived_vip::data()['keepalived_vip::params::cron_check_cmd']
+      #$cron_check_cmd         = ::roles::wrap_cron_mon($default_cron_check_cmd, 'check-vip')
 
       class { '::keepalived_vip::params':
-        cron_check_vip => ::roles::is_number_one(),
-        cron_check_cmd => $cron_check_cmd,
+        # (i) No longer the case. Now, the VIP is checked via SNMP directly.
+        #cron_check_vip => ::roles::is_number_one(),
+        #cron_check_cmd => $cron_check_cmd,
         before         => Class['::keepalived_vip'],
       }
 
