@@ -7,6 +7,7 @@ function pxeserver::data {
     pxeserver::params::ip_reservations         => {},
     pxeserver::params::host_records            => {},
     pxeserver::params::backend_dns             => [],
+    pxeserver::params::cron_wrapper            => '',
     pxeserver::params::puppet_collection       => undef,
     pxeserver::params::pinning_puppet_version  => undef,
     pxeserver::params::puppet_server           => undef,

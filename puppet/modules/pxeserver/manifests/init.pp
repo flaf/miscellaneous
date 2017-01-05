@@ -1,22 +1,29 @@
 class pxeserver {
 
-  $params = '::pxeserver::params'
-  include $params
-  $dhcp_confs             = ::homemade::getvar("${params}::dhcp_confs", $title)
-  $no_dhcp_interfaces     = ::homemade::getvar("${params}::no_dhcp_interfaces", $title)
-  $ip_reservations        = ::homemade::getvar("${params}::ip_reservations", $title)
-  $host_records           = ::homemade::getvar("${params}::host_records", $title)
-  $backend_dns            = ::homemade::getvar("${params}::backend_dns", $title)
-  $puppet_collection      = ::homemade::getvar("${params}::puppet_collection", $title)
-  $pinning_puppet_version = ::homemade::getvar("${params}::pinning_puppet_version", $title)
-  $puppet_server          = ::homemade::getvar("${params}::puppet_server", $title)
-  $puppet_ca_server       = ::homemade::getvar("${params}::puppet_ca_server", $title)
-  $puppet_apt_url         = ::homemade::getvar("${params}::puppet_apt_url", $title)
-  $puppet_apt_key         = ::homemade::getvar("${params}::puppet_apt_key", $title)
+  include '::pxeserver::params'
+  [
+    # Parameters of the class.
+    $dhcp_confs,
+    $no_dhcp_interfaces,
+    $apt_proxy,
+    $ip_reservations,
+    $host_records,
+    $backend_dns,
+    $cron_wrapper,
+    $puppet_collection,
+    $pinning_puppet_version,
+    $puppet_server,
+    $puppet_ca_server,
+    $puppet_apt_url,
+    $puppet_apt_key,
+    $supported_distributions,
 
-  $pxe_entries            = ::homemade::getvar("${params}::pxe_entries", $title)
-  $distribs_provided      = ::homemade::getvar("${params}::distribs_provided", $title)
+    # Variables defined in the body of the class.
+    $pxe_entries,
+    $distribs_provided,
+  ] = Class['::pxeserver::params']
 
+  ::homemade::is_supported_distrib($supported_distributions, $title)
 
   $distribs_provided_array = $distribs_provided.keys
   $distribs_provided_str   = $distribs_provided_array.join(', ')
@@ -61,7 +68,7 @@ class pxeserver {
     require => Package['dnsmasq'],
   }
 
-  file { [ '/srv/tftp', '/srv/tftp/pxelinux.cfg' ]:
+  file { [ '/srv/tftp', '/srv/tftp/netboot-archive', '/srv/tftp/pxelinux.cfg' ]:
     ensure  => directory,
     owner   => 'dnsmasq',
     group   => 'root', # There is no group dnsmasq.
@@ -94,6 +101,30 @@ class pxeserver {
     mode    => '0750',
     require => [ Package['dnsmasq'], File['/srv/tftp'] ],
     source  => 'puppet:///modules/pxeserver/update-di.puppet',
+  }
+
+  file { '/usr/local/sbin/update-di-all.puppet':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0750',
+    require => File['/usr/local/sbin/update-di.puppet'],
+    content => epp('pxeserver/update-di-all.puppet.epp',
+                   {
+                    'distributions' => $distribs_provided.map |$distrib, $v| { $distrib },
+                    'command'       => 'update-di.puppet',
+                   }
+                  ),
+  }
+
+  cron { 'cron-update-di-all':
+    ensure  => present,
+    user    => 'root',
+    command => "$cron_wrapper /usr/local/sbin/update-di-all.puppet".strip,
+    hour    => '2',
+    minute  => '45',
+    weekday => '0',
+    require => File['/usr/local/sbin/update-di-all.puppet'],
   }
 
   # Install the (debian|ubuntu)-installer of the current distribution.

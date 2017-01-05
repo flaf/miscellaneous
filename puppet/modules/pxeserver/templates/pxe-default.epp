@@ -69,6 +69,25 @@ MENU BEGIN Expert manual installations
 <%- } -%>
 MENU END
 
+############################
+### Rescue installations ###
+############################
+
+MENU BEGIN Rescue mode
+
+<%- $distribs_provided.each |$distrib, $settings| { -%>
+<%- $family = $settings['family'] -%>
+    LABEL <%= $distrib %>-rescue-mode
+        MENU LABEL [<%= $distrib %>] Rescue mode
+        KERNEL <%= $distrib %>/<%= $family %>-installer/amd64/linux
+        APPEND initrd=<%= $distrib %>/<%= $family %>-installer/amd64/initrd.gz rescue/enable=true -- quiet
+        TEXT HELP
+        Rescue mode for <%= $family %> <%= $distrib %>.
+        ENDTEXT
+
+<%- } -%>
+MENU END
+
 MENU SEPARATOR
 
 #################################

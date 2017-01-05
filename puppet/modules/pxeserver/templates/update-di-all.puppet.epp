@@ -1,0 +1,22 @@
+<%-|
+  Array[String[1], 1] $distributions,
+  String[1]           $command,
+|-%>
+#!/bin/sh
+
+### This file is managed by Puppet, don't edit it. ###
+
+export LC_ALL='C'
+export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+
+rv=0
+
+<%= $command %> || rv=1
+
+<%- $distributions.each |$distrib| { -%>
+<%= $command %> <%= $distrib %> || rv=1
+<%- } -%>
+
+exit "$rv"
+
+

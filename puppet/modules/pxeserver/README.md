@@ -39,6 +39,7 @@ class { '::pxeserver::params':
   ip_reservations        => $ip_reservations,
   host_records           => $host_records,
   backend_dns            => [ '8.8.8.8', '8.8.4.4' ],
+  cron_wrapper           => '',
   apt_proxy              => 'http://172.31.10.10:3142',
   puppet_collection      => 'PC1',
   pinning_puppet_version => '1.3.0-*',
@@ -99,6 +100,12 @@ behavior of dnsmasq). But if this parameter is not empty, in
 this case dnsmasq uses the DNS servers mentioned in this
 parameter.
 
+The `cron_wrapper` parameter allows to add a wrapper command
+on the weekly cron task which downloads and updates the
+`netboot.tar.gz` files for each provided distribution. It
+can be useful if you want, for instance, add a command to
+monitor the cron (and for instance check the return value).
+
 The `apt_proxy` parameter allows to set a APT proxy
 in the preseed files. If not set, its default value
 is `''` (an empty string) and no APT proxy is set in
@@ -131,6 +138,7 @@ and add an entry in the hash `pxe_entries`:
     # [...]
 
     'auto-documented-id' => {
+      #'insert_begin'               => 'MENU BEGIN Install foo blabla blabla',
       'insert_begin'               => 'MENU BEGIN Expert installations',
       'distrib'                    => 'trusty',
       'menu_label'                 => '[trusty] bla bla bla',
@@ -142,8 +150,7 @@ and add an entry in the hash `pxe_entries`:
       'late_command_file'          => 'nothing',
       'install_puppet'             => true,
       'permitrootlogin_ssh'        => true,
-      #'insert_begin'               => 'MENU END',
-      #'insert_begin'               => 'MENU SEPARATOR',
+      #'insert_end'                 => 'MENU END',
     },
 
     # [...]

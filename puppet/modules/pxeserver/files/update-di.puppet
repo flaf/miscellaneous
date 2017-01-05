@@ -2,14 +2,21 @@
 
 set -e
 
+export LC_ALL='C'
+export PATH='/usr/sbin:/usr/bin:/sbin:/bin'
+
 arg="$1"
 temp_dir=$(mktemp -d)
+tftp_dir='/srv/tftp'
+netboot_archive="$tftp_dir/netboot-archive"
+date=$(date '+%Y-%m-%d-%Hh%M')
+
 cd "$temp_dir"
 
 clean () {
     rv="$?"
     rm -rf "$temp_dir"
-    chown -R dnsmasq "/srv/tftp"
+    chown -R dnsmasq "$tftp_dir"
     [ "$rv" != 0 ] && printf '%s\n' "Something went wrong. Script aborted..." 2>&1
     exit "$rv"
 }
@@ -24,6 +31,39 @@ print_title () {
     printf '%s\n' "$line"
     printf '%s\n' "$title"
     printf '%s\n' "$line"
+}
+
+must_archive_netboot () {
+    local netboot_file="$1"
+    local family="$2"
+    local distrib="$3"
+    local current="$4"
+    "$current" && distrib='current'
+    # In "archive", the netboot file has this kind of name:
+    #
+    #       ${family}-${distrib}-${date}_netboot.tar.gz
+    #
+    # We retrieve the most recent file:
+    local last_netboot=$(find "$netboot_archive" -maxdepth 1 -mindepth 1 \
+        -type f -name "${family}-${distrib}-*_netboot.tar.gz"  | sort -r | head -n1)
+
+    # The first time, there is no netboot file in the
+    # archive, so we keep the downloaded netboot file.
+    [ -z "$last_netboot" ] && return 0
+
+    local sha1sum_1=$(sha1sum "$netboot_file" | awk '{print $1}')
+    local sha1sum_2=$(sha1sum "$last_netboot" | awk '{print $1}')
+
+    if [ "$sha1sum_1" = "$sha1sum_2" ]
+    then
+        # This is the same file. It's useless to archive the
+        # downloaded file.
+        return 1
+    else
+        # The files are different. We archive the downloaded
+        # file.
+        return 0
+    fi
 }
 
 if [ -n "$arg" ]
@@ -52,29 +92,45 @@ if [ -n "$arg" ]
 then
     # If a distribution is given as argument, then we just
     # update the kernel and the initrd.gz of this distribution.
-    print_title "# Update only linux kernel and initrd.gz of /srv/tftp/$distrib #"
+    print_title "# Update only linux kernel and initrd.gz of $tftp_dir/$distrib #"
     printf '\n'
-    wget "$url"
-    tar -xf netboot.tar.gz
-    rm -rf "/srv/tftp/$distrib"
-    mkdir -p "/srv/tftp/$distrib/$family-installer/amd64"
-    mv "$temp_dir/$family-installer/amd64/initrd.gz" "/srv/tftp/$distrib/$family-installer/amd64/"
-    mv "$temp_dir/$family-installer/amd64/linux" "/srv/tftp/$distrib/$family-installer/amd64/"
+    wget "$url" && printf 'netboot.tar.gz downloaded.\n'
+    if must_archive_netboot 'netboot.tar.gz' "$family" "$distrib" false
+    then
+        printf "New version of netboot.tar.gz which will be archived and installed.\n"
+        cp netboot.tar.gz "$netboot_archive/${family}-${distrib}-${date}_netboot.tar.gz"
+        tar -xf netboot.tar.gz
+        rm -rf "$tftp_dir/$distrib"
+        mkdir -p "$tftp_dir/$distrib/$family-installer/amd64"
+        mv "$temp_dir/$family-installer/amd64/initrd.gz" "$tftp_dir/$distrib/$family-installer/amd64/"
+        mv "$temp_dir/$family-installer/amd64/linux" "$tftp_dir/$distrib/$family-installer/amd64/"
+    else
+        printf "The downloaded version of netboot.tar.gz has already been installed and archived.\n"
+        printf "There is nothing to do.\n"
+    fi
 else
-    print_title "# Update of /srv/tftp/$family-installer #"
+    print_title "# Update of $tftp_dir/$family-installer #"
     printf "\n"
-    wget "$url"
-    tar -xf netboot.tar.gz
-    rm -fr "/srv/tftp/$family-installer"
-    rm -f "/srv/tftp/pxelinux.0"
-    cd "/srv/tftp"
-    ln -s "$family-installer/amd64/pxelinux.0" "pxelinux.0"
-    # No, this directory and the only file in this directory (ie "default")
-    # will be managed by Puppet.
-    #ln -s "$family-installer/amd64/pxelinux.cfg" "pxelinux.cfg"
-    mv "$temp_dir/$family-installer" /srv/tftp/
+    wget "$url" && printf 'netboot.tar.gz downloaded.\n'
+    if must_archive_netboot 'netboot.tar.gz' "$family" "$distrib" true
+    then
+        printf "New version of netboot.tar.gz which will be archived and installed.\n"
+        cp netboot.tar.gz "$netboot_archive/${family}-current-${date}_netboot.tar.gz"
+        tar -xf netboot.tar.gz
+        rm -fr "$tftp_dir/$family-installer"
+        rm -f "$tftp_dir/pxelinux.0"
+        cd "$tftp_dir"
+        ln -s "$family-installer/amd64/pxelinux.0" "pxelinux.0"
+        # No, this directory and the only file in this directory (ie "default")
+        # will be managed by Puppet.
+        #ln -s "$family-installer/amd64/pxelinux.cfg" "pxelinux.cfg"
+        mv "$temp_dir/$family-installer" "$tftp_dir"
+    else
+        printf "The downloaded version of netboot.tar.gz has already been installed and archived.\n"
+        printf "There is nothing to do.\n"
+    fi
 fi
 
-printf "All is Ok.\n"
+printf "All is Ok.\n\n"
 
 
