@@ -76,6 +76,7 @@ class roles::pxeserver {
     dhcp_confs             => $dhcp_confs,
     no_dhcp_interfaces     => $no_dhcp_interfaces,
     backend_dns            => $backend_dns,
+    cron_wrapper           => ::roles::wrap_cron_mon(undef, 'update-di'),
     apt_proxy              => $apt_proxy,
     puppet_collection      => $::repository::puppet::params::collection,
     pinning_puppet_version => $::repository::puppet::params::pinning_agent_version,
