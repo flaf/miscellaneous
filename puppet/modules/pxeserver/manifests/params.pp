@@ -34,24 +34,26 @@ class pxeserver::params (
       - Grub installation.
     |- END
 
-  $all_in_sda_install_ubuntu = @(END)
+  $all_in_first_disk_install_ubuntu = @(END)
     Semi manual installation of Ubuntu __DISTRIB__.
     Manual handling for network configuration.
     During the choice of the hostname, put the fqdn directly
     (or just a short hostname if the DHCP sends already a correct domain).
+    The disk used is the first disk in the dictionary order.
     |- END
 
-  $all_in_sda_install_debian = @(END)
+  $all_in_first_disk_install_debian = @(END)
     Semi manual installation of Debian __DISTRIB__.
     Manual handling for network configuration.
+    The disk used is the first disk in the dictionary order.
     |- END
 
-  $semi_manual_install_trusty = $semi_manual_install_ubuntu.regsubst('__DISTRIB__', 'Trusty')
-  $semi_manual_install_xenial = $semi_manual_install_ubuntu.regsubst('__DISTRIB__', 'Xenial')
-  $semi_manual_install_jessie = $semi_manual_install_debian.regsubst('__DISTRIB__', 'Jessie')
-  $all_in_sda_install_trusty  = $all_in_sda_install_ubuntu.regsubst('__DISTRIB__', 'Trusty')
-  $all_in_sda_install_xenial  = $all_in_sda_install_ubuntu.regsubst('__DISTRIB__', 'Xenial')
-  $all_in_sda_install_jessie  = $all_in_sda_install_debian.regsubst('__DISTRIB__', 'Jessie')
+  $semi_manual_install_trusty        = $semi_manual_install_ubuntu.regsubst('__DISTRIB__', 'Trusty')
+  $semi_manual_install_xenial        = $semi_manual_install_ubuntu.regsubst('__DISTRIB__', 'Xenial')
+  $semi_manual_install_jessie        = $semi_manual_install_debian.regsubst('__DISTRIB__', 'Jessie')
+  $all_in_first_disk_install_trusty  = $all_in_first_disk_install_ubuntu.regsubst('__DISTRIB__', 'Trusty')
+  $all_in_first_disk_install_xenial  = $all_in_first_disk_install_ubuntu.regsubst('__DISTRIB__', 'Xenial')
+  $all_in_first_disk_install_jessie  = $all_in_first_disk_install_debian.regsubst('__DISTRIB__', 'Jessie')
 
   $pxe_entries = {
 
@@ -122,75 +124,75 @@ class pxeserver::params (
       'insert_end'                 => 'MENU END',
     },
 
-    'trusty-all-in-sda-preseed-without-puppet' => {
-      'insert_begin'               => 'MENU BEGIN All in /dev/sda without puppet installed',
+    'trusty-all-in-first-disk-preseed-without-puppet' => {
+      'insert_begin'               => 'MENU BEGIN All in first disk without puppet installed',
       'distrib'                    => 'trusty',
-      'menu_label'                 => '[trusty] All in /dev/sda without puppet installed',
-      'text_help'                  => $all_in_sda_install_trusty,
+      'menu_label'                 => '[trusty] All in first disk without puppet installed',
+      'text_help'                  => $all_in_first_disk_install_trusty,
       'apt_proxy'                  => $apt_proxy,
-      'partman_auto_disk'          => '/dev/sda',
+      'partman_auto_disk'          => ' ', # A space to have the entry without value.
       'skip_boot_loader'           => false,
-      'partman_early_command_file' => 'nothing',
+      'partman_early_command_file' => 'partman_early_command_first_disk',
       'late_command_file'          => 'nothing',
       'install_puppet'             => false,
     },
 
-    'xenial-all-in-sda-preseed-without-puppet' => {
+    'xenial-all-in-first-disk-preseed-without-puppet' => {
       'distrib'                    => 'xenial',
-      'menu_label'                 => '[xenial] All in /dev/sda without puppet installed',
-      'text_help'                  => $all_in_sda_install_xenial,
+      'menu_label'                 => '[xenial] All in first disk without puppet installed',
+      'text_help'                  => $all_in_first_disk_install_xenial,
       'apt_proxy'                  => $apt_proxy,
-      'partman_auto_disk'          => '/dev/sda',
+      'partman_auto_disk'          => ' ', # A space to have the entry without value.
       'skip_boot_loader'           => false,
-      'partman_early_command_file' => 'nothing',
+      'partman_early_command_file' => 'partman_early_command_first_disk',
       'late_command_file'          => 'nothing',
       'install_puppet'             => false,
     },
 
-    'jessie-all-in-sda-preseed-without-puppet' => {
+    'jessie-all-in-first-disk-preseed-without-puppet' => {
       'distrib'                    => 'jessie',
-      'menu_label'                 => '[jessie] All in /dev/sda without puppet installed',
-      'text_help'                  => $all_in_sda_install_jessie,
+      'menu_label'                 => '[jessie] All in first disk without puppet installed',
+      'text_help'                  => $all_in_first_disk_install_jessie,
       'apt_proxy'                  => $apt_proxy,
-      'partman_auto_disk'          => '/dev/sda',
+      'partman_auto_disk'          => ' ', # A space to have the entry without value.
       'skip_boot_loader'           => false,
-      'partman_early_command_file' => 'nothing',
+      'partman_early_command_file' => 'partman_early_command_first_disk',
       'late_command_file'          => 'nothing',
       'install_puppet'             => false,
       'insert_end'                 => 'MENU END',
     },
 
-    'trusty-all-in-sda-preseed-with-puppet' => {
-      'insert_begin'               => 'MENU BEGIN All in /dev/sda with puppet installed',
+    'trusty-all-in-first-disk-preseed-with-puppet' => {
+      'insert_begin'               => 'MENU BEGIN All in first disk with puppet installed',
       'distrib'                    => 'trusty',
-      'menu_label'                 => '[trusty] All in /dev/sda with puppet installed',
-      'text_help'                  => $all_in_sda_install_trusty,
+      'menu_label'                 => '[trusty] All in first disk with puppet installed',
+      'text_help'                  => $all_in_first_disk_install_trusty,
       'apt_proxy'                  => $apt_proxy,
-      'partman_auto_disk'          => '/dev/sda',
+      'partman_auto_disk'          => ' ', # A space to have the entry without value.
       'skip_boot_loader'           => false,
-      'partman_early_command_file' => 'nothing',
+      'partman_early_command_file' => 'partman_early_command_first_disk',
       'late_command_file'          => 'nothing',
     },
 
-    'xenial-all-in-sda-preseed-with-puppet' => {
+    'xenial-all-in-first-disk-preseed-with-puppet' => {
       'distrib'                    => 'xenial',
-      'menu_label'                 => '[xenial] All in /dev/sda with puppet installed',
-      'text_help'                  => $all_in_sda_install_xenial,
+      'menu_label'                 => '[xenial] All in first disk with puppet installed',
+      'text_help'                  => $all_in_first_disk_install_xenial,
       'apt_proxy'                  => $apt_proxy,
-      'partman_auto_disk'          => '/dev/sda',
+      'partman_auto_disk'          => ' ', # A space to have the entry without value.
       'skip_boot_loader'           => false,
-      'partman_early_command_file' => 'nothing',
+      'partman_early_command_file' => 'partman_early_command_first_disk',
       'late_command_file'          => 'nothing',
     },
 
-    'jessie-all-in-sda-preseed-with-puppet' => {
+    'jessie-all-in-first-disk-preseed-with-puppet' => {
       'distrib'                    => 'jessie',
-      'menu_label'                 => '[jessie] All in /dev/sda with puppet installed',
-      'text_help'                  => $all_in_sda_install_jessie,
+      'menu_label'                 => '[jessie] All in first disk with puppet installed',
+      'text_help'                  => $all_in_first_disk_install_jessie,
       'apt_proxy'                  => $apt_proxy,
-      'partman_auto_disk'          => '/dev/sda',
+      'partman_auto_disk'          => ' ', # A space to have the entry without value.
       'skip_boot_loader'           => false,
-      'partman_early_command_file' => 'nothing',
+      'partman_early_command_file' => 'partman_early_command_first_disk',
       'late_command_file'          => 'nothing',
       'insert_end'                 => 'MENU END',
     },

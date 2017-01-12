@@ -35,7 +35,7 @@ define pxeserver::pxe_entry (
         content => file("pxeserver/${partman_early_command_file}"),
       }
       $partman_early_command = [
-        "wget http://${my_ip}/${partman_early_command_file} -O /tmp/partman_early_command",
+        "wget http://${my_ip}/${title}/partman_early_command -O /tmp/partman_early_command",
         'chmod a+x /tmp/partman_early_command',
         '/tmp/partman_early_command',
       ].join($join_preseed_str)

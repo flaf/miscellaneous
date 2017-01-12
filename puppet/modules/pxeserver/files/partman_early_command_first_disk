@@ -1,0 +1,9 @@
+#!/bin/sh
+
+DISK=$(fdisk -l | grep -o '/dev/[a-z]d[a-z]: ' | cut -f1 -d':' | sort | head -n1)
+echo "$DISK" > /tmp/chosen_disk.txt
+
+debconf-set partman-auto/disk "$DISK"
+debconf-set grub-installer/choose_bootdev "$DISK"
+
+
