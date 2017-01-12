@@ -1,6 +1,6 @@
 {
   "name": "flaf-pxeserver",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "author": "flaf",
   "summary": "Module to manage a little PXE/DHCP (and DNS) server",
   "license": "Apache-2.0",
