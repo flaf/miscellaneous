@@ -15,6 +15,7 @@ Puppet::Functions.create_function(:'network::check_interfaces') do
                      'routes',
                      'macaddress',
                      'comment',
+                     'final_comment',
                      'inet',
                      'inet6',
                    ]
@@ -80,16 +81,18 @@ Puppet::Functions.create_function(:'network::check_interfaces') do
         end
       end
 
-      # The "macaddress" key must be mapped to a non-empty string.
-      if settings.has_key?('macaddress')
-        unless settings['macaddress'].is_a?(String) and \
-               not settings['macaddress'].empty?
-          msg_options_error = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
-            |#{function_name}(): the `#{ifname}` interface is not valid
-            |because its hash value has the `macaddress` key which is
-            |not mapped to a non-emtpy string.
-            EOS
-          raise(Puppet::ParseError, msg_options_error)
+      # The "macaddress" and the "final_comment" keys must
+      # be mapped to a non-empty string.
+      [ 'macaddress', 'final_comment' ].each do |e|
+        if settings.has_key?(e)
+          unless settings[e].is_a?(String) and not settings[e].empty?
+            msg_options_error = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
+              |#{function_name}(): the `#{ifname}` interface is not valid
+              |because its hash value has the `#{e}` key which is
+              |not mapped to a non-emtpy string.
+              EOS
+            raise(Puppet::ParseError, msg_options_error)
+          end
         end
       end
 

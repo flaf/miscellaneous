@@ -46,5 +46,8 @@ iface <%= $interface %> <%= $family %> <%= $settings[$family]['method'] %>
       <%- } -%>
     <%- } -%>
   <%- } -%>
+  <%- if $settings.has_key('final_comment') { -%>
+#<%= $settings['final_comment'] %>
+  <%- } -%>
 <%- } -%>
 

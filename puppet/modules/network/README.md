@@ -118,11 +118,15 @@ network connection.
 In the `ifaces` parameter, for each interface,
 you can put:
 
-* a `inet` configuration (for IPv4)
-* and/or a `inet6` configuration (for IPv6),
-* a `macaddress` key mapped to a non-empty string (optional),
-* a `comment` key mapped to a non-empty array of
-non-empty strings (optional),
+* a `inet` configuration (for IPv4) and/or a `inet6` configuration (for IPv6),
+* a `macaddress` key (optional) mapped to a non-empty string,
+* a `comment` key (optional) mapped to a non-empty array of
+  non-empty strings,
+* a `final_comment` key (optional) mapped to a non-empty string,
+* a `routes` key (optional) mapped to a non-empty array of
+  non-empty strings.
+* a `in_networks` key (optional) mapped to a non-empty array of
+  non-empty strings.
 
 The `inet` and `inet6` keys are optional. If neither `inet`
 nor `inet6` are present, there will be no configuration at
@@ -159,6 +163,18 @@ The `comment` key must be an non-empty array of non-empty
 strings. Each string in this array is a line of comment
 just above the interface settings in the file
 `/etc/network/interfaces`.
+
+The `final_comment` key is an non-empty string to add a
+comment line just at the end of the interface definition.
+For instance, the key can be useful with a Proxmox server to
+define the comment of an interface in the Proxmox WebUI.
+
+The `in_networks` key allows to indicate the networks in
+which the interface is located. For instance, this key is
+required if you want to add static routes via the `routes`
+key where you just set the names of routes defined in the
+networks from the `in_networks` key (in the
+`inventory_networks` hash).
 
 **Remark:** bonding and bridging are allowed.
 
