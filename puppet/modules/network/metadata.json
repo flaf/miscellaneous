@@ -1,6 +1,6 @@
 {
   "name": "flaf-network",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "author": "flaf",
   "summary": "Module to set the network configuration",
   "license": "Apache-2.0",
@@ -10,7 +10,7 @@
   "data_provider": "function",
   "dependencies": [
     {"name":"puppetlabs-stdlib","version_requirement":">= 4.13.1"},
-    {"name":"flaf-homemade","version_requirement":">= 0.1."}
+    {"name":"flaf-homemade","version_requirement":">= 0.1.8"}
   ]
 }
 
