@@ -1,7 +1,14 @@
 class network::basic_router {
 
   include '::network::basic_router::params'
-  $masqueraded_networks = $::network::basic_router::params::masqueraded_networks
+
+  [
+   $masqueraded_networks,
+   $masqueraded_output_ifaces,
+   $supported_distributions,
+  ] = Class['::network::basic_router::params']
+
+  ::homemade::is_supported_distrib($supported_distributions, $title)
 
   $ipv4_forwarding_content = @(END)
     ### This file is managed by Puppet, don't edit it. ###
@@ -32,7 +39,10 @@ class network::basic_router {
     group   => 'root',
     mode    => '0755',
     content => epp('network/masquerade-networks.epp',
-                   { 'masqueraded_networks' => $masqueraded_networks }
+                   {
+                    'masqueraded_networks'      => $masqueraded_networks,
+                    'masqueraded_output_ifaces' => $masqueraded_output_ifaces,
+                   }
                   ),
     notify  => Exec['apply-masquerading'],
   }

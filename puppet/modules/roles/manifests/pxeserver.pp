@@ -1,8 +1,10 @@
 class roles::pxeserver {
 
   include '::roles::pxeserver::params'
-  $no_dhcp_interfaces = $::roles::pxeserver::params::no_dhcp_interfaces
-  $backend_dns        = $::roles::pxeserver::params::backend_dns
+  [
+   $no_dhcp_interfaces,
+   $backend_dns,
+  ] = Class['::roles::pxeserver::params']
 
   # This present role include the role "generic".
   include '::roles::generic'

@@ -14,17 +14,19 @@ function network::data {
     # network::basic_router::params which uses the classical
     # design where default values are set in this function.
 
-  "network::params::${sd}"                             => $supported_distribs,
-  "network::resolv_conf::params::${sd}"                => $supported_distribs,
-  "network::hosts::params::${sd}"                      => $supported_distribs,
-  "network::basic_router::params::${sd}"               => $supported_distribs,
-   network::basic_router::params::masqueraded_networks => [],
+  "network::params::${sd}"                                  => $supported_distribs,
+  "network::resolv_conf::params::${sd}"                     => $supported_distribs,
+  "network::hosts::params::${sd}"                           => $supported_distribs,
+  "network::basic_router::params::${sd}"                    => $supported_distribs,
+   network::basic_router::params::masqueraded_networks      => [],
+   network::basic_router::params::masqueraded_output_ifaces => [],
 
     # Merging policy.
     lookup_options => {
-      network::params::inventory_networks                 => { merge => 'deep', },
-      network::hosts::params::entries                     => { merge => 'deep', },
-      network::basic_router::params::masqueraded_networks => { merge => 'unique', },
+      network::params::inventory_networks                      => { merge => 'deep', },
+      network::hosts::params::entries                          => { merge => 'deep', },
+      network::basic_router::params::masqueraded_networks      => { merge => 'unique', },
+      network::basic_router::params::masqueraded_output_ifaces => { merge => 'unique', },
     },
 
   }

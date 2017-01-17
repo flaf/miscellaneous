@@ -22,6 +22,8 @@ List of roles provided:
 * The role `mysqlnode` which has no parameter.
 * [The role `moobotnode`](README-moobotnode.md)
 * The role `gitlab` which has no parameter.
+* The role `shadowldap` which has no parameter (TODO: not finished).
+* The role `wproxyeleapoc` which has no parameter.
 
 If a role has no parameter, there is no specific README
 and no detail. In this case, the code is the documentation.

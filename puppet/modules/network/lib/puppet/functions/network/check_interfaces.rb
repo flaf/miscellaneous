@@ -15,6 +15,7 @@ Puppet::Functions.create_function(:'network::check_interfaces') do
                      'routes',
                      'macaddress',
                      'comment',
+                     'keywords',
                      'final_comment',
                      'inet',
                      'inet6',
@@ -66,9 +67,9 @@ Puppet::Functions.create_function(:'network::check_interfaces') do
       end
 
       # The "on_networks" key must be mapped to a non-empty array of
-      # non-empty strings. It's the same for the "comment" key and the
-      # the "routes" key.
-      [ 'on_networks', 'comment', 'routes' ].each do |e|
+      # non-empty strings. It's the same for the keys "comment",
+      # "routes" and "keywords".
+      [ 'on_networks', 'comment', 'routes', 'keywords' ].each do |e|
         if settings.has_key?(e)
           unless call_function('::homemade::is_clean_arrayofstr', settings[e])
             msg_options_error = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')

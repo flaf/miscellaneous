@@ -124,8 +124,10 @@ you can put:
   non-empty strings,
 * a `final_comment` key (optional) mapped to a non-empty string,
 * a `routes` key (optional) mapped to a non-empty array of
-  non-empty strings.
+  non-empty strings,
 * a `in_networks` key (optional) mapped to a non-empty array of
+  non-empty strings.
+* a `keywords` key (optional) mapped to an non-empty array of
   non-empty strings.
 
 The `inet` and `inet6` keys are optional. If neither `inet`
@@ -175,6 +177,10 @@ required if you want to add static routes via the `routes`
 key where you just set the names of routes defined in the
 networks from the `in_networks` key (in the
 `inventory_networks` hash).
+
+The `keywords` key is useless for this present module
+but it can be used by another puppet classes which use
+the data of the `network` module, for instance in a role.
 
 **Remark:** bonding and bridging are allowed.
 
@@ -517,7 +523,8 @@ Here is an example:
 
 ```puppet
 class { '::network::basic_router::params':
-  masqueraded_networks => [ '172.31.0.0/16', '10.0.0.0/8' ],
+  masqueraded_networks      => [ '172.31.0.0/16', '10.0.0.0/8' ],
+  masqueraded_output_ifaces => [ 'eth0' ],
 }
 
 include '::network::basic_router'
@@ -526,11 +533,29 @@ include '::network::basic_router'
 
 ## Parameter of `network::basic_router::params`
 
-`masqueraded_networks` is the only parameter of this class.
-It allows to set masquerading for some IP networks. You must
-provide the CIDR address like in the example above. The
-default value of this parameter is `[]` (an empty array). In
-this case, there is no masquerading.
+`masqueraded_networks` allows to set masquerading via the
+command:
+
+```sh
+iptables -t nat -A POSTROUTING --source "$NETWORK" -j MASQUERADE
+```
+
+for each IP network. You must provide the CIDR address like
+in the example above. The default value of this parameter is
+`[]` (an empty array).
+
+`masqueraded_output_ifaces` allows to set masquerading via
+the command:
+
+```sh
+iptables -t nat -A POSTROUTING --out-interface "$IFACE" -j MASQUERADE
+```
+
+for each interface. The default value of this parameter is
+`[]` (an empty array).
+
+If `masqueraded_networks` and `masqueraded_output_ifaces` are
+an empty array, then there is just no masquerading.
 
 
 

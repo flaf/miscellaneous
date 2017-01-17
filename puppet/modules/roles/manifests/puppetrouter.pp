@@ -125,7 +125,9 @@ class roles::puppetrouter {
   }
 
   class { '::network::basic_router::params':
-    masqueraded_networks => $lans_cidr,
+    #masqueraded_networks      => $lans_cidr,
+    # We want to use masquerading only with the WAN interface.
+    masqueraded_output_ifaces => [ $dhcp_iface ],
   }
   include '::network::basic_router'
 

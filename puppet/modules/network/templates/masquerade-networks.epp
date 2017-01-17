@@ -1,4 +1,7 @@
-<%- |$masqueraded_networks| -%>
+<%-|
+$masqueraded_networks,
+$masqueraded_output_ifaces,
+|-%>
 #!/bin/sh
 
 ### This file is managed by Puppet, don't edit it. ###
@@ -7,12 +10,18 @@
 # only when all interfaces are UP.
 [ "$IFACE" != '--all' ] && exit 0
 
+export LC_ALL='C'
+export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+
 # Cleaning.
 iptables -F
 
 # Masquerading.
 <%- $masqueraded_networks.each |$a_network| { -%>
 iptables -t nat -A POSTROUTING -s '<%= $a_network %>' -j MASQUERADE
+<%- } -%>
+<%- $masqueraded_output_ifaces.each |$a_iface| { -%>
+iptables -t nat -A POSTROUTING -o '<%= $a_iface %>' -j MASQUERADE
 <%- } -%>
 
 
