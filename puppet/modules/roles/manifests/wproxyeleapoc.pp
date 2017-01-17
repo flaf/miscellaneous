@@ -17,10 +17,10 @@ class roles::wproxyeleapoc {
 
   $wan_iface = $wan_ifaces[0]
 
-  class { '::role::pxeserver::params':
+  class { '::roles::pxeserver::params':
     no_dhcp_interfaces => [ $wan_iface ],
   }
-  include '::role::pxeserver'
+  include '::roles::pxeserver'
 
   class { '::network::basic_router::params':
     masqueraded_output_ifaces => [ $wan_iface ],
