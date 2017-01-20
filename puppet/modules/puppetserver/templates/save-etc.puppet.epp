@@ -16,7 +16,11 @@ me=$(id --user --name)
 
 clean () {
     exit_code="$?"
+    # We want to remove the not encrypted tar.gz file.
     rm -f "$targzfile"
+    # If there is any problem, we do not want to keep an
+    # invalid tar.gz.nc file.
+    [ "$exit_code" = '0' ] || rm -f "${targzfile}.nc"
     exit "$exit_code"
 }
 
