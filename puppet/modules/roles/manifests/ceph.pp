@@ -2,8 +2,7 @@ class roles::ceph {
 
   # We want to handle the class ::network::hosts as a specific case.
   class { '::roles::generic::params':
-      # Add "::network::hosts" to the default excluded classes.
-      excluded_classes => ::roles::data()['roles::generic::params::excluded_classes'] + [ '::network::hosts' ]
+      excluded_classes => [ '::network::hosts' ],
   }
   include '::roles::generic'
 

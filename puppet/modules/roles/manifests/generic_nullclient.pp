@@ -26,17 +26,13 @@ class roles::generic_nullclient {
       |- END
   }
 
+  include '::roles::generic'
+
   class { '::eximnullclient::params':
     dc_smarthost         => [ { 'address' => $smtp_relay, 'port' => $smtp_port } ],
     redirect_local_mails => $admin_email,
   }
-
-  class { '::roles::generic::params':
-    # We want to remove "::eximnullclient" from the excluded classes.
-    excluded_classes => ::roles::data()['roles::generic::params::excluded_classes'] - [ '::eximnullclient' ],
-  }
-
-  include '::roles::generic'
+  include '::eximnullclient'
 
 }
 

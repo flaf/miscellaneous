@@ -17,32 +17,10 @@ function roles::data {
     '::puppetagent',
     '::mcollective::server',
     '::snmp',
-    '::repository::proxmox',
-    '::eximnullclient',
   ]
 
-  # Here the policy for $included_classes and
-  # $excluded_classes:
-  #
-  # a) $included_classes = $authorized_classes - [ "some specific classes..." ]
-  # b) $excluded_classes = [ "some not-so-specific classes..." ]
-  #
-  case $::is_proxmox {
-
-    true: {
-      # In fact, set the proxmox repository is useless (and
-      # crashes an simple "apt-get update") if we have no
-      # license.
-      $included_classes = $authorized_classes - [ '::repository::proxmox' ]
-      $excluded_classes = [ '::network::hosts', '::eximnullclient' ]
-    }
-
-    default: {
-      $included_classes = $authorized_classes - [ '::repository::proxmox' ]
-      $excluded_classes = [ '::eximnullclient' ]
-    }
-
-  }
+  $included_classes = $authorized_classes
+  $excluded_classes = []
 
   $dcs = $datacenters ? {
     NotUndef => $datacenters,
