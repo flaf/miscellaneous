@@ -141,12 +141,13 @@ include '::mcollective::server'
 
 ## Parameters
 
-The `collectives` parameter is an array of strings.
-The mcollective server will belong to the collectives put in
-this parameter. The default value of this parameter is `[
-'collective' ]` or `[ 'collective', $::datacenter ]` if
-`$::datacenter` is defined. The default merging policy of
-this `server_collectives` parameter is `unique`.
+The `collectives` parameter is an array of strings. The
+mcollective server will belong to the collectives put in
+this parameter. The default value of this parameter is
+`[ 'collective' ]` or `[ 'collective', $::datacenter ]` if
+`$::datacenter` is defined and is a non-empty string. The
+default merging policy of this `server_collectives`
+parameter is `unique`.
 
 
 

@@ -3,8 +3,8 @@ function mcollective::data {
   $default_connector   = 'rabbitmq'
   $default_mco_tag     = 'mcollective_client_public_key'
   $default_collectives = $::datacenter ? {
-    undef   => [ 'mcollective' ],
-    default => [ 'mcollective', $::datacenter ],
+    String[1] => [ 'mcollective', $::datacenter ],
+    default   => [ 'mcollective' ],
   }
 
   $supported_distribs = ['trusty', 'jessie']

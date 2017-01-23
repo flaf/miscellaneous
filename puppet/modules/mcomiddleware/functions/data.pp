@@ -1,5 +1,10 @@
 function mcomiddleware::data {
 
+  $default_exchanges = $::datacenters ? {
+    Array[String[1],1] => (['mcollective'] + $::datacenters).unique.sort,
+    default            => ['mcollective'],
+  }
+
   $supported_distribs = ['trusty', 'jessie']
   $sp                 = 'supported_distributions';
 
@@ -10,8 +15,13 @@ function mcomiddleware::data {
     mcomiddleware::params::puppet_ssl_dir  => undef,
     mcomiddleware::params::admin_pwd       => undef,
     mcomiddleware::params::mcollective_pwd => undef,
-    mcomiddleware::params::exchanges       => [ 'mcollective' ],
+    mcomiddleware::params::exchanges       => $default_exchanges,
    "mcomiddleware::params::${sp}"          => $supported_distribs,
+
+    # Merging policy.
+    lookup_options => {
+      mcomiddleware::params::exchanges => { merge => 'unique', },
+    },
   }
 
 }

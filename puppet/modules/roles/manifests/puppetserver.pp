@@ -96,13 +96,13 @@ class roles::puppetserver {
   if $::roles::puppetserver::params::is_mcollective_client {
 
     include '::mcollective::server::params'
-    include '::roles::mcomiddleware::params'
+    include '::mcomiddleware::params'
 
     include '::repository::puppet'
     include '::repository::mco'
 
     class { 'mcollective::client::params':
-      collectives        => $::roles::mcomiddleware::params::exchanges,
+      collectives        => $::mcomiddleware::params::exchanges,
       server_public_key  => $::mcollective::server::params::public_key,
       middleware_address => $::mcollective::server::params::middleware_address,
       middleware_port    => $::mcollective::server::params::middleware_port,

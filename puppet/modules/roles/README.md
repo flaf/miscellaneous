@@ -10,8 +10,8 @@ List of roles provided:
   null client is added (see the README of the `generic`
   role for more details).
 * [The role `puppetserver`](README-puppetserver.md)
-* [The role `puppetforge`](README-puppetforge.md)
-* [The role `mcomiddleware`](README-mcomiddleware.md)
+* The role `puppetforge` which has no parameter.
+* The role `mcomiddleware` which has no parameter.
 * The role `mcomiddleforge` which is the addition of the
   roles `mcomiddleware` and `puppetforge`
 * [The role `pxeserver`](README-pxeserver.md)
@@ -26,7 +26,9 @@ List of roles provided:
 * The role `wproxyeleapoc` which has no parameter.
 * The role `proxmox` which has no parameter.
 
-If a role has no parameter, there is no specific README
-and no detail. In this case, the code is the documentation.
+If a role has no parameter, there is no specific README and
+no detail. In this case, the code is the documentation.
+Furthermore, if a role has a `with_generic` parameter, it's
+not mentioned here.
 
 

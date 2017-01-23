@@ -1,12 +1,12 @@
 class roles::mcomiddleware {
 
-  include '::roles::mcomiddleware::params'
   include '::puppetagent::params'
 
-  # This is a resource-like declaration, so it must be the first.
+  # This class must be declared via a resource-like
+  # declaration before the class roles::generic which makes
+  # an include of mcomiddleware::params.
   class { '::mcomiddleware::params':
     puppet_ssl_dir => $::puppetagent::params::ssldir,
-    exchanges      => $::roles::mcomiddleware::params::exchanges,
   }
 
   # This present role include the role "generic".

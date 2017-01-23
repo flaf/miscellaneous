@@ -65,9 +65,13 @@ The `exchanges` parameter, an array of strings, is the
 exchanges created automatically in the RabbitMQ server. If a
 MCollective server uses a collective `foo`, you must create
 the `foo` exchange in the RabbitMQ server. The default value
-of this parameter is `[ 'mcollective' ]`. In any case, the
-`'mcollective'` exchanges is automatically added if not
-present in the `exchanges` parameter.
+of this parameter is `[ 'mcollective' ]` or
+`[ 'mcollective'] + $::datacenters` if the global variable
+`$::datacenters` is defined and matches with `Array[String[1], 1]`.
+In any case, the `'mcollective'` exchanges is automatically
+added if not present in the `exchanges` parameter. The
+default merging policy of this `exchanges` parameter is
+`unique`.
 
 
 # TODO
