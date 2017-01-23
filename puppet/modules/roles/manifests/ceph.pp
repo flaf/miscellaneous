@@ -1,10 +1,9 @@
 class roles::ceph {
 
   # We want to handle the class ::network::hosts as a specific case.
-  class { '::roles::generic::params':
-      excluded_classes => [ '::network::hosts' ],
+  class { '::roles::generic':
+    excluded_classes => [ '::network::hosts' ],
   }
-  include '::roles::generic'
 
 
   # For the class ::network::hosts, we want to use the IP

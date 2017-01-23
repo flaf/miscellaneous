@@ -1,6 +1,6 @@
 {
   "name": "flaf-roles",
-  "version": "0.10.15",
+  "version": "0.11.0",
   "author": "flaf",
   "summary": "Module to implement roles, ie very top level classes",
   "license": "Apache-2.0",

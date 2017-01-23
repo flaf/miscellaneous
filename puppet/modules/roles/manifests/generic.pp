@@ -1,10 +1,25 @@
-class roles::generic {
-
-  include '::roles::generic::params'
-
-  $authorized_classes = $::roles::generic::params::authorized_classes
-  $excluded_classes   = $::roles::generic::params::excluded_classes
-  $included_classes   = $::roles::generic::params::included_classes
+class roles::generic (
+  Array[String[1]] $authorized_classes = [
+    '::unix_accounts',
+    '::network',
+    '::network::hosts',
+    '::network::resolv_conf',
+    '::basic_ntp',
+    '::repository::distrib',
+    '::raid',
+    '::basic_ssh::server',
+    '::basic_ssh::client',
+    '::basic_packages',
+    '::keyboard',
+    '::locale',
+    '::timezone',
+    '::puppetagent',
+    '::mcollective::server',
+    '::snmp',
+  ],
+  Array[String[1]] $included_classes = $authorized_classes,
+  Array[String[1]] $excluded_classes = [],
+) {
 
   # Checks concerning the ENC variables $::datacenter and
   # $::datacenters.

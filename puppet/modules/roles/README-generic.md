@@ -12,23 +12,21 @@ Here is examples:
 include '::roles::generic'
 
 # 2. To exclude some classes which will be not applied.
-class { '::roles::generic::params':
+class { '::roles::generic':
   excluded_classes => [ '::network', '::network::hosts' ]
 }
-include '::roles::generic'
 
 # 3. To include only some classes explicitely. See warning
 # below.
-class { '::roles::generic::params':
+class { '::roles::generic':
   included_classes => [ '::network' ]
 }
-include '::roles::generic'
 ```
 
 
 
 
-## The parameters of `roles::generic::params`
+## The parameters of `roles::generic`
 
 
 The `authorized_classes` parameter is an array of classes
@@ -67,10 +65,9 @@ Keep, it simple and just use the `excluded_classes` parameter:
 include '::roles::generic'
 
 # OK.
-class { '::roles::generic::params':
+class { '::roles::generic':
   excluded_classes => [ '::network', '::network::hosts' ]
 }
-include '::roles::generic'
 ```
 
 That's all. Avoid to use the paramters `included_classes`
