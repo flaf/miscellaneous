@@ -1,7 +1,6 @@
-class roles::moobotnode {
-
-  include '::roles::moobotnode::params'
-  $nodetype = $::roles::moobotnode::params::nodetype
+class roles::moobotnode (
+  Enum[ 'cargo', 'lb', 'captain' ] $nodetype,
+) {
 
   include '::network::params'
 

@@ -1,12 +1,7 @@
-class roles::puppetserver {
-
-  # Import parameters.
-  include '::roles::puppetserver::params'
-  $is_mcollective_client  = $::roles::puppetserver::params::is_mcollective_client
-  $backup_keynames        = $::roles::puppetserver::params::backup_keynames
-
-
-
+class roles::puppetserver (
+  Boolean            $is_mcollective_client = false,
+  Array[ String[1] ] $backup_keynames = [],
+) {
 
   ##################################
   ### Include the role "generic" ###
@@ -36,7 +31,7 @@ class roles::puppetserver {
     unless $keyname in $ssh_public_keys {
       @("END"/L$).fail
         ${title}: the ssh public key `${keyname}` from the parameter \
-        \$::roles::puppetserver::params::backup_keynames is not \
+        \$::roles::puppetserver::backup_keynames is not \
         present among the public keys listed in the parameter \
         \$::unix_accounts::params::ssh_public_keys.
         |- END
@@ -93,7 +88,7 @@ class roles::puppetserver {
   ###########################################
   ### The mcollective::clients management ###
   ###########################################
-  if $::roles::puppetserver::params::is_mcollective_client {
+  if $is_mcollective_client {
 
     include '::mcollective::server::params'
     include '::mcomiddleware::params'

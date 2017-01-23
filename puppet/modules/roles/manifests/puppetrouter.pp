@@ -133,11 +133,10 @@ class roles::puppetrouter {
 
   include '::roles::puppetserver'
 
-  class {'::roles::pxeserver::params':
+  class {'::roles::pxeserver':
     no_dhcp_interfaces => [ $dhcp_iface ],
     backend_dns        => $wan_dns_servers,
   }
-  include '::roles::pxeserver'
 
 }
 

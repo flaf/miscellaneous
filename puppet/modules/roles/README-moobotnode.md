@@ -11,18 +11,16 @@ This role allows to install:
 Here is an example:
 
 ```puppet
-class { '::roles::moobotnode::params':
+class { '::roles::moobotnode':
   nodetype => 'cargo'
 }
-
-include '::roles::moobotnode'
 ```
 
 
 ## Parameter
 
 The parameter `nodetype` is the only parameter of the
-class `roles::moobotnode::params` and its value must
-match with `Enum[ 'cargo', 'lb', 'captain' ]`.
+class `roles::moobotnode` and its value must match with
+`Enum[ 'cargo', 'lb', 'captain' ]`.
 
 

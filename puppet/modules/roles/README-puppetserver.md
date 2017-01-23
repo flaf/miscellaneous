@@ -15,18 +15,16 @@ client. This role includes:
 Here is examples:
 
 ```puppet
-class { '::roles::puppetserver::params':
+class { '::roles::puppetserver':
   is_mcollective_client => true,
   backup_keynames       => 'root@srv-1',
 }
-
-include '::roles::puppetserver'
 ```
 
 
 
 
-## The parameters of `roles::puppetserver::params`
+## The parameters of `roles::puppetserver`
 
 
 The `is_mcollective_client` is a boolean to tell if the node
@@ -42,7 +40,7 @@ The `backup_keynames` is an array of strings and its default
 value is `[]`. This array **must** contain names of keys
 which are listed in the parameter
 `$::unix_accounts::params::ssh_public_keys`. These ssh
-public keys will be put in th `authorized_backup_keys`
+public keys will be put in the `authorized_backup_keys`
 parameter of the class `puppetserver::params`.
 
 

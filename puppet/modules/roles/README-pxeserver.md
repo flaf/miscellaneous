@@ -12,16 +12,14 @@ This role includes:
 Here is an example:
 
 ```puppet
-class { '::roles::pxeserver::params':
+class { '::roles::pxeserver':
   no_dhcp_interfaces => [ 'eth0' ],
   backend_dns        => [ '8.8.8.8', '8.8.4.4' ],
 }
-
-include '::roles::pxeserver'
 ```
 
 
-## Parameters of `roles::pxeserver::params`
+## Parameters of `roles::pxeserver`
 
 The parameters `no_dhcp_interfaces` and `backend_dns`
 override the parameters
