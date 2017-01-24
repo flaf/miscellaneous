@@ -7,9 +7,19 @@ class roles::proxmox {
       |- END
   }
 
+  # At each boot, the PermitRootLogin is automatically set
+  # to yes with a Proxmox server (probably necessary with
+  # Proxmoxs in "cluster" mode). So, we don't manage this
+  # parameter.
   class { '::roles::generic':
-    excluded_classes => [ '::network::hosts' ]
+    excluded_classes => [ '::network::hosts', '::basic_ssh::server' ]
   }
+
+  # Normally useless because already present after the OS
+  # installation.
+  ensure_packages(['openssh-server', ], { ensure => present, })
+
+  include '::proxmox'
 
 }
 

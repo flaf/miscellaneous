@@ -1,0 +1,17 @@
+{
+  "name": "flaf-proxmox",
+  "version": "0.1.1",
+  "author": "flaf",
+  "summary": "Module to make a very light management of Proxmox",
+  "license": "Apache-2.0",
+  "source": "",
+  "project_page": null,
+  "issues_url": null,
+  "data_provider": "function",
+  "dependencies": [
+    {"name":"puppetlabs-stdlib","version_requirement":">= 4.13.1"},
+    {"name":"flaf-homemade","version_requirement":">= 0.1.7"}
+  ]
+}
+
+
