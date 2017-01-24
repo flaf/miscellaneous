@@ -1,7 +1,7 @@
 class proxmox::params (
-  Variant[Integer[1], Pattern[/^([0-9]?[0-9]|100)%$/]] $zfs_arc_max,
-  Integer[0,100]                                       $swappiness,
-  Array[String[1], 1]                                  $supported_distributions,
+  Optional[Variant[Integer[1], Pattern[/^([0-9]?[0-9]|100)%$/]]] $zfs_arc_max,
+  Optional[Integer[0,100]]                                       $swappiness,
+  Array[String[1], 1]                                            $supported_distributions,
 ) {
 
   case $zfs_arc_max {
