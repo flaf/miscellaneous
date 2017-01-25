@@ -71,7 +71,7 @@ class roles::moobotnode (
           $make_backups = true
         }
 
-        /^-eleapoc$/: {
+        /-eleapoc$/: {
           $make_backups = false
         }
 
