@@ -67,8 +67,12 @@ class roles::moobotnode (
 
       case $::hostname {
 
-        /^cargo01/: {
+        /^cargo01$/: {
           $make_backups = true
+        }
+
+        /^-eleapoc$/: {
+          $make_backups = false
         }
 
         default: {
