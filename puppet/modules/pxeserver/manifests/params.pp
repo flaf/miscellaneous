@@ -1,6 +1,7 @@
 class pxeserver::params (
   Optional[ Hash[String[1], Pxeserver::Dhcpconf, 1] ] $dhcp_confs,
   Array[String[1]]                                    $no_dhcp_interfaces,
+  Array[String[1]]                                    $apache_listen_to,
   String                                              $apt_proxy,
   Hash[String[1], Array[String[1], 2, 2]]             $ip_reservations,
   Hash[String[1], Array[String[1], 1]]                $host_records,

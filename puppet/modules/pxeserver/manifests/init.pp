@@ -5,6 +5,7 @@ class pxeserver {
     # Parameters of the class.
     $dhcp_confs,
     $no_dhcp_interfaces,
+    $apache_listen_to,
     $apt_proxy,
     $ip_reservations,
     $host_records,
@@ -217,6 +218,20 @@ class pxeserver {
     hasrestart => true,
     enable     => true,
     require    => File['/etc/dnsmasq.d/main.conf'],
+  }
+
+  file { '/etc/apache2/ports.conf':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    require => Package['apache2'],
+    notify  => Service['apache2'],
+    content => epp('pxeserver/apache_ports.conf.epp',
+                   {
+                    'apache_listen_to' => $apache_listen_to,
+                   }
+                  ),
   }
 
   service { 'apache2':

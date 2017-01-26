@@ -25,6 +25,18 @@ class roles::wproxyeleapoc {
 
   $wan_iface_name = $wan_iface.keys[0]
 
+  # Apache will listen to all addresses except the WAN
+  # address which will be used by the Nginx reverse proxy.
+  $all_ipv4_non_wan_ifaces = $::network::params::interfaces
+    .filter |$iface, $settings| {
+      $iface != $wan_iface_name
+    }
+    .reduce([]) |$memo, $entry| {
+      $settings = $entry[1]
+      $memo + $settings.dig('inet', 'options', 'address')
+    }
+    .filter |$address| { $address =~ NotUndef  }
+
   # Warning. dnsmasq is the local DNS server so we do not
   # want to have an unbound installed (to avoid port
   # conflict).
@@ -36,6 +48,7 @@ class roles::wproxyeleapoc {
   class { '::roles::pxeserver':
     no_dhcp_interfaces => [ $wan_iface_name ],
     backend_dns        => $backend_dns,
+    apache_listen_to   => $all_ipv4_non_wan_ifaces,
   }
 
   class { '::network::basic_router::params':

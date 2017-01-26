@@ -36,6 +36,7 @@ $host_records = {
 class { '::pxeserver::params':
   dhcp_confs             => $dhcp_confs,
   no_dhcp_interfaces     => [ 'eth0' ],
+  apache_listen_to       => [],
   ip_reservations        => $ip_reservations,
   host_records           => $host_records,
   backend_dns            => [ '8.8.8.8', '8.8.4.4' ],
@@ -75,6 +76,15 @@ The `no_dhcp_interfaces` parameter allows to set several
 configuration to disable DHCP on specific interfaces. The
 default value of this parameter is `[]`, ie DHCP is enabled
 on all host interfaces.
+
+The parameter `apache_listen_to` allows to set the Apache
+option `Listen`:
+* With the value `[]` (the default), we have `Listen 80`
+  in the Apache configuration (Apache will listen to all
+  interfaces on the port 80).
+* With the value `[ '192.168.23.254', '192.168.24.254' ]`,
+  Apache will listen to 192.168.23.254 and 192.168.24.254
+  on the port 80.
 
 The `ip_reservations` parameter must have the structure
 above but can be the empty hash `{}` which its default

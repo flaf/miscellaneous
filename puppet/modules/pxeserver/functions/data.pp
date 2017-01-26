@@ -3,6 +3,7 @@ function pxeserver::data {
   {
     pxeserver::params::dhcp_confs              => undef,
     pxeserver::params::no_dhcp_interfaces      => [],
+    pxeserver::params::apache_listen_to        => [],
     pxeserver::params::apt_proxy               => '',
     pxeserver::params::ip_reservations         => {},
     pxeserver::params::host_records            => {},

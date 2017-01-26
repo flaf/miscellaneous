@@ -1,0 +1,11 @@
+<%-| Array[String[1]] $apache_listen_to |-%>
+### This file is managed by Puppet, don't edit it. ###
+
+<%- if $apache_listen_to.empty { -%>
+Listen 80
+<%- } else { -%>
+  <%- $apache_listen_to.each |$addr| { -%>
+Listen <%= $addr %>:80
+  <%- } -%>
+<%- } -%>
+

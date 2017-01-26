@@ -14,6 +14,7 @@ Here is an example:
 ```puppet
 class { '::roles::pxeserver':
   no_dhcp_interfaces => [ 'eth0' ],
+  apache_listen_to   => [],
   backend_dns        => [ '8.8.8.8', '8.8.4.4' ],
 }
 ```
@@ -21,13 +22,15 @@ class { '::roles::pxeserver':
 
 ## Parameters of `roles::pxeserver`
 
-The parameters `no_dhcp_interfaces` and `backend_dns`
-override the parameters
-`pxeserver::params::no_dhcp_interfaces` and
+The parameters `no_dhcp_interfaces`, `apache_listen_to` and
+`backend_dns` override the parameters
+`pxeserver::params::no_dhcp_interfaces`,
+`pxeserver::params::apache_listen_to` and
 `pxeserver::params::backend_dns` of the class
 `pxeserver::params`. The default values of these parameters
 are `undef`. So, in this case, the values of the parameters
-`pxeserver::params::no_dhcp_interfaces` and
+`pxeserver::params::no_dhcp_interfaces`,
+`pxeserver::params::apache_listen_to` and
 `pxeserver::params::backend_dns` take the precedence.
 
 

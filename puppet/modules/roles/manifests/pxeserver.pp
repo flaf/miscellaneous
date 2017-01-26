@@ -1,5 +1,6 @@
 class roles::pxeserver (
   Optional[ Array[String[1]] ] $no_dhcp_interfaces = undef,
+  Optional[ Array[String[1]] ] $apache_listen_to   = undef,
   Optional[ Array[String[1]] ] $backend_dns        = undef,
 ) {
 
@@ -74,6 +75,7 @@ class roles::pxeserver (
   class { '::pxeserver::params':
     dhcp_confs             => $dhcp_confs,
     no_dhcp_interfaces     => $no_dhcp_interfaces,
+    apache_listen_to       => $apache_listen_to,
     backend_dns            => $backend_dns,
     cron_wrapper           => ::roles::wrap_cron_mon(undef, 'update-di'),
     apt_proxy              => $apt_proxy,
