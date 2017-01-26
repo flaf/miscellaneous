@@ -29,8 +29,11 @@ class pxeserver {
   $distribs_provided_array = $distribs_provided.keys
   $distribs_provided_str   = $distribs_provided_array.join(', ')
   $my_family               = $facts['os']['distro']['id'].downcase
-  $my_ip                   = $facts['networking']['ip']
   $disable_dns             = $host_records.empty
+  $my_ip                   = $apache_listen_to.empty ? {
+    true  => $::facts['networking']['ip'],
+    false => $apache_listen_to[0],
+  }
 
   # If $backend_dns is empty, dnsmasq uses /etc/resolv.conf
   # as backend DNS. If not, it uses /etc/resolv-dnsmasq.conf
