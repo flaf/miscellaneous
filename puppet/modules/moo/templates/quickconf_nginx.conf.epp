@@ -1,0 +1,58 @@
+<%-|
+  Array[String[1]] $listen,
+  String[1]        $public_domain,
+  String[1]        $proxy_pass_address,
+  String[1]        $ssl_cert_name,
+  String[1]        $ssl_key_name,
+|-%>
+### This file is managed by Puppet, please don't edit it. ###
+
+server {
+<%- if $listen.empty { -%>
+  listen 443;
+<%- } else { -%>
+  <%- $listen.each |$address| { -%>
+  listen <%= $address %>:443;
+  <%- } -%>
+<%- } -%>
+  server_name *.<%= $public_domain %> <%= $public_domain %>;
+
+  ssl on;
+  ssl_certificate     <%= $ssl_cert_name %>;
+  ssl_certificate_key <%= $ssl_key_name %>;
+
+  ssl_session_timeout 5m;
+
+  ssl_protocols SSLv3 TLSv1 TLSv1.1 TLSv1.2;
+  ssl_ciphers "HIGH:!aNULL:!MD5 or HIGH:!aNULL:!MD5:!3DES";
+  ssl_prefer_server_ciphers on;
+
+
+  # https://<%= $public_domain %> is a specific case which
+  # must be redirect to https://communaute.<%= $public_domain %>.
+  if ($host = "<%= $public_domain %>") {
+    rewrite ^(.*) https://communaute.<%= $public_domain %>$1 permanent;
+  }
+
+  location / {
+    proxy_pass http://<%= $proxy_pass_address %>/;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-For $remote_addr;
+    proxy_redirect ~^http://.*\.<%= $public_domain.regsubst('\.', '\.', 'G') %>/(.*)$ https://$host/$1;
+  }
+}
+
+# http to https redirection.
+server {
+<%- if $listen.empty { -%>
+  listen 80;
+<%- } else { -%>
+  <%- $listen.each |$address| { -%>
+  listen <%= $address %>:80;
+  <%- } -%>
+<%- } -%>
+  server_name *.<%= $public_domain %> <%= $public_domain %>;
+  rewrite ^(.*) https://$host$1 permanent;
+}
+
+

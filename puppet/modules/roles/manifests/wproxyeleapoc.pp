@@ -24,6 +24,13 @@ class roles::wproxyeleapoc {
                  )
 
   $wan_iface_name = $wan_iface.keys[0]
+  $wan_address    = $::network::params::interfaces.dig($wan_iface_name, 'inet', 'options', 'address')
+  unless $wan_address !~ Undef {
+    @("END"/L).fail
+      ${title}: with this role, the WAN interface must have \
+      an IPv4 address.
+      |-END
+  }
 
   # Apache will listen to all addresses except the WAN
   # address which will be used by the Nginx reverse proxy.
@@ -50,6 +57,11 @@ class roles::wproxyeleapoc {
     backend_dns        => $backend_dns,
     apache_listen_to   => $all_ipv4_non_wan_ifaces,
   }
+
+  class { 'moo::quickwproxy::params':
+    listen => [ $wan_address ],
+  }
+  include 'moo::quickwproxy'
 
   class { '::network::basic_router::params':
     masqueraded_output_ifaces => [ $wan_iface_name ],

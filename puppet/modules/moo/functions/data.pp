@@ -65,6 +65,13 @@ function moo::data {
     # to haproxy >= 1.5 to have feature concerning the log
     # format.
 
+    moo::quickwproxy::params::listen                  => [],
+    moo::quickwproxy::params::public_domain           => $::domain,
+    moo::quickwproxy::params::proxy_pass_address      => "moolb-vip.${::domain}",
+    moo::quickwproxy::params::ssl_cert                => undef,
+    moo::quickwproxy::params::ssl_key                 => undef,
+    moo::quickwproxy::params::supported_distributions => [ 'trusty' ],
+
     moo::params::moobot_conf => $moobot_conf,
 
     # Merging policy.

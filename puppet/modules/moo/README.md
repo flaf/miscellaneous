@@ -4,7 +4,8 @@ This module implements the management of:
 
 - cargo servers,
 - lb servers,
-- captain servers
+- captain servers,
+- quick reverse proxy
 
 in a moodle platform.
 
@@ -431,5 +432,47 @@ configuration via the command (as root):
 ```sh
 python /opt/moobot/bin/lb.py --force --verbose --debug
 ```
+
+
+
+
+# The quick reverse proxy server
+
+## Usage
+
+Here is an example:
+
+```puppet
+class { '::moo::quickwproxy::params':
+  listen             => [],
+  public_domain      => 'elea.ac-versailles.fr',
+  proxy_pass_address => "moolb-vip.${::domain}",
+  ssl_cert           => "content of the cert.pem file...",
+  ssl_key            => "content of the private.pem file...",
+}
+
+include '::moo::quickwproxy'
+```
+
+## Parameters
+
+The `listen` parameter sets the `listen` Nginx instructions:
+* With `[]` (the default), Nginx uses all interfaces on port
+  443 and 80 (for http => https redirection).
+* With `[ '192.168.23.10', '192.168.24.10' ]`, Nginx uses theses
+  addresses to listen on ports 443 and 80 and that's all.
+
+The `public_domain` is the domain used to contact moodles
+and it must match with the SSL certificate. The default
+value of this parameter is `$::domain`.
+
+The `proxy_pass_address` parameter sets the `proxy_pass`
+instruction of the Nginx. Its default value is "moolb-vip.${::domain}".
+
+And `ssl_cert` and `ssl_key` are the contents of the SSL
+certificate (a .pem file) and the SSL private key (a .pem
+file).
+
+
 
 
