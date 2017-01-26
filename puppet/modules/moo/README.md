@@ -386,6 +386,11 @@ via the command (as root):
 mysql -u root -h localhost --password='' < init-moobot-database.sql
 ```
 
+**Warning:** maybe the `init-moobot-database.sql` doesn't
+match exactly with the hostnames and/or the IP of your cargo
+servers. In this case, you have to edit and change the end
+of this file (the `INSERT` lines in the `cargos` tables).
+
 
 
 
