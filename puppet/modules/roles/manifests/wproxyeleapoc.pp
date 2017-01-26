@@ -1,4 +1,6 @@
-class roles::wproxyeleapoc {
+class roles::wproxyeleapoc (
+  Boolean $rsyslog_allow_udp_reception = false,
+) {
 
   include '::network::params'
 
@@ -67,6 +69,33 @@ class roles::wproxyeleapoc {
     masqueraded_output_ifaces => [ $wan_iface_name ],
   }
   include '::network::basic_router'
+
+  $comment = $rsyslog_allow_udp_reception ? {
+    true  => '',
+    false => '#',
+  }
+
+  file_line { 'rsyslog_allow_udp_reception_1':
+    path   => '/etc/rsyslog.conf',
+    match  => '^[[:space:]]*#?[[:space:]]*\$ModLoad[[:space:]]+imudp([[:space:]]|$)',
+    line   => "${comment}\$ModLoad imudp    # Line edited by Puppet",
+    notify => Service['rsyslog'],
+  }
+
+  file_line { 'rsyslog_allow_udp_reception_2':
+    ensure => present,
+    path   => '/etc/rsyslog.conf',
+    match  => '^[[:space:]]*#?[[:space:]]*\$UDPServerRun[[:space:]]514([[:space:]]|$)',
+    line   => "${comment}\$UDPServerRun 514 # Line edited by Puppet",
+    notify => Service['rsyslog'],
+  }
+
+  service { 'rsyslog':
+    ensure     => running,
+    hasstatus  => true,
+    hasrestart => true,
+    enable     => true,
+  }
 
 }
 

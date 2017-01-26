@@ -3,6 +3,7 @@
   $no_dhcp_interfaces,
   $domain,
   $disable_dns,
+  $dnsmasq_no_hosts,
   $use_resolv_conf,
 | -%>
 ### This file is managed by Puppet, don't edit it. ###
@@ -11,6 +12,10 @@
 # To disable DNS completely. We just want to have a DHCP/PXE server.
 port=0
 
+<%- } else { -%>
+  <%- if $dnsmasq_no_hosts { -%>
+no-hosts
+  <%- } -%>
 <%- } -%>
 <%- unless $use_resolv_conf { -%>
 resolv-file=/etc/resolv-dnsmasq.conf

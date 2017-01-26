@@ -7,6 +7,7 @@ function pxeserver::data {
     pxeserver::params::apt_proxy               => '',
     pxeserver::params::ip_reservations         => {},
     pxeserver::params::host_records            => {},
+    pxeserver::params::dnsmasq_no_hosts        => false,
     pxeserver::params::backend_dns             => [],
     pxeserver::params::cron_wrapper            => '',
     pxeserver::params::puppet_collection       => undef,

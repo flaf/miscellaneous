@@ -23,7 +23,8 @@ List of roles provided:
 * [The role `moobotnode`](README-moobotnode.md)
 * The role `gitlab` which has no parameter.
 * The role `shadowldap` which has no parameter (TODO: not finished).
-* The role `wproxyeleapoc` which has no parameter.
+* The role `wproxyeleapoc` with only one parameter `rsyslog_allow_udp_reception`
+  to retrieve haproxy logs from moolb.
 * The role `proxmox` which has no parameter.
 
 If a role has no parameter, there is no specific README and

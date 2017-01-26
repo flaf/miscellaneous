@@ -5,6 +5,7 @@ class pxeserver::params (
   String                                              $apt_proxy,
   Hash[String[1], Array[String[1], 2, 2]]             $ip_reservations,
   Hash[String[1], Array[String[1], 1]]                $host_records,
+  Boolean                                             $dnsmasq_no_hosts,
   Array[String[1]]                                    $backend_dns,
   String                                              $cron_wrapper,
   Optional[ String[1] ]                               $puppet_collection,

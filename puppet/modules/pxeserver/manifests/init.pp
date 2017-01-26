@@ -9,6 +9,7 @@ class pxeserver {
     $apt_proxy,
     $ip_reservations,
     $host_records,
+    $dnsmasq_no_hosts,
     $backend_dns,
     $cron_wrapper,
     $puppet_collection,
@@ -170,6 +171,7 @@ class pxeserver {
                     'no_dhcp_interfaces' => $no_dhcp_interfaces,
                     'domain'             => $::domain,
                     'disable_dns'        => $disable_dns,
+                    'dnsmasq_no_hosts'   => $dnsmasq_no_hosts,
                     'use_resolv_conf'    => $use_resolv_conf,
                    }
                   ),
