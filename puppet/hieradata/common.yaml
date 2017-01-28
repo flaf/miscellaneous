@@ -71,7 +71,7 @@ mcollective::server::params::public_key: '%{alias("_mcollective_server_public_ke
 mcollective::server::params::middleware_address: 'middleware.%{::domain}'
 
 mcomiddleware::params::mcollective_pwd: "%{alias('_middleware_mcollective_pwd_')}"
-roles::mcomiddleware::params::exchanges: [ 'ceph' ]
+mcomiddleware::params::exchanges: [ 'ceph' ]
 
 
 snmp::params:views: #
