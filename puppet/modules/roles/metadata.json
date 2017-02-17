@@ -1,6 +1,6 @@
 {
   "name": "flaf-roles",
-  "version": "0.12.9",
+  "version": "0.12.10",
   "author": "flaf",
   "summary": "Module to implement roles, ie very top level classes",
   "license": "Apache-2.0",
@@ -20,7 +20,7 @@
     {"name":"flaf-locale","version_requirement":"0.2.1"},
     {"name":"flaf-timezone","version_requirement":"0.3.0"},
     {"name":"flaf-puppetagent","version_requirement":"0.2.9"},
-    {"name":"flaf-mcollective","version_requirement":"0.3.5"},
+    {"name":"flaf-mcollective","version_requirement":"0.3.6"},
     {"name":"flaf-snmp","version_requirement":"0.3.1"},
     {"name":"flaf-mcomiddleware","version_requirement":"0.2.3"},
     {"name":"flaf-puppetserver","version_requirement":"0.5.12"},

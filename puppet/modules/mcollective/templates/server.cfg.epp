@@ -12,6 +12,7 @@ String[1]                    $puppet_bin_dir,
 | -%>
 ### This file is managed by Puppet, don't edit it. ###
 
+identity          = <%= $::facts['networking']['fqdn'] %>
 main_collective   = mcollective
 collectives       = <%= $collectives.join(',') %>
 libdir            = /opt/puppetlabs/mcollective/plugins
