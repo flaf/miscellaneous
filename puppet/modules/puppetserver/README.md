@@ -17,7 +17,7 @@ $pubkeys = {
 
 class { '::puppetserver::params':
   puppet_memory          => '4g',
-  puppetdb_memory        => '1g',
+  puppetdb_memory        => '512m',
   profile                => 'autonomous',
   modules_repository     => 'http://puppetforge.domain.tld',
   strict                 => 'error',
@@ -44,11 +44,12 @@ include '::puppetserver'
 
 # Parameters
 
-The `puppet_memory` and `puppetdb_memory` parameters set the
-RAM available for the JVM of the puppetserver and the RAM
-available for the JVM of the puppetdb server. The default
-value of these parameters is `'1g'` (ie 1GB). Another
-possible value is `'512m'` for instance (ie 512MB).
+The `puppet_memory` and `puppetdb_memory` parameters set
+respectively the RAM available for the JVM of the
+puppetserver and the RAM available for the JVM of the
+puppetdb server. The default value of these parameters are:
+* `'2g'` (ie 2GB) for `puppet_memory`,
+* `512m` (ie 512MB) for `puppetdb_memory`.
 
 The `profile` parameter is important. The two possible
 values for this parameter are `'client'` or `'autonomous'`:

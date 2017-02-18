@@ -1,6 +1,6 @@
 {
   "name": "flaf-puppetserver",
-  "version": "0.5.12",
+  "version": "0.5.13",
   "author": "flaf",
   "summary": "Module to install a puppet 4 server",
   "license": "Apache-2.0",

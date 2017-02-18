@@ -1,8 +1,8 @@
 function puppetserver::data {
 
   # '2g' => 2GB, '512m' => 512MB etc.
-  $puppet_memory           = '1g'
-  $puppetdb_memory         = '1g'
+  $puppet_memory           = '2g'
+  $puppetdb_memory         = '512m'
   $profile                 = undef
   $modules_repository      = undef
   $strict                  = undef
