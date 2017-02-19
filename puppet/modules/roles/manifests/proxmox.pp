@@ -46,9 +46,10 @@ class roles::proxmox {
 
   # All Unix accounts which are sudo and root are "admin" in
   # the Proxmox WebUI.
-  class { '::proxmox':
+  class { '::proxmox::params':
     admin_users => $admin_users,
   }
+  include '::proxmox'
 
 }
 
