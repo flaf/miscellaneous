@@ -16,6 +16,7 @@ type Unix_accounts::Users = Hash[
       Optional['is_sudo']              => Boolean,
       Optional['ssh_authorized_keys']  => Array[String[1]],
       Optional['ssh_public_keys']      => Boolean,
+      Optional['email']                => String[1],
     }
   ]
 ]

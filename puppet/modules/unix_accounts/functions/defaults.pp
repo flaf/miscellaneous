@@ -21,6 +21,7 @@ function unix_accounts::defaults (String[1] $login) {
     'ssh_authorized_keys'  => [],
     'purge_ssh_keys'       => true,
     'ssh_public_keys'      => {},
+    'email'                => undef,
   }
 
 }

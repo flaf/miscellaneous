@@ -1,0 +1,40 @@
+<%-|
+  String[1] $user_cfg,
+  String[1] $user_cfg_puppet,
+|-%>
+#!/bin/sh
+
+### This file is managed by Puppet, don't edit manually. ###
+
+export LC_ALL='C'
+export PATH='/usr/sbin:/usr/bin:/sbin:/bin'
+
+user_cfg='<%= $user_cfg %>'
+user_cfg_puppet='<%= $user_cfg_puppet %>'
+
+if [ ! -f "$user_cfg" ]
+then
+    echo "Sorry the file $user_cfg doesn't exist." >&2
+    exit 1
+fi
+
+# $user_cfg_puppet can be absent and, to not interrupt the
+# puppet run, it's better to return 0 in this case.
+if [ ! -f "$user_cfg_puppet" ]
+then
+    echo "Sorry the file $user_cfg_puppet doesn't exist." >&2
+    exit 0
+fi
+
+if diff -q "$user_cfg_puppet" "$user_cfg" >/dev/null
+then
+    echo "$user_cfg_puppet and $user_cfg are already identical."
+    exit 0
+else
+    echo "$user_cfg_puppet and $user_cfg are NOT identical. Update..."
+    cp -a "$user_cfg" "$user_cfg.$(date '+%Y-%m-%d-%Hh%M')"
+    cat "$user_cfg_puppet" >"$user_cfg"
+    exit 0
+fi
+
+

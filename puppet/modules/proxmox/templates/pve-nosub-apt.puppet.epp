@@ -1,0 +1,31 @@
+<%-|
+  String[1] $url,
+  String[1] $distribution,
+  String[1] $component,
+|-%>
+#!/bin/sh
+
+### This file is managed by Puppet, don't edit manually. ###
+
+export LC_ALL='C'
+export PATH='/usr/sbin:/usr/bin:/sbin:/bin'
+
+src_file='/etc/apt/sources.list.d/pve-no-subscription.list'
+src_content='deb <%= $url %> <%= $distribution %> <%= $component %>'
+
+if [ -e "$src_file" ]
+then
+    printf 'The file %s already exists.\n' "$src_file"
+    rm "$src_file"
+    printf "So this file has been removed. Don't forget to launch \`apt-get update\` now.\n"
+    exit 0
+else
+    printf "The file %s doesn't exist.\n" "$src_file"
+    printf '%s\n' "$src_content" > "$src_file"
+    chown 'root:root' "$src_file"
+    chmod '644' "$src_file"
+    printf "So this file has been created. Don't forget to launch \`apt-get update\` now.\n"
+    exit 0
+fi
+
+

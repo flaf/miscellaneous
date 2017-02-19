@@ -1,6 +1,9 @@
 class proxmox::params (
   Optional[Variant[Integer[1], Pattern[/^([0-9]?[0-9]|100)%$/]]] $zfs_arc_max,
   Optional[Integer[0,100]]                                       $swappiness,
+  Array[Proxmox::AdminUser]                                      $admin_users,
+  String[1]                                                      $apt_nosub_url,
+  String[1]                                                      $apt_nosub_component,
   Array[String[1], 1]                                            $supported_distributions,
 ) {
 

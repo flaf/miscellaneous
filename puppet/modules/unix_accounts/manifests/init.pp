@@ -53,6 +53,7 @@ class unix_accounts {
     # the home has been deleted and Puppet can no longer
     # manage the ssh authorized keys (even in order to
     # purge these keys).
+    $email                = $params_completed['email']
 
     # Tag: USER_PARAMS
     unix_accounts::user { $user:
@@ -72,6 +73,7 @@ class unix_accounts {
       ssh_authorized_keys  => $ssh_authorized_keys,
       purge_ssh_keys       => $purge_ssh_keys,
       ssh_public_keys      => $ssh_public_keys,
+      email                => $email,
     }
 
     if $user == 'root' {

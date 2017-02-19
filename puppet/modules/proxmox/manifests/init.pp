@@ -7,10 +7,106 @@ class proxmox {
     $ensure_zfs_conf,
     $swappiness_value,
     $ensure_swappiness_conf,
+    $admin_users,
+    $apt_nosub_url,
+    $apt_nosub_component,
     $supported_distributions,
   ] = Class['::proxmox::params']
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
+
+  ### Management of the script to add/remove the
+  ### no-subscription APT repository.
+
+  file { '/usr/local/sbin/pve-nosub-apt.puppet':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '06750',
+    content => epp('proxmox/pve-nosub-apt.puppet.epp',
+                   {
+                     'url'          => $apt_nosub_url,
+                     'distribution' => $::facts["os"]["distro"]["codename"],
+                     'component'    => $apt_nosub_component,
+                   },
+                  ),
+  }
+
+
+  ### Management of /etc/pve/user.cfg etc. ###
+
+  case $admin_users.empty {
+    true: {
+      $ensure_user_cfg  = 'absent'
+      $content_user_cfg = undef
+    }
+    false: {
+      $ensure_user_cfg  = 'present'
+      $content_user_cfg = epp('proxmox/user.cfg.epp', {'admin_users' => $admin_users,})
+    }
+  }
+
+  # With Proxmox, /etc/pve/ is a fuse filesystem and
+  # chmod/chown just don't work in /etc/pve/ and trigger
+  # errors during a puppet run when puppet manages a file in
+  # /etc/pve/. So, instead to manage a file /etc/pve/user.cfg,
+  # we will manage the file /etc/pve.puppet/user.cfg in a
+  # special directory /etc/pve.puppet/.
+  file { '/etc/pve.puppet':
+    ensure  => directory,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0750',
+    recurse => true,
+    purge   => true,
+    force   => true,
+  }
+
+  $user_cfg        = '/etc/pve/user.cfg'
+  $user_cfg_puppet = '/etc/pve.puppet/user.cfg'
+
+  file { $user_cfg_puppet:
+    ensure  => $ensure_user_cfg,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0600',
+    content => $content_user_cfg,
+    notify  => Exec['rewrite-pve-user-cfg'],
+  }
+
+  file { '/usr/local/sbin/rewrite-pve-user-cfg.puppet':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '06750',
+    content => epp('proxmox/rewrite-pve-user-cfg.puppet.epp',
+                   {
+                     'user_cfg'        => $user_cfg,
+                     'user_cfg_puppet' => $user_cfg_puppet,
+                   },
+                  ),
+  }
+
+  exec { 'rewrite-pve-user-cfg':
+    path        => '/usr/sbin:/usr/bin:/sbin:/bin',
+    command     => '/usr/local/sbin/rewrite-pve-user-cfg.puppet',
+    user        => 'root',
+    group       => 'root',
+    refreshonly => true,
+    require     => File['/usr/local/sbin/rewrite-pve-user-cfg.puppet'],
+  }
+
+  ### Management of /etc/issue (cosmetic). ###
+
+  $myfqdn = $::facts['networking']['fqdn']
+
+  file_line { 'edit-https-url-in-etc-issue':
+    path  => '/etc/issue',
+    line  => "  https://${myfqdn}:8006/  # Edited by Puppet.",
+    match => '^[[:space:]]*https://.*$',
+  }
+
+  ### Management of zfs_arc_max and swappiness. ###
 
   $content_zfs_conf = @("END")
     ### This file is managed by Puppet, don't edit it. ###

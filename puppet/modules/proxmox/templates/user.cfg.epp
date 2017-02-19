@@ -1,0 +1,31 @@
+<%-|Array[Proxmox::AdminUser, 1] $admin_users|-%>
+### This file is managed by Puppet, don't edit manually. ###
+
+<%- $admin_users.each |$user| { -%>
+<%-
+  $username = $user['username']
+  $email    = $user['email'] ? { undef => '', default => $user['email'] }
+-%>
+user:<%= $username %>@pam:1:0:::<%= $email %>:::
+<%- } -%>
+
+<%-
+  $admins_pam = $admin_users.reduce([]) |$memo, $entry| {
+    $username = $entry['username']
+    case $username {
+      # root is special and no need to add him in the "admin" group.
+      'root' : { $memo }
+      default: { $memo + [ "${username}@pam" ] }
+    }
+  }.join(',')
+-%>
+
+# Definition of the group "admin" and its members.
+# "Full access" is just a simple comment".
+group:admin:<%= $admins_pam %>:Full access:
+
+# Definition of a group permission (an acl) applied to the
+# group "admin" and with the role "Administrator".
+acl:1:/:@admin:Administrator:
+
+
