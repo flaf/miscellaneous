@@ -5,6 +5,9 @@ function raid::data {
       'LSI Logic / Symbios Logic MegaRAID SAS 2208 [Thunderbolt] (rev 05)',
       'LSI Logic / Symbios Logic MegaRAID SAS 2108 [Liberator] (rev 05)',
     ],
+    'storcli' => [
+      'LSI Logic / Symbios Logic MegaRAID SAS-3 3108 [Invader] (rev 02)',
+    ],
     'hpssacli' => [
       'Hewlett-Packard Company Device 3239 (rev 01)',
       'Hewlett-Packard Company Smart Array Gen9 Controllers (rev 01)',
@@ -25,9 +28,10 @@ function raid::data {
     # But in this module, ::raid is the unique public class and
     # the classes raid::foo are internal without parameter except
     # supported_distributions.
-   "raid::megaraid::${sd}"            => [ 'jessie' ],
-   "raid::hpssacli::${sd}"            => [ 'trusty', 'jessie' ],
-   "raid::areca::${sd}"               => [ 'jessie' ],
+   "raid::megaraid::${sd}" => [ 'jessie' ],
+   "raid::storcli::${sd}"  => [ 'trusty', 'jessie' ],
+   "raid::hpssacli::${sd}" => [ 'trusty', 'jessie' ],
+   "raid::areca::${sd}"    => [ 'jessie' ],
   }
 
 }
