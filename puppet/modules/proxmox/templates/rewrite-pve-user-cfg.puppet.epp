@@ -12,6 +12,11 @@ export PATH='/usr/sbin:/usr/bin:/sbin:/bin'
 user_cfg='<%= $user_cfg %>'
 user_cfg_puppet='<%= $user_cfg_puppet %>'
 
+# Remove comments of a file.
+filter_comment () {
+    grep -Ev '^[[:space:]]*#' "$1"
+}
+
 if [ ! -f "$user_cfg" ]
 then
     echo "Sorry the file $user_cfg doesn't exist." >&2
@@ -26,7 +31,7 @@ then
     exit 0
 fi
 
-if diff -q "$user_cfg_puppet" "$user_cfg" >/dev/null
+if filter_comment "$user_cfg_puppet" | diff -q - "$user_cfg" >/dev/null
 then
     echo "$user_cfg_puppet and $user_cfg are already identical."
     exit 0
@@ -44,7 +49,7 @@ else
     #
     # So it's better to remove all comments in the file
     # $user_cfg.
-    grep -Ev '^[[:space:]]*#' "$user_cfg_puppet" >"$user_cfg"
+    filter_comment "$user_cfg_puppet" >"$user_cfg"
 
     exit 0
 fi
