@@ -1,6 +1,6 @@
 {
   "name": "flaf-proxmox",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "author": "flaf",
   "summary": "Module to make a very light management of Proxmox",
   "license": "Apache-2.0",

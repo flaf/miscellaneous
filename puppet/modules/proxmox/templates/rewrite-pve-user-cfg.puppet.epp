@@ -33,7 +33,19 @@ then
 else
     echo "$user_cfg_puppet and $user_cfg are NOT identical. Update..."
     cp -a "$user_cfg" "$user_cfg.$(date '+%Y-%m-%d-%Hh%M')"
-    cat "$user_cfg_puppet" >"$user_cfg"
+
+    # We have to remove comment lines because, with comments
+    # in $user_cfg, we have warnings like tkat during a
+    # simple "qm list" command:
+    #
+    # ~# qm list
+    # user config - ignore config line: ### This file is managed by Puppet, don't edit manually. ###
+    # ... etc.
+    #
+    # So it's better to remove all comments in the file
+    # $user_cfg.
+    grep -Ev '^[[:space:]]*#' "$user_cfg_puppet" >"$user_cfg"
+
     exit 0
 fi
 
