@@ -22,7 +22,7 @@ class proxmox {
     ensure  => present,
     owner   => 'root',
     group   => 'root',
-    mode    => '06750',
+    mode    => '0750',
     content => epp('proxmox/pve-nosub-apt.puppet.epp',
                    {
                      'url'          => $apt_nosub_url,
@@ -78,7 +78,7 @@ class proxmox {
     ensure  => present,
     owner   => 'root',
     group   => 'root',
-    mode    => '06750',
+    mode    => '0750',
     content => epp('proxmox/rewrite-pve-user-cfg.puppet.epp',
                    {
                      'user_cfg'        => $user_cfg,
