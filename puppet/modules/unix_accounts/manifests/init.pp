@@ -2,9 +2,14 @@ class unix_accounts {
 
   include '::unix_accounts::params'
 
-  $users           = $::unix_accounts::params::users
-  $ssh_public_keys = $::unix_accounts::params::ssh_public_keys
-  $rootstage       = $::unix_accounts::params::rootstage
+  [
+    $users,
+    $ssh_public_keys,
+    $rootstage,
+    $supported_distributions,
+  ] = Class['::unix_accounts::params']
+
+  ::homemade::is_supported_distrib($supported_distributions, $title)
 
   # In any case, a minimal ~/.vimrc file will be created in
   # the managed homes dans the minimal .vimrc required "vim"
