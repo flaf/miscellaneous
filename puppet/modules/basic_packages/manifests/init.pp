@@ -2,6 +2,10 @@ class basic_packages {
 
   include '::basic_packages::params'
 
+  [ $supported_distributions ] = Class['::basic_packages::params']
+
+  ::homemade::is_supported_distrib($supported_distributions, $title)
+
   $wanted_packages = [
     'vim',
     'gawk',

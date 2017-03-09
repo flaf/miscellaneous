@@ -6,8 +6,8 @@ function unix_accounts::data {
     unix_accounts::params::rootstage               => 'main',
     unix_accounts::params::supported_distributions => [
                                                         'trusty',
-                                                        'jessie',
                                                         'xenial',
+                                                        'jessie',
                                                       ],
 
     # Merging policy.
