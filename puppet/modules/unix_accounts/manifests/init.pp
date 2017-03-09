@@ -6,6 +6,11 @@ class unix_accounts {
   $ssh_public_keys = $::unix_accounts::params::ssh_public_keys
   $rootstage       = $::unix_accounts::params::rootstage
 
+  # In any case, a minimal ~/.vimrc file will be created in
+  # the managed homes dans the minimal .vimrc required "vim"
+  # installed.
+  ensure_packages( [ 'vim' ], { ensure => present } )
+
   # A user will be managed only if its 'ensure' parameter
   # is absent or present and equal to 'ignore'.
   $users_managed = $users.filter |$user, $params| {
