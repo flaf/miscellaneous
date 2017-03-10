@@ -4,7 +4,6 @@ class network::hosts::params (
   String                                $hosts_from_tag     = '',
   Array[String[1], 1]                   $supported_distributions,
 ) {
-
 }
 
 

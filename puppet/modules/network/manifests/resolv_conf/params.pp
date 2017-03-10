@@ -19,8 +19,6 @@ class network::resolv_conf::params (
   Array[ Array[String[1], 2, 2] ] $local_resolver_access_control = [],
   Array[String[1], 1]             $supported_distributions,
 ) inherits ::network::params {
-
-
 }
 
 
