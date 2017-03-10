@@ -6,8 +6,8 @@ class roles::moobotnode (
 
   $interfaces         = $::network::params::interfaces
   $inventory_networks = $::network::params::inventory_networks
-  $smtp_relay         = $::network::params::smtp_relay
-  $smtp_port          = $::network::params::smtp_port
+  $smtp_relay         = ::network::get_param($interfaces, $inventory_networks, 'smtp_relay'),
+  $smtp_port          = ::network::get_param($interfaces, $inventory_networks, 'smtp_port'),
 
   include '::moo::params'
   $moobot_tmp = $::moo::params::moobot_conf

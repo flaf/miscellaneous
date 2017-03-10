@@ -126,7 +126,9 @@ you can put:
 * a `routes` key (optional) mapped to a non-empty array of
   non-empty strings,
 * a `in_networks` key (optional) mapped to a non-empty array of
-  non-empty strings.
+  non-empty strings. The first network in this array is special
+  as regards the `::network::get_param()` function. It's the
+  **primary network** (see below).
 * a `keywords` key (optional) mapped to an non-empty array of
   non-empty strings.
 
