@@ -2,13 +2,27 @@
 enc_included_classes:
   - [ 'flaf', '::unix_accounts' ]
   - [ 'flaf', '::basic_packages' ]
+  - [ 'flaf', '::network' ]
+  - [ 'flaf', '::network::hosts' ]
+  - [ 'flaf', '::network::resolv_conf' ]
 enc_datacenter: 'vboxhome'
 
 network::params::ifaces:
   eth0:
-    in_networks: [ 'freebox_lan' ]
+    in_networks: [ 'vbox_adm' ]
     macaddress: '08:00:27:00:00:b2'
     inet:
       method: 'dhcp'
 
+#    '::basic_ntp',
+#    '::repository::distrib',
+#    '::raid',
+#    '::basic_ssh::server',
+#    '::basic_ssh::client',
+#    '::keyboard',
+#    '::locale',
+#    '::timezone',
+#    '::puppetagent',
+#    '::mcollective::server',
+#    '::snmp',
 

@@ -1,0 +1,10 @@
+<%- |$ifname, $macaddress| -%>
+### This file is managed by Puppet, don't edit it. ###
+
+[Match]
+MACAddress=<%= $macaddress %>
+
+[Link]
+Name=<%= $ifname %>
+
+

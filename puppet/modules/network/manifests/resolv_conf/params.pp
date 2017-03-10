@@ -2,7 +2,7 @@
 # where /etc/resolv.conf is not managed by default.
 #
 class network::resolv_conf::params (
-  String[1]                       $domain                        = $::domain,
+  String[1]                       $domain                        = $::facts['networking']['domain'],
   Array[String[1], 1]             $search                        = ::network::get_param(
                                                                      $::network::params::interfaces,
                                                                      $::network::params::inventory_networks,
@@ -20,7 +20,6 @@ class network::resolv_conf::params (
   Array[String[1], 1]             $supported_distributions,
 ) inherits ::network::params {
 
-  ::homemade::is_supported_distrib($supported_distributions, $title)
 
 }
 

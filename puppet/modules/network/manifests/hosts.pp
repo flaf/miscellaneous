@@ -2,8 +2,17 @@ class network::hosts {
 
   include '::network::hosts::params'
 
-  $entries  = $::network::hosts::params::entries_completed
-  $from_tag = $::network::hosts::params::hosts_from_tag
+  [
+   $entries_completed,
+   $hosts_from_tag,
+   $supported_distributions,
+  ] = Class['::network::hosts::params']
+
+  ::homemade::is_supported_distrib($supported_distributions, $title)
+
+  # Commodity.
+  $entries  = $entries_completed
+  $from_tag = $hosts_from_tag
 
   # We check the addresses in $entries.
   $entries.each |$addr_x, $names| {

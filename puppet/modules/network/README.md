@@ -41,8 +41,6 @@ network::params::inventory_networks:
 With this yaml code:
 
 ```yaml
-network::params::restart: true
-
 network::params::ifaces:
   eth0:
     in_networks: [ 'admin_mgt' ]
@@ -60,8 +58,6 @@ and this simple puppet code `include '::network'`.
 With this yaml code:
 
 ```yaml
-network::params::restart: false # currently the default value
-
 network::params::ifaces:
   eth0:
     in_networks: [ 'mysql' ]
@@ -98,22 +94,12 @@ and this simple puppet code `include '::network'`.
 ### Few explanations
 
 **Warning:** the file `/etc/network/interfaces` is not
-managed at all by this class, unless the parameter
-`network::params::restart` is set to `true` (not
-recommended, see below). If set to `false` (the default),
-the file managed by the class is just
-`/etc/network/interfaces.puppet` and you should restart the
-network manually.
-
-The `restart` parameter is a boolean. If the value
-is `true`, then the network will be restarted after
-an update of the network configuration. **It is not
-recommended to set this parameter to `true`**. With a
-basic network configuration (one interface with one IP
-address) it will probably work but with a more complicated
-network configuration (several interfaces with bridges
-etc.), this will certainly fail and you will lose the
-network connection.
+managed at all by this class. The file managed by the class
+is just the dummy file `/etc/network/interfaces.puppet` and
+you have to update :
+- the file `/etc/network/interfaces` manually
+- and restart the network manually (for instance with a
+  drastic and recommended reboot).
 
 In the `ifaces` parameter, for each interface,
 you can put:
@@ -307,8 +293,8 @@ hiera:
 
 ```puppet
 class { '::network::resolv_conf::params':
-  domain                        => $::domain,
-  search                        => [ $::domain ],
+  domain                        => $::facts['networking']['domain'],
+  search                        => [ $::facts['networking']['domain'] ],
   timeout                       => 5,
   override_dhcp                 => false,
   dns_servers                   => [ '8.8.8.8', '8.8.4.4' ],
@@ -328,7 +314,7 @@ include '::network::resolv_conf'
 
 The `domain` parameter is a string which sets the
 `domain` stanza in the file `/etc/resolv.conf`. The default
-value of this parameter is `$::domain`.
+value of this parameter is `$::facts['networking']['domain']`.
 
 The `search` parameter is a non-empty array of
 non-empty strings which sets the `search` stanza in the file

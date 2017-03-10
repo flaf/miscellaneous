@@ -1,6 +1,6 @@
 function network::data {
 
-  $supported_distribs = [ 'trusty', 'jessie' ]
+  $supported_distribs = [ 'trusty', 'xenial', 'jessie' ]
   $sd = 'supported_distributions';
 
   {

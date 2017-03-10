@@ -2,15 +2,25 @@ class network::resolv_conf {
 
   include '::network::resolv_conf::params'
 
-  $domain            = $::network::resolv_conf::params::domain
-  $search            = $::network::resolv_conf::params::search
-  $timeout           = $::network::resolv_conf::params::timeout
-  $override_dhcp     = $::network::resolv_conf::params::override_dhcp
-  $dns_servers       = $::network::resolv_conf::params::dns_servers
-  $local_resolver    = $::network::resolv_conf::params::local_resolver
-  $lr_interface      = $::network::resolv_conf::params::local_resolver_interface
-  $lr_access_control = $::network::resolv_conf::params::local_resolver_access_control
-  $interfaces        = $::network::resolv_conf::params::interfaces
+  [
+   $domain,
+   $search,
+   $timeout,
+   $override_dhcp,
+   $dns_servers,
+   $local_resolver,
+   $local_resolver_interface,
+   $local_resolver_access_control,
+   $interfaces,
+   $supported_distributions,
+  ] = Class['::network::resolv_conf::params']
+
+  ::homemade::is_supported_distrib($supported_distributions, $title)
+  ::homemade::fail_if_undef($interfaces, 'interfaces', $title)
+
+  # Commodity.
+  $lr_interface      = $local_resolver_interface
+  $lr_access_control = $local_resolver_access_control
 
   # Get the interfaces configured via DHCP.
   $dhcp_ifaces = $interfaces.filter |$ifname, $settings| {
