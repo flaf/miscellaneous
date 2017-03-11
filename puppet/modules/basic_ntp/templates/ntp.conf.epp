@@ -3,6 +3,7 @@ Variant[ Array[String[1], 1], Enum['all'] ] $interfaces,
 Array[String[1], 1]                         $servers,
 Variant[ Array[String[1], 1], Enum['all'] ] $subnets_authorized,
 Boolean                                     $ipv6,
+String[1]                                   $restrict_options,
 | -%>
 ### This file is managed by Puppet, don't edit it. ###
 
@@ -46,15 +47,15 @@ restrict -6 default ignore
        $network   = $dump_cidr['network']
        $netmask   = $dump_cidr['netmask']
     -%>
-restrict <%= $network %> mask <%= $netmask %> kod notrap nomodify nopeer noquery
+restrict <%= $network %> mask <%= $netmask %> <%= $restrict_options %>
   <%- } -%>
 
 <%- } else {  -%>
 <%# $subnets_authorized == 'all' -%>
 # Default rule: exchange time with everybody but don't allow configuration.
-restrict -4 default kod notrap nomodify nopeer noquery
+restrict -4 default <%= $restrict_options %>
   <%- if $ipv6 { -%>
-restrict -6 default kod notrap nomodify nopeer noquery
+restrict -6 default <%= $restrict_options %>
   <%- } -%>
 
 <%- } -%>

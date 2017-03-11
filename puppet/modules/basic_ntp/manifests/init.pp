@@ -2,12 +2,26 @@ class basic_ntp {
 
   include '::basic_ntp::params'
 
-  $interfaces         = $::basic_ntp::params::interfaces
-  $servers            = $::basic_ntp::params::servers
-  $subnets_authorized = $::basic_ntp::params::subnets_authorized
-  $ipv6               = $::basic_ntp::params::ipv6
+  [
+   $interfaces,
+   $servers,
+   $subnets_authorized,
+   $ipv6,
+   $supported_distributions,
+  ] = Class['::basic_ntp::params']
+
+  ::homemade::is_supported_distrib($supported_distributions, $title)
 
   ensure_packages([ 'ntp' ], { ensure => present, })
+
+  case $::facts['lsbdistcodename'] {
+    /^(trusty|jessie)$/: {
+      $restrict_options = 'kod notrap nomodify nopeer noquery'
+    }
+    default: {
+      $restrict_options = 'kod notrap nomodify nopeer noquery limited'
+    }
+  }
 
   file { '/etc/ntp.conf':
     ensure  => present,
@@ -19,6 +33,7 @@ class basic_ntp {
                       'subnets_authorized' => $subnets_authorized,
                       'ipv6'               => $ipv6,
                       'servers'            => $servers,
+                      'restrict_options'   => $restrict_options,
                     }
                   ),
     require => Package['ntp'],

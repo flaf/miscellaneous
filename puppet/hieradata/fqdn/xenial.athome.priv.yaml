@@ -5,8 +5,10 @@ enc_included_classes:
   - [ 'flaf', '::network' ]
   - [ 'flaf', '::network::hosts' ]
   - [ 'flaf', '::network::resolv_conf' ]
+  - [ 'flaf', '::basic_ntp' ]
 enc_datacenter: 'vboxhome'
 
+network::resolv_conf::params::override_dhcp: true
 network::params::ifaces:
   eth0:
     in_networks: [ 'vbox_adm' ]
@@ -14,7 +16,6 @@ network::params::ifaces:
     inet:
       method: 'dhcp'
 
-#    '::basic_ntp',
 #    '::repository::distrib',
 #    '::raid',
 #    '::basic_ssh::server',

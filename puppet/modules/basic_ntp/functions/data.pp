@@ -7,7 +7,7 @@ function basic_ntp::data {
                   '3.debian.pool.ntp.org',
                  ]
 
-  $supported_distribs = [ 'trusty', 'jessie' ]
+  $supported_distribs = [ 'trusty', 'xenial', 'jessie' ]
   $sd                 = 'supported_distributions';
 
   {
