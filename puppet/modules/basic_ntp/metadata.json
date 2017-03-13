@@ -1,6 +1,6 @@
 {
   "name": "flaf-basic_ntp",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "author": "flaf",
   "summary": "Module to manage a basic ntp installation",
   "license": "Apache-2.0",
