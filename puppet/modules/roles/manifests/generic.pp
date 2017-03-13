@@ -7,16 +7,16 @@ class roles::generic (
     '::network::hosts',
     '::network::resolv_conf',
     '::basic_ntp',
-    #'::raid',
-    #'::basic_ssh::server',
-    #'::basic_ssh::client',
-    #'::basic_packages',
-    #'::keyboard',
-    #'::locale',
-    #'::timezone',
+    '::raid',
+    '::basic_ssh::server',
+    '::basic_ssh::client',
+    '::basic_packages',
+    '::keyboard',
+    '::locale',
+    '::timezone',
     '::puppetagent',
-    #'::mcollective::server',
-    #'::snmp',
+    '::mcollective::server',
+    '::snmp',
   ],
   Array[String[1]] $included_classes = $authorized_classes,
   Array[String[1]] $excluded_classes = [],
@@ -107,11 +107,20 @@ class roles::generic (
                        $::network::params::inventory_networks,
                        'apt_proxy'
                      )
-        $proxy_address = $apt_proxy['address']
-        $proxy_port    = $apt_proxy['port']
+
+        case $apt_proxy {
+          Undef: {
+            $apt_proxy_value = undef
+          }
+          default: {
+            $proxy_address   = $apt_proxy['address']
+            $proxy_port      = $apt_proxy['port']
+            $apt_proxy_value = "http://${proxy_address}:${proxy_port}"
+          }
+        }
 
         class { '::repository::aptconf::params':
-          apt_proxy => "http://${proxy_address}:${proxy_port}",
+          apt_proxy => $apt_proxy_value,
         }
         class { '::repository::aptconf':
           stage => 'repository',
