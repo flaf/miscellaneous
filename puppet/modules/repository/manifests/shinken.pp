@@ -1,25 +1,28 @@
-class repository::shinken (
-  String[1] $stage = 'repository',
-) {
+class repository::shinken {
 
   include '::repository::shinken::params'
 
-  $url         = $::repository::shinken::params::url
-  $key_url     = $::repository::shinken::params::key_url
-  $fingerprint = $::repository::shinken::params::fingerprint
+  [
+   $url,
+   $key_url,
+   $fingerprint,
+   $supported_distributions,
+  ] = Class['::repository::shinken::params']
 
-  apt::key { 'shinken':
+  ::homemade::is_supported_distrib($supported_distributions, $title)
+
+  repository::aptkey { 'shinken':
     id     => $fingerprint,
     source => $key_url,
   }
 
-  apt::source { 'shinken':
-    comment  => 'Homemade Shinken Repository.',
-    location => $url,
-    release  => 'shinken',
-    repos    => 'main',
-    include  => { 'src' => false, 'deb' => true },
-    require  => Apt::Key['shinken'],
+  repository::sourceslist { 'shinken':
+    comment    => 'Homemade Shinken Repository.',
+    location   => $url,
+    release    => 'shinken',
+    components => [ 'main' ],
+    src        => false,
+    require    => Repository::Aptkey['shinken'],
   }
 
 }

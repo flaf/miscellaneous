@@ -1,12 +1,17 @@
 ---
 enc_included_classes:
-  - [ 'flaf', '::unix_accounts' ]
-  - [ 'flaf', '::basic_packages' ]
-  - [ 'flaf', '::network' ]
-  - [ 'flaf', '::network::hosts' ]
-  - [ 'flaf', '::network::resolv_conf' ]
-  - [ 'flaf', '::basic_ntp' ]
+  - [ 'flaf', '::roles::generic' ]
+  #- [ 'flaf', '::unix_accounts' ]
+  #- [ 'flaf', '::basic_packages' ]
+  #- [ 'flaf', '::network' ]
+  #- [ 'flaf', '::network::hosts' ]
+  #- [ 'flaf', '::network::resolv_conf' ]
+  #- [ 'flaf', '::basic_ntp' ]
+  #- [ 'flaf', '::repository::aptkey::params' ]
+  #- [ 'flaf', '::repository::aptconf' ]
 enc_datacenter: 'vboxhome'
+
+puppetagent::params::cron: 'per-week'
 
 network::resolv_conf::params::override_dhcp: true
 network::params::ifaces:

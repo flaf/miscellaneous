@@ -1,25 +1,28 @@
-class repository::php (
-  String[1] $stage = 'repository',
-) {
+class repository::php {
 
   include '::repository::php::params'
 
-  $url         = $::repository::php::params::url
-  $key_url     = $::repository::php::params::key_url
-  $fingerprint = $::repository::php::params::fingerprint
+  [
+   $url,
+   $key_url,
+   $fingerprint,
+   $supported_distributions,
+  ] = Class['repository::php']
 
-  apt::key { 'php':
+  ::homemade::is_supported_distrib($supported_distributions, $title)
+
+  repository::aptkey { 'php':
     id     => $fingerprint,
     source => $key_url,
   }
 
-  apt::source { 'php':
-    comment  => 'Local PHP Repository.',
-    location => $url,
-    release  => 'php',
-    repos    => 'main',
-    include  => { 'src' => false, 'deb' => true },
-    require  => Apt::Key['php'],
+  repository::sourceslist { 'php':
+    comment    => 'Local PHP Repository.',
+    location   => $url,
+    release    => 'php',
+    components => [ 'main' ],
+    src        => false,
+    require    => Repository::Aptkey['php'],
   }
 
 }

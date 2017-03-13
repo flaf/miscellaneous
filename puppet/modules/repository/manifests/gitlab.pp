@@ -1,6 +1,4 @@
-class repository::gitlab (
-  String[1] $stage = 'repository',
-) {
+class repository::gitlab {
 
   include '::repository::gitlab::params'
 
@@ -19,25 +17,23 @@ class repository::gitlab (
   $codename = $::facts["os"]["distro"]["codename"].downcase()
   $comment  = "Gitlab Repository."
 
-  # Use hkp on port 80 to avoid problem with firewalls etc.
-  apt::key { 'gitlab':
-    id     => $key,
-    server => 'hkp://keyserver.ubuntu.com:80',
+  repository::aptkey { 'gitlab':
+    id => $key,
   }
 
-  apt::source { "gitlab":
-    comment  => $comment,
-    location => "${url}",
-    release  => $codename,
-    repos    => 'main',
-    include  => { 'src' => $src, 'deb' => true },
-    require  => Apt::Key['gitlab'],
+  repository::sourceslist { "gitlab":
+    comment    => $comment,
+    location   => "${url}",
+    release    => $codename,
+    components => [ 'main' ],
+    src        => $src,
+    require    => Repository::Aptkey['gitlab'],
   }
 
   if $pinning_version != 'none' {
 
     # About pinning => `man apt_preferences`.
-    apt::pin { 'gitlab':
+    repository::pinning { 'gitlab':
       explanation => 'To ensure the version of the gitlab-ce package.',
       packages    => 'gitlab-ce',
       version     => $pinning_version,

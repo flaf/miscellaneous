@@ -1,0 +1,22 @@
+<%-|
+  String[1]           $comment,
+  String[1]           $location,
+  String[1]           $release,
+  Array[String[1], 1] $components,
+  Boolean             $src,
+|-%>
+<%-
+  $components_str = $components.join(' ')
+  $deb_line       = "${location} ${release} ${components_str}"
+-%>
+### This file is managed by Puppet, don't edit it. ###
+
+# <%= $comment %>
+<%- if $src { -%>
+deb     <%= $deb_line %>
+deb-src <%= $deb_line %>
+<%- } else { -%>
+deb <%= $deb_line %>
+<%- } -%>
+
+

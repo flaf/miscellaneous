@@ -1,6 +1,4 @@
-class repository::puppetserver (
-  String[1] $stage = 'repository',
-) {
+class repository::puppetserver {
 
   include '::repository::puppetserver::params'
 
@@ -19,7 +17,7 @@ class repository::puppetserver (
 
   if $pinning_puppetserver_version != 'none' {
     # About pinning => `man apt_preferences`.
-    apt::pin { 'puppetserver':
+    repository::pinning { 'puppetserver':
       explanation => 'To ensure the version of the puppetserver package.',
       packages    => 'puppetserver',
       version     => $pinning_puppetserver_version,
@@ -29,7 +27,7 @@ class repository::puppetserver (
 
   if $pinning_puppetdb_version != 'none' {
     # About pinning => `man apt_preferences`.
-    apt::pin { 'puppetdb':
+    repository::pinning { 'puppetdb':
       explanation => 'To ensure the version of the puppetdb package.',
       packages    => 'puppetdb',
       version     => $pinning_puppetdb_version,
@@ -39,7 +37,7 @@ class repository::puppetserver (
 
   if $pinning_puppetdb_termini_version != 'none' {
     # About pinning => `man apt_preferences`.
-    apt::pin { 'puppetdb-termini':
+    repository::pinning { 'puppetdb-termini':
       explanation => 'To ensure the version of the puppetdb-termini package.',
       packages    => 'puppetdb-termini',
       version     => $pinning_puppetdb_termini_version,

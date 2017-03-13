@@ -1,25 +1,28 @@
-class repository::raid (
-  String[1] $stage = 'repository',
-) {
+class repository::raid {
 
   include '::repository::raid::params'
 
-  $url         = $::repository::raid::params::url
-  $key_url     = $::repository::raid::params::key_url
-  $fingerprint = $::repository::raid::params::fingerprint
+  [
+   $url,
+   $key_url,
+   $fingerprint,
+   $supported_distributions,
+  ] = Class['::repository::raid::params']
 
-  apt::key { 'raid':
+  ::homemade::is_supported_distrib($supported_distributions, $title)
+
+  repository::aptkey { 'raid':
     id     => $fingerprint,
     source => $key_url,
   }
 
-  apt::source { 'raid':
-    comment  => 'Homemade RAID Repository.',
-    location => $url,
-    release  => 'raid',
-    repos    => 'main',
-    include  => { 'src' => false, 'deb' => true },
-    require  => Apt::Key['raid'],
+  repository::sourceslist { 'raid':
+    comment    => 'Homemade RAID Repository.',
+    location   => $url,
+    release    => 'raid',
+    components => [ 'main' ],
+    src        => false,
+    require    => Repository::Aptkey['raid'],
   }
 
 }

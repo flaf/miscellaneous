@@ -1,21 +1,22 @@
 class roles::generic (
   Array[String[1]] $authorized_classes = [
     '::unix_accounts',
+    '::repository::aptkey::params',
+    '::repository::aptconf',
     '::network',
     '::network::hosts',
     '::network::resolv_conf',
     '::basic_ntp',
-    '::repository::distrib',
-    '::raid',
-    '::basic_ssh::server',
-    '::basic_ssh::client',
-    '::basic_packages',
-    '::keyboard',
-    '::locale',
-    '::timezone',
+    #'::raid',
+    #'::basic_ssh::server',
+    #'::basic_ssh::client',
+    #'::basic_packages',
+    #'::keyboard',
+    #'::locale',
+    #'::timezone',
     '::puppetagent',
-    '::mcollective::server',
-    '::snmp',
+    #'::mcollective::server',
+    #'::snmp',
   ],
   Array[String[1]] $included_classes = $authorized_classes,
   Array[String[1]] $excluded_classes = [],
@@ -79,6 +80,7 @@ class roles::generic (
 
     case $a_class {
 
+
       #####################
       ### unix_accounts ###
       #####################
@@ -90,6 +92,80 @@ class roles::generic (
         }
 
         include '::unix_accounts'
+
+      }
+
+
+      ###########################
+      ### repository::aptconf ###
+      ###########################
+      '::repository::aptconf': {
+
+        include '::network::params'
+        $apt_proxy = ::network::get_param(
+                       $::network::params::interfaces,
+                       $::network::params::inventory_networks,
+                       'apt_proxy'
+                     )
+        $proxy_address = $apt_proxy['address']
+        $proxy_port    = $apt_proxy['port']
+
+        class { '::repository::aptconf::params':
+          apt_proxy => "http://${proxy_address}:${proxy_port}",
+        }
+        class { '::repository::aptconf':
+          stage => 'repository',
+        }
+
+      }
+
+
+      ##################################
+      ### repository::aptkey::params ###
+      ##################################
+      '::repository::aptkey::params': {
+
+        include '::network::params'
+        $pgp_keyserver = ::network::get_param(
+                           $::network::params::interfaces,
+                           $::network::params::inventory_networks,
+                           'pgp_keyserver'
+                         )
+        $http_proxy    = ::network::get_param(
+                           $::network::params::interfaces,
+                           $::network::params::inventory_networks,
+                           'http_proxy'
+                         )
+
+        case $pgp_keyserver {
+          Undef: {
+            $keyserver_value   = undef
+          }
+          default: {
+            $keyserver_address = $pgp_keyserver['address']
+            $keyserver_port    = $pgp_keyserver['port']
+            $keyserver_value   = "hkp://${keyserver_address}:${keyserver_port}"
+          }
+        }
+
+        case [$http_proxy, $pgp_keyserver.dig('proxy_required')] {
+          [NotUndef, false]: {
+            $http_proxy_value = undef
+          }
+          [NotUndef, default]: {
+            $proxy_address    = $http_proxy['address']
+            $proxy_port       = $http_proxy['port']
+            $http_proxy_value = "http://${proxy_address}:${proxy_port}"
+          }
+          [default, default]: {
+            $http_proxy_value = undef
+          }
+        }
+
+        class { '::repository::aptkey::params':
+          http_proxy => $http_proxy_value,
+          keyserver  => $keyserver_value,
+        }
 
       }
 

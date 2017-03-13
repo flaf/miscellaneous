@@ -1,25 +1,28 @@
-class repository::moobot (
-  String[1] $stage = 'repository',
-) {
+class repository::moobot {
 
   include '::repository::moobot::params'
 
-  $url         = $::repository::moobot::params::url
-  $key_url     = $::repository::moobot::params::key_url
-  $fingerprint = $::repository::moobot::params::fingerprint
+  [
+   $url,
+   $key_url,
+   $fingerprint,
+   $supported_distributions,
+  ] = Class['::repository::moobot::params']
 
-  apt::key { 'moobot':
+  ::homemade::is_supported_distrib($supported_distributions, $title)
+
+  repository::aptkey { 'moobot':
     id     => $fingerprint,
     source => $key_url,
   }
 
-  apt::source { 'moobot':
-    comment  => 'Moobot Repository.',
-    location => $url,
-    release  => 'moobot',
-    repos    => 'main',
-    include  => { 'src' => false, 'deb' => true },
-    require  => Apt::Key['moobot'],
+  repository::sourceslist { 'moobot':
+    comment    => 'Moobot Repository.',
+    location   => $url,
+    release    => 'moobot',
+    components => [ 'main' ],
+    src        => false,
+    require    => Repository::Aptkey['moobot'],
   }
 
 }

@@ -1,0 +1,13 @@
+<%-|
+  String[1] $explanation,
+  String[1] $packages,
+  String[1] $version,
+  Integer   $priority,
+|-%>
+### This file is managed by Puppet, don't edit it. ###
+Explanation: <%= $explanation %>
+Package: <%= $packages %>
+Pin: version <%= $version %>
+Pin-Priority: <%= $priority %>
+
+

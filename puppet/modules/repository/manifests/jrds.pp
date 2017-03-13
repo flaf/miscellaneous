@@ -1,25 +1,28 @@
-class repository::jrds (
-  String[1] $stage = 'repository',
-) {
+class repository::jrds {
 
   include '::repository::jrds::params'
 
-  $url         = $::repository::jrds::params::url
-  $key_url     = $::repository::jrds::params::key_url
-  $fingerprint = $::repository::jrds::params::fingerprint
+  [
+   $url,
+   $key_url,
+   $fingerprint,
+   $supported_distributions,
+  ] = Class['::repository::jrds::params']
 
-  apt::key { 'jrds':
+  ::homemade::is_supported_distrib($supported_distributions, $title)
+
+  repository::aptkey { 'jrds':
     id     => $fingerprint,
     source => $key_url,
   }
 
-  apt::source { 'jrds':
+  repository::sourceslist { 'jrds':
     comment  => 'Local JRDS Repository.',
     location => $url,
     release  => 'jrds',
-    repos    => 'main',
-    include  => { 'src' => false, 'deb' => true },
-    require  => Apt::Key['jrds'],
+    components => [ 'main' ],
+    src        => false,
+    require  => Repository::Aptkey['jrds'],
   }
 
 }

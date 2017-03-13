@@ -29,7 +29,9 @@ network::params::inventory_networks:
     ntp_servers: [ '172.16.0.1' ]
     dns_servers: [ '172.16.0.1' ]
     dhcp_range: [ '172.16.200.10', '172.16.200.20' ]
-    apt_proxy: 'http://apt.%{::domain}:3142'
+    apt_proxy: { 'address': 'apt.%{::domain}', 'port': 3142 }
+    #http_proxy: { 'address': '172.16.5.1', 'port': 3128 }
+    #pgp_keyserver: { 'address': '172.16.5.1', 'port': 80, 'proxy_required': true }
     admin_email: '%{alias("_admin_email_")}'
   vbox_priv:
     comment: [ 'Private LAN n2 in VBox (dhcp wihout gateway and dns).' ]

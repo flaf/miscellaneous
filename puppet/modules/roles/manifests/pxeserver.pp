@@ -21,8 +21,14 @@ class roles::pxeserver (
   $apt_proxies = $networks.reduce([]) |$memo, $entry| {
     [ $netname, $settings ] = $entry
     case 'apt_proxy' in $settings {
-      true:  { $memo + $settings['apt_proxy'] }
-      false: { $memo }
+      true:  {
+        $proxy_address = $settings['apt_proxy']['address']
+        $proxy_port    = $settings['apt_proxy']['port']
+        $memo + "http://${proxy_address}:${proxy_port}"
+      }
+      false: {
+        $memo
+      }
     }
   }
   .unique

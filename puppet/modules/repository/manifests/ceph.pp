@@ -1,13 +1,16 @@
-class repository::ceph (
-  String[1] $stage = 'repository',
-) {
+class repository::ceph {
 
   include '::repository::ceph::params'
 
-  $url             = $::repository::ceph::params::url
-  $src             = $::repository::ceph::params::src
-  $codename        = $::repository::ceph::params::codename
-  $pinning_version = $::repository::ceph::params::pinning_version
+  [
+   $url,
+   $src,
+   $codename,
+   $pinning_version,
+   $supported_distributions,
+  ] = Class['::repository::ceph::params']
+
+  ::homemade::is_supported_distrib($supported_distributions, $title)
 
   if $codename !~ Enum['infernalis', 'jewel'] {
     regsubst(@("END"), '\n', ' ', 'G').fail
@@ -18,12 +21,7 @@ class repository::ceph (
       |- END
   }
 
-  if $pinning_version =~ Undef {
-    regsubst(@("END"), '\n', ' ', 'G').fail
-      $title: sorry the parameter `repository::params::ceph_pinning_version`
-      is undefined. You must define it explicitly.
-      |- END
-  }
+  ::homemade::fail_if_undef($pinning_version, 'pinning_version', $title)
 
   # Fingerprint of the APT key:
   #
@@ -37,19 +35,17 @@ class repository::ceph (
   $key         = '08B73419AC32B4E966C1A330E84AC2C0460F3994'
   $cleaned_url = $url.regsubst(/\/$/,'') # Remove the trailing slash.
 
-  # Use hkp on port 80 to avoid problem with firewalls etc.
-  apt::key { 'ceph':
-    id     => $key,
-    server => 'hkp://keyserver.ubuntu.com:80',
+  repository::aptkey { 'ceph':
+    id => $key,
   }
 
-  apt::source { 'ceph':
-    comment  => 'Ceph Repository.',
-    location => "${cleaned_url}/debian-${codename}",
-    release  => $::facts['lsbdistcodename'],
-    repos    => 'main',
-    include  => { 'src' => $src, 'deb' => true },
-    require  => Apt::Key['ceph'],
+  repository::sourceslist { 'ceph':
+    comment    => 'Ceph Repository.',
+    location   => "${cleaned_url}/debian-${codename}",
+    release    => $::facts['lsbdistcodename'],
+    components => [ 'main' ],
+    src        => $src,
+    require    => Repository::Aptkey['ceph'],
   }
 
   if $pinning_version != 'none' {
@@ -60,7 +56,7 @@ class repository::ceph (
     #
     #   apt-cache search '.*' | grep ceph | awk '{print $1}' | sort | uniq
     #
-    apt::pin { 'ceph':
+    repository::pinning { 'ceph':
       explanation => 'To ensure the version of the ceph packages.',
       packages    => '/^(ceph|ceph-.*|libceph.*|librados.*|librbd[1-9]|librgw[1-9]|python-ceph.*|python-rados|python-rbd)$/',
       version     => $pinning_version,
