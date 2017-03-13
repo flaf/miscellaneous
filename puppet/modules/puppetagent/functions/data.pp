@@ -24,7 +24,11 @@ function puppetagent::data {
     puppetagent::params::ssldir            => "${etcdir}/ssl",
     puppetagent::params::bindir            => $bindir,
     puppetagent::params::etcdir            => $etcdir,
-   "puppetagent::params::${sd}"            => [ 'trusty', 'jessie' ],
+   "puppetagent::params::${sd}"            => [
+                                               'trusty',
+                                               'xenial',
+                                               'jessie',
+                                              ],
   }
 
 }
