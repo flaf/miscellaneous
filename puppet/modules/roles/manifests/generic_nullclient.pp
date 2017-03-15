@@ -5,8 +5,8 @@ class roles::generic_nullclient {
   $interfaces         = $::network::params::interfaces
   $inventory_networks = $::network::params::inventory_networks
   $admin_email        = ::network::get_param($interfaces, $inventory_networks, 'admin_email')
-  $smtp_relay         = ::network::get_param($interfaces, $inventory_networks, 'smtp_relay'),
-  $smtp_port          = ::network::get_param($interfaces, $inventory_networks, 'smtp_port'),
+  $smtp_relay         = ::network::get_param($interfaces, $inventory_networks, 'smtp_relay')
+  $smtp_port          = ::network::get_param($interfaces, $inventory_networks, 'smtp_port')
 
   unless $admin_email =~ NotUndef {
     @("END"/L$).fail
