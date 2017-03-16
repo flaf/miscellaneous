@@ -14,7 +14,7 @@ network::params::inventory_networks:
       address: 'httpproxy.lss1.backbone.education'
       port: 3128
     apt_proxy:
-      address: 'aptproxy.lss1.backbone.education'
+      address: 'apt.%{::domain}' # For my VBoxLabs I want to use my local APT proxy.
       port: 3142
     pgp_keyserver:
       address: 'keyserver.lss1.backbone.education'
