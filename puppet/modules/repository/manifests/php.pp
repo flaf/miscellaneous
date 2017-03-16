@@ -7,7 +7,7 @@ class repository::php {
    $key_url,
    $fingerprint,
    $supported_distributions,
-  ] = Class['repository::php']
+  ] = Class['repository::php::params']
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
