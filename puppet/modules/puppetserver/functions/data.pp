@@ -5,6 +5,8 @@ function puppetserver::data {
   $puppetdb_memory         = '512m'
   $profile                 = undef
   $modules_repository      = undef
+  $http_proxy              = undef
+  $proxy_for_modrepo       = true
   $strict                  = undef
   $puppetdb_name           = 'puppet'
   $puppetdb_user           = 'puppet'
@@ -24,6 +26,8 @@ function puppetserver::data {
     puppetserver::params::puppetdb_memory        => $puppetdb_memory,
     puppetserver::params::profile                => $profile,
     puppetserver::params::modules_repository     => $modules_repository,
+    puppetserver::params::http_proxy             => $http_proxy,
+    puppetserver::params::proxy_for_modrepo      => $proxy_for_modrepo,
     puppetserver::params::strict                 => $strict,
     puppetserver::params::puppetdb_name          => $puppetdb_name,
     puppetserver::params::puppetdb_user          => $puppetdb_user,

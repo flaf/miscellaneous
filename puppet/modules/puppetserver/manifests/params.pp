@@ -3,6 +3,8 @@ class puppetserver::params (
   String[1]                               $puppetdb_memory,
   Optional[ Puppetserver::Profile ]       $profile = undef,
   Optional[ String[1] ]                   $modules_repository,
+  Optional[ String[1] ]                   $http_proxy,
+  Boolean                                 $proxy_for_modrepo,
   Optional[ Puppetserver::Strict ]        $strict,
   String[1]                               $puppetdb_name,
   String[1]                               $puppetdb_user,

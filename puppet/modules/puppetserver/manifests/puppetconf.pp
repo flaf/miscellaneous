@@ -33,6 +33,8 @@ class puppetserver::puppetconf {
     $profile,
     $puppet_memory,
     $modules_repository,
+    $http_proxy,
+    $proxy_for_modrepo,
     $strict,
     $modules_versions,
     $max_groups,
@@ -391,8 +393,19 @@ class puppetserver::puppetconf {
   $eyaml_bin = '/opt/puppetlabs/server/data/puppetserver/jruby-gems/bin/eyaml'
   $data_dir  = '/opt/puppetlabs/server/data/puppetserver'
 
+  case $http_proxy {
+    Undef: {
+      $gem_server_options = '--no-ri --no-rdoc'
+      $gem_options        = ''
+    }
+    default: {
+      $gem_server_options = "--no-ri --no-rdoc --http_proxy ${http_proxy}"
+      $gem_options        = "--http_proxy ${http_proxy}"
+    }
+  }
+
   exec { 'install-gem-hiera-eyaml':
-    command => "${ppsrv_bin} gem install hiera-eyaml --no-ri --no-rdoc",
+    command => "${ppsrv_bin} gem install hiera-eyaml ${gem_server_options}",
     path    => '/usr/sbin:/usr/bin:/sbin:/bin',
     user    => 'root',
     group   => 'root',
@@ -402,7 +415,7 @@ class puppetserver::puppetconf {
   }
 
   exec { 'install-gem-deep-merge':
-    command => "${ppsrv_bin} gem install deep_merge --no-ri --no-rdoc",
+    command => "${ppsrv_bin} gem install deep_merge ${gem_server_options}",
     path    => '/usr/sbin:/usr/bin:/sbin:/bin',
     user    => 'root',
     group   => 'root',
@@ -418,7 +431,7 @@ class puppetserver::puppetconf {
   # TODO: I thought that a user could take the gem from the
   # puppetserver but I have not found the way to do that.
   exec { 'install-gem-hiera-eyaml-for-user':
-    command => '/opt/puppetlabs/puppet/bin/gem install hiera-eyaml',
+    command => "/opt/puppetlabs/puppet/bin/gem install hiera-eyaml ${gem_options}",
     path    => '/usr/sbin:/usr/bin:/sbin:/bin',
     user    => 'root',
     group   => 'root',
@@ -428,7 +441,7 @@ class puppetserver::puppetconf {
   }
 
   exec { 'install-gem-deep-merge-for-user':
-    command => '/opt/puppetlabs/puppet/bin/gem install deep_merge',
+    command => "/opt/puppetlabs/puppet/bin/gem install deep_merge ${gem_options}",
     path    => '/usr/sbin:/usr/bin:/sbin:/bin',
     user    => 'root',
     group   => 'root',
