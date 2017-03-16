@@ -1,17 +1,23 @@
 class puppetforge {
 
   include '::puppetforge::params'
-  $puppetforge_git_url = $::puppetforge::params::puppetforge_git_url
-  $commit_id           = $::puppetforge::params::commit_id
-  $remote_forge        = $::puppetforge::params::remote_forge
-  $address             = $::puppetforge::params::address
-  $port                = $::puppetforge::params::port
-  $pause               = $::puppetforge::params::pause
-  $modules_git_urls    = $::puppetforge::params::modules_git_urls
-  $release_retention   = $::puppetforge::params::release_retention
-  $sshkeypair          = $::puppetforge::params::sshkeypair # undef is allowed
-  # undef not allowed here.
-  $puppet_bin_dir      = ::homemade::getvar('::puppetforge::params::puppet_bin_dir', $title)
+
+  [
+   $puppetforge_git_url,
+   $http_proxy,
+   $https_proxy,
+   $commit_id,
+   $remote_forge,
+   $address,
+   $port,
+   $pause,
+   $modules_git_urls,
+   $release_retention,
+   $sshkeypair,
+   $puppet_bin_dir,
+  ] = Class['::puppetforge::params']
+
+  ::homemade::fail_if_undef($puppet_bin_dir, 'puppet_bin_dir', $title)
 
   # Some specific directories or files.
   $homedir               = '/var/lib/puppetforge'
@@ -39,6 +45,8 @@ class puppetforge {
   $script_install = @("END")
     [ ! -d '/opt' ] && mkdir '/opt'
     cd '/opt'
+    export http_proxy=${http_proxy}
+    export https_proxy=${https_proxy}
     { git clone '$puppetforge_git_url' puppetforge-server && cd '${workdir}'; } || exit 1
     git reset --hard '${commit_id}'
     bundle install || exit 1

@@ -29,6 +29,8 @@ $sshkeypair = {
 
 class { '::puppetforge::params':
   puppetforge_git_url => 'http://github.com/unibet/puppet-forge-server',
+  http_proxy          => 'http://httproxy.domain.tld:3128',
+  https_proxy         => 'http://httproxy.domain.tld:3128',
   commit_id           => '6f1b224a4e666c754876139f3643b22f3515f5e6',
   remote_forge        => 'https://forgeapi.puppetlabs.com',
   address             => '0.0.0.0',
@@ -49,6 +51,14 @@ The `puppetforge_git_url` is the url of the repository used to
 installed the Puppet forge. The default value of this
 parameter is `'http://github.com/unibet/puppet-forge-server'`
 and you should probably never change this value.
+
+The `http_proxy` and `https_proxy` parameters allow to
+define the environment variables `http_proxy` and
+`https_proxy` if there is a HTTP(s) proxy in the network. In
+this case, it's required during the `git clone` of the
+`puppet-forge-server` repository and during some `gem
+install`. The default value of these parameters is `undef`,
+ie no HTTP(s) proxy is used.
 
 The `commit_id` parameter is the commit ID of the
 git repository used to installd the Puppet forge.
@@ -107,10 +117,14 @@ needed to clone/pull the git repositories. Be careful, **it's
 necessarily a RSA key pair**. If not present, the default value
 of this parameter is `undef` and no ssh key pair is managed.
 
+**Warning:** even with the `sshkeypair` parameter, you have
+to launch some manual `git clone` with the `puppetforge`
+Unix account in order to accept (and put in
+`~/.ssh/known_hosts`) the ssh host keys from all the "git"
+hosts present in the `modules_git_urls` parameter.
+
 
 TODO:
-
-* implement some cleaning procedures.
 
 * implement the service "update-pp-module" via a push
   system (ie the host receives a message from the

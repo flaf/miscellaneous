@@ -1,7 +1,9 @@
 function puppetforge::data {
 
-  $puppetforge_git_url = 'http://github.com/unibet/puppet-forge-server'
-  $commit_id           = 'ab01f3376be081a426798b4333aed0ada920f637' # ie version 1.9.0.
+  $puppetforge_git_url = 'https://github.com/unibet/puppet-forge-server'
+  $http_proxy          = undef
+  $https_proxy         = undef
+  $commit_id           = '7925c3943adbd505c71252f235b05102947dd91a'
   $remote_forge        = 'https://forgeapi.puppetlabs.com'
   $address             = '0.0.0.0'
   $port                = 8080
@@ -15,6 +17,8 @@ function puppetforge::data {
 
   {
     puppetforge::params::puppetforge_git_url => $puppetforge_git_url,
+    puppetforge::params::http_proxy          => $http_proxy,
+    puppetforge::params::https_proxy         => $https_proxy,
     puppetforge::params::commit_id           => $commit_id,
     puppetforge::params::remote_forge        => $remote_forge,
     puppetforge::params::address             => $address,

@@ -1,5 +1,7 @@
 class puppetforge::params (
   String[1]                           $puppetforge_git_url,
+  Optional[ String[1] ]               $http_proxy,
+  Optional[ String[1] ]               $https_proxy,
   String[1]                           $commit_id,
   String[1]                           $remote_forge,
   String[1]                           $address,
