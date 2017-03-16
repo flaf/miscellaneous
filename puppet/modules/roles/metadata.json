@@ -1,6 +1,6 @@
 {
   "name": "flaf-roles",
-  "version": "0.14.4",
+  "version": "0.14.5",
   "author": "flaf",
   "summary": "Module to implement roles, ie very top level classes",
   "license": "Apache-2.0",
@@ -12,7 +12,7 @@
     {"name":"flaf-unix_accounts","version_requirement":"1.1.0"},
     {"name":"flaf-network","version_requirement":"0.9.0"},
     {"name":"flaf-basic_ntp","version_requirement":"0.2.0"},
-    {"name":"flaf-repository","version_requirement":"0.7.0"},
+    {"name":"flaf-repository","version_requirement":"0.7.1"},
     {"name":"flaf-raid","version_requirement":"0.2.1"},
     {"name":"flaf-basic_ssh","version_requirement":"0.3.1"},
     {"name":"flaf-basic_packages","version_requirement":"0.3.0"},

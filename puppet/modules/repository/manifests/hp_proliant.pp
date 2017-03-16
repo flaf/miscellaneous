@@ -9,7 +9,7 @@ class repository::hp_proliant {
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
-  $key      = '882F7199B20F94BD7E3E690EFADD8D64B1275EA3'
+  $key      = '57446EFDE098E5C934B69C7DC208ADDE26C2B797'
   $codename = $::facts['lsbdistcodename']
   $comment  = "Hewlett-Packard ${codename} Repository: Management Component Pack for ProLiant (mcp)."
 
