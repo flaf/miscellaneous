@@ -10,16 +10,6 @@ network::params::inventory_networks:
     dns_servers: [ '195.221.98.7', '195.221.98.9' ]
     ntp_servers: [ '195.221.97.69' ]
     admin_email: '%{alias("_admin_email_")}'
-    http_proxy:
-      address: 'httpproxy.lss1.backbone.education'
-      port: 3128
-    apt_proxy:
-      address: 'apt.%{::domain}' # For my VBoxLabs I want to use my local APT proxy.
-      port: 3142
-    pgp_keyserver:
-      address: 'keyserver.lss1.backbone.education'
-      port: 80
-      proxy_required: false
   freebox_lan:
     comment: [ 'LAN behind the Freebox (dhcp).' ]
     vlan_id: '1000'
