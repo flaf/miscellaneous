@@ -20,6 +20,11 @@ class { '::puppetserver::params':
   puppetdb_memory        => '512m',
   profile                => 'autonomous',
   modules_repository     => 'http://puppetforge.domain.tld',
+  http_proxy             => {
+                             'host'           => 'httpproxy.domain.tld',
+                             'port'           => 3128,
+                             'in_puppet_conf' => false,
+                            },
   strict                 => 'error',
   puppetdb_name          => 'puppet',
   puppetdb_user          => 'puppet',
@@ -75,6 +80,19 @@ forge. If you set this parameter, you must give a complete
 url: for instance `http://mypuppetforge.domain.tld:8080`
 (with the protocol, ie http or https, and the port if
 different of 80).
+
+The `http_proxy` parameter must have the structure in the
+example above or the `undef` value which is the default
+value (in this case the server doesn't use any HTTP proxy at
+all). If set with the structure above, in this case the HTTP
+proxy is used at least during some `gem install` commands
+required during the installation. If the key
+`in_puppet_conf` is set to true, the HTTP proxy is defined
+too in the `puppet.conf` configuration via the options
+`http_proxy_host` and `http_proxy_port`. Warning, in this
+case, the proxy is used for any puppet run (via `puppet
+agent --test`) or for any module installation (via `puppet
+module install ...`).
 
 The `strict` parameter is the value of the option `strict`
 in the `puppet.conf` file. The possible values are `'off'`,
