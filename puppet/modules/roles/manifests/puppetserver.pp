@@ -58,9 +58,31 @@ class roles::puppetserver (
       |- END
   }
 
+  include '::network::params'
+
+  $http_proxy = ::network::get_param(
+                  $::network::params::interfaces,
+                  $::network::params::inventory_networks,
+                  'http_proxy'
+                )
+
+  case $http_proxy {
+    Undef: {
+      $http_proxy_value  = undef
+    }
+    default: {
+      $http_proxy_value  = {
+                             'host'           => $http_proxy['address'],
+                             'port'           => $http_proxy['port'],
+                             'in_puppet_conf' => false,
+                           }
+    }
+  }
+
   class { '::puppetserver::params':
     authorized_backup_keys => $authorized_backup_keys,
     datacenters            => $datacenters,
+    http_proxy             => $http_proxy_value,
   }
 
   # Repository Postgresql needed only for a "autonomous"
