@@ -2,6 +2,9 @@
   $profile,
   $modules_repository,
   $strict,
+  $http_proxy_in_puppet_conf,
+  $http_proxy_host,
+  $http_proxy_port,
 |-%>
 ### This file is managed by Puppet, don't edit it. ###
 
@@ -24,6 +27,10 @@ cacrl = $ssldir/ca_crl.pem
 <%- } -%>
 <%- if $modules_repository !~ Undef { -%>
 module_repository = <%= $modules_repository  %>
+<%- } -%>
+<%- if $http_proxy_in_puppet_conf { -%>
+http_proxy_host = <%= $http_proxy_host %>
+http_proxy_port = <%= $http_proxy_port %>
 <%- } -%>
 
 [master]

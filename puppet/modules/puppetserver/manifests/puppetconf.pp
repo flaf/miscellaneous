@@ -34,7 +34,6 @@ class puppetserver::puppetconf {
     $puppet_memory,
     $modules_repository,
     $http_proxy,
-    $proxy_for_modrepo,
     $strict,
     $modules_versions,
     $max_groups,
@@ -358,6 +357,23 @@ class puppetserver::puppetconf {
     }
   }
 
+  case $http_proxy {
+    Undef: {
+      $http_proxy_host           = undef
+      $http_proxy_port           = undef
+      $http_proxy_in_puppet_conf = false
+      $gem_server_options        = '--no-ri --no-rdoc'
+      $gem_options               = ''
+    }
+    default: {
+      $http_proxy_host           = $http_proxy['host']
+      $http_proxy_port           = $http_proxy['port']
+      $http_proxy_in_puppet_conf = $http_proxy['in_puppet_conf']
+      $gem_server_options        = "--no-ri --no-rdoc --http_proxy http://${http_proxy_host}:${http_proxy_port}"
+      $gem_options               = "--http_proxy http://${http_proxy_host}:${http_proxy_port}"
+    }
+  }
+
   file { "$puppet_path/puppet.conf":
     ensure  => present,
     owner   => 'root',
@@ -366,9 +382,12 @@ class puppetserver::puppetconf {
     before  => Service['puppetserver'],
     notify  => $notify_puppetserver,
     content => epp('puppetserver/puppet.conf.epp',
-                   { 'profile'            => $profile,
-                     'modules_repository' => $modules_repository,
-                     'strict'             => $strict,
+                   { 'profile'                   => $profile,
+                     'modules_repository'        => $modules_repository,
+                     'strict'                    => $strict,
+                     'http_proxy_in_puppet_conf' => $http_proxy_in_puppet_conf,
+                     'http_proxy_host'           => $http_proxy_host,
+                     'http_proxy_port'           => $http_proxy_port,
                    }
                   ),
   }
@@ -392,17 +411,6 @@ class puppetserver::puppetconf {
   $ppsrv_bin = '/opt/puppetlabs/bin/puppetserver'
   $eyaml_bin = '/opt/puppetlabs/server/data/puppetserver/jruby-gems/bin/eyaml'
   $data_dir  = '/opt/puppetlabs/server/data/puppetserver'
-
-  case $http_proxy {
-    Undef: {
-      $gem_server_options = '--no-ri --no-rdoc'
-      $gem_options        = ''
-    }
-    default: {
-      $gem_server_options = "--no-ri --no-rdoc --http_proxy ${http_proxy}"
-      $gem_options        = "--http_proxy ${http_proxy}"
-    }
-  }
 
   exec { 'install-gem-hiera-eyaml':
     command => "${ppsrv_bin} gem install hiera-eyaml ${gem_server_options}",

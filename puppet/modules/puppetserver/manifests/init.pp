@@ -8,7 +8,6 @@ class puppetserver {
     $profile,
     $modules_repository,
     $http_proxy,
-    $proxy_for_modrepo,
     $strict,
     $puppetdb_name,
     $puppetdb_user,
