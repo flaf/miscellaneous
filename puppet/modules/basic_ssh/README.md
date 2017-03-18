@@ -20,9 +20,11 @@ include '::basic_ssh::server'
 The class `basic_ssh::client` has no parameter and just
 installs the ssh client.
 
-The class `basic_ssh::server::params` has only one parameter,
-`permitrootlogin`, which must be equal to the strings
-`yes`, `without-password`, `forced-commands-only` or `no`.
-Its default value is `without-password`.
+The class `basic_ssh::server::params` has only one
+parameter, `permitrootlogin`, which must be equal to the
+strings `yes`, `without-password`, `prohibit-password`,
+`forced-commands-only` or `no`. Its default value is
+`without-password` or `prohibit-password` since Ubuntu
+Xenial.
 
 
