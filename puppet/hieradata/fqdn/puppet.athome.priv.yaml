@@ -4,8 +4,7 @@ enc_included_classes:
 enc_datacenter: 'vboxhome'
 enc_groups: [ 'puppetserver' ]
 
-puppetserver::params::puppet_memory: '4g'
-puppetserver::params::puppetdb_memory: '1g'
+puppetserver::params::puppet_memory: '2g'
 
 network::params::ifaces:
   eth0:
