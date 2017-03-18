@@ -17,6 +17,7 @@ function repository::data {
   $repository_crdp_url                = 'http://repository.crdp.ac-versailles.fr/debian'
   $repositroy_crdp_gpgkey             = 'http://repository.crdp.ac-versailles.fr/crdp.gpg'
   $repositroy_crdp_gpgkey_fingerprint = '741FA112F3B2D515A88593F83DE39DE978BB3659'
+  $puppet_apt_key_fingerprint         = '6F6B 1550 9CF8 E59E 6E46  9F32 7F43 8280 EF8D 349F'
   $sd                                 = 'supported_distributions'
   $default_sd                         = [
                                          'trusty',
@@ -41,6 +42,7 @@ function repository::data {
     repository::puppet::params::src                    => false,
     repository::puppet::params::collection             => undef,
     repository::puppet::params::pinning_agent_version  => undef,
+    repository::puppet::params::apt_key_fingerprint    => $puppet_apt_key_fingerprint,
    "repository::puppet::params::${sd}"                 => $default_sd,
 
     repository::mco::params::url         => $repository_crdp_url,

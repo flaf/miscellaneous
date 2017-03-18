@@ -17,7 +17,7 @@ class pxeserver {
     $puppet_server,
     $puppet_ca_server,
     $puppet_apt_url,
-    $puppet_apt_key,
+    $puppet_apt_key_finger,
     $supported_distributions,
 
     # Variables defined in the body of the class.
@@ -26,6 +26,13 @@ class pxeserver {
   ] = Class['::pxeserver::params']
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
+
+  ::homemade::fail_if_undef($puppet_collection,      'pxeserver::params::puppet_collection',      $title)
+  ::homemade::fail_if_undef($pinning_puppet_version, 'pxeserver::params::pinning_puppet_version', $title)
+  ::homemade::fail_if_undef($puppet_server,          'pxeserver::params::puppet_sever',           $title)
+  ::homemade::fail_if_undef($puppet_ca_server,       'pxeserver::params::puppet_ca_server',       $title)
+  ::homemade::fail_if_undef($puppet_apt_url,         'pxeserver::params::puppet_apt_url',         $title)
+  ::homemade::fail_if_undef($puppet_apt_key_finger,  'pxeserver::params::puppet_apt_key_finger',  $title)
 
   $distribs_provided_array = $distribs_provided.keys
   $distribs_provided_str   = $distribs_provided_array.join(', ')
@@ -264,6 +271,26 @@ class pxeserver {
     require => Package['apache2'],
   }
 
+  $puppet_apt_key_finger_cleaned = $puppet_apt_key_finger.regsubst(/^0x/, '').regsubst(' ', '', 'G')
+  $puppet_apt_key_name           = 'puppetkey.gpg'
+  $puppet_apt_key_path           = "/var/www/html/${puppet_apt_key_name}"
+
+  exec { 'create-apt-puppet-key':
+    command => "apt-key export ${puppet_apt_key_finger_cleaned} > ${puppet_apt_key_path}",
+    path    => '/usr/sbin:/usr/bin:/sbin:/bin',
+    user    => 'root',
+    group   => 'root',
+    creates => $puppet_apt_key_path,
+  }
+
+  # If the file is unmanaged, the file is remove during each puppet run.
+  file { $puppet_apt_key_path:
+    ensure => file,
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0644',
+  }
+
   file { '/var/www/html/late-command-install-puppet':
     ensure  => present,
     owner   => 'root',
@@ -277,7 +304,7 @@ class pxeserver {
                     'puppet_server'          => $puppet_server,
                     'puppet_ca_server'       => $puppet_ca_server,
                     'puppet_apt_url'         => $puppet_apt_url,
-                    'puppet_apt_key'         => $puppet_apt_key,
+                    'puppet_apt_key_url'     => "http://${my_ip}/${puppet_apt_key_name}",
                    },
                   ),
   }

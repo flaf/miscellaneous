@@ -5,6 +5,7 @@ class repository::puppet {
   [
    $url,
    $src,
+   $apt_key_fingerprint,
    $collection,
    $pinning_agent_version,
    $supported_distributions,
@@ -15,15 +16,13 @@ class repository::puppet {
   ::homemade::fail_if_undef($collection, 'collection', $title)
   ::homemade::fail_if_undef($pinning_agent_version, 'pinning_agent_version', $title)
 
-  # PGP key which expires in 2019-02-11.
-  $key         = '6F6B 1550 9CF8 E59E 6E46  9F32 7F43 8280 EF8D 349F'
   $collec_down = $collection.downcase
   $collec_up   = $collection.upcase
   $codename    = $::facts['lsbdistcodename']
   $comment     = "Puppetlabs ${collec_up} ${codename} Repository."
 
   repository::aptkey { 'puppetlabs':
-    id => $key,
+    id => $apt_key_fingerprint,
   }
 
   repository::sourceslist { "puppetlabs-${collec_down}":

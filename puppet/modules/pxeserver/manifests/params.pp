@@ -13,7 +13,7 @@ class pxeserver::params (
   Optional[ String[1] ]                               $puppet_server,
   Optional[ String[1] ]                               $puppet_ca_server,
   Optional[ String[1] ]                               $puppet_apt_url,
-  Optional[ String[1] ]                               $puppet_apt_key,
+  Optional[ String[1] ]                               $puppet_apt_key_finger,
   Array[String[1], 1]                                 $supported_distributions,
 ) {
 

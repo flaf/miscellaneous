@@ -47,7 +47,7 @@ class { '::pxeserver::params':
   puppet_server          => 'puppet.domain.tld',
   puppet_ca_server       => 'puppet.domain.tld',
   puppet_apt_url         => 'http://apt.puppetlabs.com',
-  puppet_apt_key         => 'http://apt.puppetlabs.com/pubkey.gpg',
+  puppet_apt_key_finger  => '6F6B 1550 9CF8 E59E 6E46  9F32 7F43 8280 EF8D 349F',
 }
 
 include '::pxeserver'
@@ -121,14 +121,21 @@ in the preseed files. If not set, its default value
 is `''` (an empty string) and no APT proxy is set in
 this case.
 
+**Remark about APT proxy:** if the preseed configuration of
+a PXE entry set a HTTP proxy, if you want you can edit
+manually the boot options and replace the file `preseed.cfg`
+by the file `preseed-noproxy.cfg` to have exactly the same
+configuration but without HTTP proxy.
+
 The remaining parameters concerned Puppet and, for each, the
 default value is `undef` and you must provide a value.
-Indeed, the PXE server provides installation where the
+Indeed, the PXE server provides installations where the
 puppet-agent package is automatically installed with a
 specific version. All these parameters are clear. Just a
-remark concerning the parameter `puppet_apt_key`. This
-parameter must be any url where the APT key of Puppetlabs
-will be downloaded via wget during the PXE installation.
+remark concerning the parameter `puppet_apt_key_finger`.
+This parameter must be the fingerprint of the current APT
+public key of Puppetlabs (this key is downloaded by the
+"client" PXE via the PXE server).
 
 
 # How to add a custom PXE entry

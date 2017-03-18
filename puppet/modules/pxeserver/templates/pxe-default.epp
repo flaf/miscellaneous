@@ -32,11 +32,20 @@ MENU COLOR timeout_msg 31;41    #90ffff00 #00000000 std
 LABEL warning
     MENU LABEL Warning about the lack of RAM (read me please)
     TEXT HELP
-    WARNING, if you have strange and incomprehensible errors
+    WARNING: if you have strange and incomprehensible errors
     of this kind "Maybe bad mirror...", check the RAM of
     your machine. For instance, with Ubuntu Trusty, a PXE
     installation is impossible with only 256MB of RAM. You
     need 512MB.
+    ENDTEXT
+
+LABEL information
+    MENU LABEL Information about the HTTP proxy (read me please)
+    TEXT HELP
+    INFORMATION: if a "preseed.cfg" file set a HTTP proxy,
+    you can edit manually the boot options and replace this
+    file by "preseed-noproxy.cfg" to have exactly the same
+    preseed configuration but without HTTP proxy.
     ENDTEXT
 
 MENU SEPARATOR
@@ -48,7 +57,7 @@ LABEL local
     # The default entry if the user just presses Enter before the timeout
     MENU DEFAULT
 
-MENU SEPARATOR
+#MENU SEPARATOR
 
 #######################################
 ### Expert and manual installations ###

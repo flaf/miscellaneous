@@ -108,21 +108,35 @@ define pxeserver::pxe_entry (
   }.join($join_preseed_str)
   # End of the settings of the $late_command variable.
 
+  $preseed_hash = {
+    'distrib'               => $distrib,
+    'apt_proxy'             => $apt_proxy,
+    'partman_early_command' => $partman_early_command,
+    'partman_auto_disk'     => $partman_auto_disk,
+    'skip_boot_loader'      => $skip_boot_loader,
+    'late_command'          => $late_command,
+  }
+
+  $preseed_basic_settings = {
+    'ensure' => 'file',
+    'owner'  => 'root',
+    'group'  => 'root',
+    'mode'   => '0644',
+  }
+
   file { "/var/www/html/${title}/preseed.cfg":
-    ensure  => present,
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0644',
-    content => epp("pxeserver/preseed-${distrib}.cfg.epp",
-                   {
-                    'distrib'               => $distrib,
-                    'apt_proxy'             => $apt_proxy,
-                    'partman_early_command' => $partman_early_command,
-                    'partman_auto_disk'     => $partman_auto_disk,
-                    'skip_boot_loader'      => $skip_boot_loader,
-                    'late_command'          => $late_command,
-                   },
-                  ),
+    *       => $preseed_basic_settings,
+    content => epp("pxeserver/preseed-${distrib}.cfg.epp", $preseed_hash),
+  }
+
+  if $apt_proxy != '' {
+    $preseed_hash_noproxy = $preseed_hash + { 'apt_proxy' => '' }
+    file { "/var/www/html/${title}/preseed-noproxy.cfg":
+      *       => $preseed_basic_settings,
+      content => epp("pxeserver/preseed-${distrib}.cfg.epp", $preseed_hash_noproxy),
+    }
   }
 
 }
+
+

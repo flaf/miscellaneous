@@ -4,7 +4,7 @@ String[1] $pinning_puppet_version,
 String[1] $puppet_server,
 String[1] $puppet_ca_server,
 String[1] $puppet_apt_url,
-String[1] $puppet_apt_key,
+String[1] $puppet_apt_key_url,
 |-%>
 #!/bin/sh
 
@@ -25,7 +25,7 @@ apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --yes lsb-relea
 apt-get update
 
 apt-get install --yes wget # with a minimal install of Xenial, wget is not installed.
-wget <%= $puppet_apt_key %> -O - | apt-key add -
+wget <%= $puppet_apt_key_url %> -O - | apt-key add -
 
 COLLECTION='<%= $puppet_collection %>'
 distrib=$(lsb_release -sc)

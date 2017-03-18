@@ -90,7 +90,7 @@ class roles::pxeserver (
     puppet_server          => $::puppetagent::params::server,
     puppet_ca_server       => $::puppetagent::params::ca_server,
     puppet_apt_url         => $::repository::puppet::params::url,
-    puppet_apt_key         => [ $::repository::puppet::params::url, 'pubkey.gpg' ].join('/'),
+    puppet_apt_key_finger  => $::repository::puppet::params::apt_key_fingerprint,
   }
 
   include '::pxeserver'
