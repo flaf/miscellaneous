@@ -2,6 +2,7 @@
   $profile,
   $modules_repository,
   $strict,
+  $strict_variables,
   $http_proxy_in_puppet_conf,
   $http_proxy_host,
   $http_proxy_port,
@@ -21,6 +22,9 @@
 ssldir = $confdir/ssl { owner = service, mode = 0750 }
 <%- if $strict !~ Undef { -%>
 strict = <%= $strict %>
+<%- } -%>
+<%- if $strict_variables !~ Undef { -%>
+strict_variables = <%= "${strict_variables}" %>
 <%- } -%>
 <%- if $profile == 'client' { -%>
 cacrl = $ssldir/ca_crl.pem

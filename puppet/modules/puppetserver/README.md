@@ -26,6 +26,7 @@ class { '::puppetserver::params':
                              'in_puppet_conf' => false,
                             },
   strict                 => 'error',
+  strict_variables       => true,
   puppetdb_name          => 'puppet',
   puppetdb_user          => 'puppet',
   puppetdb_pwd           => '123456',
@@ -99,6 +100,13 @@ in the `puppet.conf` file. The possible values are `'off'`,
 `'warning'`, `'error'` and `undef` (the default). When the
 value is `undef`, the option is just not present in the file
 `puppet.conf` and, in this case, the default value from
+Puppet software is set.
+
+The `strict_variables` parameter is the value of the option
+`strict_variables` in the `puppet.conf` file. The possible
+values are `true` (the default value), `false` or `undef`.
+When the value is `undef`, the option is just not present in
+the `puppet.conf` and, in this case, the default value from
 Puppet software is set.
 
 The `puppetdb_name`, `puppetdb_user` and `puppetdb_pwd`

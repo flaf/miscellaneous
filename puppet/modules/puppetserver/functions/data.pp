@@ -7,6 +7,7 @@ function puppetserver::data {
   $modules_repository      = undef
   $http_proxy              = undef
   $strict                  = undef
+  $strict_variables        = true
   $puppetdb_name           = 'puppet'
   $puppetdb_user           = 'puppet'
   $puppetdb_pwd            = undef
@@ -27,6 +28,7 @@ function puppetserver::data {
     puppetserver::params::modules_repository     => $modules_repository,
     puppetserver::params::http_proxy             => $http_proxy,
     puppetserver::params::strict                 => $strict,
+    puppetserver::params::strict_variables       => $strict_variables,
     puppetserver::params::puppetdb_name          => $puppetdb_name,
     puppetserver::params::puppetdb_user          => $puppetdb_user,
     puppetserver::params::puppetdb_pwd           => $puppetdb_pwd,

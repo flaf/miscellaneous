@@ -5,6 +5,7 @@ class puppetserver::params (
   Optional[ String[1] ]                   $modules_repository,
   Optional[ Puppetserver::HttpProxy ]     $http_proxy,
   Optional[ Puppetserver::Strict ]        $strict,
+  Optional[ Boolean ]                     $strict_variables,
   String[1]                               $puppetdb_name,
   String[1]                               $puppetdb_user,
   Optional[ String[1] ]                   $puppetdb_pwd,
