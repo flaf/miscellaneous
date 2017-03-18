@@ -2,7 +2,12 @@ class locale {
 
   include '::locale::params'
 
-  $default_locale = $::locale::params::default_locale
+  [
+    $default_locale,
+    $supported_distributions,
+  ] = Class['::locale::params']
+
+  ::homemade::is_supported_distrib($supported_distributions, $title)
 
   file { '/etc/default/locale':
     ensure  => present,
