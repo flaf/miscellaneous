@@ -2,11 +2,16 @@ class keyboard {
 
   include '::keyboard::params'
 
-  $xkbmodel   = $::keyboard::params::xkbmodel
-  $xkblayout  = $::keyboard::params::xkblayout
-  $xkbvariant = $::keyboard::params::xkbvariant
-  $xkboptions = $::keyboard::params::xkboptions
-  $backspace  = $::keyboard::params::backspace
+  [
+    $xkbmodel,
+    $xkblayout,
+    $xkbvariant,
+    $xkboptions,
+    $backspace,
+    $supported_distributions,
+  ] = Class['::keyboard::params']
+
+  ::homemade::is_supported_distrib($supported_distributions, $title)
 
   $conf_hash = {
     'xkbmodel'   => $xkbmodel,
@@ -25,12 +30,14 @@ class keyboard {
   }
 
   case $::lsbdistcodename {
-    'trusty': {
-      $command = 'dpkg-reconfigure --frontend=noninteractive keyboard-configuration'
-    }
-    default: {
-      # With Wheezy, it's was the same too.
+    'jessie': {
+      # With Wheezy it's was the same command too.
       $command = 'service keyboard-setup restart'
+    }
+    # Currently, this command is OK for Ubuntu distributions
+    # supported by this module.
+    default: {
+      $command = 'dpkg-reconfigure --frontend=noninteractive keyboard-configuration'
     }
   }
 
