@@ -19,14 +19,4 @@ network::params::ifaces:
     inet:
       method: 'dhcp'
 
-#    '::repository::distrib',
-#    '::raid',
-#    '::basic_ssh::server',
-#    '::basic_ssh::client',
-#    '::keyboard',
-#    '::locale',
-#    '::timezone',
-#    '::puppetagent',
-#    '::mcollective::server',
-#    '::snmp',
 
