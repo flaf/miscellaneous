@@ -29,7 +29,7 @@ class keyboard {
     content => epp('keyboard/default.keyboard.epp', $conf_hash),
   }
 
-  case $::lsbdistcodename {
+  case $::facts['os']['distro']['codename'] {
     'jessie': {
       # With Wheezy it's was the same command too.
       $command = 'service keyboard-setup restart'
