@@ -12,7 +12,12 @@ function snmp::data {
     default => $::datacenter,
   }
 
-  $sd = 'supported_distributions';
+  $sd                      = 'supported_distributions'
+  $supported_distributions = [
+                              'trusty',
+                              'xenial',
+                              'jessie',
+                             ];
 
   {
     snmp::params::interface       => $interface,
@@ -22,7 +27,7 @@ function snmp::data {
     snmp::params::snmpv3_accounts => $snmpv3_accounts,
     snmp::params::communities     => $communities,
     snmp::params::views           => $views,
-   "snmp::params::${sd}"          => ['trusty', 'jessie'],
+   "snmp::params::${sd}"          => $supported_distributions,
 
     # Merging policy.
     lookup_options => {

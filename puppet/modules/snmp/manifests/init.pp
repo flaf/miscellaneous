@@ -2,13 +2,18 @@ class snmp {
 
   include '::snmp::params'
 
-  $interface       = $::snmp::params::interface
-  $port            = $::snmp::params::port
-  $syslocation     = $::snmp::params::syslocation
-  $syscontact      = $::snmp::params::syscontact
-  $snmpv3_accounts = $::snmp::params::snmpv3_accounts
-  $communities     = $::snmp::params::communities
-  $views           = $::snmp::params::views
+  [
+    $interface,
+    $port,
+    $syslocation,
+    $syscontact,
+    $snmpv3_accounts,
+    $communities,
+    $views,
+    $supported_distributions,
+  ] = Class['::snmp::params']
+
+  ::homemade::is_supported_distrib($supported_distributions, $title)
 
   ensure_packages( [ 'snmpd' ], { ensure => present } )
 
