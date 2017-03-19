@@ -1,0 +1,16 @@
+<%- |Eximnullclient::PasswdClient $passwd_client| -%>
+### This file is managed by Puppet, don't edit it. ###
+
+# password file used when the local exim is authenticating to a remote
+# host as a client.
+#
+# see exim4_passwd_client(5) for more documentation
+#
+# Example:
+### target.mail.server.example:login:password
+
+<%- $passwd_client.each |$line| { -%>
+<%= $line['target'] %>:<%= $line['login'] %>:<%= $line['password'] %>
+<%- } -%>
+
+

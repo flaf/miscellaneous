@@ -1,4 +1,4 @@
-<%-| String $redirect_local_mails |-%>
+<%-| Optional[String[1]] $redirect_local_mails |-%>
 ### This file is managed by Puppet, don't edit it. ###
 
 ######################################################################
@@ -11,7 +11,7 @@
 
 begin routers
 
-<%- if $redirect_local_mails =~ String[1] { -%>
+<%- if $redirect_local_mails !~ Undef { -%>
 domains_virtual_others:
   driver = redirect
   data   = ${lookup{@$domain}lsearch{/etc/exim4/aliases.virtual}}
