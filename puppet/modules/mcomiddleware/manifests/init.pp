@@ -10,6 +10,7 @@ class mcomiddleware  {
     $admin_pwd,
     $mcollective_pwd,
     $exchanges,
+    $supported_distributions,
   ] = Class['::mcomiddleware::params']
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
