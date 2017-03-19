@@ -1,6 +1,6 @@
 {
   "name": "flaf-keyboard",
-  "version": "0.2.1",
+  "version": "0.2.3",
   "author": "flaf",
   "summary": "Module to set the keyboard configuration",
   "license": "Apache-2.0",
@@ -9,8 +9,8 @@
   "issues_url": null,
   "data_provider": "function",
   "dependencies": [
-    {"name":"puppetlabs-stdlib","version_requirement":">= 4.11.0"},
-    {"name":"flaf-homemade","version_requirement":">= 0.1.6"}
+    {"name":"puppetlabs-stdlib","version_requirement":">= 4.13.1"},
+    {"name":"flaf-homemade","version_requirement":">= 0.1.7"}
   ]
 }
 
