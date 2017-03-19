@@ -6,7 +6,7 @@ define ceph::node (
 ) {
 
   include '::ceph::params'
-  $supported_distribution = $::ceph::params::supported_distribution
+  $supported_distributions = $::ceph::params::supported_distributions
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
   # Check if $nodetype and $client_accounts are consistent.
