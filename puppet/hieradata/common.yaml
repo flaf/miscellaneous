@@ -42,7 +42,7 @@ network::params::inventory_networks:
     dhcp_range: [ '10.0.0.210', '10.0.0.220' ]
     admin_email: '%{alias("_admin_email_")}'
 
-_admin_email_: 'admin@flaf.fr'
+_admin_email_: 'francois.lafont@ac-versailles.fr'
 
 unix_accounts::params::users:
   root:

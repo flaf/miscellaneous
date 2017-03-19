@@ -1,6 +1,6 @@
 ---
 enc_included_classes:
-  - [ 'flaf', '::roles::generic' ]
+  - [ 'flaf', '::roles::generic_nullclient' ]
   #- [ 'flaf', '::unix_accounts' ]
   #- [ 'flaf', '::basic_packages' ]
   #- [ 'flaf', '::network' ]
