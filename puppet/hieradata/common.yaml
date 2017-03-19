@@ -1,4 +1,14 @@
 ---
+_admin_email_: 'francois.lafont@ac-versailles.fr'
+_smtp_relay_: 'smtp.googlemail.com'
+_smtp_port_: 587
+
+# Update this key if necessary.
+eximnullclient::params::passwd_client:
+  - target: '*.google.com'
+    login: 'flaf.misc[arobase]gmail.com'
+    password: 'xxx...'
+
 network::params::inventory_networks:
   net97:
     comment: [ 'Historical "97" network at lss1.' ]
@@ -33,6 +43,8 @@ network::params::inventory_networks:
     #http_proxy: { 'address': '172.16.5.1', 'port': 3128 }
     #pgp_keyserver: { 'address': '172.16.5.1', 'port': 80, 'proxy_required': true }
     admin_email: '%{alias("_admin_email_")}'
+    smtp_relay: '%{alias("_smtp_relay_")}'
+    smtp_port: '%{alias("_smtp_port_")}'
   vbox_priv:
     comment: [ 'Private LAN n2 in VBox (dhcp wihout gateway and dns).' ]
     vlan_id: '1002'
@@ -41,8 +53,6 @@ network::params::inventory_networks:
     cidr_address: '10.0.0.0/24'
     dhcp_range: [ '10.0.0.210', '10.0.0.220' ]
     admin_email: '%{alias("_admin_email_")}'
-
-_admin_email_: 'francois.lafont@ac-versailles.fr'
 
 unix_accounts::params::users:
   root:
