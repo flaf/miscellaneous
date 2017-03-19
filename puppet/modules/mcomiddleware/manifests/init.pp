@@ -1,14 +1,22 @@
 class mcomiddleware  {
 
-  $params = '::mcomiddleware::params'
-  include $params
-  $stomp_ssl_ip    = ::homemade::getvar("${params}::stomp_ssl_ip",    $title)
-  $stomp_ssl_port  = ::homemade::getvar("${params}::stomp_ssl_port",  $title)
-  $ssl_versions    = ::homemade::getvar("${params}::ssl_versions",    $title)
-  $puppet_ssl_dir  = ::homemade::getvar("${params}::puppet_ssl_dir",  $title)
-  $admin_pwd       = ::homemade::getvar("${params}::admin_pwd",       $title)
-  $mcollective_pwd = ::homemade::getvar("${params}::mcollective_pwd", $title)
-  $exchanges       = ::homemade::getvar("${params}::exchanges",       $title)
+  include '::mcomiddleware::params'
+
+  [
+    $stomp_ssl_ip,
+    $stomp_ssl_port,
+    $ssl_versions,
+    $puppet_ssl_dir,
+    $admin_pwd,
+    $mcollective_pwd,
+    $exchanges,
+  ] = Class['::mcomiddleware::params']
+
+  ::homemade::is_supported_distrib($supported_distributions, $title)
+
+  ::homemade::fail_if_undef($puppet_ssl_dir,  'mcomiddleware::params::puppet_ssl_dir',  $title)
+  ::homemade::fail_if_undef($admin_pwd,       'mcomiddleware::params::admin_pwd',       $title)
+  ::homemade::fail_if_undef($mcollective_pwd, 'mcomiddleware::params::mcollective_pwd', $title)
 
   $packages = [ 'rabbitmq-server',
                 'python',          # Needed for the cli rabbitmqadmin.
