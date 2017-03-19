@@ -1,12 +1,19 @@
 class ceph {
 
-  $params = '::ceph::params'
-  include $params
-  $cluster_name    = ::homemade::getvar("${params}::cluster_name", $title)
-  $cluster_conf    = ::homemade::getvar("${params}::cluster_conf", $title)
-  $nodetype        = ::homemade::getvar("${params}::nodetype", $title)
-  # the variable $client_accounts can be undef.
-  $client_accounts = getvar("${params}::client_accounts")
+  include '::ceph::params'
+
+  [
+    $cluster_name,
+    $cluster_conf,
+    $nodetype,
+    $client_accounts, # the variable $client_accounts can be undef.
+    $supported_distributions,
+  ] = Class['::ceph::params']
+
+  ::homemade::is_supported_distrib($supported_distributions, $title)
+
+  ::homemade::fail_if_undef($cluster_conf, 'ceph::params::cluster_conf', $title)
+  ::homemade::fail_if_undef($nodetype,     'ceph::params::nodetype',     $title)
 
   ::ceph::node { $cluster_name:
     cluster_conf    => $cluster_conf,

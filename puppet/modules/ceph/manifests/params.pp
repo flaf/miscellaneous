@@ -5,9 +5,6 @@ class ceph::params (
   Optional[Array[String[1], 1]] $client_accounts,
   Array[String[1], 1]           $supported_distributions,
 ) {
-
-  ::homemade::is_supported_distrib($supported_distributions, $title)
-
 }
 
 

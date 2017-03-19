@@ -5,6 +5,10 @@ define ceph::node (
   Optional[Array[String[1], 1]] $client_accounts = undef,
 ) {
 
+  include '::ceph::params'
+  $supported_distribution = $::ceph::params::supported_distribution
+  ::homemade::is_supported_distrib($supported_distributions, $title)
+
   # Check if $nodetype and $client_accounts are consistent.
   case [$nodetype == 'clientnode', $client_accounts] {
     [true,  Undef]: {

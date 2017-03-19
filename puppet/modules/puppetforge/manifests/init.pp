@@ -15,7 +15,10 @@ class puppetforge {
    $release_retention,
    $sshkeypair,
    $puppet_bin_dir,
+   $supported_distributions,
   ] = Class['::puppetforge::params']
+
+  ::homemade::is_supported_distrib($supported_distributions, $title)
 
   ::homemade::fail_if_undef($puppet_bin_dir, 'puppet_bin_dir', $title)
 
