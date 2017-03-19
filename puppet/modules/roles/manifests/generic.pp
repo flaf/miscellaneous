@@ -14,6 +14,7 @@ class roles::generic (
     '::keyboard',
     '::locale',
     '::timezone',
+    '::wget',
     '::puppetagent',
     '::mcollective::server',
     '::snmp',
@@ -175,6 +176,38 @@ class roles::generic (
           http_proxy => $http_proxy_value,
           keyserver  => $keyserver_value,
         }
+
+      }
+
+
+      ############
+      ### wget ###
+      ############
+      '::wget': {
+
+        $http_proxy = ::network::get_param(
+                        $::network::params::interfaces,
+                        $::network::params::inventory_networks,
+                        'http_proxy',
+                      )
+
+        case $http_proxy {
+          Undef: {
+            $http_proxy_value = undef
+          }
+          default: {
+            $proxy_address    = $http_proxy['address']
+            $proxy_port       = $http_proxy['port']
+            $http_proxy_value = "http://${proxy_address}:${proxy_port}"
+          }
+        }
+
+        class { '::wget::params':
+          http_proxy  => $http_proxy_value,
+          https_proxy => $http_proxy_value,
+        }
+
+        include '::wget'
 
       }
 
