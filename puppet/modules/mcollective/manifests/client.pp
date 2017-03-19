@@ -1,28 +1,42 @@
 class mcollective::client {
 
-  $params = '::mcollective::client::params'
-  include $params
-  $collectives        = ::homemade::getvar("${params}::collectives", $title)
-  $private_key        = ::homemade::getvar("${params}::private_key", $title)
-  $public_key         = ::homemade::getvar("${params}::public_key", $title)
-  $server_public_key  = ::homemade::getvar("${params}::server_public_key", $title)
-  $connector          = ::homemade::getvar("${params}::connector", $title)
-  $middleware_address = ::homemade::getvar("${params}::middleware_address", $title)
-  $middleware_port    = ::homemade::getvar("${params}::middleware_port", $title)
-  $mcollective_pwd    = ::homemade::getvar("${params}::mcollective_pwd", $title)
-  $mco_tag            = ::homemade::getvar("${params}::mco_tag", $title)
-  $mco_plugins        = ::homemade::getvar("${params}::mco_plugins", $title)
-  $puppet_ssl_dir     = ::homemade::getvar("${params}::puppet_ssl_dir", $title)
-  $collectives_sorted = ::homemade::getvar("${params}::collectives_sorted", $title)
+  include '::mcollective::client::params'
+
+  [
+    $collectives,
+    $private_key,
+    $public_key,
+    $server_public_key,
+    $connector,
+    $middleware_address,
+    $middleware_port,
+    $mcollective_pwd,
+    $mco_tag,
+    $mco_plugins,
+    $puppet_ssl_dir,
+    $collectives_sorted,
+    $supported_distributions,
+  ] = Class['::mcollective::client::params']
+
+  ::homemade::is_supported_distrib($supported_distributions, $title)
+
+  ::homemade::fail_if_undef($private_key,        'mcollective::server::params::private_key',        $title)
+  ::homemade::fail_if_undef($public_key,         'mcollective::server::params::public_key',         $title)
+  ::homemade::fail_if_undef($server_public_key,  'mcollective::server::params::server_public_key',  $title)
+  ::homemade::fail_if_undef($middleware_address, 'mcollective::server::params::middleware_address', $title)
+  ::homemade::fail_if_undef($middleware_port,    'mcollective::server::params::middleware_port',    $title)
+  ::homemade::fail_if_undef($mcollective_pwd,    'mcollective::server::params::mcollective_pwd',    $title)
+  ::homemade::fail_if_undef($puppet_ssl_dir,     'mcollective::server::params::puppet_ssl_dir',     $title)
 
   include '::mcollective::common_paths'
-  $client_priv_key_path    = $::mcollective::common_paths::client_priv_key_path
-  $client_pub_key_path     = $::mcollective::common_paths::client_pub_key_path
-  $client_pub_key_path_exp = $::mcollective::common_paths::client_pub_key_path_exp
-  $server_pub_key_path     = $::mcollective::common_paths::server_pub_key_path_for_client
-
-
-  require '::mcollective::package'
+  [
+    $client_priv_key_path,
+    $client_pub_key_path,
+    $client_pub_key_path_exp,
+    $server_pub_key_path_for_client,
+  ] = Class['::mcollective::common_paths']
+  # For convenience.
+  $server_pub_key_path = $server_pub_key_path_for_client
 
   ensure_packages($mco_plugins, { ensure => present, })
 
