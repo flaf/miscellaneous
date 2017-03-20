@@ -162,7 +162,7 @@ class roles::generic (
           [NotUndef, false]: {
             $http_proxy_value = undef
           }
-          [NotUndef, default]: {
+          [NotUndef, true]: {
             $proxy_address    = $http_proxy['address']
             $proxy_port       = $http_proxy['port']
             $http_proxy_value = "http://${proxy_address}:${proxy_port}"
