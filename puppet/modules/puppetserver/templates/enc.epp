@@ -8,6 +8,7 @@
 ### This file is managed by Puppet, don't edit it.
 
 require 'yaml'
+require 'json'
 
 # The maximum number of hiera groups allowed.
 MAX_GROUPS = <%= $max_groups %>
@@ -16,16 +17,6 @@ MAX_GROUPS = <%= $max_groups %>
 ENV_DIR = File.expand_path(File.dirname(__FILE__))
 
 fqdn = ARGV[0]
-
-# Ouput of the ENC which must be completed.
-output = '{
-  "environment": "###environment###",
-  "parameters":
-  {
-    ###parameters###
-  }
-}
-'
 
 # Search for the $fqdn.yaml file in hieradata. Exactly only
 # one file must exist (not 0 or 2 etc).
@@ -90,83 +81,91 @@ unless hash.has_key?('enc_groups') then hash['enc_groups'] = [] end
 # The "datacenter" variable will be updated via the key
 # "enc_datacenter" in the loop below.
 datacenter = nil
-parameters = ''
+parameters_hash = {}
+
+
+
 
 # Only keys which start with "enc_" are handled.
 hash.select { |key, value| key =~ /^enc_/ }.each do |key, value|
 
   key = key.sub(/^enc_/, '')
 
-  # Handle when the value is a string or a number.
-  if value.is_a?(String) or value.is_a?(Numeric)
-    if value.is_a?(Numeric) then value = value.to_s() end
-    value = value.gsub('"', '\\"') # Escape " in value.
-    parameters += "\"#{key}\": \"#{value}\",\n    "
-    if key == 'datacenter' then datacenter = value end
-  end
+  # In _any_ case, we can add the value in the parameters hash.
+  # We will make some checks after.
+  parameters_hash[key] = value
 
-  # Handle when the value is a array.
-  if value.is_a?(Array)
+  # The "groups" key is specal because we want to add
+  # automatically some groups "dir/common" when it's
+  # needed (when there is a group "dir/foo").
+  if key == 'groups'
 
-    # The "groups" key is specal because we want to add
-    # automatically some groups "dir/common" when it's
-    # needed (when there is a group "dir/foo").
-    if key == 'groups'
+    unless value.is_a?(Array)
+      STDERR.puts "Sorry, the enc_groups key must be an array of strings " \
+                  "in the `#{fqdn}.yaml' file."
+      exit(1)
+    end
 
-      if value.uniq.length != value.length
-        STDERR.puts "Sorry, there are duplicated groups in the enc_groups " \
-                    "key in the `#{fqdn}.yaml' file."
-        exit(1)
-      end
-
-      additional_common_groups = value.select { |e| e.include?('/') }.map do |e|
-        unless e.count('/') == 1
-          STDERR.puts "Sorry, the group `#{e}' is not valid in the " \
-                      "`#{fqdn}.yaml' file. A group can contain only " \
-                      "0 or 1 slash character (max depth is 1)."
-          exit(1)
-        end
-        if e[0] == '/' or e[-1] == '/'
-          STDERR.puts "Sorry, the group `#{e}' is not valid in the " \
-                      "`#{fqdn}.yaml' file. The first and the last " \
-                      "character in the group name can't be a slash."
-          exit(1)
-        end
-
-        # The name of the group is OK.
-        additional_group = e.split('/')[0] + '/common'
-
-        if File.file?("#{ENV_DIR}/#{environment}/hieradata/group/#{additional_group}.yaml")
-          # The yaml file exists, we can add the group.
-          additional_group
-        else
-          # The yaml file doesn't exist, we don't add the group.
-          nil
-        end
-
-      end
-      .compact # To remove nil elements.
-      .uniq    # To avoid duplicated "dir/common" if the
-               # array "value" already contains "dir/a" and
-               # "dir/b" (for instance).
-
-      # Add addtional common groups in "value" only if not
-      # already present in "value". For instance, if value
-      # is equal to [ "foo/common" ], it's useless to add
-      # the group "foo/commonce" again.
-      additional_common_groups.each do |a_group|
-        unless value.include?(a_group)
-          value.push(a_group)
-        end
-      end
-
-      if value.size > MAX_GROUPS
-        STDERR.puts "Sorry, the host #{fqdn} belongs to #{value.size} " \
-                    "hiera-groups and the maximum allowed is #{MAX_GROUPS}."
+    value.each do |e|
+      unless e.is_a?(String)
+        STDERR.puts "Sorry, the enc_groups key must be an array of strings " \
+                    "in the `#{fqdn}.yaml' file."
         exit(1)
       end
     end
-    parameters += "\"#{key}\": #{value.to_s()},\n    "
+
+    if value.uniq.length != value.length
+      STDERR.puts "Sorry, there are duplicated groups in the enc_groups " \
+                  "key in the `#{fqdn}.yaml' file."
+      exit(1)
+    end
+
+    additional_common_groups = value.select { |e| e.include?('/') }.map do |e|
+      unless e.count('/') == 1
+        STDERR.puts "Sorry, the group `#{e}' is not valid in the " \
+                    "`#{fqdn}.yaml' file. A group can contain only " \
+                    "0 or 1 slash character (max depth is 1)."
+        exit(1)
+      end
+      if e[0] == '/' or e[-1] == '/'
+        STDERR.puts "Sorry, the group `#{e}' is not valid in the " \
+                    "`#{fqdn}.yaml' file. The first and the last " \
+                    "character in the group name can't be a slash."
+        exit(1)
+      end
+
+      # The name of the group is OK.
+      additional_group = e.split('/')[0] + '/common'
+
+      if File.file?("#{ENV_DIR}/#{environment}/hieradata/group/#{additional_group}.yaml")
+        # The yaml file exists, we can add the group.
+        additional_group
+      else
+        # The yaml file doesn't exist, we don't add the group.
+        nil
+      end
+
+    end
+    .compact # To remove nil elements.
+    .uniq    # To avoid duplicated "dir/common" if the
+             # array "value" already contains "dir/a" and
+             # "dir/b" (for instance).
+
+    # Add addtional common groups in "value" only if not
+    # already present in "value". For instance, if value
+    # is equal to [ "foo/common" ], it's useless to add
+    # the group "foo/commonce" again.
+    additional_common_groups.each do |a_group|
+      unless value.include?(a_group)
+        value.push(a_group)
+      end
+    end
+
+    if value.size > MAX_GROUPS
+      STDERR.puts "Sorry, the host #{fqdn} belongs to #{value.size} " \
+                  "hiera-groups and the maximum allowed is #{MAX_GROUPS}."
+      exit(1)
+    end
 
     # == Remark about groups ==
     #
@@ -182,27 +181,34 @@ hash.select { |key, value| key =~ /^enc_/ }.each do |key, value|
     # is not defined, there are warnings in logs. If the groups_N
     # variable is defined to a dummy file, there is no warning.
     #
-    if key == 'groups'
-      if MAX_GROUPS - value.size > 0
-        value = value + [ 'NOT_AVAILABLE' ]*(MAX_GROUPS - value.size)
-      end
+    completed_array = []
+    if MAX_GROUPS - value.size > 0
+      completed_array = value + [ 'NOT_AVAILABLE' ]*(MAX_GROUPS - value.size)
     end
 
-    # When the value of the key "foo" is an array, we want
-    # to define the keys "foo_0", "foo_1" etc. where "foo_0"
-    # is associated with the first value of the array,
-    # "foo_1" the second value of the array etc.
+    # We want to define the keys "groups_0", "groups_1" etc. where "groups_0"
+    # is associated with the first value of the array, "groups_1" the second
+    # value of the array etc.
     c = 0
-    value.select { |e| e.is_a?(String) or e.is_a?(Numeric) }.each do |e|
-      if e.is_a?(Numeric) then e = e.to_s() end
-      e = e.gsub('"', '\\"') # Escape " in e.
-      parameters += "\"#{key}_#{c}\": \"#{e}\",\n    "
+    completed_array.each do |e|
+      parameters_hash["#{key}_#{c}"] = e
       c += 1
     end
 
-  end # End of handle when the value is a array.
+  end # End of the specific case of the "groups" key.
 
 end
+
+
+
+
+unless parameters_hash.key?('datacenter') and parameters_hash['datacenter'].is_a?(String)
+  STDERR.puts "Sorry, the enc_datacenter must be present in the " \
+              " `#{fqdn}.yaml' file and must be a string."
+  exit(1)
+end
+
+datacenter = parameters_hash['datacenter']
 
 unless datacenters_array.include?(datacenter)
   STDERR.puts "Sorry, in hieradata, the file `datacenter/#{datacenter}.yaml' " \
@@ -213,25 +219,14 @@ unless datacenters_array.include?(datacenter)
   exit(1)
 end
 
-datacenters = datacenters_array.to_s
-parameters += "\"datacenters\": #{datacenters},\n"
+parameters_hash['datacenters'] = datacenters_array
 
-parameters.strip!
+final_hash = {
+  'environment' => environment,
+  'parameters'  => parameters_hash,
+}
 
-output.sub!('###environment###', environment)
-output.sub!('###parameters###', parameters)
-
-# Just a little tick to allow interpolation with
-# %{datacenter} or %{::datacenter} in the enc_*
-# keys in the yaml file fqdn.yaml.
-#
-# It's just an exception because, with enc_* keys,
-# there is no hiera interpolation. This present
-# ENC script does'nt use the hiera mechanism.
-output.gsub!('%{datacenter}', datacenter)
-output.gsub!('%{::datacenter}', datacenter)
-
-puts output
+puts(JSON.pretty_generate(final_hash))
 exit(0)
 
 

@@ -21,7 +21,7 @@ class network::hosts {
     # We remove the optional "@@".
     $addr = $addr_x.regsubst(/^@@/, '')
 
-    if !$addr.is_ip_address {
+    if !$addr =~ Stdlib::Compat::Ip_address {
       fail("${title}: the address value `${addr_x}` is not valid.")
     }
     if $addr == '127.0.0.1' {
