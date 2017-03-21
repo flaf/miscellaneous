@@ -28,9 +28,10 @@ define repository::aptkey (
 
   $key = $id.regsubst(' ', '', 'G').regsubst(/^0x/, '')
 
-  $cmd_apt_key_add = $source ? {
-    undef   => "apt-key adv --keyserver '${keyserver_final}' --recv-keys '${key}'",
-    default => "wget -O- '${source}' | apt-key add -",
+  $cmd_apt_key_add = $keyserver_final ? {
+    undef   => "wget -O- '${source}' | apt-key add -",
+    # If we have a keyserver, we use it by default.
+    default => "apt-key adv --keyserver '${keyserver_final}' --recv-keys '${key}'",
   }
 
   # In fact, it's possible to have $http_proxy_final == undef.
