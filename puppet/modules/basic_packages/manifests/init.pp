@@ -7,7 +7,7 @@ class basic_packages {
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
   $wanted_packages = [
-    'man', # After a minimal Xenial installation, man is not present.
+    'man-db', # After a minimal Xenial installation, man is not present.
     'vim',
     'gawk',
     'bash-completion',
