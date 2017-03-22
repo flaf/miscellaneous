@@ -67,7 +67,6 @@ class network::resolv_conf {
     ensure_packages(['unbound'],
                     {
                      ensure => present,
-                     before => Service['unbound'],
                      notify => Service['unbound'],
                     }
                    )
@@ -78,7 +77,6 @@ class network::resolv_conf {
       group   => 'root',
       mode    => '0644',
       require => Package['unbound'],
-      before  => Service['unbound'],
       notify  => Service['unbound'],
       content => epp('network/unbound.forward.conf.epp',
                      { 'dns_servers' => $dns_servers, }
@@ -104,7 +102,6 @@ class network::resolv_conf {
       group   => 'root',
       mode    => '0644',
       require => Package['unbound'],
-      before  => Service['unbound'],
       notify  => Service['unbound'],
       content => epp('network/unbound.server.conf.epp',
                      {
@@ -130,19 +127,42 @@ class network::resolv_conf {
       path    => '/usr/sbin:/usr/bin:/sbin:/bin',
       command => $cmd,
       onlyif  => "test -f '${file_auto_trust}'",
-      before  => Service['unbound'],
       notify  => Service['unbound'],
     }
 
-    if $::lsbdistcodename == 'jessie' {
-      # On Debian Jessie like in Trusty, the service uses a
-      # sysvinit script to start, but in Jessie the default
-      # provider is "systemd" so we have to tell Puppet that
-      # for this service the activation is via sysvinit and
-      # not via systemd. "debian" provider is sysvinit in fact.
-      $unbound_provider = 'debian'
-    } else {
-      $unbound_provider = undef
+    # On Trusty and Jessie, this file exists but it doesn't
+    # exist on Xenial, so we have to create it before to
+    # change a line in this file.
+    file { '/etc/default/unbound':
+      ensure => file,
+      owner  => 'root',
+      group  => 'root',
+      mode   => '0644',
+    }
+
+    file_line { 'edit-etc-default-unbound':
+      path    => '/etc/default/unbound',
+      # Normally it's a shell script, so comment should be allowed.
+      line    => "ROOT_TRUST_ANCHOR_UPDATE=false # Edited by Puppet.",
+      match   => '^[[:space:]]*#?[[:space:]]*ROOT_TRUST_ANCHOR_UPDATE=.*$',
+      require => File['/etc/default/unbound'],
+      notify  => Service['unbound'],
+    }
+
+    case $::facts["os"]["distro"]["codename"] {
+      'jessie': {
+        # Finally, I think this provider setting is useless now.
+        #
+        # On Debian Jessie like in Trusty, the service uses a
+        # sysvinit script to start, but in Jessie the default
+        # provider is "systemd" so we have to tell Puppet that
+        # for this service the activation is via sysvinit and
+        # not via systemd. "debian" provider is sysvinit in fact.
+        $unbound_provider = 'debian'
+      }
+      default: {
+        $unbound_provider = undef
+      }
     }
 
     service { 'unbound':
