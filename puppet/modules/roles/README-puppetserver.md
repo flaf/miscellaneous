@@ -17,7 +17,7 @@ Here is examples:
 ```puppet
 class { '::roles::puppetserver':
   is_mcollective_client => true,
-  backup_keynames       => 'root@srv-1',
+  sshpubkey_tag         => "ppbackup@${::facts['networking']['fqdn']}",
 }
 ```
 
@@ -29,18 +29,20 @@ class { '::roles::puppetserver':
 
 The `is_mcollective_client` is a boolean to tell if the node
 must be too a mcollective client. The default value of this
-parameter is `false`. If `true`, the class
-`mcollective::client` will be included and the node will be
-a mcollective client of the **same** middleware server used
-by its mcollective service. To do that, the role uses
-parameters from the class `mcollective::server::params` (see
-the code).
+parameter is `false` unless the hostname of the host is exactly
+`puppet` where, in this case, the default value is `true`.
+If `true`, the class `mcollective::client` will be included
+and the node will be a mcollective client of the **same**
+middleware server used by its mcollective service. To do
+that, the role uses parameters from the class
+`mcollective::server::params` (see the code).
 
-The `backup_keynames` is an array of strings and its default
-value is `[]`. This array **must** contain names of keys
-which are listed in the parameter
-`$::unix_accounts::params::ssh_public_keys`. These ssh
-public keys will be put in the `authorized_backup_keys`
-parameter of the class `puppetserver::params`.
+The `sshpubkey_tag` is a non-empty string. This tag is
+searched on all SSH public keys which are listed in the
+parameter `$::unix_accounts::params::ssh_public_keys`. The
+matching ssh public keys will be put in the
+`authorized_backup_keys` parameter of the class
+`puppetserver::params`. The default value of this parameter
+is the value mentioned in the example above.
 
 

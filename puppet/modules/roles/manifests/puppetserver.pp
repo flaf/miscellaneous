@@ -1,6 +1,9 @@
 class roles::puppetserver (
-  Boolean            $is_mcollective_client = false,
-  Array[ String[1] ] $backup_keynames = [],
+  Boolean $is_mcollective_client = case $::facts['networking']['hostname'] {
+    /^puppet$/: { true  }
+    default:    { false }
+  },
+  $sshpubkey_tag                 = "ppbackup@${::facts['networking']['fqdn']}",
 ) {
 
   ##################################
@@ -26,26 +29,56 @@ class roles::puppetserver (
   include '::unix_accounts::params'
   $ssh_public_keys = $::unix_accounts::params::ssh_public_keys
 
-  $authorized_backup_keys = $backup_keynames.reduce({}) |$memo, String[1] $keyname| {
+  # ### Deprecated.
+  #
+  #
+  #$authorized_backup_keys = $backup_keynames.reduce({}) |$memo, String[1] $keyname| {
 
-    unless $keyname in $ssh_public_keys {
-      @("END"/L$).fail
-        ${title}: the ssh public key `${keyname}` from the parameter \
-        \$::roles::puppetserver::backup_keynames is not \
-        present among the public keys listed in the parameter \
-        \$::unix_accounts::params::ssh_public_keys.
-        |- END
-    }
+  #  unless $keyname in $ssh_public_keys {
+  #    @("END"/L$).fail
+  #      ${title}: the ssh public key `${keyname}` from the parameter \
+  #      \$::roles::puppetserver::backup_keynames is not \
+  #      present among the public keys listed in the parameter \
+  #      \$::unix_accounts::params::ssh_public_keys.
+  #      |- END
+  #  }
 
-    $key = {
-      $keyname => {
-        'type'     => $ssh_public_keys[$keyname]['type'],
-        'keyvalue' => $ssh_public_keys[$keyname]['keyvalue'],
+  #  $key = {
+  #    $keyname => {
+  #      'type'     => $ssh_public_keys[$keyname]['type'],
+  #      'keyvalue' => $ssh_public_keys[$keyname]['keyvalue'],
+  #    }
+  #  }
+
+  #  $memo + $key
+
+  #} ### End of deprecated.
+
+  $authorized_backup_keys = $ssh_public_keys.reduce({}) |$memo, $sspubkey| {
+
+    [$keyname, $settings] = $sspubkey
+
+    if $sshpubkey_tag in $settings.dig('tags') {
+      $key = {
+        $keyname => {
+          'type'     => $settings['type'],
+          'keyvalue' => $settings['keyvalue'],
+        }
       }
+    } else {
+      $key = {}
     }
 
     $memo + $key
 
+  }
+
+  if $authorized_backup_keys.empty {
+    @("END"/L$).fail
+      ${title}: sorry, no ssh public key from the parameter \
+      `\$::unix_accounts::params::ssh_public_keys` with \
+      the tag `${sshpubkey_tag}` has been found.
+      |- END
   }
 
   # For a `client` puppetserver, the $datacenters global
