@@ -19,7 +19,17 @@ class gitlab::params (
 
   # Concerning the "tar-gitlab-backup" file.
   $suffix_tar_file    = '_gitlab_backup.tar'
-  $regex_tar_file     = "[0-9]+${suffix_tar_file}"
+  #
+  # Since Gitlab 9.0.0 at least (somewhere between 8.14.4
+  # and 9.0.0), the pattern of a backup file is:
+  #
+  #   1490713606_2017_03_08_gitlab_backup.tar
+  #
+  # no longer:
+  #
+  #   1490713606_gitlab_backup.tar
+  #
+  $regex_tar_file     = "[0-9]+_[0-9]{4}_[0-9]{2}_[0-9]{2}${suffix_tar_file}"
   $pattern_tar_file   = "*${suffix_tar_file}"
 
 }
