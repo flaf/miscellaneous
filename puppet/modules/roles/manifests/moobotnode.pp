@@ -1,5 +1,15 @@
 class roles::moobotnode (
-  Enum[ 'cargo', 'lb', 'captain' ] $nodetype,
+  Enum['cargo', 'lb', 'captain'] $nodetype = case $::facts['networking']['hostname'] {
+    /^cargo/:   { 'cargo'   }
+    /^moolb/:   { 'lb'      }
+    /^captain/: { 'captain' }
+    default:    {
+      @("END"/L).fail
+        Class `${title}`: sorry, there is no default value for the parameter \
+        `${title}::nodetype` when the hostname is `${::facts['networking']['hostname']}`.
+        |- END
+    }
+  },
 ) {
 
   include '::network::params'

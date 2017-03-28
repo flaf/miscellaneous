@@ -21,6 +21,7 @@ class { '::roles::moobotnode':
 
 The parameter `nodetype` is the only parameter of the
 class `roles::moobotnode` and its value must match with
-`Enum[ 'cargo', 'lb', 'captain' ]`.
+`Enum[ 'cargo', 'lb', 'captain' ]`. Its default value
+depends on the hostname. See the code for more details.
 
 
