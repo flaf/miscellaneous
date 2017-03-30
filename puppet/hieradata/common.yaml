@@ -73,10 +73,10 @@ unix_accounts::params::users:
 puppetagent::params::ca_server: 'puppet.%{::domain}'
 puppetagent::params::cron: 'disabled'
 repository::puppet::params::collection: 'PC1'
-repository::puppet::params::pinning_agent_version: '1.8.3-*'
+repository::puppet::params::pinning_agent_version: '1.9.3-*'
 repository::puppetserver::params::pinning_puppetserver_version: '2.7.2-*'
-repository::puppetserver::params::pinning_puppetdb_version: '4.3.0-*'
-repository::puppetserver::params::pinning_puppetdb_termini_version: '4.3.0-*'
+repository::puppetserver::params::pinning_puppetdb_version: '4.3.2-*'
+repository::puppetserver::params::pinning_puppetdb_termini_version: '4.3.2-*'
 
 mcollective::server::params::private_key: '%{alias("_mcollective_server_private_key_")}'
 mcollective::server::params::public_key: '%{alias("_mcollective_server_public_key_")}'
@@ -111,6 +111,8 @@ unix_accounts::params::ssh_public_keys:
       reApz1WP8EdIP1ZSCEGxZf384dWQXHT2HSoVIJrqqpLBXon94B3OuCB
       BLETS+Zs8NuySTO2f+q6roRnwhcBcLN5J9ODFv56QkzSqmD/mOgtMsF
       kOMhTB8OzKgz4gDtfwacaN4EcUwkBAFzY0MeOUTtDb
+    tags:
+      - 'ppbackup@puppet.athome.priv'
   francois@dtic-flaf.atwork.priv:
     type: 'ssh-rsa'
     keyvalue: >
@@ -121,6 +123,8 @@ unix_accounts::params::ssh_public_keys:
       b23ssrSSfPB1Sw06wVeiIjTlmG/UDhsPuPeu/VXi9j96XhIz3UwuMqq
       3dUyLTR3tPisEqa4TwxaZRb6vZrk2rSwhN/Fjk1hR45TeYUDxxw5u3A
       QcsOI0Nur1Gr/uHmnDRWhoIDrO5HMxmsb6eGMWDpg/
+    tags:
+      - 'ppbackup@puppet.atwork.priv'
 
 # It's the password => root
 _root_unix_pwd_: >
