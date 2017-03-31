@@ -1,35 +1,45 @@
-<%- |$profile, $max_groups| -%>
+<%- |
+  Integer[1] $max_groups,
+  Boolean    $global_layer,
+  String[1]  $layer_title,
+|-%>
 ---
 ### This file is managed by Puppet, don't edit. ###
 
-:backends:
-  - 'eyaml'
+# Hiera <%= $layer_title %>
 
-:hierarchy:
-  - '%{::environment}/hieradata/fqdn/%{::clientcert}'
+version: 5
+
+defaults:
+  datadir: 'hieradata'
+  lookup_key: 'eyaml_lookup_key'
+
+
+hierarchy:
+<%- if ! $global_layer { -%>
+  - name: '<%= $layer_title %> per-node data'
+    path: 'fqdn/%{trusted.certname}.yaml'
+    options:
+      pkcs7_private_key: '/etc/puppetlabs/puppet/keys/private_key.pkcs7.pem'
+      pkcs7_public_key: '/etc/puppetlabs/puppet/keys/public_key.pkcs7.pem'
+<%- } -%>
+  - name: '<%= $layer_title %> per-group data'
+    paths:
 <%- range(0, $max_groups - 1).each |$index| { -%>
-  - '%{::environment}/hieradata/group/%{::groups_<%= $index %>}'
+      - 'group/%{::groups_<%= $index %>}.yaml'
 <%- } -%>
-<%- if $profile == 'client' { -%>
-  <%- range(0, $max_groups - 1).each |$index| { -%>
-  - '%{::environment}/hieradata-group-from-master/%{::groups_<%= $index %>}'
-  <%- } -%>
-<%- } -%>
-  - '%{::environment}/hieradata/datacenter/%{::datacenter}'
-  - '%{::environment}/hieradata/common'
-<%- if $profile == 'client' { -%>
-  <%- if $::datacenter { -%>
-  - '%{::environment}/hieradata-datacenter-<%= $::datacenter %>-from-master'
-  <%- } -%>
-  - '%{::environment}/hieradata-common-from-master'
-<%- } -%>
-
-:merge_behavior: 'deeper'
-
-:eyaml:
-  :extension: 'yaml'
-  :datadir: '/etc/puppetlabs/code/environments'
-  :pkcs7_private_key: '/etc/puppetlabs/puppet/keys/private_key.pkcs7.pem'
-  :pkcs7_public_key: '/etc/puppetlabs/puppet/keys/public_key.pkcs7.pem'
+    options:
+      pkcs7_private_key: '/etc/puppetlabs/puppet/keys/private_key.pkcs7.pem'
+      pkcs7_public_key: '/etc/puppetlabs/puppet/keys/public_key.pkcs7.pem'
+  - name: '<%= $layer_title %> per-datacenter data'
+    path: 'datacenter/%{::datacenter}.yaml'
+    options:
+      pkcs7_private_key: '/etc/puppetlabs/puppet/keys/private_key.pkcs7.pem'
+      pkcs7_public_key: '/etc/puppetlabs/puppet/keys/public_key.pkcs7.pem'
+  - name: '<%= $layer_title %> common data'
+    path: 'common.yaml'
+    options:
+      pkcs7_private_key: '/etc/puppetlabs/puppet/keys/private_key.pkcs7.pem'
+      pkcs7_public_key: '/etc/puppetlabs/puppet/keys/public_key.pkcs7.pem'
 
 

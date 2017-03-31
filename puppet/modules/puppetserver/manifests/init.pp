@@ -3,22 +3,10 @@ class puppetserver {
   include '::puppetserver::params'
 
   [
-    $puppet_memory,
-    $puppetdb_memory,
-    $profile,
-    $modules_repository,
-    $http_proxy,
-    $strict,
-    $puppetdb_name,
-    $puppetdb_user,
-    $puppetdb_pwd,
-    $puppetdb_certwhitelist,
-    $modules_versions,
-    $max_groups,
-    $datacenters,
-    $groups_from_master,
     $mcrypt_pwd,
-    $authorized_backup_keys,
+    $datacenters,
+    $puppetdb_pwd,
+    $profile,
     $supported_distributions,
   ] = Class['::puppetserver::params']
 
@@ -42,13 +30,6 @@ class puppetserver {
 
   # The mcrypt password is mandatory.
   ::homemade::fail_if_undef($mcrypt_pwd, 'puppetserver::params::mcrypt_pwd', $title)
-
-  # From params but there are not parameters of the class,
-  # just common internal values.
-  $puppetlabs_path   = $::puppetserver::params::puppetlabs_path
-  $puppet_path       = $::puppetserver::params::puppet_path
-  $ssldir            = $::puppetserver::params::ssldir
-  $puppet_bin_dir    = $::puppetserver::params::puppet_bin_dir
 
   include '::puppetserver::puppetconf'
   include '::puppetserver::backup'

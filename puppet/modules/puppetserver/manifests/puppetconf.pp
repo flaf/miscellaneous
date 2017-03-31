@@ -36,10 +36,9 @@ class puppetserver::puppetconf {
     $http_proxy,
     $strict,
     $strict_variables,
-    $modules_versions,
+    $environments,
     $max_groups,
     $datacenters,
-    $groups_from_master,
     # In the params class but not as parameter.
     $puppetlabs_path,
     $puppet_path,
@@ -84,18 +83,11 @@ class puppetserver::puppetconf {
   # The environment directories and its sub-directories etc.
   $code_path         = "${puppetlabs_path}/code"
   $environment_path  = "${code_path}/environments"
-  $production_path   = "${environment_path}/production"
-  $manifests_path    = "${production_path}/manifests"
-  $modules_path      = "${production_path}/modules"
   $keys_path         = "${puppet_path}/keys"
   $eyaml_public_key  = "${keys_path}/public_key.pkcs7.pem"
   $eyaml_private_key = "${keys_path}/private_key.pkcs7.pem"
 
-  file { [ $environment_path,
-           $production_path,
-           $manifests_path,
-           $modules_path,
-         ]:
+  file {$environment_path:
     ensure => directory,
     owner  => 'root',
     group  => 'root',
@@ -104,169 +96,202 @@ class puppetserver::puppetconf {
     notify => $notify_puppetserver,
   }
 
-  # The environment.conf file must be present but its content
-  # will not be managed (and will probably not used).
-  file { "${production_path}/environment.conf":
-    ensure => present,
-    owner  => 'root',
-    group  => 'root',
-    mode   => '0644',
-    before => Service['puppetserver'],
-    notify => $notify_puppetserver,
-  }
+  # Environments loop.
+  $environments.each |$an_env| {
 
-  # The site.pp file.
-  file { "${manifests_path}/site.pp":
-    ensure => present,
-    owner  => 'root',
-    group  => 'root',
-    mode   => '0644',
-    before => Service['puppetserver'],
-    source => 'puppet:///modules/puppetserver/site.pp',
-    # No need to restart the puppetserver here.
-  }
+    $an_env_path    = "${environment_path}/${an_env}"
+    $manifests_path = "${an_env_path}/manifests"
+    $modules_path   = "${an_env_path}/modules"
 
-  file { "/usr/local/sbin/install-modules.puppet":
-    ensure  => present,
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0750',
-    before  => Service['puppetserver'],
-    content => epp('puppetserver/install-modules.puppet.epp',
-                   {
-                     'environment_path' => $environment_path,
-                     'puppet_bin_dir'   => $puppet_bin_dir,
-                     'modules_versions' => $modules_versions,
-                   }
-                  ),
-    # No need to restart the puppetserver here.
-  }
+    file {
+      default:
+        owner  => 'root',
+        group  => 'root',
+        before => Service['puppetserver'],
+      ;
 
-  file { "/usr/local/sbin/clean-node-crl-not-changed.puppet":
-    ensure  => present,
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0750',
-    before  => Service['puppetserver'],
-    content => epp('puppetserver/clean-node-crl-not-changed.puppet.epp',
+      [$an_env_path, $manifests_path, $modules_path]:
+        ensure => 'directory',
+        mode   => '0755',
+        notify => $notify_puppetserver,
+      ;
+
+      # The environment.conf file must be present but its
+      # content will not be managed (and will probably not
+      # used).
+      "${an_env_path}/environment.conf":
+        ensure => present,
+        mode   => '0644',
+        notify => $notify_puppetserver,
+      ;
+
+      # The site.pp file.
+      "${manifests_path}/site.pp":
+        ensure => present,
+        mode   => '0644',
+        source => 'puppet:///modules/puppetserver/site.pp',
+        # No need to restart the puppetserver here.
+      ;
+
+      # The hiera.yaml from the environment layer.
+      "${an_env_path}/hiera.yaml":
+        ensure  => present,
+        mode    => '0644',
+        notify  => $notify_puppetserver,
+        content => epp(
+                     'puppetserver/hiera.yaml.epp',
+                     {
+                       'max_groups'   => $max_groups,
+                       'global_layer' => false,
+                       'layer_title'  => "${an_env} environment layer",
+                     }
+                   ),
+      ;
+    }
+
+  } # End of environments loop.
+
+  file {
+    default:
+      ensure  => present,
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0750',
+      before  => Service['puppetserver'],
+      # No need to restart the puppetserver here.
+    ;
+
+    '/usr/local/sbin/clean-node-crl-not-changed.puppet':
+      content => epp(
+                   'puppetserver/clean-node-crl-not-changed.puppet.epp',
                    {
                      'ssldir'         => $ssldir,
                      'puppet_bin_dir' => $puppet_bin_dir,
                    }
-                  ),
-    # No need to restart the puppetserver here.
-  }
+                 ),
+    ;
 
-  file { '/usr/local/sbin/update-modules.puppet':
-    ensure  => present,
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0750',
-    before  => Service['puppetserver'],
-    content => epp('puppetserver/update-modules.puppet.epp',
-                   {
-                     'modules_path'     => $modules_path,
-                     'puppet_bin_dir'   => $puppet_bin_dir,
-                     'modules_versions' => $modules_versions,
-                   }
-                  ),
-    # No need to restart the puppetserver here.
-  }
+    # Deprecated: should support the environment as argument
+    # and this is not the case currently. Furthermore this
+    # script is rarely used.
+    #
+    #'/usr/local/sbin/install-modules.puppet':
+    #  content => epp(
+    #               'puppetserver/install-modules.puppet.epp',
+    #               {
+    #                 'environment_path' => $environment_path,
+    #                 'puppet_bin_dir'   => $puppet_bin_dir,
+    #                 'modules_versions' => $modules_versions,
+    #               }
+    #             ),
+    #;
+    #
+    #'/usr/local/sbin/update-modules.puppet':
+    #  content => epp(
+    #               'puppetserver/update-modules.puppet.epp',
+    #               {
+    #                 'modules_path'     => $modules_path, #### TODO: Problem here. This variable no longer exist.
+    #                 'puppet_bin_dir'   => $puppet_bin_dir,
+    #                 'modules_versions' => $modules_versions,
+    #               }
+    #             ),
+    #;
 
-  file { '/usr/local/sbin/check-puppet-module.puppet':
-    ensure  => present,
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0750',
-    before  => Service['puppetserver'],
-    content => epp('puppetserver/check-puppet-module.puppet.epp',
+    '/usr/local/sbin/check-puppet-module.puppet':
+      content => epp(
+                   'puppetserver/check-puppet-module.puppet.epp',
                    {
                      'puppet_bin_dir' => $puppet_bin_dir,
                    }
-                  ),
-    # No need to restart the puppetserver here.
-  }
-
-  # The "hieradata-common-from-master.yaml" file (ie the cfm
-  # file) from the master present only when the puppetserver
-  # has the "client" profile, not when it has the
-  # "autonomous" profile.
-  # We have exactly the same thing with the file
-  # "hieradata-datacenter-from-master.yaml".
-  # The "client" puppetserver will retrieve too some yaml
-  # group files from the master via the $groups_from_master
-  # variable.
-  if $profile == 'client' {
-
-    # file() takes the content from the master puppet.
-    # So the file must exist in the master.
-    $cfm_content = file("${production_path}/hieradata/common.yaml")
-    file { "${production_path}/hieradata-common-from-master.yaml":
-      ensure  => present,
-      owner   => 'root',
-      group   => 'root',
-      mode    => '0644',
-      content => $cfm_content,
-      before  => Service['puppetserver'],
-      # No need to restart the puppetserver here.
-    }
-
-    # Only if $::datacenter is defined for this server.
-    if $::datacenter {
-      $dfm_content = file("${production_path}/hieradata/datacenter/${::datacenter}.yaml")
-      file { "${production_path}/hieradata-datacenter-${::datacenter}-from-master.yaml":
-        ensure  => present,
-        owner   => 'root',
-        group   => 'root',
-        mode    => '0644',
-        content => $dfm_content,
-        before  => Service['puppetserver'],
-        # No need to restart the puppetserver here.
-      }
-    }
-
-    # The root directory. But maybe another directories must
-    # be created. For instance, if the 'foo/mysql' hiera
-    # group belongs to the array $groups_from_master, we
-    # have to create the directory "$gfm_dir/foo" too, etc.
-    $gfm_root = "${production_path}/hieradata-group-from-master"
-
-    # All the directories which must be created before to
-    # create yaml-group files from the master below.
-    $gfm_dirs = $groups_from_master.reduce([$gfm_root]) |$memo, $a_group| {
-      $dir = dirname("${gfm_root}/${a_group}.yaml")
-      case $dir in $memo {
-        true:  { $memo          }
-        false: { $memo + [$dir] }
-      }
-    }
-
-    # The "hieradata-group-from-master" directories and its files below.
-    file { $gfm_dirs:
-      ensure  => directory,
-      owner   => 'root',
-      group   => 'root',
-      mode    => '0755',
-      recurse => true,
-      purge   => true,
-      force   => true,
-      before  => Service['puppetserver'],
-      # No need to restart the puppetserver here.
-    }
-
-    $groups_from_master.each |$a_group| {
-      file { "${gfm_root}/${a_group}.yaml":
-        ensure  => present,
-        owner   => 'root',
-        group   => 'root',
-        mode    => '0644',
-        content => file("${production_path}/hieradata/group/${a_group}.yaml"),
-        before  => Service['puppetserver'],
-        # No need to restart the puppetserver here.
-      }
-    }
+                 ),
+    ;
 
   }
+
+  # Deprecated: With Hiera 5, the correct way to share data
+  # between the "autonomous" server and the "client" servers
+  # is to use the hiera global layer.
+  #
+  #  # The "hieradata-common-from-master.yaml" file (ie the cfm
+  #  # file) from the master present only when the puppetserver
+  #  # has the "client" profile, not when it has the
+  #  # "autonomous" profile.
+  #  # We have exactly the same thing with the file
+  #  # "hieradata-datacenter-from-master.yaml".
+  #  # The "client" puppetserver will retrieve too some yaml
+  #  # group files from the master via the $groups_from_master
+  #  # variable.
+  #  if $profile == 'client' {
+  #
+  #    # file() takes the content from the master puppet.
+  #    # So the file must exist in the master.
+  #    $cfm_content = file("${production_path}/hieradata/common.yaml")
+  #    file { "${production_path}/hieradata-common-from-master.yaml":
+  #      ensure  => present,
+  #      owner   => 'root',
+  #      group   => 'root',
+  #      mode    => '0644',
+  #      content => $cfm_content,
+  #      before  => Service['puppetserver'],
+  #      # No need to restart the puppetserver here.
+  #    }
+  #
+  #    # Only if $::datacenter is defined for this server.
+  #    if $::datacenter {
+  #      $dfm_content = file("${production_path}/hieradata/datacenter/${::datacenter}.yaml")
+  #      file { "${production_path}/hieradata-datacenter-${::datacenter}-from-master.yaml":
+  #        ensure  => present,
+  #        owner   => 'root',
+  #        group   => 'root',
+  #        mode    => '0644',
+  #        content => $dfm_content,
+  #        before  => Service['puppetserver'],
+  #        # No need to restart the puppetserver here.
+  #      }
+  #    }
+  #
+  #    # The root directory. But maybe another directories must
+  #    # be created. For instance, if the 'foo/mysql' hiera
+  #    # group belongs to the array $groups_from_master, we
+  #    # have to create the directory "$gfm_dir/foo" too, etc.
+  #    $gfm_root = "${production_path}/hieradata-group-from-master"
+  #
+  #    # All the directories which must be created before to
+  #    # create yaml-group files from the master below.
+  #    $gfm_dirs = $groups_from_master.reduce([$gfm_root]) |$memo, $a_group| {
+  #      $dir = dirname("${gfm_root}/${a_group}.yaml")
+  #      case $dir in $memo {
+  #        true:  { $memo          }
+  #        false: { $memo + [$dir] }
+  #      }
+  #    }
+  #
+  #    # The "hieradata-group-from-master" directories and its files below.
+  #    file { $gfm_dirs:
+  #      ensure  => directory,
+  #      owner   => 'root',
+  #      group   => 'root',
+  #      mode    => '0755',
+  #      recurse => true,
+  #      purge   => true,
+  #      force   => true,
+  #      before  => Service['puppetserver'],
+  #      # No need to restart the puppetserver here.
+  #    }
+  #
+  #    $groups_from_master.each |$a_group| {
+  #      file { "${gfm_root}/${a_group}.yaml":
+  #        ensure  => present,
+  #        owner   => 'root',
+  #        group   => 'root',
+  #        mode    => '0644',
+  #        content => file("${production_path}/hieradata/group/${a_group}.yaml"),
+  #        before  => Service['puppetserver'],
+  #        # No need to restart the puppetserver here.
+  #      }
+  #    }
+  #
+  #  } # End of "client" profile specific.
 
   # The hiera.yaml file. This file must trigger a restart
   # of the server when it is updated.
@@ -278,8 +303,10 @@ class puppetserver::puppetconf {
     before  => Service['puppetserver'],
     notify  => $notify_puppetserver,
     content => epp('puppetserver/hiera.yaml.epp',
-                   { 'profile'    => $profile,
-                     'max_groups' => $max_groups,
+                   {
+                     'max_groups'   => $max_groups,
+                     'global_layer' => true,
+                     'layer_title'  => "global layer",
                    }
                   ),
   }

@@ -2,14 +2,24 @@ class puppetserver::puppetdb {
 
   ensure_packages(['puppetdb'], { ensure => present, })
 
-  $db               = $::puppetserver::puppetdb_name
-  $user             = $::puppetserver::puppetdb_user
-  $pwd              = $::puppetserver::puppetdb_pwd
-  $memory           = $::puppetserver::puppetdb_memory
-  $certwhitelist    = $::puppetserver::puppetdb_certwhitelist
+  include '::puppetserver::params'
 
-  $puppet_ssl_dir     = $::puppetserver::ssldir
-  $puppetlabs_path    = $::puppetserver::puppetlabs_path
+  [
+    $puppetdb_name,
+    $puppetdb_user,
+    $puppetdb_pwd,
+    $puppetdb_memory,
+    $puppetdb_certwhitelist,
+    $ssldir,
+    $puppetlabs_path,
+  ] = Class['::puppetserver::params']
+
+  $db                 = $puppetdb_name
+  $user               = $puppetdb_user
+  $pwd                = $puppetdb_pwd
+  $memory             = $puppetdb_memory
+  $certwhitelist      = $puppetdb_certwhitelist
+  $puppet_ssl_dir     = $ssldir
   $puppetdb_path      = "${puppetlabs_path}/puppetdb"
   $puppetdb_ssl_dir   = "${puppetdb_path}/ssl"
   $certwhitelist_file = "${puppetdb_path}/certificate-whitelist"

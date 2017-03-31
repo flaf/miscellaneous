@@ -31,13 +31,19 @@ class { '::puppetserver::params':
   puppetdb_user          => 'puppet',
   puppetdb_pwd           => '123456',
   puppetdb_certwhitelist => [ $::fqdn, "puppet2.${::domain}" ],
-  modules_versions       => {
-                              'author-modA' => '1.2.1',
-                              'author-modB' => '0.4.0',
-                            },
+  #
+  # This parameter has been removed.
+  #
+  #modules_versions       => {
+  #                            'author-modA' => '1.2.1',
+  #                            'author-modB' => '0.4.0',
+  #                          },
   max_groups             => 3,
   datacenters            => undef,
-  groups_from_master     => [],
+  #
+  # This parameter has been removed.
+  #
+  #groups_from_master     => [],
   mcrypt_pwd             => 'abcdef',
   authorized_backup_keys => $pubkeys,
 }
@@ -131,6 +137,10 @@ and **all** puppet nodes can request the puppetdb server.
 The default value of this parameter is `[ $::fqdn ]`, ie
 only the puppetserver can request the puppetdb server.
 
+```
+## The parameter `modules_versions` has been removed.
+## (Deprecated)
+
 The `modules_versions` is a hash like above to force the
 installation of specific modules with a specific version
 during the execution of the script `install-modules.puppet`.
@@ -140,6 +150,7 @@ Be careful, the version are pinned when a module is
 installed via the script `install-modules.puppet`, but this
 pinning is completely ignored by the classical command
 `puppet module install`.
+```
 
 The `max_groups` parameter is an integer greater or equal to
 1. It's the maximum number of groups to which a node belongs
@@ -159,6 +170,11 @@ variables:
   the hierarchy (without the `yaml` extension).
 * With a `client` puppetserver, this global variable is defined
   via the `datacenters` parameter of the class `puppetserver::params`.
+
+
+```
+## The parameter `groups_from_master` hase been removed.
+## (Deprecated)
 
 The `groups_from_master` parameter is an array of non-empty
 strings (but the array can be empty). The default value of
@@ -183,6 +199,7 @@ puppetserver. Furthermore, it the global variable
 `$::datacenter` is defined, the file
 `datacenter/${::datacenter}.yaml`will be automatically
 imported from the parent `autonomous` puppetserver.
+```
 
 The `mcrypt_pwd` parameter is a mandatory parameter which
 must be a non-empty string. Every day, `/etc/` will be saved

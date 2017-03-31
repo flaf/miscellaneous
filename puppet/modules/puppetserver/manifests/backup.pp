@@ -1,12 +1,14 @@
 class puppetserver::backup {
 
+  include '::puppetserver::params'
+
   [
     $mcrypt_pwd,
     $authorized_backup_keys,
     $puppetdb_name,
     $puppetdb_user,
     $profile,
-  ] = Class['::puppetserver']
+  ] = Class['::puppetserver::params']
 
 
   ::ppbackup::mcrypt_user { 'root':

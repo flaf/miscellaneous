@@ -5,9 +5,17 @@ class puppetserver::postgresql {
                    { ensure => present, }
                  )
 
-  $db   = $::puppetserver::puppetdb_name
-  $user = $::puppetserver::puppetdb_user
-  $pwd  = $::puppetserver::puppetdb_pwd
+  include '::puppetserver::params'
+
+  [
+    $puppetdb_name,
+    $puppetdb_user,
+    $puppetdb_pwd,
+  ] = Class['::puppetserver::params']
+
+  $db   = $puppetdb_name
+  $user = $puppetdb_user
+  $pwd  = $puppetdb_pwd
 
   $warn = @(END)
     # This file is managed by Puppet, don't edit it.
