@@ -1,2 +1,6 @@
 ---
 
+# YAML file currently empty. The correct syntax in this case
+# is to put an empty hash explicitly.
+{}
+
