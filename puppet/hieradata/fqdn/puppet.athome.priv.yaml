@@ -7,10 +7,10 @@ enc_groups: [ 'puppetserver' ]
 # test..............
 test::param:
   a: 'specific-a'
-  c: '%{alias("my_alias")}'
+  c: 'specific-c.%{hiera("foo")}'
   #c: 'specific-c'
 
-my_alias: '123456'
+foo: '123456'
 
 puppetserver::params::puppet_memory: '2g'
 
