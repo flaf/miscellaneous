@@ -5,18 +5,15 @@ enc_datacenter: 'vboxhome'
 enc_groups: [ 'puppetserver' ]
 
 
-### test ###
+##### test for PUP-7418 #####
 test::param:
   a: 'specific-a'
-  c: 'specific-c.%{hiera("foo")}'
-  #c: 'specific-c'
+  c: 'specific-c'
+  #c: '%{alias("my_alias")}'
 
-foo:
-  a: 1
-  b: 2
-bar: '%{hiera("foo")}'
+my_alias: '123456'
+##### test for PUP-7418 #####
 
-### test ###
 
 puppetserver::params::puppet_memory: '2g'
 
