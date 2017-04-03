@@ -12,6 +12,20 @@ test::param:
   #c: '%{alias("my_alias")}'
 
 my_alias: '123456'
+
+key:
+  subkey1: 'aaa'
+  subkey2:
+    - 'bbb'
+    - subsubkey1: 'ccc'
+      subsubkey2: "%{alias(\"'foo.foo'.k2\")}"
+
+
+foo.foo:
+  k1: 'xxx'
+  k2:
+    a: 'yyy'
+    b: 'zzz'
 ##### test for PUP-7418 #####
 
 
