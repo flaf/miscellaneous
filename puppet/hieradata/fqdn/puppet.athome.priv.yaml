@@ -18,14 +18,17 @@ key:
   subkey2:
     - 'bbb'
     - subsubkey1: 'ccc'
-      subsubkey2: "%{alias(\"'foo.foo'.k2\")}"
+      subsubkey2: "%{alias(\"'foo.foo'.k1\")}"
+      #subsubkey2: "%{alias('\"foo.foo\".k2')}"
+      #subsubkey2: '%{alias("''foo.foo''.k1")}'
+      #subsubkey2: '%{alias(''"foo.foo".k2'')}'
 
 
 foo.foo:
-  k1: 'xxx'
+  k1: 'gagné aussi!!!'
   k2:
-    a: 'yyy'
-    b: 'zzz'
+    a: 'gagné!!!'
+    b: 'gagné!!!'
 ##### test for PUP-7418 #####
 
 
