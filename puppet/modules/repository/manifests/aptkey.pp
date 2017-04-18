@@ -26,12 +26,19 @@ define repository::aptkey (
     default => $http_proxy,
   }
 
+  if ($source =~ Undef and $keyserver_final =~ Undef) {
+    @("END"/L).fail
+      $title: sorry all parameters `source`, `keyserver` and
+      `repository::aptkey::params::keyserver` are undef so,
+      no way defined to retrieve the APT key.
+      |-END
+  }
+
   $key = $id.regsubst(' ', '', 'G').regsubst(/^0x/, '')
 
-  $cmd_apt_key_add = $keyserver_final ? {
-    undef   => "wget -O- '${source}' | apt-key add -",
-    # If we have a keyserver, we use it by default.
-    default => "apt-key adv --keyserver '${keyserver_final}' --recv-keys '${key}'",
+  $cmd_apt_key_add = $source ? {
+    NotUndef => "wget -O- '${source}' | apt-key add -",
+    default  => "apt-key adv --keyserver '${keyserver_final}' --recv-keys '${key}'",
   }
 
   # In fact, it's possible to have $http_proxy_final == undef.
@@ -43,7 +50,7 @@ define repository::aptkey (
   $cmd_apt_key_test = @("END"/L$)
     apt-key finger | awk 'tolower(\$2) == "fingerprint" {print}' | \
     sed -r 's/key[[:space:]]+fingerprint = //i' | tr -d ' ' | \
-    grep -q '^${key}$'
+    grep -q '^${key}\$'
     |-END
 
   exec { "add-apt-key-${title}":

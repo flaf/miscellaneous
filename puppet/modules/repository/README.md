@@ -1,10 +1,164 @@
 # Module description
 
 This module configures APT repositories. This module
-consists of several public classes.
+consists of several public classes and user-defined
+resources.
 
-**Warning:** the default stage of the public classes of this
-module is `'repository'`, not `'main'`.
+
+
+
+# The class `repository::aptconf`
+
+This class allows to manage the APT global settings.
+
+
+## Usage
+
+Here is an example:
+
+```puppet
+class { '::repository::aptconf::params':
+  apt_proxy          => 'http://httpproxy.domain.tld:3142',
+  install_recommends => false,
+  install_suggests   => false,
+  distrib_url        => 'http://ftp.fr.debian.org/debian/',
+  src                => false,
+  backports          => false,
+}
+
+include '::repository::aptconf:'
+```
+
+
+## Parameters
+
+The `apt_proxy` parameter allows to set the APT option
+`Acquire::http::Proxy`. Its default value is `undef`, ie no
+APT proxy is set.
+
+The `install_recommends` is a boolean to set the APT option
+`APT::Install-Recommends`. Its default value is `false`.
+
+The `install_suggests` is a boolean to set the APT option
+`APT::Install-Suggests`. Its default value is `false`.
+
+The `distrib_url` parameter is the URL used to reach the
+official APT repositories. Its default value is:
+
+* `'http://ftp.fr.debian.org/debian/'` for Debian distribution.
+* `'http://fr.archive.ubuntu.com/ubuntu'` for Ubuntu distribution.
+
+The `src` parameter is a boolean. If `true` then `deb-src`
+lines will be added for the official APT repositories, if
+`false` no `deb-src` lines. The default value is `false`.
+
+
+
+
+# The class `repository::aptkey::params` and the user-defined resource `repository::aptkey`
+
+This class and this user-defined resource allow to manage
+APT PGP keys.
+
+
+## Usage
+
+Here is an example:
+
+```puppet
+# To set the default settings of the user-defined resources
+# "repository::aptkey".
+class { '::repository::aptkey::params':
+  http_proxy => 'http://httpproxy.domain.tld:3128',
+  keyserver  => 'hkp://keyserver.ubuntu.com:80',
+}
+
+# This APT key will be downloaded via the default
+# configuration set in "::repository::aptkey::params", ie
+# via the keyserver and the HTTP proxy set above.
+::repository::aptkey { 'puppetlabs':
+  id => '6F6B 1550 9CF8 E59E 6E46  9F32 7F43 8280 EF8D 349F',
+}
+
+# This APT key will be downloaded via a simple wget to the
+# source parameter and the HTTP proxy set above in the
+# default configuration in "::repository::aptkey::params"
+# will be used by the wget command.
+repository::aptkey { 'shinken':
+  id     => '0x741FA112F3B2D515A58543F83DE39DE978BB3659',
+  source => 'http://shinken.domain.tld/pubkey.gpg',
+}
+```
+
+
+## Parameters of the class `repository::aptkey::params`
+
+The parameter `http_proxy` set a HTTP used by default by a
+resource `repository::aptkey` to retrieve the APT key. If
+you set this parameter, all your `repository::aptkey`
+resources will use this HTTP proxy to retrieve the APT keys,
+without exception. The default value of this parameter
+is `undef` ie no HTTP proxy.
+
+The parameter `keyserver` set the key server used by default
+by a resource `repository::aptkey` to retrieve its APT key.
+If you set this parameter, all your `repository::aptkey`
+resources will use this key server to retrieve the APT keys
+via the command:
+
+```sh
+# If a HTTP proxy is set, the environment variable http_proxy is set before.
+apt-key adv --keyserver "$keyserver" --recv-keys "$id"
+```
+
+unless you define the `source` parameter in a specific
+`repository::aptkey` resource (see below) where, in this
+case, a simple:
+
+```sh
+# If a HTTP proxy is set, the environment variable http_proxy is set before.
+wget -O- "$source" | apt-key add -
+```
+
+will be used to retrieve the APT key. The default value of
+this parameter `hkp://keyserver.ubuntu.com:80`.
+
+
+## Paramters of the user-defined resource `repository::aptkey`
+
+The `id` parameter is the fingerprint ID of the APT key.
+This parameter has no default value and is mandatory. The
+string value can have spaces or not, and can have the `0x`
+prefix or not.
+
+The `keyserver` parameter is the key server used to retrieve
+the APT key. The default value of this parameter is `undef`
+and in this case:
+
+* or the value of `repository::aptkey::params::keysever` will
+  be used if defined;
+* if not, the parameter `source` (see below) must be defined.
+
+The `source` parameter is the URL to download the APT key
+via `wget`. The default value is `undef` and the key server
+will be used is this case. If not equal to `undef`, this
+parameter takes the precedence over the keyserver and a
+`wget` command will be used to retrieve the APT key.
+
+The `http_proxy` is the HTTP proxy used to retrieve the APT
+key (via a key server or via a `wget`).  The default value
+of this parameter is `undef`, and in this case:
+
+* or the value of `repository::aptkey::params::http_proxy` will
+  be used if defined;
+* if not, no HTTP proxy will be used.
+
+
+
+
+# The user-defined resource `repository::sourceslist`
+
+TODO...
 
 
 

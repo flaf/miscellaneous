@@ -15,12 +15,12 @@ class repository::aptconf {
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
   $codename = $::facts['lsbdistcodename']
+  $osname   = $::facts["os"]["distro"]["id"].downcase()
 
-  if $::operatingsystem != 'Debian' and $backports {
+  if $osname != 'debian' and $backports {
     @("END").regsubst('\n', ' ', 'G').fail
       ${title}: if the parameter repository::aptconf::params::backports is
-      set to true, the OS must be Debian but it is ${::operatingsystem}
-      currently.
+      set to true, the OS must be Debian but it is ${osname} currently.
       |- END
   }
 
@@ -119,9 +119,9 @@ class repository::aptconf {
   }
 
   ### The "official" sources.list entries. ###
-  case $::operatingsystem {
+  case $osname {
 
-    'Debian': {
+    'debian': {
 
       repository::sourceslist { $codename:
         comment    => 'Official repository.',
@@ -167,7 +167,7 @@ class repository::aptconf {
 
     }
 
-    'Ubuntu': {
+    'ubuntu': {
 
       repository::sourceslist { $codename:
         comment    => 'Only main and restricted are maintained by the Ubuntu developers.',
