@@ -42,7 +42,7 @@ function repository::data {
    "repository::aptconf::params::${sd}"             => $default_sd,
 
     repository::aptkey::params::http_proxy => undef,
-    repository::aptkey::params::keyserver  => 'hkp://keyserver.ubuntu.com:80',
+    repository::aptkey::params::keyserver  => undef,
    "repository::aptkey::params::${sd}"     => $default_sd,
 
     repository::puppet::params::url                    => 'http://apt.puppetlabs.com',

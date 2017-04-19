@@ -111,17 +111,10 @@ via the command:
 apt-key adv --keyserver "$keyserver" --recv-keys "$id"
 ```
 
-unless you define the `source` parameter in a specific
-`repository::aptkey` resource (see below) where, in this
-case, a simple:
-
-```sh
-# If a HTTP proxy is set, the environment variable http_proxy is set before.
-wget -O- "$source" | apt-key add -
-```
-
-will be used to retrieve the APT key. The default value of
-this parameter `hkp://keyserver.ubuntu.com:80`.
+without exception. If this parameter is undefined, it
+depends on the parameters of each resource
+`repository::aptkey` (see below). The default value of this
+parameter is `undef`.
 
 
 ## Paramters of the user-defined resource `repository::aptkey`
@@ -132,27 +125,40 @@ string value can have spaces or not, and can have the `0x`
 prefix or not.
 
 The `keyserver` parameter is the key server used to retrieve
-the APT key. The default value of this parameter is `undef`
-and in this case:
+the APT key. The default value of this parameter is `undef`.
+Now, here is the `keyserver` policy:
 
-* either the value of `repository::aptkey::params::keysever`
-  is used if defined;
-* or, if not defined, the parameter `source` (see below)
-  must be defined.
+1. If `repository::aptkey::keysever` (from the user-defined resource)
+   is not `undef`, this key server is used to download the APT key.
+2. If `repository::aptkey::keysever` is `undef`:
+    a. If `repository::aptkey::params::keysever` (from the class)
+       is not `undef`, this key server is used to download the APT
+       key.
+    b. If `repository::aptkey::params::keysever` is `undef`, then:
+        i. The `source` parameter will be used to download the APT
+           key via a `wget` command.
+        ii. If the `source` parameter is undefined, the key server
+            `hkp://keyserver.ubuntu.com:80` will be used.
 
 The `source` parameter is the URL to download the APT key
-via `wget`. The default value is `undef` and the key server
-will be used is this case. If not equal to `undef`, this
-parameter takes the precedence over the keyserver and a
-`wget` command will be used to retrieve the APT key.
+via `wget`. The default value is `undef`. As you can see in
+the policy described above, this parameter can be ignored if a
+key server is defined (via the parameter
+`repository::aptkey::params::keysever` or the parameter
+`repository::aptkey::keysever`).
 
 The `http_proxy` is the HTTP proxy used to retrieve the APT
 key (via a key server or via a `wget`).  The default value
-of this parameter is `undef`, and in this case:
+of this parameter is `undef`. The `http_proxy` policy is:
 
-* either the value of `repository::aptkey::params::http_proxy`
-  is used if defined;
-* or, if not defined, no HTTP proxy is used.
+1. If `repository::aptkey::http_proxy` (from the user-defined resource)
+   is not `undef`, this HTTP proxy will be used to retrieve the APT key.
+2. If `repository::aptkey::http_proxy` is `undef`:
+    a. If `repository::aptkey::params::http_proxy` (from the class)
+       is not `undef`, this HTTP proxy will be used to retrieve the APT
+       key.
+    b. If `repository::aptkey::params::http_proxy` is `undef`, then
+       no HTTP proxy will be used to retrieve the APT key.
 
 
 
