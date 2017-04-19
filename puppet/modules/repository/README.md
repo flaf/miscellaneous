@@ -135,8 +135,8 @@ Now, here is the `keyserver` policy:
       is not `undef`, this key server is used to download the APT
       key.
     * If `repository::aptkey::params::keysever` is `undef`, then:
-        * The `source` parameter will be used to download the APT
-          key via a `wget` command.
+        * If not undefined, the `source` parameter will be used to
+          download the APT key via a `wget` command.
         * If the `source` parameter is undefined, the key server
           `hkp://keyserver.ubuntu.com:80` will be used.
 
