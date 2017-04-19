@@ -4,7 +4,7 @@ define repository::sourceslist (
   String[1]           $location,
   String[1]           $release,
   Array[String[1], 1] $components,
-  Boolean             $src,
+  Boolean             $src = false,
   Boolean             $apt_update = true,
 ) {
 

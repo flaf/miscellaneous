@@ -5,6 +5,7 @@ class repository::ceph {
   [
    $url,
    $src,
+   $apt_key_fingerprint,
    $codename,
    $pinning_version,
    $supported_distributions,
@@ -32,7 +33,7 @@ class repository::ceph {
   #   url='https://git.ceph.com/release.asc'
   #   wget -q -O- "$url" | apt-key add -
   #
-  $key         = '08B73419AC32B4E966C1A330E84AC2C0460F3994'
+  $key         = $apt_key_fingerprint
   $cleaned_url = $url.regsubst(/\/$/,'') # Remove the trailing slash.
 
   repository::aptkey { 'ceph':

@@ -3,17 +3,18 @@ class repository::gitlab {
   include '::repository::gitlab::params'
 
   [
-    $url,
-    $src,
-    $pinning_version,
-    $supported_distributions,
+   $url,
+   $src,
+   $apt_key_fingerprint,
+   $pinning_version,
+   $supported_distributions,
   ] = Class['::repository::gitlab::params']
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
   ::homemade::fail_if_undef($pinning_version, 'pinning_version', $title)
 
   # GPG key which expires in 2020-04-15.
-  $key      = '1A4C919DB987D435939638B914219A96E15E78F4'
+  $key      = $apt_key_fingerprint
   $codename = $::facts["os"]["distro"]["codename"].downcase()
   $comment  = "Gitlab Repository."
 

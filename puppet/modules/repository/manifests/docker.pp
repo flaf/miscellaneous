@@ -5,6 +5,7 @@ class repository::docker {
   [
    $url,
    $src,
+   $apt_key_fingerprint,
    $pinning_version,
    $supported_distributions,
   ] = Class['::repository::docker::params']
@@ -12,7 +13,7 @@ class repository::docker {
   ::homemade::is_supported_distrib($supported_distributions, $title)
   ::homemade::fail_if_undef($pinning_version, 'pinning_version', $title)
 
-  $key      = '58118E89F3A912897C070ADBF76221572C52609D'
+  $key      = $apt_key_fingerprint
   $codename = $::facts['lsbdistcodename']
   $osid     = $::facts['lsbdistid'].downcase # typically "debian" or "ubuntu"
   $release  = "${osid}-${codename}"

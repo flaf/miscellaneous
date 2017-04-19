@@ -5,14 +5,14 @@ class repository::php {
   [
    $url,
    $key_url,
-   $fingerprint,
+   $apt_key_fingerprint,
    $supported_distributions,
   ] = Class['repository::php::params']
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
   repository::aptkey { 'php':
-    id     => $fingerprint,
+    id     => $apt_key_fingerprint,
     source => $key_url,
   }
 

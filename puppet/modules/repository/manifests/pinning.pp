@@ -1,9 +1,9 @@
 define repository::pinning (
   String[1] $id = $title,
   String[1] $explanation,
-  String[1] $packages = '*',
-  String[1] $version = '',
-  Integer   $priority = 0,
+  String[1] $packages,
+  String[1] $version,
+  Integer   $priority = 500,
 ) {
 
   file { "/etc/apt/preferences.d/${id}.pref":

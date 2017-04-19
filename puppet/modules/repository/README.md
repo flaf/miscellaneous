@@ -45,8 +45,8 @@ The `install_suggests` is a boolean to set the APT option
 The `distrib_url` parameter is the URL used to reach the
 official APT repositories. Its default value is:
 
-* `'http://ftp.fr.debian.org/debian/'` for Debian distribution.
-* `'http://fr.archive.ubuntu.com/ubuntu'` for Ubuntu distribution.
+* `'http://ftp.fr.debian.org/debian/'` for Debian distributions.
+* `'http://fr.archive.ubuntu.com/ubuntu'` for Ubuntu distributions.
 
 The `src` parameter is a boolean. If `true` then `deb-src`
 lines will be added for the official APT repositories, if
@@ -55,10 +55,10 @@ lines will be added for the official APT repositories, if
 
 
 
-# The class `repository::aptkey::params` and the user-defined resource `repository::aptkey`
+# `repository::aptkey::params` and `repository::aptkey`
 
-This class and this user-defined resource allow to manage
-APT PGP keys.
+The class `repository::aptkey::params` and the user-defined
+resource `repository::aptkey` allow to manage APT PGP keys.
 
 
 ## Usage
@@ -135,9 +135,10 @@ The `keyserver` parameter is the key server used to retrieve
 the APT key. The default value of this parameter is `undef`
 and in this case:
 
-* or the value of `repository::aptkey::params::keysever` will
-  be used if defined;
-* if not, the parameter `source` (see below) must be defined.
+* either the value of `repository::aptkey::params::keysever`
+  is used if defined;
+* or, if not defined, the parameter `source` (see below)
+  must be defined.
 
 The `source` parameter is the URL to download the APT key
 via `wget`. The default value is `undef` and the key server
@@ -149,16 +150,117 @@ The `http_proxy` is the HTTP proxy used to retrieve the APT
 key (via a key server or via a `wget`).  The default value
 of this parameter is `undef`, and in this case:
 
-* or the value of `repository::aptkey::params::http_proxy` will
-  be used if defined;
-* if not, no HTTP proxy will be used.
+* either the value of `repository::aptkey::params::http_proxy`
+  is used if defined;
+* or, if not defined, no HTTP proxy is used.
 
 
 
 
 # The user-defined resource `repository::sourceslist`
 
-TODO...
+
+## Usage
+
+Here is an example:
+
+```puppet
+class { '::repository::aptkey::params':
+  http_proxy => 'http://httpproxy.domain.tld:3128',
+  keyserver  => 'hkp://keyserver.ubuntu.com:80',
+}
+
+::repository::aptkey { 'puppetlabs':
+  id => '6F6B 1550 9CF8 E59E 6E46  9F32 7F43 8280 EF8D 349F',
+}
+
+repository::sourceslist { "puppetlabs-pc1":
+  # "id" is useless because the default value of this
+  # attribute is the title of the resource.
+  id         => 'puppetlabs-pc1',
+  comment    => 'Puppetlabs PC1 trusty Repository.',
+  location   => 'http://apt.puppetlabs.com',
+  release    => 'trusty',
+  components => [ 'PC1' ],
+  src        => false,
+  apt_update => true,
+  require    => Repository::Aptkey['puppetlabs'],
+}
+```
+
+
+## Parameters
+
+The `id` parameter allow to define the name of the
+source.list file. The full path of this file will be
+`/etc/apt/sources.list.d/${id}.list`. The default value of
+this parameter is the title of the resource.
+
+The `comment` parameter is just a comment put in the file
+`/etc/apt/sources.list.d/${id}.list`. This parameter has no
+default value.
+
+The syntax of the line put in the file
+`/etc/apt/sources.list.d/${id}.list` will be :
+
+```puppet
+deb ${location} ${release} ${components.join(' ')}
+```
+
+The parameters `location`, `release` and `components`
+have no default value.
+
+The parameter `src` is a boolean to add the line `deb-src`
+is set to `true`. Its default value is `false`.
+
+The parameter `apt_update` is a boolean. If set to `true`,
+it triggers the command `apt-get update` if the resource is
+changed. The default value of this parameter is `true`.
+
+
+
+
+# The user-defined resource `repository::pinning`
+
+
+## Usage
+
+Here is an example:
+
+```puppet
+repository::pinning { 'puppet-agent':
+  # Useless because the default value of this attribute is
+  # the title of the resource.
+  id          => 'puppet-agent',
+  explanation => 'To ensure the version of the puppet-agent package.',
+  packages    => 'puppet-agent',
+  version     => '1.9.3-*',
+  priority    => 990,
+}
+```
+
+
+## Parameters
+
+The `id` parameter allow to define the name of the pinning
+file. The full path of this file will be
+`/etc/apt/preferences.d/${id}.pref`. The default value of
+this parameter is the title of the resource.
+
+Here is the form of the pinning file:
+
+```puppet
+Explanation: $explanation
+Package: $packages
+Pin: version $version
+Pin-Priority: $priority
+```
+
+* The parameter `explanation` has no default value.
+* The parameter `packages` has no default value.
+* The parameter `version` has no default value.
+* The default value of `priority` is `500`.
+
 
 
 
@@ -221,6 +323,7 @@ Here is an example:
 class { '::repository::puppet::params':
   url                    => 'http://apt.puppetlabs.com',
   src                    => false,
+  apt_key_fingerprint    => '6F6B 1550 9CF8 E59E 6E46 9F32 7F43 8280 EF8D 349F',
   collection             => 'PC1',
   pinning_agent_version  => '1.3.0-*', # Don't forget the joker.
 }
@@ -230,12 +333,8 @@ include '::repository::puppet'
 
 ## Parameters
 
-The `url` parameter is the url of the APT repository.
-Its default value is `http://apt.puppetlabs.com`.
-
-The `src` parameter is a boolean to tell if you
-want to include the `deb-src` line or not in the
-`sources.list.d/`. Its default value is `false`.
+The default values of the parameters `url`, `src` and
+`apt_key_fingerprint` are the values of the example above.
 
 The `collection` parameter gives the name of the collection
 which will be used. The `pinning_agent_version` parameter
@@ -263,7 +362,7 @@ Here is an example:
 ```puppet
 # The class repository::puppetserver doesn't manage the
 # Puppetlabs repository in the sources.list.d directory.
-# This is the function of the repository::puppet class.
+# This is the goal of the repository::puppet class.
 include '::repository::puppet'
 
 # The class repository::puppetserver only manages pinnings
@@ -306,8 +405,9 @@ Here is an example:
 
 ```puppet
 class { '::repository::postgresql::params':
-  url => 'http://apt.postgresql.org/pub/repos/apt/',
-  src => false,
+  url                 => 'http://apt.postgresql.org/pub/repos/apt/',
+  src                 => false,
+  apt_key_fingerprint => 'B97B 0AFC AA1A 47F0 44F2 44A0 7FCC 7D46 ACCC 4CF8'
 }
 
 include '::repository::postgresql'
@@ -329,10 +429,11 @@ Here is an example:
 
 ```puppet
 class { '::repository::ceph::params':
-  url             => 'http://download.ceph.com',
-  codename        => 'infernalis',
-  pinning_version => '9.2.0-*',
-  src             => false,
+  url                 => 'http://download.ceph.com',
+  src                 => false,
+  apt_key_fingerprint => '08B7 3419 AC32 B4E9 66C1  A330 E84A C2C0 460F 3994',
+  codename            => 'infernalis',
+  pinning_version     => '9.2.0-*',
 }
 
 include '::repository::ceph'
@@ -340,13 +441,12 @@ include '::repository::ceph'
 
 ## Parameters and default values
 
-Only `url` and `src` parameters have default values
-which are respectively `http://download.ceph.com` and `false`.
-The `codename` and `pinning_version` have not
-relevant default value (it's `undef`) and you must provide
-relevant values explicitly. For the `pinning_version`
-parameter, the string value `'none'` is special and means
-"no pinning".
+Only `url`, `src` and `apt_key_fingerprint` parameters have
+default values which are the value in the example above. The
+`codename` and `pinning_version` have not relevant default
+value (it's `undef`) and you must provide relevant values
+explicitly. For the `pinning_version` parameter, the string
+value `'none'` is special and means "no pinning".
 
 Remark: the complete url used by APT is
 `"${url}/debian-${codename}"` which is the nomenclature used
@@ -365,9 +465,10 @@ Here is an example:
 $distro_id = $::facts["os"]["distro"]["id"].downcase()
 
 class { '::repository::gitlab::params':
-  url             => "http://packages.gitlab.com/gitlab/gitlab-ce/${distro_id}/",
-  src             => false,
-  pinning_version => '8.10.8-*',
+  url                 => "http://packages.gitlab.com/gitlab/gitlab-ce/${distro_id}/",
+  src                 => false,
+  apt_key_fingerprint => '1A4C 919D B987 D435 9396 38B9 1421 9A96 E15E 78F4',
+  pinning_version     => '8.10.8-*',
 }
 
 include '::repository::gitlab'
@@ -375,11 +476,11 @@ include '::repository::gitlab'
 
 ## Parameters and default values
 
-Only `url` and `src` parameters have default values which
-are the values used above. The `pinning_version` has not
-relevant default value (it's `undef`) and you must provide
-a relevant value explicitly. The string value `'none'` is
-special and means "no pinning".
+Only `url`, `src` and `apt_key_fingerprint` parameters have
+default values which are the values used above. The
+`pinning_version` has not relevant default value (it's
+`undef`) and you must provide a relevant value explicitly.
+The string value `'none'` is special and means "no pinning".
 
 
 
@@ -392,9 +493,10 @@ Here is an example:
 
 ```puppet
 class { '::repository::docker::params':
-  url             => 'http://apt.dockerproject.org/repo/dists',
-  src             => false,
-  pinning_version => '1.10.0-*',
+  url                 => 'http://apt.dockerproject.org/repo/dists',
+  src                 => false,
+  apt_key_fingerprint => '5811 8E89 F3A9 1289 7C07 0ADB F762 2157 2C52 609D',
+  pinning_version     => '1.10.0-*',
 }
 
 include '::repository::docker'
@@ -402,11 +504,11 @@ include '::repository::docker'
 
 ## Parameters and default values
 
-Except for `pinning_version`, the default values of
-the parameters are exactly the values of the call above. The
-parameter `pinning_version` provides a pinning for
-the package `docker-engine`. Its default value is `undef`
-and you must provide a value explicitly. The special value
+Except for `pinning_version`, the default values of the
+parameters are exactly the values of the call above. The
+parameter `pinning_version` provides a pinning for the
+package `docker-engine`. Its default value is `undef` and
+you must provide a value explicitly. The special value
 `'none'` means "no pinning".
 
 
@@ -434,16 +536,42 @@ the values of the call above.
 
 
 
+# The `repository::hp_proliant` class
+
+
+## Usage
+
+Here is an example:
+
+```puppet
+class { '::repository::hp_proliant::params':
+  url                 => 'http://downloads.linux.hpe.com/SDR/repo/mcp',
+  apt_key_fingerprint => '5744 6EFD E098 E5C9 34B6 9C7D C208 ADDE 26C2 B797',
+}
+
+include '::repository::hp_proliant'
+```
+
+
+## Parameters
+
+The default values of the parameters `url` and
+`apt_key_fingerprint` are the same values as in the example
+above.
+
+
+
+
 # The homemade local repositories
 
 This section concerns the classes:
 
-- `repository::shinken`,
-- `repository::raid`
-- `repository::mco`
-- `repository::moobot`,
 - `repository::jrds`
+- `repository::mco`
+- `repository::moobot`
 - `repository::php`
+- `repository::raid`
+- `repository::shinken`
 
 which work with exactly the same way.
 
@@ -454,9 +582,9 @@ the other classes above:
 
 ```puppet
 class { '::repository::shinken::params':
-  url         => 'http://repository.crdp.ac-versailles.fr',
-  key_url     => 'http://repository.crdp.ac-versailles.fr/crdp.gpg',
-  fingerprint => '741FA112F3B2D515A88593F83DE39DE978BB3659',
+  url                 => 'http://repository.crdp.ac-versailles.fr',
+  key_url             => 'http://repository.crdp.ac-versailles.fr/crdp.gpg',
+  apt_key_fingerprint => '741F A112 F3B2 D515 A885 93F8 3DE3 9DE9 78BB 3659',
 }
 
 include '::repository::shinken'
