@@ -1,0 +1,7 @@
+---
+version: 5
+hierarchy:
+  - name: "Module repository default values"
+    data_hash: "repository::data"
+
+

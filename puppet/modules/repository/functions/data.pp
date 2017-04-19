@@ -1,4 +1,7 @@
-function repository::data {
+function repository::data (
+  Hash                  $options,
+  Puppet::LookupContext $context,
+) {
 
   $distro_id = $::facts["os"]["distro"]["id"].downcase()
 
