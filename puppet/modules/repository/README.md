@@ -131,14 +131,14 @@ Now, here is the `keyserver` policy:
 1. If `repository::aptkey::keysever` (from the user-defined resource)
    is not `undef`, this key server is used to download the APT key.
 2. If `repository::aptkey::keysever` is `undef`:
-    a. If `repository::aptkey::params::keysever` (from the class)
-       is not `undef`, this key server is used to download the APT
-       key.
-    b. If `repository::aptkey::params::keysever` is `undef`, then:
-        i. The `source` parameter will be used to download the APT
-           key via a `wget` command.
-        ii. If the `source` parameter is undefined, the key server
-            `hkp://keyserver.ubuntu.com:80` will be used.
+    * If `repository::aptkey::params::keysever` (from the class)
+      is not `undef`, this key server is used to download the APT
+      key.
+    * If `repository::aptkey::params::keysever` is `undef`, then:
+        * The `source` parameter will be used to download the APT
+          key via a `wget` command.
+        * If the `source` parameter is undefined, the key server
+          `hkp://keyserver.ubuntu.com:80` will be used.
 
 The `source` parameter is the URL to download the APT key
 via `wget`. The default value is `undef`. As you can see in
@@ -154,11 +154,11 @@ of this parameter is `undef`. The `http_proxy` policy is:
 1. If `repository::aptkey::http_proxy` (from the user-defined resource)
    is not `undef`, this HTTP proxy will be used to retrieve the APT key.
 2. If `repository::aptkey::http_proxy` is `undef`:
-    a. If `repository::aptkey::params::http_proxy` (from the class)
-       is not `undef`, this HTTP proxy will be used to retrieve the APT
-       key.
-    b. If `repository::aptkey::params::http_proxy` is `undef`, then
-       no HTTP proxy will be used to retrieve the APT key.
+    * If `repository::aptkey::params::http_proxy` (from the class)
+      is not `undef`, this HTTP proxy will be used to retrieve the APT
+      key.
+    * If `repository::aptkey::params::http_proxy` is `undef`, then
+      no HTTP proxy will be used to retrieve the APT key.
 
 
 
