@@ -1,4 +1,7 @@
-function puppetserver::data {
+function puppetserver::data (
+  Hash                  $options,
+  Puppet::LookupContext $context,
+) {
 
   # '2g' => 2GB, '512m' => 512MB etc.
   $puppet_memory           = '2g'

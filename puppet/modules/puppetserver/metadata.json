@@ -1,13 +1,12 @@
 {
   "name": "flaf-puppetserver",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "author": "flaf",
   "summary": "Module to install a puppet 4 server",
   "license": "Apache-2.0",
   "source": "",
   "project_page": null,
   "issues_url": null,
-  "data_provider": "function",
   "dependencies": [
     {"name":"puppetlabs-stdlib","version_requirement":">= 4.13.1"},
     {"name":"flaf-homemade","version_requirement":">= 0.1.8"},

@@ -19,22 +19,23 @@
 # 0750 permission for ssldir seems better than the default
 # permission 0771. Of course, we keep the default path of
 # the ssldir.
-ssldir = $confdir/ssl { owner = service, mode = 0750 }
+ssldir            = $confdir/ssl { owner = service, mode = 0750 }
+codedir           = /etc/puppetlabs/code
 <%- if $strict !~ Undef { -%>
-strict = <%= $strict %>
+strict            = <%= $strict %>
 <%- } -%>
 <%- if $strict_variables !~ Undef { -%>
-strict_variables = <%= "${strict_variables}" %>
+strict_variables  = <%= "${strict_variables}" %>
 <%- } -%>
 <%- if $profile == 'client' { -%>
-cacrl = $ssldir/ca_crl.pem
+cacrl             = $ssldir/ca_crl.pem
 <%- } -%>
 <%- if $modules_repository !~ Undef { -%>
 module_repository = <%= $modules_repository  %>
 <%- } -%>
 <%- if $http_proxy_in_puppet_conf { -%>
-http_proxy_host = <%= $http_proxy_host %>
-http_proxy_port = <%= $http_proxy_port %>
+http_proxy_host   = <%= $http_proxy_host %>
+http_proxy_port   = <%= $http_proxy_port %>
 <%- } -%>
 
 [master]
@@ -43,7 +44,6 @@ vardir  = /opt/puppetlabs/server/data/puppetserver
 logdir  = /var/log/puppetlabs/puppetserver
 rundir  = /var/run/puppetlabs/puppetserver
 pidfile = /var/run/puppetlabs/puppetserver/puppetserver.pid
-codedir = /etc/puppetlabs/code
 
 # Modifications.
 external_nodes       = $environmentpath/enc
