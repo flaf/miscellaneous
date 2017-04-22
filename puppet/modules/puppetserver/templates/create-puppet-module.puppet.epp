@@ -1,0 +1,283 @@
+<%-| $puppet_bin_dir, $puppet_conf|-%>
+#!/bin/sh
+
+### This file is managed by Puppet, don't edit it. ###
+
+set -e
+
+export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:<%= $puppet_bin_dir %>'
+export LC_ALL='C'
+SCRIPT_NAME="${0##*/}"
+PUPPET_CONF='<%= $puppet_conf %>'
+
+long_options='help,dir:,name:,summary:'
+short_options='h,d:,n:,s:'
+
+print_help () {
+    cat <<EOF
+The syntax is:
+    $SCRIPT_NAME --help
+    $SCRIPT_NAME [--dir <dest-dir>] --name <module-name> --summary <summary>
+EOF
+}
+
+if ! TEMP=$(getopt -o "$short_options" -l "$long_options" -n "$SCRIPT_NAME" -- "$@")
+then
+    echo "Syntax error with $SCRIPT_NAME." >&2
+    print_help                             >&2
+    return 1
+fi
+
+eval set -- "$TEMP"
+
+dir=$(pwd)
+name=''
+summary=''
+
+while true
+do
+    case "$1" in
+
+        --help|-h)
+            print_help
+            exit 0
+        ;;
+
+        --dir|-d)
+            dir="$2"
+            shift 2
+        ;;
+
+        --name|-n)
+            name="$2"
+            shift 2
+        ;;
+
+        --summary|-s)
+            summary="$2"
+            shift 2
+        ;;
+
+        --)
+            shift 1
+            break
+        ;;
+
+    esac
+
+done
+
+if [ ! -d "$dir" ]
+then
+    printf "Sorry the destination directory \`%s' doesn't exist.\n" "$dir" >&2
+    printf "Script aborted.\n"                                             >&2
+    exit 1
+fi
+
+# To have the full path.
+old_dir="$dir"
+if ! dir=$(cd "$dir" 2>/dev/null && pwd)
+then
+    printf "Sorry, impossible to make a \`cd %s'.\n" "$old_dir" >&2
+    printf "Script aborted.\n"                                  >&2
+    exit 1
+fi
+
+if ! printf '%s\n' "$name" | grep -qE '^[a-z][a-z0-9]*-[a-z][_a-z0-9]*$'
+then
+    printf "Sorry the name of the module must have this form <author>-<module-name> where:\n" >&2
+    printf "    * <author> must match with /[a-z][a-z0-9]/\n"                                 >&2
+    printf "    * <module-name> must match with /[a-z][_a-z0-9]/\n"                           >&2
+    printf "Script aborted.\n"                                                                >&2
+    exit 1
+fi
+
+if [ -z "$summary" ]
+then
+    printf "Sorry, the option --summary must be provided with an non-empty value.\n" >&2
+    printf "Script aborted.\n"                                                       >&2
+    exit 1
+fi
+
+nl=$(printf "%s\n" "$summary" | wc -l)
+
+if [ "$nl" != 1 ]
+then
+    printf "Sorry, the summary must contain only one line.\n" >&2
+    printf "Script aborted.\n"                                >&2
+    exit 1
+fi
+
+# Triming of summary.
+summary=$(printf "%s\n" "$summary" | sed -r -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+
+if ! printf "%s\n" "$summary" | grep -qE '[a-z]'
+then
+    printf "Sorry, the summary must contain at least one character in [a-z].\n" >&2
+    printf "Script aborted.\n"                                                  >&2
+    exit 1
+fi
+
+if ! printf "%s\n" "$summary" | grep -qE '^[\-\. ,a-zA-Z0-9]+$'
+then
+    printf "Sorry, the summary must contain only these characters:\n" >&2
+    printf "   <space> - . , a-z A-Z 0-9"                             >&2
+    printf "Script aborted.\n"                                        >&2
+    exit 1
+fi
+
+modulename="${name#*-}"
+author="${name%%-*}"
+moduledir="$dir/$modulename"
+modulepath=$(puppet config print modulepath --config "$PUPPET_CONF")
+
+stdlibversion=''
+
+old_IFS="$IFS"
+IFS=':'
+for m in xx$modulepath
+do
+    if [ -f "$m/stdlib/metadata.json" ]
+    then
+        stdlibversion=$(cat "$m/stdlib/metadata.json" | jq -r '.["version"]') && break
+    fi
+done
+IFS="$old_IFS"
+
+if ! mkdir "$moduledir"
+then
+    printf "Script aborted.\n" >&2
+    exit 1
+fi
+
+#################################
+### Building of metadata.json ###
+#################################
+
+metadata_content='{
+  "name": "%s",
+  "version": "0.1.0",
+  "author": "%s",
+  "summary": "%s",
+  "license": "Apache-2.0",
+  "source": "",
+  "project_page": null,
+  "issues_url": null'
+
+metadata_content=$(printf "$metadata_content" "$name" "$author" "$summary")
+
+if [ -n "$stdlibversion" ]
+then
+    metadata_content=$(cat <<EOS
+${metadata_content},
+  "dependencies": [
+    {"name": "puppetlabs-stdlib", "version_requirement": ">= $stdlibversion"}
+  ]
+}
+EOS
+)
+else
+    metadata_content=$(cat <<EOS
+${metadata_content}
+}
+EOS
+)
+fi
+
+printf '%s\n' "$metadata_content" > "$moduledir/metadata.json"
+
+
+##############################
+### Building of hiera.yaml ###
+##############################
+
+cat >"$moduledir/hiera.yaml" <<EOF
+---
+version: 5
+hierarchy:
+  - name: "Module $modulename default values"
+    data_hash: "$modulename::data"
+
+
+EOF
+
+
+#######################################
+### Building of the data() function ###
+#######################################
+
+mkdir "$moduledir/functions"
+
+cat >"$moduledir/functions/data.pp" <<EOF
+function $modulename::data (
+  Hash                  \$options,
+  Puppet::LookupContext \$context,
+) {
+
+  #\$supported_distributions = [ ... ];
+
+  {
+    #$modulename::supported_distribution => \$supported_distribution,
+  }
+
+}
+
+
+EOF
+
+
+###############################
+### Building of the init.pp ###
+###############################
+
+mkdir "$moduledir/manifests"
+
+cat >"$moduledir/manifests/init.pp" <<EOF
+class $modulename {
+
+  # TODO...
+
+}
+
+
+EOF
+
+mkdir "$moduledir/templates"
+
+
+##############################
+### Building of the README ###
+##############################
+
+cat >"$moduledir/README.md" <<EOF
+TODO: Please, make a real README file...
+
+# Module description
+
+$summary
+
+
+
+
+# Usage
+
+Here is an example:
+
+\`\`\`puppet
+class { '::$modulename':
+  # ...
+}
+\`\`\`
+
+
+
+
+# Parameters
+
+TODO...
+
+
+EOF
+
+
+

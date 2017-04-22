@@ -42,6 +42,7 @@ class puppetserver::puppetconf {
     # In the params class but not as parameter.
     $puppetlabs_path,
     $puppet_path,
+    $puppet_conf,
     $ssldir,
     $puppet_bin_dir,
   ] = Class['::puppetserver::params']
@@ -402,7 +403,7 @@ class puppetserver::puppetconf {
     }
   }
 
-  file { "$puppet_path/puppet.conf":
+  file { $puppet_conf:
     ensure  => present,
     owner   => 'root',
     group   => 'root',
@@ -587,6 +588,20 @@ class puppetserver::puppetconf {
     group   => 'root',
     mode    => '755',
     content => $git_ssh_wrapper_content,
+  }
+
+  file { '/usr/local/bin/create-puppet-module.puppet':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '755',
+    content => epp(
+                   'puppetserver/create-puppet-module.puppet.epp',
+                    {
+                     'puppet_bin_dir' => $puppet_bin_dir,
+                     'puppet_conf'    => $puppet_conf,
+                    }
+               ),
   }
 
   # it's just a convenience.

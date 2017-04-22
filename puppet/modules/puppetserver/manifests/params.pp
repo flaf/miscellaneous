@@ -22,6 +22,7 @@ class puppetserver::params (
   # Maybe should be retrieve from the puppetagent module...?
   $puppetlabs_path   = '/etc/puppetlabs'
   $puppet_path       = "${puppetlabs_path}/puppet"
+  $puppet_conf       = "${puppet_path}/puppet.conf"
   $ssldir            = "${puppet_path}/ssl"
   $puppet_bin_dir    = '/opt/puppetlabs/puppet/bin'
 
