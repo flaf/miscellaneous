@@ -17,7 +17,7 @@ print_help () {
     cat <<EOF
 The syntax is:
     $SCRIPT_NAME --help
-    $SCRIPT_NAME [--dir <dest-dir>] --name <module-name> --summary <summary>
+    $SCRIPT_NAME [--dir <dest-dir>] --name <author>-<module-name> --summary "<summary>"
 EOF
 }
 
