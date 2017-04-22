@@ -135,7 +135,7 @@ stdlibversion=''
 
 old_IFS="$IFS"
 IFS=':'
-for m in xx$modulepath
+for m in $modulepath
 do
     if [ -f "$m/stdlib/metadata.json" ]
     then
