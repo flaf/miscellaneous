@@ -213,7 +213,7 @@ launch the command `mcrypt -d "etc_${date}.tar.gz.nc"` and
 you have to give the password `mcrypt_pwd`.
 
 **Remark:** if the server if an autonomous server, so with a
-Puppetdb service, the puppetdb is saved in `/etc/puppetdb-backup/`.
+Puppetdb service, the puppetdb is saved in `/usr/local/puppetdb-backup/`.
 
 The `authorized_backup_keys` parameter allows to set ssh
 public keys which will be put in the `~/.ssh/authorized_keys`
