@@ -54,7 +54,7 @@ fi
 <%- if $profile == 'autonomous' { -%>
 
 # Backup of the Puppetdb.
-puppetdb_backup_dir='/etc/puppetdb-backup'
+puppetdb_backup_dir='/usr/local/puppetdb-backup'
 if [ ! -d "$puppetdb_backup_dir" ]
 then
     mkdir "$puppetdb_backup_dir"
@@ -69,7 +69,7 @@ pg_dump --host=localhost --username "$puppetdb_user" "$puppetdb_name" | gzip -9 
 chmod 600 "$puppetdb_gz"
 <%- } -%>
 
-tar -zcf "$targzfile" /etc 2>/dev/null
+tar -zcf "$targzfile" /etc "$puppetdb_backup_dir" 2>/dev/null
 mcrypt --config "$config" --quiet "$targzfile"
 rm "$targzfile"
 chown ppbackup:ppbackup "${targzfile}.nc"
