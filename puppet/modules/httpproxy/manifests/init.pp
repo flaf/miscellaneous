@@ -68,10 +68,11 @@ class httpproxy {
 
     '/etc/nginx/sites-available/keyserver':
       content => epp(
-                   'httproxy/security.conf.epp',
+                   'httproxy/keyserver.epp',
                    {
                      'apt_cacher_ng_adminpwd' => $apt_cacher_ng_adminpwd,
                    },
+                 )
       ;
 
   }
