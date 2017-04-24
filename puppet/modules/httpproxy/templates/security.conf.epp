@@ -1,0 +1,8 @@
+<%-| String[1] $apt_cacher_ng_adminpwd |-%>
+# Basic authentication with username and password, required
+# to visit pages with administrative functionality.
+# Format: username:password
+
+AdminAuth: admin:<%= $apt_cacher_ng_adminpwd %>
+
+
