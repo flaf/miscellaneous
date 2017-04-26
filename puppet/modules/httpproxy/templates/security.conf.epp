@@ -1,4 +1,6 @@
 <%-| String[1] $apt_cacher_ng_adminpwd |-%>
+### This file is managed by Puppet. Don't edit it manually. ###
+
 # Basic authentication with username and password, required
 # to visit pages with administrative functionality.
 # Format: username:password

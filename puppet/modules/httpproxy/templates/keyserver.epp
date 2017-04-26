@@ -1,0 +1,62 @@
+<%-| String[1] $keyserver_fqdn |-%>
+### This file is managed by Puppet. Don't edit it manually. ###
+
+
+#   During the command (the "0x" is optional):
+#
+#       apt-key adv --keyserver "hkp://${keyserver_fqdn}:80" --recv-keys "0x${fingerprint}"
+#
+#   of a client, the HTTP request sent is:
+#
+#       http://${keyserver_fqdn}/lookup?op=get&search=0x${fingerprint}
+#
+#   which must be handled correctly with the "nginx" config
+#   below. For instance, here is an example with the keyserver
+#   "keyserver.ubuntu.com":
+#
+#       http://keyserver.ubuntu.com/pks/lookup?op=get&search=0x6F6B15509CF8E59E6E469F327F438280EF8D349F
+#
+server {
+
+  listen      80;
+  server_name <%= $keyserver_fqdn %>;
+  root        /var/www/html/key;
+  index       index.html;
+
+  if ( $uri != '/pks/lookup' ) {
+    # Request not acceptable.
+    return 406;
+  }
+
+  if ( $arg_op != 'get' ) {
+    # Request not acceptable.
+    return 406;
+  }
+
+  if ( $arg_search ~ '^0x[A-F0-9]{40}$' ) {
+    # The new URL which will be handled is simply:
+    #
+    #     http://${keyserver_fqdn}/0x${fingerprint}
+    #
+    # And the "last" instruction:
+    #
+    #       stops processing the current set of
+    #       ngx_http_rewrite_module directives and starts a
+    #       search for a new location matching the changed
+    #       URI. (dixit Nginx documentation).
+    #
+    rewrite ^ /$arg_search last;
+    set $is_valid OK;
+  }
+
+  if ( $is_valid != 'OK' ) {
+    return 406;
+  }
+
+  location / {
+    try_files $uri = 404;
+  }
+
+}
+
+

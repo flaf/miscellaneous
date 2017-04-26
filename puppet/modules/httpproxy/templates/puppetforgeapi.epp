@@ -1,0 +1,16 @@
+<%-| String[1] $puppetforgeapi_fqdn |-%>
+### This file is managed by Puppet. Don't edit it manually. ###
+
+server {
+
+  listen      80;
+  server_name <%= $puppetforgeapi_fqdn %>;
+
+  location / {
+      proxy_pass       https://forgeapi.puppetlabs.com/;
+      proxy_set_header Host forgeapi.puppetlabs.com;
+  }
+
+}
+
+
