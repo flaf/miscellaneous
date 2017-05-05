@@ -1,0 +1,7 @@
+---
+version: 5
+hierarchy:
+  - name: "pxeserver default values"
+    data_hash: "pxeserver::data"
+
+

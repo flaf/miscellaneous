@@ -234,6 +234,19 @@ class pxeserver::params (
         |- END
     },
 
+    'xenial-elea-lemming-xerus' => {
+      'distrib'          => 'xenial',
+      'menu_label'       => '[xenial] Install lemming/xerus (Supermicro - Transtec)',
+      'apt_proxy'        => $apt_proxy,
+      'skip_boot_loader' => true,
+      'text_help'        => @(END),
+        1. Network configuration (interface, hostname which should be a fqdn)
+        2. Partitioning (do not format the partitions, it is already done)
+         RAID10 dev#0:   fs => XFS, mntpt => /,        mntopt => noatime
+         RAID10 dev#2:   fs => XFS, mntpt => /backups, mntopt => noatime
+        |- END
+    },
+
     'trusty-ceph-dc2' => {
       'distrib'    => 'trusty',
       'menu_label' => '[trusty] Install Ceph (Supermicro - ASInfo)',

@@ -1,4 +1,7 @@
-function pxeserver::data {
+function pxeserver::data (
+  Hash                  $options,
+  Puppet::LookupContext $context,
+) {
 
   {
     pxeserver::params::dhcp_confs              => undef,
