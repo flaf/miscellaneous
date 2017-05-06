@@ -25,13 +25,15 @@ class repository::puppet {
     id => $apt_key_fingerprint,
   }
 
+  ensure_packages(["puppetlabs-release-${collec_down}"], {'ensure' => 'purged'})
+
   repository::sourceslist { "puppetlabs-${collec_down}":
     comment    => $comment,
     location   => "${url}",
     release    => $codename,
     components => [ $collec_up ],
     src        => $src,
-    require    => Repository::Aptkey['puppetlabs'],
+    require    => [Repository::Aptkey['puppetlabs'], Package["puppetlabs-release-${collec_down}"]],
   }
 
   if $pinning_agent_version != 'none' {
