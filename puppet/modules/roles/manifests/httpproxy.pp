@@ -18,7 +18,7 @@ class roles::httpproxy {
     $settings = $entry[1];
     $::datacenter in $settings['datacenters']
   }.reduce([]) |$memo, $entry| {
-    $memo + [$entry[1]['cidr']]
+    $memo + [$entry[1]['cidr_address']]
   }.unique
 
   class { '::httpproxy::params':
