@@ -198,5 +198,43 @@ the keyserver service. This parameter has the structure of
 the example above. The default value of this parameter is
 `[]` (ie no PGP key provided by default).
 
+The boolean `enable_puppetforgeapi` allows to disable/enable
+the HTTP proxy for the Puppetforge API. Its default value
+is `false` (ie no Puppetforge proxy by default).
+
+The string `puppetforgeapi_fqdn` allows to set the server name
+of the vhost which provides the Puppetforge proxy. The default
+value if this parameter is `puppetforgeapi.${::domain}"`.
+
+The boolean `enable_squidguard` allows to disable/enable the
+HTTP proxy Squid/SquidGuard. Its default value is `true`.
+
+The array of strings `squid_allowed_networks` allows to set
+the networks which will be able to request the Squid HTTP
+proxy. The default value is `[]` (no networks allowed by
+default).
+
+The integer `squid_port` allows to set the listening port of
+the Squid daemon. The default value of this parameter is
+`3128`.
+
+The structure `squidguard_conf` allows to set the SquidGuard
+configuration (ie who can request on this or that url). This
+parameter has the structure of the example above. The default
+value of this parameter is:
+
+```puppet
+# The minimal "do nothing" SquidGuard configuration.
+{
+  'acl' => {
+    'default' => { 'pass' => 'all' }
+  }
+}
+```
+
+The string `squidguard_admin_email` allows to set the email
+address of the administrator which is displayed on the HTTP
+redirect page of SquidGuard. The default value of this
+parameter is `admin@${::domain}`.
 
 
