@@ -30,6 +30,7 @@ function httpproxy::data (
 
     httpproxy::params::enable_squidguard       => true,
     httpproxy::params::squid_allowed_networks  => [],
+    httpproxy::params::squid_port              => 3128,
     httpproxy::params::squidguard_conf         => $default_squidguard_conf,
     httpproxy::params::squidguard_admin_email  => "admin@${domain}",
 

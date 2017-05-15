@@ -16,6 +16,7 @@ httpproxy::params::apt_cacher_ng_adminpwd: '123456'
 #httpproxy::params::enable_keyserver: false
 #httpproxy::params::enable_puppetforgeapi: false
 httpproxy::params::squid_allowed_networks: [ '172.16.0.0/16' ]
+#httpproxy::params::squid_port: 3129
 
 httpproxy::params::squidguard_conf:
   src:

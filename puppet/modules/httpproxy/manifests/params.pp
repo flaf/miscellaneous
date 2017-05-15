@@ -12,6 +12,7 @@ class httpproxy::params (
   #
   Boolean                        $enable_squidguard,
   Array[String[1]]               $squid_allowed_networks,
+  Integer[1]                     $squid_port,
   Httpproxy::SquidguardConf      $squidguard_conf,
   String[1]                      $squidguard_admin_email,
   #

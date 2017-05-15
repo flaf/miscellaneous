@@ -1,4 +1,4 @@
-<%-| Array[String[1]] $allowed_networks |-%>
+<%-| Array[String[1]] $allowed_networks, Integer[1] $port, |-%>
 ### This file is managed by Puppet, don't edit it. ###
 
 shutdown_lifetime 5 seconds
@@ -35,7 +35,7 @@ http_access deny  all
 url_rewrite_program /usr/bin/squidGuard -c /etc/squidguard/squidGuard.conf
 url_rewrite_children 20
 
-http_port 3128
+http_port <%= $port %>
 
 coredump_dir /var/spool/squid
 

@@ -17,6 +17,7 @@ class httpproxy {
    #
    $enable_squidguard,
    $squid_allowed_networks,
+   $squid_port,
    $squidguard_conf,
    $squidguard_admin_email,
    $forbiddendir,
@@ -209,6 +210,7 @@ class httpproxy {
                  'httpproxy/squid.conf.epp',
                  {
                    'allowed_networks' => $squid_allowed_networks,
+                   'port'             => $squid_port,
                  },
                ),
   }
