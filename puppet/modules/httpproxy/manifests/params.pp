@@ -10,11 +10,17 @@ class httpproxy::params (
   Boolean                        $enable_puppetforgeapi,
   String[1]                      $puppetforgeapi_fqdn,
   #
+  Boolean                        $enable_squidguard,
+  Array[String[1]]               $squid_allowed_networks,
+  Httpproxy::SquidguardConf      $squidguard_conf,
+  String[1]                      $squidguard_admin_email,
+  #
   Array[String[1], 1]            $supported_distributions,
 ) {
 
   # Used in several places in this modules.
-  $keydir = '/var/www/html/key'
+  $keydir       = '/var/www/html/key'
+  $forbiddendir = '/var/www/html/forbidden'
 
 
   ### Additional checks about the parameter $pgp_pubkeys. ###

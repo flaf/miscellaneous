@@ -9,11 +9,18 @@ class httpproxy {
    #
    $enable_keyserver,
    $keyserver_fqdn,
+   $pgp_pubkeys,
+   $keydir,
    #
    $enable_puppetforgeapi,
    $puppetforgeapi_fqdn,
-   $pgp_pubkeys,
-   $keydir,
+   #
+   $enable_squidguard,
+   $squid_allowed_networks,
+   $squidguard_conf,
+   $squidguard_admin_email,
+   $forbiddendir,
+   #
    $supported_distributions,
   ] = Class['httpproxy::params']
 
@@ -118,16 +125,45 @@ class httpproxy {
       ensure => if $enable_puppetforgeapi {'link'} else {'absent'},
       target => '../sites-available/puppetforgeapi',
     ;
+    '/etc/nginx/sites-available/forbidden':
+      content => epp(
+                   'httpproxy/forbidden.epp',
+                   {
+                     'server_name' => $::facts['networking']['ip'],
+                     'root'        => $forbiddendir,
+                   },
+                 ),
+    ;
+    '/etc/nginx/sites-enabled/forbidden':
+      ensure => if $enable_squidguard {'link'} else {'absent'},
+      target => '../sites-available/forbidden',
+    ;
   }
 
-  file {$keydir:
-    ensure  => 'directory',
-    recurse => true,
-    purge   => true,
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0755',
-    require => Package['nginx-light'],
+  file {
+    default:
+      ensure  => 'directory',
+      recurse => true,
+      purge   => true,
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0755',
+      require => Package['nginx-light'],
+      before  => Service['nginx'],
+    ;
+    [$keydir, $forbiddendir]:
+    ;
+    "${forbiddendir}/forbidden.html":
+      ensure  => 'file',
+      mode    => '0644',
+      content => epp(
+                   'httpproxy/forbidden.html.epp',
+                   {
+                     'admin_email' => $squidguard_admin_email,
+                     'fqdn'        => $::facts['networking']['fqdn'],
+                   },
+                 ),
+    ;
   }
 
   $pgp_pubkeys.each |$pubkey| {
@@ -139,9 +175,9 @@ class httpproxy {
     }
   }
 
-  $enable_nginx = case [$enable_keyserver, $enable_puppetforgeapi] {
-    [false, false]: { false }
-    default:        { true  }
+  $enable_nginx = case [$enable_keyserver, $enable_puppetforgeapi, $enable_squidguard] {
+    [false, false, false]: { false }
+    default              : { true  }
   }
 
   service { 'nginx':
@@ -149,6 +185,99 @@ class httpproxy {
     enable     => $enable_nginx,
     hasrestart => true,
     hasstatus  => true,
+  }
+
+
+  ### Squid and Squidguard. ###
+
+  ensure_packages(
+    [
+      'squid',
+      'squidguard',
+    ],
+    {ensure => present}
+  )
+
+  file { '/etc/squid/squid.conf':
+    ensure  => 'file',
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    require => Package['squid'],
+    notify  => Service['squid'],
+    content => epp(
+                 'httpproxy/squid.conf.epp',
+                 {
+                   'allowed_networks' => $squid_allowed_networks,
+                 },
+               ),
+  }
+
+  service { 'squid':
+    ensure     => if $enable_squidguard {'running'} else {'stopped'},
+    enable     => $enable_squidguard,
+    hasrestart => true,
+    hasstatus  => true,
+  }
+
+  # Squidguard should be configure only when Squid daemon is UP.
+  file { '/etc/squidguard/squidGuard.conf':
+    ensure  => 'file',
+    owner   => 'proxy',
+    group   => 'proxy',
+    mode    => '0640',
+    require => Service['squid'],
+    notify  => Exec['update-squidguard'],
+    content => epp(
+                 'httpproxy/squidguard.conf.epp',
+                 {
+                   'conf' => $squidguard_conf,
+                 },
+               ),
+  }
+
+  # Creations of urls/domains lists.
+  $squidguard_conf.each |$blocktype, $a_block| {
+    $a_block.each |$name, $settings| {
+      $settings.filter |$option, $value| {
+        $option =~ Httpproxy::SquidguardList and $value =~ Array
+      }.each |$option, $value| {
+
+        $t = httpproxy::get_option_value($name, $option, $value).split('/')
+        $f = "/var/lib/squidguard/db/${t[0]}/${t[1]}"
+        $d = "/var/lib/squidguard/db/${t[0]}"
+
+        file {
+          default:
+            owner   => 'proxy',
+            group   => 'proxy',
+            require => File['/etc/squidguard/squidGuard.conf'],
+            notify  => Exec['update-squidguard'],
+          ;
+          $d:
+            ensure => 'directory',
+            mode   => '2750',
+          ;
+          $f:
+            ensure  => 'file',
+            mode    => '0644',
+            content => epp(
+                         'httpproxy/squidguardlist.epp',
+                         {
+                          'list' => $value,
+                         },
+                       ),
+          ;
+        }
+
+      }
+    }
+  }
+
+  exec { 'update-squidguard':
+    path        => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+    command     => 'update-squidguard -v',
+    refreshonly => true,
   }
 
 }

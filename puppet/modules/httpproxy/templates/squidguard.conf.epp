@@ -1,0 +1,63 @@
+<%-| Httpproxy::SquidguardConf $conf |-%>
+### This file is managed by Puppet, don't edit it. ###
+
+dbhome /var/lib/squidguard/db
+logdir /var/log/squidguard
+<%- if 'src' in $conf { -%>
+
+  <%- $conf['src'].each |$name, $settings| { -%>
+src <%= $name %> {
+    <%- $settings.each |$option, $value| { -%>
+    <%= $option %> <%= httpproxy::get_option_value($name, $option, $value) %>
+    <%- } -%>
+}
+
+  <%- } -%>
+<%- } -%>
+<%- if 'dest' in $conf { -%>
+
+  <%- $conf['dest'].each |$name, $settings| { -%>
+dest <%= $name %> {
+    <%- $settings.each |$option, $value| { -%>
+    <%= $option %> <%= httpproxy::get_option_value($name, $option, $value) %>
+    <%- } -%>
+}
+
+  <%- } -%>
+<%- } -%>
+
+# In a "pass" instruction:
+#
+#   * "!foo" means "list foo not allowed".
+#   * "foo" means "list foo allowed".
+#   * With a "pass" instruction that ends with "all", everything is allowed
+#     by default except what is explicitly not allowed.
+#   * With a "pass" instruction that ends with "none", nothing is allowed
+#     by default except what is explicitly allowed.
+#
+# In brief, there are 2 kinds of "pass" instructions:
+#
+#   a) "pass X Y none"  => nothing is allowed except X and Y which are allowed.
+#   b) "pass !X !Y all" => all is allowed except X and Y which are not allowed.
+#
+# The name of a "acl" entry must be the name of a "src"
+# block, except for the "default" ACL. For a request, only
+# one ACL is applied and it's the "default" ACL if the
+# source doesn't match with any others ACL.
+#
+acl {
+<%- $conf['acl'].each |$name, $settings| { -%>
+
+    <%= $name %> {
+  <%- $settings.each |$option, $value| { -%>
+        <%= $option %> <%= httpproxy::get_option_value($name, $option, $value) %>
+    <%- if $name == 'default' { -%>
+        redirect http://<%= $::facts['networking']['ip'] %>/forbidden.html
+    <%- } -%>
+  <%- } -%>
+    }
+<%- } -%>
+
+}
+
+

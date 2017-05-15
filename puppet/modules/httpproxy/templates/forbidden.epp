@@ -1,0 +1,20 @@
+<%-| String[1] $server_name, String[1] $root |-%>
+### This file is managed by Puppet, don't edit it. ###
+
+server {
+
+  listen      80;
+  server_name <%= $server_name %>;
+
+  root <%= $root %>;
+  index index.html;
+
+  location / {
+    # First attempt to serve request as file, then
+    # as directory, then fall back to displaying a 404.
+    try_files $uri $uri/ =404;
+  }
+
+}
+
+

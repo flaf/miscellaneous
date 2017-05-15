@@ -1,0 +1,19 @@
+<%-| String[1] $admin_email, String[1] $fqdn |-%>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Page not allowed</title>
+</head>
+<body>
+
+    <!-- This file is managed by Puppet, don't edit it. -->
+
+    <p>
+      Sorry this page is not allowed for you. If you want to access this page,
+      please contact the administrator at <a href="mailto:<%= $admin_email %>"><%= $admin_email %></a>
+      to reconfigure the HTTP proxy <%= $fqdn %>.
+    </p>
+
+</body>
+</html>

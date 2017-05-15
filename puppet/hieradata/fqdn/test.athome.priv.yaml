@@ -15,6 +15,23 @@ httpproxy::params::apt_cacher_ng_adminpwd: '123456'
 #httpproxy::params::enable_apt_cacher_ng: false
 #httpproxy::params::enable_keyserver: false
 #httpproxy::params::enable_puppetforgeapi: false
+httpproxy::params::squid_allowed_networks: [ '172.16.0.0/16' ]
+
+httpproxy::params::squidguard_conf:
+  src:
+    admin:
+      ip: ['192.168.0.252', '172.16.0.1']
+  dest:
+    archive:
+      domainlist: ['archive.flaf.fr', 'archive.ubuntu.com']
+    repository:
+      domainlist: ['repository.flaf.fr', 'ftp.fr.debian.org']
+  acl:
+    admin:
+      pass: ['archive', 'repository', 'none']
+    default:
+      pass: 'none'
+
 
 httpproxy::params::pgp_pubkeys:
   - name: 'puppet'

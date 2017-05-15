@@ -3,8 +3,15 @@ function httpproxy::data (
   Puppet::LookupContext $context,
 ) {
 
-  $domain = $::facts['networking']['domain']
-
+  $domain                  = $::facts['networking']['domain']
+  # Minimal SquidGuard configuration "do nothing".
+  $default_squidguard_conf  = {
+    'acl' => {
+      'default' => {
+        'pass' => 'all',
+      }
+    }
+  }
   $supported_distributions = [
                               'xenial',
                              ];
@@ -18,8 +25,13 @@ function httpproxy::data (
     httpproxy::params::keyserver_fqdn          => $::facts['networking']['fqdn'],
     httpproxy::params::pgp_pubkeys             => [],
 
-    httpproxy::params::enable_puppetforgeapi   => true,
+    httpproxy::params::enable_puppetforgeapi   => false,
     httpproxy::params::puppetforgeapi_fqdn     => "puppetforgeapi.${domain}",
+
+    httpproxy::params::enable_squidguard       => true,
+    httpproxy::params::squid_allowed_networks  => [],
+    httpproxy::params::squidguard_conf         => $default_squidguard_conf,
+    httpproxy::params::squidguard_admin_email  => "admin@${domain}",
 
     httpproxy::params::supported_distributions => $supported_distributions,
   }

@@ -1,0 +1,4 @@
+<%-| Array[String[1]] $list |-%>
+<%- $list.each |$item| { -%>
+<%= $item %>
+<%- } -%>
