@@ -22,7 +22,7 @@ function httpproxy::data (
     httpproxy::params::apt_cacher_ng_port      => 3142,
 
     httpproxy::params::enable_keyserver        => true,
-    httpproxy::params::keyserver_fqdn          => $::facts['networking']['fqdn'],
+    httpproxy::params::keyserver_fqdn          => "keyserver.${domain}",
     httpproxy::params::pgp_pubkeys             => [],
 
     httpproxy::params::enable_puppetforgeapi   => false,

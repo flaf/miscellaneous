@@ -94,11 +94,11 @@ class { '::httpproxy::params':
   apt_cacher_ng_port     => 3142,
   #
   enable_keyserver       => true,
-  keyserver_fqdn         => $::facts['networking']['fqdn'],
+  keyserver_fqdn         => "keyserver.${::domain}",
   pgp_pubkeys            => $pgp_pubkeys,
   #
   enable_puppetforgeapi  => true,
-  puppetforgeapi_fqdn    => "puppetforgeapi.${domain}",
+  puppetforgeapi_fqdn    => "puppetforgeapi.${::domain}",
   #
   enable_squidguard      => true,
   squid_allowed_networks => ['192.168.0.0/16', '172.16.0.0/16'],
@@ -183,8 +183,9 @@ keyserver server. Its default value is `true`.
 
 The string `keyserver_fqdn` allows to set the server name
 of the vhost which provides the keyserver service which is
-a basic HTTP server. To retrieve a PGP key installed on the
-keyserver, you can laucnhed:
+a basic HTTP server. The default value of this parameter is
+`"keyserver.${::domain}"`. To retrieve a PGP key installed
+on the keyserver, you can laucnhed:
 
 ```sh
 # Where "keyserver.domain.tld" is the value of the puppet
