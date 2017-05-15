@@ -44,7 +44,7 @@ LABEL information
     TEXT HELP
     INFORMATION: if a "preseed.cfg" file set a HTTP proxy,
     you can edit manually the boot options and replace this
-    file by "preseed-noproxy.cfg" to have exactly the same
+    file by "preseednoproxy.cfg" to have exactly the same
     preseed configuration but without HTTP proxy.
     ENDTEXT
 

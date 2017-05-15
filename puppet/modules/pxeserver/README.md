@@ -124,7 +124,7 @@ this case.
 **Remark about APT proxy:** if the preseed configuration of
 a PXE entry set a HTTP proxy, if you want you can edit
 manually the boot options and replace the file `preseed.cfg`
-by the file `preseed-noproxy.cfg` to have exactly the same
+by the file `preseednoproxy.cfg` to have exactly the same
 configuration but without HTTP proxy.
 
 The remaining parameters concerned Puppet and, for each, the

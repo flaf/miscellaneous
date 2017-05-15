@@ -131,7 +131,7 @@ define pxeserver::pxe_entry (
 
   if $apt_proxy != '' {
     $preseed_hash_noproxy = $preseed_hash + { 'apt_proxy' => '' }
-    file { "/var/www/html/${title}/preseed-noproxy.cfg":
+    file { "/var/www/html/${title}/preseednoproxy.cfg":
       *       => $preseed_basic_settings,
       content => epp("pxeserver/preseed-${distrib}.cfg.epp", $preseed_hash_noproxy),
     }
