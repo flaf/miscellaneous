@@ -14,13 +14,9 @@ network::params::ifaces:
 
 simplekeepalived::params::virtual_router_id: 28
 simplekeepalived::params::auth_pass: '1234567890'
-simplekeepalived::params::virtual_ipaddress:
-  - address: '192.168.0.199/24'
-    label: 'vip'
-  - address: '192.168.0.200/32'
-    label: 'vip2'
+simplekeepalived::params::virtual_ipaddress: [ {address: '192.168.0.199/24', label: 'vip'} ]
 simplekeepalived::params::track_script:
-  script: '/bin/toto'
+  script: 'true'
   interval: 7
 
 

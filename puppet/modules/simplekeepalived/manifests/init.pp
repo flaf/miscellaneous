@@ -27,7 +27,7 @@ class simplekeepalived {
     $broadcast   = $dump['broadcast']
     $netmask_num = $dump['netmask_num']
 
-    if ($netmask_num == '32') or ($netmask_num == '128') {
+    if ($netmask_num == 32) or ($netmask_num == 128) {
       # Broadcast has no sense in this case.
       $line = "${cidr} dev ${interface} label ${interface}:${label}"
     } else {
@@ -42,14 +42,6 @@ class simplekeepalived {
     default:  { undef                                 }
   }
 
-  notify { 'Addr':
-    message => "${virtual_ipaddress_array}",
-  }
-
-  notify { 'tc':
-    message => "${track_script_final}",
-  }
-
   ensure_packages(['keepalived'], {ensure => present})
 
   file {'/etc/keepalived/keepalived.conf':
@@ -62,13 +54,13 @@ class simplekeepalived {
     content => epp(
                  'simplekeepalived/keepalived.conf.epp',
                  {
-                   'virtual_router_id'  => $virtual_router_id,
-                   'interface'          => $interface,
-                   'priority'           => $priority,
-                   'nopreempt'          => $nopreempt,
-                   'auth_pass'          => $auth_pass,
-                   'virtual_ipaddress'  => $virtual_ipaddress_array,
-                   'track_script_final' => $track_script,
+                   'virtual_router_id' => $virtual_router_id,
+                   'interface'         => $interface,
+                   'priority'          => $priority,
+                   'nopreempt'         => $nopreempt,
+                   'auth_pass'         => $auth_pass,
+                   'virtual_ipaddress' => $virtual_ipaddress_array,
+                   'track_script'      => $track_script_final,
                  },
                ),
   }

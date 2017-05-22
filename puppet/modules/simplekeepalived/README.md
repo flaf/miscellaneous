@@ -1,5 +1,3 @@
-TODO: Please, make a real README file...
-
 # Module description
 
 A module to manage a simple VRRP instance with Keepalived.
@@ -12,33 +10,32 @@ A module to manage a simple VRRP instance with Keepalived.
 Here is an example:
 
 ```puppet
-class { '::simplekeepalived':
-  # ...
+class { '::simplekeepalived::params':
+  virtual_router_id => 28,
+  interface         => 'eth0',
+  priority          => 100,
+  nopreempt         => true,
+  auth_pass         => '1234567890abcd',
+  virtual_ipaddress => [
+                        {'address' => '192.168.0.199/24', 'label' => 'vip1'},
+                        {'address' => '192.168.0.200/32', 'label' => 'vip2'},
+                       ],
+  track_script      => {
+                        'script'   => '/usr/local/bin/check arg1 arg2',
+                        'interval' => 2,
+                        'weight'   => 0,
+                        'fall'     => 2,
+                        'rise'     => 1,
+                       },
 }
+
+include '::simplekeepalived'
 ```
 
 
-```yaml
-virtual_router_id: 28
-interface: 'eth0'      # default == $::facts['networking']['primary']
-priority: 100          # default == 100
-nopreempt: true        # default == true
-auth_pass: '1234567890'
-virtual_ipaddress:
-  - address: '192.168.0.199/24'
-    label: 'vip'
-    # <=> '192.168.0.199/24 broadcast 192.168.0.255 dev eth0 label eth0:vip'
-track_script:          # default == undef
-  script: "/usr/local/bin/check"
-  interval: 2 # default == 2
-  weight: 0   # default == 0
-  fall: 2     # default == 2
-  rise: 1     # default == 1
-```
 
 
 # Parameters
 
-TODO...
 
 
