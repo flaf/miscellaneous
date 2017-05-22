@@ -1,0 +1,15 @@
+{
+  "name": "flaf-simplekeepalived",
+  "version": "0.1.0",
+  "author": "flaf",
+  "summary": "A module to manage a simple VRRP instance with Keepalived.",
+  "license": "Apache-2.0",
+  "source": "",
+  "project_page": null,
+  "issues_url": null,
+  "dependencies": [
+    {"name": "puppetlabs-stdlib", "version_requirement": ">= 4.17.0"},
+    {"name": "flaf-homemade", "version_requirement": ">= 0.1.8"},
+    {"name": "flaf-network", "version_requirement": ">= 0.9.2"}
+  ]
+}
