@@ -45,10 +45,10 @@ The parameter `interface` is the interface bound by the VRRP
 instance. The default value of this parameter is
 `$::facts['networking']['primary']`.
 
-The parameter `priority` allow to set the priority of the
-VRRP instance. For electing MASTER, highest priority wins,
+The parameter `priority` allows to set the priority of the
+VRRP instance. For electing MASTER, highest priority wins
 unless the parameter `nopreempt` is `true`. The default
-value of the parameter `priority` is `true`.
+value of the parameter `priority` is `100`.
 
 The parameter `nopreempt` allows the lower priority machine
 to maintain the master role, even when a higher priority
@@ -60,15 +60,16 @@ the nodes to communicate. This parameter has no default
 value.
 
 The parameter `virtual_ipaddress` must have the same
-structure above and it allows to set the VIP. This parameter
-is an array that can only contain one VIP. This parameter
+structure above and it allows to set the VIPs. This parameter
+is an array that can too only contain one VIP. This parameter
 has no default value.
 
-The parameter `track_script` can be `undef` or must be a
-hash with the structure above where only the key `script` is
-mandatory. The others keys are optional with the default
-values in the example above. This script sets the VRRP
-instance to the `FAULT` state if its exit code is not zero.
+The parameter `track_script` can be `undef` (in this case no
+track script) or must be a hash with the structure above
+where only the key `script` is mandatory. The others keys
+are optional with the default values in the example above.
+This script sets the VRRP instance to the `FAULT` state if
+its exit code is not zero.
 
 
 
