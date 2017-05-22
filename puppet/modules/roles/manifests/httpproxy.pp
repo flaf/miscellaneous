@@ -29,6 +29,13 @@ class roles::httpproxy {
 
   include '::httpproxy'
 
+
+  class {'::simplekeepalived::params':
+    track_script => { 'script' => 'pkill -0 squid' },
+  }
+
+  include '::simplekeepalived'
+
 }
 
 
