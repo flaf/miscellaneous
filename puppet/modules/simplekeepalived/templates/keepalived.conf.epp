@@ -1,0 +1,57 @@
+<%-|
+Integer[0,255]                          $virtual_router_id,
+String[1]                               $interface,
+Integer[1,255]                          $priority,
+Boolean                                 $nopreempt,
+String[1]                               $auth_pass,
+Simplekeepalived::VirtualIPAddress      $virtual_ipaddress,
+Optional[Simplekeepalived::TrackScript] $track_script,
+|-%>
+### This file is managed by Puppet, please don't edit it. ###
+
+<%- if $track_script !~ Undef { -%>
+vrrp_script service_check {
+    script      $track_script['script']
+    interval    $track_script['interval']
+    weight      $track_script['weight']
+    fall        $track_script['fall']
+    rise        $track_script['rise']
+}
+
+<%- } -%>
+
+vrrp_instance ROUTER_ID_<%= $virtual_router_id %> {
+
+    virtual_router_id   <%= $virtual_router_id %>
+    interface           <%= $interface %>
+    advert_int          1
+    garp_master_delay   5
+    state               BACKUP
+    priority            <%= $priority %>
+<%- if $nopreempt { -%>
+    nopreempt
+<%- } -%>
+
+    virtual_ipaddress {
+<%- $virtual_ipaddress.each |$line| { -%>
+        <%= $line %>
+<%- } -%>
+    }
+
+    authentication {
+        auth_type  PASS
+        auth_pass  <%= $auth_pass %>
+    }
+
+    track_interface {
+        <%= $interface %>
+    }
+
+<%- if $track_script !~ Undef { -%>
+    track_script {
+        service_check
+    }
+
+<%- } -%>
+}
+

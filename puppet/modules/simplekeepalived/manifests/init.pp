@@ -50,6 +50,36 @@ class simplekeepalived {
     message => "${track_script_final}",
   }
 
+  ensure_packages(['keepalived'], {ensure => present})
+
+  file {'/etc/keepalived/keepalived.conf':
+    ensure  => 'file',
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0640',
+    require => Package['keepalived'],
+    notify  => Service['keepalived'],
+    content => epp(
+                 'simplekeepalived/keepalived.conf.epp',
+                 {
+                   'virtual_router_id'  => $virtual_router_id,
+                   'interface'          => $interface,
+                   'priority'           => $priority,
+                   'nopreempt'          => $nopreempt,
+                   'auth_pass'          => $auth_pass,
+                   'virtual_ipaddress'  => $virtual_ipaddress_array,
+                   'track_script_final' => $track_script,
+                 },
+               ),
+  }
+
+  service { 'keepalived':
+    ensure     => 'running',
+    enable     => true,
+    hasrestart => true,
+    hasstatus  => true,
+  }
+
 }
 
 
