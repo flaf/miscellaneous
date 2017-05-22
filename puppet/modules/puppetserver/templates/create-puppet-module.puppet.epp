@@ -215,8 +215,8 @@ function $modulename::data (
 ) {
 
   #\$supported_distributions = [
-  #                              ...
-  #                            ];
+  #                             ...
+  #                           ];
 
   {
     #$modulename::supported_distributions => \$supported_distributions,
