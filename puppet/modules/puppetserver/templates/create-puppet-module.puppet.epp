@@ -214,10 +214,12 @@ function $modulename::data (
   Puppet::LookupContext \$context,
 ) {
 
-  #\$supported_distributions = [ ... ];
+  #\$supported_distributions = [
+  #                              ...
+  #                            ];
 
   {
-    #$modulename::supported_distribution => \$supported_distribution,
+    #$modulename::supported_distributions => \$supported_distributions,
   }
 
 }

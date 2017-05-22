@@ -566,7 +566,9 @@ $dump = ::network::dump_cidr('172.31.3.4/255.255.240.0')
   broadcast   => '172.31.15.255',
   netmask     => '255.255.240.0',
   cidr        => '172.31.3.4/20',
-  netmask_num => '20',
+  netmask_num => 20,
+  ipv4        => true,
+  ipv6        => false,
 }
 ```
 
