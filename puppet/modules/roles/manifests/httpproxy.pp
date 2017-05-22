@@ -31,6 +31,7 @@ class roles::httpproxy {
 
 
   class {'::simplekeepalived::params':
+    # The important service to check is "squid".
     track_script => { 'script' => 'pkill -0 squid' },
   }
 

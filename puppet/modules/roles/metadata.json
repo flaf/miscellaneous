@@ -1,6 +1,6 @@
 {
   "name": "flaf-roles",
-  "version": "0.16.10",
+  "version": "0.17.1",
   "author": "flaf",
   "summary": "Module to implement roles, ie very top level classes",
   "license": "Apache-2.0",
@@ -33,6 +33,7 @@
     {"name":"flaf-rsyncd","version_requirement":"0.1.2"},
     {"name":"flaf-proxmox","version_requirement":"0.1.6"},
     {"name":"flaf-httpproxy","version_requirement":"0.1.2"},
+    {"name":"flaf-simplekeepalived","version_requirement":"0.1.1"},
     {"name":"olecam-keepalived_vip","version_requirement":"0.3.4"}
   ]
 }
