@@ -90,7 +90,7 @@ Puppet::Functions.create_function(:'network::dump_cidr') do
       'broadcast'   => network_addr.to_range.last.to_s,
       'netmask'     => netmask_addr_str,
       'cidr'        => cidr_str,
-      'netmask_num' => netmask_num_str,
+      'netmask_num' => netmask_num_str.to_i,
       'ipv4'        => ipv4,
       'ipv6'        => ipv6,
     }

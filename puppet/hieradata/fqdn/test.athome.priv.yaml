@@ -2,6 +2,7 @@
 enc_included_classes:
   - [ 'flaf', '::roles::generic' ]
   - [ 'flaf', '::httpproxy' ]
+  - [ 'flaf', '::simplekeepalived' ]
 enc_datacenter: 'vboxhome'
 
 network::params::ifaces:
@@ -10,6 +11,18 @@ network::params::ifaces:
     macaddress: '08:00:27:00:00:b1'
     inet:
       method: 'dhcp'
+
+simplekeepalived::params::virtual_router_id: 28
+simplekeepalived::params::auth_pass: '1234567890'
+simplekeepalived::params::virtual_ipaddress:
+  - address: '192.168.0.199/24'
+    label: 'vip'
+  - address: '192.168.0.200/32'
+    label: 'vip2'
+simplekeepalived::params::track_script:
+  script: '/bin/toto'
+  interval: 7
+
 
 httpproxy::params::apt_cacher_ng_adminpwd: '123456'
 #httpproxy::params::enable_apt_cacher_ng: false
