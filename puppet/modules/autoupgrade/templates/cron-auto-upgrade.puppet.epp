@@ -44,7 +44,7 @@ fi
 # Redirect stdout and stderr in the log file.
 exec >> "$logfile" 2>&1
 
-printf '\n\n%s: start of %s...\n\n' "$(date)" "$script_name"
+printf '\n%s: start of %s...\n' "$(date)" "$script_name"
 
 # From APT-GET(8)
 #
@@ -52,6 +52,7 @@ printf '\n\n%s: start of %s...\n\n' "$(date)" "$script_name"
 #       Quiet; produces output suitable for logging,
 #       omitting progress indicators.
 #
+printf '\nAPT cache update...\n'
 apt-get update --quiet --quiet
 
 
@@ -79,6 +80,7 @@ apt-get update --quiet --quiet
 #    in which case it will use that to decide the final
 #    action.
 #
+printf '\nAPT upgrade...\n'
 apt-get --no-remove --yes --quiet --quiet      \
     --option Dpkg::options::='--force-confdef' \
     --option Dpkg::options::='--force-confold' \
@@ -91,25 +93,25 @@ then
     if "$reboot"
     then
         touch "$flag_puppet_run_at_reboot"
-        printf '\n\nA reboot is required, so the puppet run will be triggered after the reboot.\n\n'
+        printf '\nA reboot is required, so the puppet run will be triggered after the reboot.\n'
     else
-        printf '\n\nNo reboot required, the puppet run is triggered now.\n\n'
+        printf '\nNo reboot required, the puppet run is triggered now.\n'
         # If there are changes, the exit code is not zero.
         "$puppet_bin" agent --test --color='false' || true
     fi
 else
-    printf '\n\nNo puppet run required.\n\n'
+    printf '\nNo puppet run required.\n'
 fi
 
 if "$reboot"
 then
-    printf '\n\nA reboot will be triggered in 10 seconds, end of script.\n\n'
+    printf '\nA reboot will be triggered in 10 seconds, end of script.\n'
     {
       sleep 10
       reboot
     } &
 else
-    printf '\n\nNo reboot required, end of script.\n\n'
+    printf '\nNo reboot required, end of script.\n'
 fi
 
 

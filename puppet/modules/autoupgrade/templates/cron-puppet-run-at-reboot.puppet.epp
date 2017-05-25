@@ -27,17 +27,17 @@ create_logfile
 # Redirect stdout and stderr in the log file.
 exec >> "$logfile" 2>&1
 
-printf '\n\n%s: start of %s...\n\n' "$(date)" "$script_name"
+printf '\n%s: start of %s...\n' "$(date)" "$script_name"
 
 if [ -f "$flag_puppet_run_at_reboot" ]
 then
-    printf '\n\n%s: the flag is present, the puppet cron will be launched in few seconds...\n\n' "$(date)"
+    printf '\n%s: the flag is present, the puppet cron will be launched in few seconds...\n' "$(date)"
     sleep 60
     rm "$flag_puppet_run_at_reboot"
     # If there are changes, the exit code is not zero.
     "$puppet_bin" agent --test --color='false' || true
 else
-    printf '\n\n%s: no flag present, end of script.\n\n' "$(date)"
+    printf '\n%s: no flag present, end of script.\n' "$(date)"
 fi
 
 
