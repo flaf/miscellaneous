@@ -1,0 +1,114 @@
+<%-|
+  Boolean   $reboot,
+  Boolean   $puppet_run,
+  String[1] $puppet_bin,
+  String[1] $logfile,
+  String[1] $flag_puppet_run_at_reboot,
+|-%>
+#!/bin/sh
+
+### This file is managed by Puppet, please don't edit it. ###
+
+export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+export LC_ALL='C'
+export DEBIAN_FRONTEND='noninteractive'
+
+reboot='<%= if $reboot { "true" } else { "false" } %>'
+puppet_run='<%= if $puppet_run { "true" } else { "false" } %>'
+puppet_bin='<%= $puppet_bin %>'
+logfile='<%= $logfile %>'
+flag_puppet_run_at_reboot=<%= $flag_puppet_run_at_reboot %>
+
+create_logfile () {
+    touch "$logfile"
+    chmod '0600' "$logfile"
+}
+
+set -e
+
+create_logfile
+
+# Rotate of the log file if needed.
+logsize=$(stat --format '%s' "$logfile")
+if [ "$logsize" -gt '5242880' ] # Rotation if size > 5242880 Bytes ie 5MiB.
+then
+    rm -f "${logfile}.gz"
+    gzip -9 --force "$logfile"
+    # After the gzip command, the log file exists no longer
+    # (the extension .gz has been added). We have to create
+    # a new empty log file.
+    create_logfile
+fi
+
+# Redirtect stdout and stderr in the log file.
+exec >> "$logfile" 2>&1
+
+printf '\n\n%s: start of the upgrade...\n' "$(date)"
+
+# From APT-GET(8)
+#
+#   -q, --quiet
+#       Quiet; produces output suitable for logging,
+#       omitting progress indicators.
+#
+apt-get update --quiet
+
+
+# From APT-GET(8)
+#
+#   --no-remove
+#       If any packages are to be removed apt-get
+#       immediately aborts without prompting.
+#
+#   --yes
+#       Automatic yes to prompts; assume "yes" as answer to
+#       all prompts and run non-interactively.
+#
+# Remark: The --yes option concerns _only_ the questions
+# from apt-get. It doesn't concern the questions from
+# debconf and from dpkg.
+#
+# From DPKG(1)
+#
+#    confdef: If a conffile has been modified and the
+#    version in the package did change, always choose the
+#    default action without prompting. If there is no
+#    default action it will stop to ask the user unless
+#    --force-confnew or --force-confold is also been given,
+#    in which case it will use that to decide the final
+#    action.
+#
+apt-get --no-remove --yes --quiet              \
+    --option Dpkg::options::='--force-confdef' \
+    --option Dpkg::options::='--force-confold' \
+    dist-upgrade
+
+# We don't launch a puppet run here if a reboot is required.
+# If a reboot is required, the puppet run will be launched after the reboot.
+if "$puppet_run"
+then
+    if "$reboot"
+    then
+        touch "$flag_puppet_run_at_reboot"
+        printf 'A reboot is required, so the puppet run will be triggered after the reboot.\n'
+    else
+        printf 'No reboot required, the puppet run is triggered now.\n'
+        # If there are changes, the exit code is not zero.
+        "$puppet_bin" agent --test --color='false' || true
+    fi
+else
+    printf 'No puppet run required.\n'
+fi
+
+if "$reboot"
+then
+    printf 'A reboot will be triggered in 10 seconds, end of script.\n'
+    {
+      sleep 10
+      reboot
+    } &
+else
+    printf 'No reboot required, end of script.\n'
+fi
+
+

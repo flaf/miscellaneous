@@ -1,0 +1,7 @@
+---
+version: 5
+hierarchy:
+  - name: "Module autoupgrade default values"
+    data_hash: "autoupgrade::data"
+
+

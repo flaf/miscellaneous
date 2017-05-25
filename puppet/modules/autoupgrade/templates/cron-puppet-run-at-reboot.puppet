@@ -1,0 +1,42 @@
+<%-|
+  String[1] $puppet_bin,
+  String[1] $logfile,
+  String[1] $flag_puppet_run_at_reboot,
+|-%>
+#!/bin/sh
+
+### This file is managed by Puppet, please don't edit it. ###
+
+export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+export LC_ALL='C'
+
+puppet_bin='<%= $puppet_bin %>'
+logfile='<%= $logfile %>'
+flag_puppet_run_at_reboot=<%= $flag_puppet_run_at_reboot %>
+
+create_logfile () {
+    touch "$logfile"
+    chmod '0600' "$logfile"
+}
+
+set -e
+
+create_logfile
+
+# Redirtect stdout and stderr in the log file.
+exec >> "$logfile" 2>&1
+
+printf '\n\n%s: start of the e...\n' "$(date)"
+
+if [ -f "$flag_puppet_run_at_reboot" ]
+then
+    printf '\n\n%s: the flag is present, the puppet cron will be launched in few seconds...\n' "$(date)"
+    sleep 60
+    rm "$flag_puppet_run_at_reboot"
+    # If there are changes, the exit code is not zero.
+    "$puppet_bin" agent --test --color='false' || true
+else
+    printf '\n\n%s: no flag present, end of script.\n' "$(date)"
+fi
+
+
