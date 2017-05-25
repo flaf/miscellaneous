@@ -44,7 +44,7 @@ fi
 # Redirect stdout and stderr in the log file.
 exec >> "$logfile" 2>&1
 
-printf '\n%s: start of %s...\n' "$(date)" "$script_name"
+printf '\n===>%s: start of %s...\n' "$(date)" "$script_name"
 
 # From APT-GET(8)
 #

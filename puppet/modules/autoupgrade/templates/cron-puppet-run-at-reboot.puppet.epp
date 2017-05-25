@@ -27,7 +27,7 @@ create_logfile
 # Redirect stdout and stderr in the log file.
 exec >> "$logfile" 2>&1
 
-printf '\n%s: start of %s...\n' "$(date)" "$script_name"
+printf '\n===>%s: start of %s...\n' "$(date)" "$script_name"
 
 if [ -f "$flag_puppet_run_at_reboot" ]
 then
