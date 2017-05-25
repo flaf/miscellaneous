@@ -44,7 +44,7 @@ fi
 # Redirect stdout and stderr in the log file.
 exec >> "$logfile" 2>&1
 
-printf '\n===>%s: start of %s...\n' "$(date)" "$script_name"
+printf '\n\n\n===> %s: start of %s...\n' "$(date)" "$script_name"
 
 # From APT-GET(8)
 #
@@ -53,7 +53,7 @@ printf '\n===>%s: start of %s...\n' "$(date)" "$script_name"
 #       omitting progress indicators.
 #
 printf '\nAPT cache update...\n'
-apt-get update --quiet --quiet
+apt-get --quiet --quiet update
 
 
 # From APT-GET(8)
