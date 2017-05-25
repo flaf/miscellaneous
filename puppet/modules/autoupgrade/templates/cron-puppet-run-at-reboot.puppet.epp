@@ -31,7 +31,7 @@ printf '\n%s: start of %s...\n' "$(date)" "$script_name"
 
 if [ -f "$flag_puppet_run_at_reboot" ]
 then
-    printf '\n%s: the flag is present, the puppet cron will be launched in few seconds...\n' "$(date)"
+    printf '\n%s: the flag is present, the puppet cron will be launched in 60 seconds...\n' "$(date)"
     sleep 60
     rm "$flag_puppet_run_at_reboot"
     # If there are changes, the exit code is not zero.
