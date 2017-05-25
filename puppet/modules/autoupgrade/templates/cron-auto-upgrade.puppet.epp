@@ -81,10 +81,10 @@ apt-get --quiet --quiet update
 #    action.
 #
 printf '\nAPT upgrade...\n'
-apt-get --no-remove --yes --quiet --quiet      \
+apt-get --no-remove --yes --quiet              \
     --option Dpkg::options::='--force-confdef' \
     --option Dpkg::options::='--force-confold' \
-    dist-upgrade
+    upgrade
 
 # We don't launch a puppet run here if a reboot is required.
 # If a reboot is required, the puppet run will be launched after the reboot.
