@@ -1,6 +1,7 @@
 ---
 enc_included_classes:
   - [ 'flaf', '::roles::httpproxy' ]
+  - [ 'flaf', '::autoupgrade' ]
 enc_datacenter: 'vboxhome'
 
 network::params::ifaces:
@@ -10,9 +11,12 @@ network::params::ifaces:
     inet:
       method: 'dhcp'
 
+
+autoupgrade::params::apply: true
+
 simplekeepalived::params::virtual_router_id: 28
 simplekeepalived::params::auth_pass: '1234567890'
-simplekeepalived::params::virtual_ipaddress: [ {address: '192.168.0.199/24', label: 'vip'} ]
+simplekeepalived::params::virtual_ipaddress: [ {address: '172.16.233.233/24', label: 'vip'} ]
 
 
 httpproxy::params::apt_cacher_ng_adminpwd: '123456'

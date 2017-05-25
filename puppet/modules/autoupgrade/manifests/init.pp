@@ -15,7 +15,7 @@ class autoupgrade {
     $supported_distributions,
     #
     $autoupgrade_script,
-    $puppet_run_at_reboot_script
+    $puppet_run_at_reboot_script,
     $flag_puppet_run_at_reboot,
     $logfile,
   ] = Class['::autoupgrade::params']

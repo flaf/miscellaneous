@@ -11,16 +11,16 @@ function autoupgrade::data (
                              ];
 
   {
-    autoupgrade::apply                   => false,
-    autoupgrade::hour                    => fqdn_rand(6, $seed),  # from 0 to 5.
-    autoupgrade::minute                  => fqdn_rand(60, $seed), # from 0 to 59.
-    autoupgrade::monthday                => absent,               # ie * (any day of the month).
-    autoupgrade::month                   => absent,               # ie * (any month).
-    autoupgrade::weekday                 => fqdn_rand(7, $seed),  # from 0 to 6.
-    autoupgrade::reboot                  => true,
-    autoupgrade::puppet_run              => true,
-    autoupgrade::puppet_bin              => '/opt/puppetlabs/bin/puppet',
-    autoupgrade::supported_distributions => $supported_distributions,
+    autoupgrade::params::apply                   => false,
+    autoupgrade::params::hour                    => fqdn_rand(6, $seed),  # from 0 to 5.
+    autoupgrade::params::minute                  => fqdn_rand(60, $seed), # from 0 to 59.
+    autoupgrade::params::monthday                => absent,               # ie * (any day of the month).
+    autoupgrade::params::month                   => absent,               # ie * (any month).
+    autoupgrade::params::weekday                 => fqdn_rand(7, $seed),  # from 0 to 6.
+    autoupgrade::params::reboot                  => true,
+    autoupgrade::params::puppet_run              => true,
+    autoupgrade::params::puppet_bin              => '/opt/puppetlabs/bin/puppet',
+    autoupgrade::params::supported_distributions => $supported_distributions,
   }
 }
 

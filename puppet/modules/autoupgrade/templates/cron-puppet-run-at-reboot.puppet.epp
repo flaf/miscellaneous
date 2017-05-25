@@ -10,9 +10,10 @@
 export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
 export LC_ALL='C'
 
+script_name="${0##*/}"
 puppet_bin='<%= $puppet_bin %>'
 logfile='<%= $logfile %>'
-flag_puppet_run_at_reboot=<%= $flag_puppet_run_at_reboot %>
+flag_puppet_run_at_reboot='<%= $flag_puppet_run_at_reboot %>'
 
 create_logfile () {
     touch "$logfile"
@@ -23,20 +24,20 @@ set -e
 
 create_logfile
 
-# Redirtect stdout and stderr in the log file.
+# Redirect stdout and stderr in the log file.
 exec >> "$logfile" 2>&1
 
-printf '\n\n%s: start of the e...\n' "$(date)"
+printf '\n\n%s: start of %s...\n\n' "$(date)" "$script_name"
 
 if [ -f "$flag_puppet_run_at_reboot" ]
 then
-    printf '\n\n%s: the flag is present, the puppet cron will be launched in few seconds...\n' "$(date)"
+    printf '\n\n%s: the flag is present, the puppet cron will be launched in few seconds...\n\n' "$(date)"
     sleep 60
     rm "$flag_puppet_run_at_reboot"
     # If there are changes, the exit code is not zero.
     "$puppet_bin" agent --test --color='false' || true
 else
-    printf '\n\n%s: no flag present, end of script.\n' "$(date)"
+    printf '\n\n%s: no flag present, end of script.\n\n' "$(date)"
 fi
 
 
