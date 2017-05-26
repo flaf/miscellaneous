@@ -31,13 +31,14 @@ printf '\n\n\n===> %s: start of %s...\n' "$(date)" "$script_name"
 
 if [ -f "$flag_puppet_run_at_reboot" ]
 then
-    printf '\n%s: the flag is present, the puppet cron will be launched in 60 seconds...\n' "$(date)"
-    sleep 60
+    printf '\nThe flag file is present, the puppet cron will be launched in 60 seconds...\n'
     rm "$flag_puppet_run_at_reboot"
+    sleep 60
     # If there are changes, the exit code is not zero.
     "$puppet_bin" agent --test --color='false' || true
+    printf '\nPuppet run executed, end of script.\n'
 else
-    printf '\n%s: no flag present, end of script.\n' "$(date)"
+    printf '\nNo flag file present, end of script.\n'
 fi
 
 
