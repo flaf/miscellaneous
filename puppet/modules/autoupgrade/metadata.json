@@ -1,6 +1,6 @@
 {
   "name": "flaf-autoupgrade",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "author": "flaf",
   "summary": "A module to upgrade and reboot a host automatically.",
   "license": "Apache-2.0",
