@@ -41,8 +41,8 @@ class roles::moobotnode (
 
       # To monitor the "backup" cron task.
       $default_backup_cmd = ::moo::data()['moo::cargo::params::backup_cmd']
-      $backup_cmd         = ::roles::wrap_cron_mon($default_backup_cmd, 'backup-moodles')
-      $rsync_filedir_cmd  = ::roles::wrap_cron_mon("${default_backup_cmd} --no-sqldump", 'rsync-filedirs')
+      $backup_cmd         = ::roles::wrap_cron_mon('backup-moodles', $default_backup_cmd)
+      $rsync_filedir_cmd  = ::roles::wrap_cron_mon('rsync-filedirs', "${default_backup_cmd} --no-sqldump")
 
       class { '::network::resolv_conf::params':
         local_resolver_interface      => [ $primary_address ],
@@ -122,7 +122,7 @@ class roles::moobotnode (
       #
       # We want to be able to monitor if the VIP(s) is (are) present.
       #$default_cron_check_cmd = ::keepalived_vip::data()['keepalived_vip::params::cron_check_cmd']
-      #$cron_check_cmd         = ::roles::wrap_cron_mon($default_cron_check_cmd, 'check-vip')
+      #$cron_check_cmd         = ::roles::wrap_cron_mon('check-vip', $default_cron_check_cmd)
 
       class { '::keepalived_vip::params':
         # (i) No longer the case. Now, the VIP is checked via SNMP directly.
@@ -143,7 +143,7 @@ class roles::moobotnode (
 
       # To monitor the "backup" cron task.
       $default_backup_cmd = ::moo::data()['moo::captain::params::backup_cmd']
-      $backup_cmd         = ::roles::wrap_cron_mon($default_backup_cmd, 'dump-captain-db')
+      $backup_cmd         = ::roles::wrap_cron_mon('dump-captain-db', $default_backup_cmd)
 
       include 'roles::generic'
 

@@ -4,7 +4,7 @@ class roles::gitlab {
   include '::repository::gitlab'
 
   class { '::gitlab::params':
-    backup_cron_wrapper => ::roles::wrap_cron_mon(undef, 'backup-gitlab'),
+    backup_cron_wrapper => ::roles::wrap_cron_mon('backup-gitlab'),
   }
 
   class { '::rsyncd::params':
