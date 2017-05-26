@@ -18,6 +18,7 @@ class roles::generic (
     '::puppetagent',
     '::mcollective::server',
     '::snmp',
+    '::autoupgrade',
   ],
   Array[String[1]] $included_classes = $authorized_classes,
   Array[String[1]] $excluded_classes = [],
