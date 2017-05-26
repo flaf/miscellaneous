@@ -348,6 +348,20 @@ class roles::generic (
       }
 
 
+      ###################
+      ### autoupgrade ###
+      ###################
+      '::autoupgrade': {
+
+        class { '::autoupgrade::params':
+          upgrade_wrapper => ::roles::wrap_cron_mon('autoupgrade'),
+        }
+
+        include '::autoupgrade'
+
+      }
+
+
       ########################
       ### The default case ###
       ########################
