@@ -10,8 +10,10 @@ class autoupgrade {
     $month,
     $weekday,
     $reboot,
+    $commands_before_reboot,
     $puppet_run,
     $puppet_bin,
+    $upgrade_wrapper,
     $supported_distributions,
     #
     $autoupgrade_script,
@@ -50,6 +52,7 @@ class autoupgrade {
     content => epp( "autoupgrade/${autoupgrade_name}.epp",
                     {
                       'reboot'                    => $reboot,
+                      'commands_before_reboot'    => $commands_before_reboot,
                       'puppet_run'                => $puppet_run,
                       'puppet_bin'                => $puppet_bin,
                       'logfile'                   => $logfile,
@@ -58,10 +61,15 @@ class autoupgrade {
                   ),
   }
 
+  $cron_cmd = case $upgrade_wrapper {
+    Undef:   { $autoupgrade_script                        }
+    default: { "${upgrade_wrapper} ${autoupgrade_script}" }
+  }
+
   cron { 'cron-auto-upgrade':
     ensure   => $ensure_cron,
     user     => 'root',
-    command  => $autoupgrade_script,
+    command  => $cron_cmd,
     hour     => $hour,
     minute   => $minute,
     monthday => $monthday,

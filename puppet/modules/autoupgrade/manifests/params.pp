@@ -6,8 +6,10 @@ class autoupgrade::params (
   Data                $month,
   Data                $weekday,
   Boolean             $reboot,
+  Array[String[1]]    $commands_before_reboot,
   Boolean             $puppet_run,
   String[1]           $puppet_bin,
+  Optional[String[1]] $upgrade_wrapper,
   Array[String[1], 1] $supported_distributions,
 ) {
 

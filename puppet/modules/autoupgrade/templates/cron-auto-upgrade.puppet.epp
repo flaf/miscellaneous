@@ -1,9 +1,10 @@
 <%-|
-  Boolean   $reboot,
-  Boolean   $puppet_run,
-  String[1] $puppet_bin,
-  String[1] $logfile,
-  String[1] $flag_puppet_run_at_reboot,
+  Boolean          $reboot,
+  Array[String[1]] $commands_before_reboot,
+  Boolean          $puppet_run,
+  String[1]        $puppet_bin,
+  String[1]        $logfile,
+  String[1]        $flag_puppet_run_at_reboot,
 |-%>
 #!/bin/sh
 
@@ -109,6 +110,9 @@ fi
 
 if "$reboot"
 then
+    <%- $commands_before_reboot.each |$line| { -%>
+    <%= $line %>
+    <%- } -%>
     printf '\nA reboot will be triggered in 10 seconds, end of script.\n'
     {
       sleep 10
