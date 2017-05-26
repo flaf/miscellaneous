@@ -44,7 +44,7 @@ fi
 # Redirect stdout and stderr in the log file.
 exec >> "$logfile" 2>&1
 
-printf '\n\n\n===> %s: start of %s...\n' "$(date)" "$script_name"
+printf '\n\n\n===> %s: start of %s\n' "$(date)" "$script_name"
 
 # From APT-GET(8)
 #
@@ -79,6 +79,10 @@ apt-get --quiet --quiet update
 #    --force-confnew or --force-confold is also been given,
 #    in which case it will use that to decide the final
 #    action.
+#
+# Currently, the grep pipe is the only way I have found to
+# remove the progress bar indicator from the dpkg command
+# output. It's clearly a workaround.
 #
 printf '\nAPT upgrade...\n'
 apt-get --no-remove --yes --quiet              \
