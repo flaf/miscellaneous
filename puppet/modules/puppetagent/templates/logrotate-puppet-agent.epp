@@ -1,0 +1,61 @@
+<%-| String[1] $reload_rsyslog_cmd |-%>
+### This file is managed by Puppet, please don't edit it. ###
+
+# monthly
+#     Rotation tried monthly.
+#
+# size 10M
+#     rotation only when the file /var/log/puppet-agent.log
+#     grows bigger than 10M.
+#
+# rotate 5
+#     Keep only puppet-agent.log.1, puppet-agent.log.2.gz, ...,
+#     puppet-agent.log.5.gz so approximatively 50MB of logs.
+#
+# missingok
+#     If the log file is missing, go on to the next one without
+#     issuing an error message.
+#
+# notifempty
+#     Do not rotate the log if it is empty.
+#
+# compress
+#     Old versions of log files are compressed.
+#
+# delaycompress
+#     Postpone compression of the previous log file to the next
+#     rotation cycle. This has only effect when used in
+#     combination with compress. It can be used when some
+#     program can not be told to close its logfile and thus
+#     might continue writing to the previous log file for some
+#     time.
+#     In clear, during the rotation, the file /var/log/puppet-agent.log
+#     will be not compressed and just move to /var/log/puppet-agent.log.1
+#     (with the same inode).
+#
+# postrotate
+#     Allow to reload the rsyslog daemon to write logs in the new file
+#     /var/log/puppet-agent.log instead of the previous file which has
+#     benn renamed to /var/log/puppet-agent.log.1.
+#
+# If you want to test the configuration, you have to add
+#
+#       su root syslog
+#
+# Which
+#
+/var/log/puppet-agent.log
+{
+    monthly
+    size 10M
+    rotate 5
+    missingok
+    notifempty
+    compress
+    delaycompress
+    postrotate
+        <%= $reload_rsyslog_cmd %>
+    endscript
+}
+
+

@@ -4,33 +4,7 @@ enc_included_classes:
 enc_datacenter: 'vboxhome'
 enc_groups: [ 'puppetserver' ]
 
-
-##### test for PUP-7418 #####
-test::param:
-  a: 'specific-a'
-  c: 'specific-c'
-  #c: '%{alias("my_alias")}'
-
-my_alias: '123456'
-
-key:
-  subkey1: 'aaa'
-  subkey2:
-    - 'bbb'
-    - subsubkey1: 'ccc'
-      subsubkey2: "%{alias(\"'foo.foo'.k1\")}"
-      #subsubkey2: "%{alias('\"foo.foo\".k2')}"
-      #subsubkey2: '%{alias("''foo.foo''.k1")}'
-      #subsubkey2: '%{alias(''"foo.foo".k2'')}'
-
-
-foo.foo:
-  k1: 'gagné aussi!!!'
-  k2:
-    a: 'gagné!!!'
-    b: 'gagné!!!'
-##### test for PUP-7418 #####
-
+#puppetagent::params::dedicated_log: false
 
 puppetserver::params::puppet_memory: '2g'
 

@@ -5,6 +5,7 @@
   String[1]        $puppet_bin,
   String[1]        $logfile,
   String[1]        $flag_puppet_run_at_reboot,
+  String[1]        $upgrade_subcmd,
 |-%>
 #!/bin/sh
 
@@ -20,6 +21,7 @@ puppet_run='<%= if $puppet_run { "true" } else { "false" } %>'
 puppet_bin='<%= $puppet_bin %>'
 logfile='<%= $logfile %>'
 flag_puppet_run_at_reboot='<%= $flag_puppet_run_at_reboot %>'
+upgrade_subcmd='<%= $upgrade_subcmd %>'
 
 create_logfile () {
     touch "$logfile"
@@ -89,7 +91,7 @@ printf '\nAPT upgrade...\n'
 apt-get --no-remove --yes --quiet              \
     --option Dpkg::options::='--force-confdef' \
     --option Dpkg::options::='--force-confold' \
-    dist-upgrade | grep -vE '^\(Reading database \.\.\.'
+    "$upgrade_subcmd" | grep -vE '^\(Reading database \.\.\.'
 
 # We don't launch a puppet run here if a reboot is required.
 # If a reboot is required, the puppet run will be launched after the reboot.

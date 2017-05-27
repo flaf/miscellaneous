@@ -14,6 +14,7 @@ class autoupgrade {
     $puppet_run,
     $puppet_bin,
     $upgrade_wrapper,
+    $upgrade_subcmd,
     $supported_distributions,
     #
     $autoupgrade_script,
@@ -57,6 +58,7 @@ class autoupgrade {
                       'puppet_bin'                => $puppet_bin,
                       'logfile'                   => $logfile,
                       'flag_puppet_run_at_reboot' => $flag_puppet_run_at_reboot,
+                      'upgrade_subcmd'            => $upgrade_subcmd,
                     }
                   ),
   }

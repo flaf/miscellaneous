@@ -10,15 +10,66 @@ class puppetagent {
     $cron,
     $puppetconf_path,
     $manage_puppetconf,
+    $dedicated_log,
     $ssldir,
     $bindir,
     $etcdir,
     $supported_distributions,
     # It's not a parameter but an internal value.
     $file_flag_puppet_cron,
+    $reload_rsyslog_cmd,
   ] = Class['::puppetagent::params']
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
+
+  if $dedicated_log and $::rsyslog_default_filecreatemode.empty {
+    @("END"/L$).fail
+      ${title}: sorry the custom fact \$::rsyslog_default_filecreatemode \
+      is empty which not allowed when the parameter \
+      \$::puppetagent::params::dedicated_log is set to true.
+      |- END
+  }
+
+  $ensure_dedicated_log = case $dedicated_log {
+    true:    { 'file'   }
+    default: { 'absent' }
+  }
+
+  file { '/etc/rsyslog.d/01-puppet-agent.conf':
+    ensure  => $ensure_dedicated_log,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    before  => Package['puppet-agent'],
+    notify  => Exec['restart-rsyslog-for-puppet-agent'],
+    content => epp( 'puppetagent/01-puppet-agent.conf.epp',
+                    {
+                      'rsyslog_default_filecreatemode' => $rsyslog_default_filecreatemode,
+                    }
+                  ),
+  }
+
+  # It's probably a good idea to not manage the "rsyslog"
+  # service in this present module.
+  exec { 'restart-rsyslog-for-puppet-agent':
+    path        => '/usr/sbin:/usr/bin:/sbin:/bin',
+    command     => 'service rsyslog restart',
+    before      => Package['puppet-agent'],
+    refreshonly => true,
+  }
+
+  file { '/etc/logrotate.d/puppet-agent':
+    ensure  => $ensure_dedicated_log,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    before  => Package['puppet-agent'],
+    content => epp( 'puppetagent/logrotate-puppet-agent.epp',
+                    {
+                      'reload_rsyslog_cmd' => $reload_rsyslog_cmd,
+                    }
+                  ),
+  }
 
   ensure_packages(['puppet-agent'], { ensure => present, })
 

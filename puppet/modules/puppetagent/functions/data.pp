@@ -21,6 +21,7 @@ function puppetagent::data {
     puppetagent::params::cron              => 'per-week',
     puppetagent::params::puppetconf_path   => "${etcdir}/puppet.conf",
     puppetagent::params::manage_puppetconf => true,
+    puppetagent::params::dedicated_log     => true,
     puppetagent::params::ssldir            => "${etcdir}/ssl",
     puppetagent::params::bindir            => $bindir,
     puppetagent::params::etcdir            => $etcdir,

@@ -1,0 +1,31 @@
+<%-| String[1] $rsyslog_default_filecreatemode |-%>
+### This file is managed by Puppet, please don't edit it. ###
+
+# FileCreateMode may be specified multiple times. If so, it
+# specifies the creation mode for all selector lines that
+# follow until the next $FileCreateMode directive. Order of
+# lines is vitally important.
+#
+# We want to have very strict Unix permissions for puppet logs.
+#
+$FileCreateMode 0600
+
+# By default, puppet-agent uses the 'daemon' facility via
+# the option "syslogfacility" in puppet.conf. So we could
+# add the condition
+#
+#        $syslogfacility-text == 'daemon'
+#
+# in the "if" below but it should be not necessary.
+#
+if $programname == 'puppet-agent' then {
+    -/var/log/puppet-agent.log
+    stop
+}
+
+# Restore the value of $FileCreateMode from the "rsyslog"
+# package.
+#
+$FileCreateMode <%= $rsyslog_default_filecreatemode %>
+
+
