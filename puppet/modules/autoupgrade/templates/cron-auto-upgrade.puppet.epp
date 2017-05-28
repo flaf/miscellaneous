@@ -104,12 +104,12 @@ then
         touch "$flag_puppet_run_at_reboot"
         printf '\nA reboot is required, so the puppet run will be triggered after the reboot.\n'
     else
-        printf '\nNo reboot required, the puppet run may be triggered...\n'
+        printf '\nNo reboot required, the puppet run may be triggered.\n'
         if [ -f "$flag_no_puppet_run" ]
         then
-            printf '... but the flag file "no-puppet-run" is present, so no puppet run finally.\n'
+            printf 'The flag file "no-puppet-run" is present, so no puppet run finally.\n'
         else
-            printf '... the flag file "no-puppet-run" is absent, so a puppet run is really triggered now.\n'
+            printf 'The flag file "no-puppet-run" is absent, so a puppet run is really triggered now.\n'
             # If there are changes, the exit code is not zero.
             "$puppet_bin" agent --test --color='false' || true
         fi
