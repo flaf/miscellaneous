@@ -17,18 +17,11 @@ class puppetagent {
     $supported_distributions,
     # It's not a parameter but an internal value.
     $file_flag_puppet_cron,
+    $dedicated_log_file,
     $reload_rsyslog_cmd,
   ] = Class['::puppetagent::params']
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
-
-  if $dedicated_log and $::rsyslog_default_filecreatemode.empty {
-    @("END"/L$).fail
-      ${title}: sorry the custom fact \$::rsyslog_default_filecreatemode \
-      is empty which not allowed when the parameter \
-      \$::puppetagent::params::dedicated_log is set to true.
-      |- END
-  }
 
   $ensure_dedicated_log = case $dedicated_log {
     true:    { 'file'   }
@@ -44,7 +37,7 @@ class puppetagent {
     notify  => Exec['restart-rsyslog-for-puppet-agent'],
     content => epp( 'puppetagent/01-puppet-agent.conf.epp',
                     {
-                      'rsyslog_default_filecreatemode' => $rsyslog_default_filecreatemode,
+                      'dedicated_log_file' => $dedicated_log_file,
                     }
                   ),
   }
@@ -67,6 +60,7 @@ class puppetagent {
     content => epp( 'puppetagent/logrotate-puppet-agent.epp',
                     {
                       'reload_rsyslog_cmd' => $reload_rsyslog_cmd,
+                      'dedicated_log_file' => $dedicated_log_file,
                     }
                   ),
   }

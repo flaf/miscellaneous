@@ -19,6 +19,7 @@ class puppetagent::params (
   # puppet module.
   $file_flag_puppet_cron = "${etcdir}/no-run-via-cron"
 
+  $dedicated_log_file = '/var/log/puppet-agent.log'
 
   # The command to reload rsyslog after a log rotation.
   $reload_rsyslog_cmd = case $::facts['os']['distro']['codename'] {
