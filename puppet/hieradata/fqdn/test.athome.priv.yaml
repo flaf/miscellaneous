@@ -13,10 +13,6 @@ network::params::ifaces:
 
 
 autoupgrade::params::apply: true
-#autoupgrade::params::upgrade_wrapper: 'foofoo'
-#autoupgrade::params::commands_before_reboot:
-#  - 'true'
-#  - 'false || true'
 
 simplekeepalived::params::virtual_router_id: 28
 simplekeepalived::params::auth_pass: '1234567890'

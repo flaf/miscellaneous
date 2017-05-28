@@ -37,7 +37,7 @@ then
     printf '\nThe flag file "puppet-run-at-reboot" is present.\n'
     if [ -f "$flag_no_puppet_run" ]
     then
-        printf 'The flag file "no-puppet-run" is present, so end of script.\n'
+        printf 'But the flag file "no-puppet-run" is present, so end of script without puppet run.\n'
     else
         printf 'The flag file "no-puppet-run" is absent, so a puppet run will be launched in 60 seconds...\n'
         sleep 60
