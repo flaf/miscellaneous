@@ -1,4 +1,7 @@
-function puppetagent::data {
+function puppetagent::data (
+  Hash                  $options,
+  Puppet::LookupContext $context,
+) {
 
   # Warning: the $server_facts will be defined for the node
   #          only if the parameter `trusted_server_facts`

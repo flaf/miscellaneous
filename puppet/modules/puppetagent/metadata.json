@@ -7,9 +7,8 @@
   "source": "",
   "project_page": null,
   "issues_url": null,
-  "data_provider": "function",
   "dependencies": [
-    {"name":"puppetlabs-stdlib","version_requirement":">= 4.13.1"},
+    {"name":"puppetlabs-stdlib","version_requirement":">= 4.17.0"},
     {"name":"flaf-homemade","version_requirement":">= 0.1.8"}
   ]
 }
