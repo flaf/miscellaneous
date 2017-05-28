@@ -28,6 +28,7 @@ function puppetagent::data (
     puppetagent::params::ssldir            => "${etcdir}/ssl",
     puppetagent::params::bindir            => $bindir,
     puppetagent::params::etcdir            => $etcdir,
+    puppetagent::params::flag_puppet_cron  => "${etcdir}/no-run-via-cron",
    "puppetagent::params::${sd}"            => [
                                                'trusty',
                                                'xenial',

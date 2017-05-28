@@ -1,6 +1,6 @@
 <%-|
   Boolean   $cron_enabled,
-  String[1] $file_flag_puppet_cron,
+  String[1] $flag_puppet_cron,
 |-%>
 #!/bin/sh
 
@@ -105,9 +105,9 @@ cron_enabled=true
 <%- } else { -%>
 cron_enabled=false
 <%- } -%>
-file_flag_puppet_cron='<%= $file_flag_puppet_cron %>'
+flag_puppet_cron='<%= $flag_puppet_cron %>'
 
-if "$cron_enabled" && [ ! -e "$file_flag_puppet_cron" ]
+if "$cron_enabled" && [ ! -e "$flag_puppet_cron" ]
 then
     printf "No upgrade of puppet-agent because the puppet run is currently enabled via cron.\n"
     exit 1

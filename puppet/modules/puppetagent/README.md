@@ -2,10 +2,6 @@
 
 This module configures the puppet agent (ie the client).
 
-Remark: this module implements the "params" design pattern.
-
-
-
 
 # Usage
 
@@ -22,9 +18,11 @@ class { '::puppetagent::params':
   cron              => 'per-week',
   puppetconf_path   => '/etc/puppetlabs/puppet/puppet.conf',
   manage_puppetconf => true,
+  dedicated_log     => true,
   ssldir            => '/etc/puppetlabs/puppet/ssl',
   bindir            => '/opt/puppetlabs/puppet/bin',
   etcdir            => '/etc/puppetlabs/puppet',
+  flag_puppet_cron  => '/etc/puppetlabs/puppet/no-run-via-cron',
 }
 
 include '::puppetagent'
@@ -89,6 +87,15 @@ puppetagent::manage_puppetconf: false
 in the `$fqdn.yaml` file of these specific nodes.
 The default value of this parameter is `true`.
 
+If set to `true`, the boolean `dedicated_log` allows to put
+all logs from the puppet agent in the dedicated log file
+`/var/log/puppet-agent.log` and no longer in syslog.
+Furthermore, this dedicated log file will have restrictive
+Unix rights (0600 instead of 0640 for syslog). The default
+value of this parameter is `true`. If set to `false`, the
+logs of puppet agent will be put in syslog (the default
+behaviour of the puppet agent).
+
 The `ssldir` parameter is a non-empty string and its default
 value is `'/etc/puppetlabs/puppet/ssl'`. Normally you should
 never change this parameter.
@@ -101,7 +108,12 @@ The `etcdir` parameter is a non-empty string and its default
 value is `'/etc/puppetlabs/puppet'`. Normally you should
 never change this parameter.
 
-
+The parameter `flag_puppet_cron` is the path of a file which
+disables the puppet runs via cron. Indeed, if this file is
+present, even if it is empty, the cron script which triggers
+a puppet run will do absolutely nothing. The default value
+of this parameter is `'/etc/puppetlabs/puppet/no-run-via-cron'`
+and normally you should never change this parameter.
 
 
 # Manual installation of the puppet agent

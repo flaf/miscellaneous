@@ -14,9 +14,9 @@ class puppetagent {
     $ssldir,
     $bindir,
     $etcdir,
+    $flag_puppet_cron,
     $supported_distributions,
     # It's not a parameter but an internal value.
-    $file_flag_puppet_cron,
     $dedicated_log_file,
     $reload_rsyslog_cmd,
   ] = Class['::puppetagent::params']
@@ -189,8 +189,8 @@ class puppetagent {
     mode   => '0750',
     content => epp( 'puppetagent/cron-puppet-run.puppet.epp',
                     {
-                      'bindir'                => $bindir,
-                      'file_flag_puppet_cron' => $file_flag_puppet_cron,
+                      'bindir'           => $bindir,
+                      'flag_puppet_cron' => $flag_puppet_cron,
                     }
                   ),
   }
@@ -202,7 +202,7 @@ class puppetagent {
     mode   => '0750',
     content => epp( 'puppetagent/set-cron-puppet-run.puppet.epp',
                     {
-                      'file_flag_puppet_cron' => $file_flag_puppet_cron,
+                      'flag_puppet_cron' => $flag_puppet_cron,
                     }
                   ),
   }
@@ -230,8 +230,8 @@ class puppetagent {
     mode   => '0750',
     content => epp( 'puppetagent/upgrade-puppet-agent.puppet.epp',
                     {
-                      'cron_enabled'          => $cron_enabled,
-                      'file_flag_puppet_cron' => $file_flag_puppet_cron,
+                      'cron_enabled'     => $cron_enabled,
+                      'flag_puppet_cron' => $flag_puppet_cron,
                     }
                   ),
   }

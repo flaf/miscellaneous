@@ -10,14 +10,9 @@ class puppetagent::params (
   String[1]           $ssldir,
   String[1]           $bindir,
   String[1]           $etcdir,
+  String[1]           $flag_puppet_cron,
   Array[String[1], 1] $supported_distributions,
 ) {
-
-  # It's not a parameter of the module but it's an internal
-  # value which is can be useful if present here. One day,
-  # maybe this internal value could be useful in another
-  # puppet module.
-  $file_flag_puppet_cron = "${etcdir}/no-run-via-cron"
 
   $dedicated_log_file = '/var/log/puppet-agent.log'
 

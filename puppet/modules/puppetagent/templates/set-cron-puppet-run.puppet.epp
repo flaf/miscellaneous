@@ -1,4 +1,4 @@
-<%- |String[1] $file_flag_puppet_cron| -%>
+<%- |String[1] $flag_puppet_cron| -%>
 #!/bin/sh
 
 ### This file is managed by puppet, don't exist
@@ -7,7 +7,7 @@ set -e
 export LC_ALL=C
 export PATH='/usr/sbin:/usr/bin:/sbin:/bin'
 
-file_flag='<%= $file_flag_puppet_cron %>'
+file_flag='<%= $flag_puppet_cron %>'
 dir=$(dirname "$file_flag")
 
 if [ ! -d "$dir" ]

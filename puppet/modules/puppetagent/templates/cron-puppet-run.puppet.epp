@@ -1,4 +1,4 @@
-<%- |String[1] $bindir, String[1] $file_flag_puppet_cron | -%>
+<%- |String[1] $bindir, String[1] $flag_puppet_cron | -%>
 #!/bin/bash
 
 ### This file is managed by puppet, don't exist
@@ -17,7 +17,7 @@ export PATH='<%= $bindir %>:/usr/sbin:/usr/bin:/sbin:/bin'
 script_name="${0##*/}"
 pid="$$"
 tag="$script_name[$pid]"
-file_stop='<%= $file_flag_puppet_cron %>'
+file_stop='<%= $flag_puppet_cron %>'
 pause=$((RANDOM % 300)) # a sleep during x seconds where 0 =< x < 300.
 msg_stop="This puppet run via cron will be NOT started because the file $file_stop is present."
 msg_start="This puppet run via cron will be started (in ${pause}s) because the file $file_stop is absent."
