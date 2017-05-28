@@ -4,8 +4,6 @@ enc_included_classes:
 enc_datacenter: 'vboxhome'
 enc_groups: [ 'puppetserver' ]
 
-#puppetagent::params::dedicated_log: false
-
 puppetserver::params::puppet_memory: '2g'
 
 network::params::ifaces:
