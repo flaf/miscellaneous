@@ -180,14 +180,14 @@ class puppetagent {
 
   }
 
-  $cron_bin = '/usr/local/sbin/run-cron.puppet'
+  $cron_bin = '/usr/local/sbin/cron-puppet-run.puppet'
 
   file { $cron_bin:
     ensure => $ensure_cron,
     owner  => 'root',
     group  => 'root',
     mode   => '0750',
-    content => epp( 'puppetagent/run-cron.puppet.epp',
+    content => epp( 'puppetagent/cron-puppet-run.puppet.epp',
                     {
                       'bindir'                => $bindir,
                       'file_flag_puppet_cron' => $file_flag_puppet_cron,
