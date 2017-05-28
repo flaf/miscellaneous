@@ -35,7 +35,7 @@ class puppetagent {
     mode    => '0644',
     before  => Package['puppet-agent'],
     notify  => Exec['restart-rsyslog-for-puppet-agent'],
-    content => epp( 'puppetagent/01-puppet-agent.conf.epp',
+    content => epp( 'puppetagent/rsyslog-01-puppet-agent.conf.epp',
                     {
                       'dedicated_log_file' => $dedicated_log_file,
                     }
