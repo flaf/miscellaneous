@@ -353,8 +353,13 @@ class roles::generic (
       ###################
       '::autoupgrade': {
 
+        # Modules puppetagent and autoupgrade will use the
+        # same flag file to disable any puppet run.
+        include '::puppetagent::params'
+
         class { '::autoupgrade::params':
-          upgrade_wrapper => ::roles::wrap_cron_mon('autoupgrade'),
+          upgrade_wrapper    => ::roles::wrap_cron_mon('autoupgrade'),
+          flag_no_puppet_run => $::puppetagent::params::flag_puppet_cron,
         }
 
         include '::autoupgrade'
