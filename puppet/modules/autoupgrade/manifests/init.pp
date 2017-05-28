@@ -12,6 +12,7 @@ class autoupgrade {
     $reboot,
     $commands_before_reboot,
     $puppet_run,
+    $flag_no_puppet_run,
     $puppet_bin,
     $upgrade_wrapper,
     $upgrade_subcmd,
@@ -55,6 +56,7 @@ class autoupgrade {
                       'reboot'                    => $reboot,
                       'commands_before_reboot'    => $commands_before_reboot,
                       'puppet_run'                => $puppet_run,
+                      'flag_no_puppet_run'        => $flag_no_puppet_run,
                       'puppet_bin'                => $puppet_bin,
                       'logfile'                   => $logfile,
                       'flag_puppet_run_at_reboot' => $flag_puppet_run_at_reboot,
@@ -92,6 +94,7 @@ class autoupgrade {
                       'puppet_bin'                => $puppet_bin,
                       'logfile'                   => $logfile,
                       'flag_puppet_run_at_reboot' => $flag_puppet_run_at_reboot,
+                      'flag_no_puppet_run'        => $flag_no_puppet_run,
                     }
                   ),
   }

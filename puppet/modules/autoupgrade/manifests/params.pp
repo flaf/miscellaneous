@@ -8,6 +8,7 @@ class autoupgrade::params (
   Boolean                         $reboot,
   Array[String[1]]                $commands_before_reboot,
   Boolean                         $puppet_run,
+  String[1]                       $flag_no_puppet_run,
   String[1]                       $puppet_bin,
   Optional[String[1]]             $upgrade_wrapper,
   Enum['upgrade', 'dist-upgrade'] $upgrade_subcmd,

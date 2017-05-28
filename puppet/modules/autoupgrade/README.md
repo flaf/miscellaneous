@@ -20,8 +20,10 @@ class { '::autoupgrade::params':
   reboot                 => true,
   commands_before_reboot => [],
   puppet_run             => true,
+  flag_no_puppet_run     => '/etc/puppetlabs/puppet/no-run',
   puppet_bin             => '/opt/puppetlabs/bin/puppet',
   upgrade_wrapper        => undef,
+  upgrade_subcmd         => 'dist-upgrade',
 }
 
 include '::autoupgrade'
@@ -58,6 +60,14 @@ puppet run after each automatic upgrade. If `reboot` is set
 to `true`, the puppet run will not be executed just after
 the automatic upgrade but just after the reboot.
 
+The parameter `flag_no_puppet_run` is the path of a file
+which completely disables any puppet run during the
+automatic upgrades if this file is present (as regular file,
+even an empty file works). So if this file is present, even
+with `puppet_run` set to `true`, any puppet run will be
+launched. The default value of this parameter is
+`'/etc/puppetlabs/puppet/no-run'`.
+
 The parameter `puppet_bin` is the path of the puppet binary.
 Its default value is `/opt/puppetlabs/bin/puppet`.
 
@@ -66,4 +76,7 @@ use to wrap the script which makes the automatic upgrades
 (can be usefull in monitoring for instance). The default
 value of this parameter is `undef`, ie no wrapper.
 
+The parameter `upgrade_subcmd` can take only 2 values:
+`'upgrade'` or `'dist-upgrade'` (the default) which are
+subcommands from the `apt-get` command.
 

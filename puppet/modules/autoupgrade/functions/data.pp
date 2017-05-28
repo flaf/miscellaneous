@@ -20,6 +20,7 @@ function autoupgrade::data (
     autoupgrade::params::reboot                  => true,
     autoupgrade::params::commands_before_reboot  => [],
     autoupgrade::params::puppet_run              => true,
+    autoupgrade::params::flag_no_puppet_run      => '/etc/puppetlabs/puppet/no-run',
     autoupgrade::params::puppet_bin              => '/opt/puppetlabs/bin/puppet',
     autoupgrade::params::upgrade_wrapper         => undef,
     autoupgrade::params::upgrade_subcmd          => 'dist-upgrade',

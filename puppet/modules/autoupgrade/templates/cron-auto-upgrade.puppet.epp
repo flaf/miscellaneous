@@ -2,6 +2,7 @@
   Boolean          $reboot,
   Array[String[1]] $commands_before_reboot,
   Boolean          $puppet_run,
+  String[1]        $flag_no_puppet_run,
   String[1]        $puppet_bin,
   String[1]        $logfile,
   String[1]        $flag_puppet_run_at_reboot,
@@ -21,6 +22,7 @@ puppet_run='<%= if $puppet_run { "true" } else { "false" } %>'
 puppet_bin='<%= $puppet_bin %>'
 logfile='<%= $logfile %>'
 flag_puppet_run_at_reboot='<%= $flag_puppet_run_at_reboot %>'
+flag_no_puppet_run='<%= $flag_no_puppet_run %>'
 upgrade_subcmd='<%= $upgrade_subcmd %>'
 
 create_logfile () {
@@ -102,9 +104,15 @@ then
         touch "$flag_puppet_run_at_reboot"
         printf '\nA reboot is required, so the puppet run will be triggered after the reboot.\n'
     else
-        printf '\nNo reboot required, the puppet run is triggered now.\n'
-        # If there are changes, the exit code is not zero.
-        "$puppet_bin" agent --test --color='false' || true
+        printf '\nNo reboot required, the puppet run may be triggered...\n'
+        if [ -f "$flag_no_puppet_run" ]
+        then
+            printf '... but the flag file "no-puppet-run" is present, so no puppet run finally.\n'
+        else
+            printf '... the flag file "no-puppet-run" is absent, so a puppet run is really triggered now.\n'
+            # If there are changes, the exit code is not zero.
+            "$puppet_bin" agent --test --color='false' || true
+        fi
     fi
 else
     printf '\nNo puppet run required.\n'

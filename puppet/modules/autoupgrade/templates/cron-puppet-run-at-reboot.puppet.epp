@@ -2,6 +2,7 @@
   String[1] $puppet_bin,
   String[1] $logfile,
   String[1] $flag_puppet_run_at_reboot,
+  String[1] $flag_no_puppet_run,
 |-%>
 #!/bin/sh
 
@@ -14,6 +15,7 @@ script_name="${0##*/}"
 puppet_bin='<%= $puppet_bin %>'
 logfile='<%= $logfile %>'
 flag_puppet_run_at_reboot='<%= $flag_puppet_run_at_reboot %>'
+flag_no_puppet_run='<%= $flag_no_puppet_run %>'
 
 create_logfile () {
     touch "$logfile"
@@ -31,14 +33,20 @@ printf '\n\n\n===> %s: start of %s\n' "$(date)" "$script_name"
 
 if [ -f "$flag_puppet_run_at_reboot" ]
 then
-    printf '\nThe flag file is present, the puppet cron will be launched in 60 seconds...\n'
     rm "$flag_puppet_run_at_reboot"
-    sleep 60
-    # If there are changes, the exit code is not zero.
-    "$puppet_bin" agent --test --color='false' || true
-    printf '\nPuppet run executed, end of script.\n'
+    printf '\nThe flag file "puppet-run-at-reboot" is present.\n'
+    if [ -f "$flag_no_puppet_run" ]
+    then
+        printf 'The flag file "no-puppet-run" is present, so end of script.\n'
+    else
+        printf 'The flag file "no-puppet-run" is absent, so a puppet run will be launched in 60 seconds...\n'
+        sleep 60
+        # If there are changes, the exit code is not zero.
+        "$puppet_bin" agent --test --color='false' || true
+        printf '\nPuppet run executed, end of script.\n'
+    fi
 else
-    printf '\nNo flag file present, end of script.\n'
+    printf '\nThe flag file "puppet-run-at-reboot" is absent, so end of script.\n'
 fi
 
 
