@@ -1,4 +1,7 @@
-function gitlab::data {
+function gitlab::data (
+  Hash                  $options,
+  Puppet::LookupContext $context,
+) {
 
   $fqdn = $::facts.dig('networking', 'fqdn');
 

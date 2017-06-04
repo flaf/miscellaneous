@@ -1,6 +1,6 @@
 {
   "name": "flaf-roles",
-  "version": "0.18.7",
+  "version": "0.18.8",
   "author": "flaf",
   "summary": "Module to implement roles, ie very top level classes",
   "license": "Apache-2.0",
@@ -29,7 +29,7 @@
     {"name":"flaf-ceph","version_requirement":"0.2.5"},
     {"name":"flaf-moo","version_requirement":"0.5.14"},
     {"name":"flaf-eximnullclient","version_requirement":"0.3.0"},
-    {"name":"flaf-gitlab","version_requirement":"0.2.13"},
+    {"name":"flaf-gitlab","version_requirement":"0.3.0"},
     {"name":"flaf-rsyncd","version_requirement":"0.1.2"},
     {"name":"flaf-proxmox","version_requirement":"0.1.6"},
     {"name":"flaf-httpproxy","version_requirement":"0.1.2"},

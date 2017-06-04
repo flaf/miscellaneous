@@ -1,0 +1,7 @@
+---
+version: 5
+hierarchy:
+  - name: 'Module gitlab default values'
+    data_hash: 'gitlab::data'
+
+

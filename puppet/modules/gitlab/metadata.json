@@ -1,16 +1,15 @@
 {
   "name": "flaf-gitlab",
-  "version": "0.2.13",
+  "version": "0.3.0",
   "author": "flaf",
   "summary": "Module to install and configure a Gitlab server",
   "license": "Apache-2.0",
   "source": "",
   "project_page": null,
   "issues_url": null,
-  "data_provider": "function",
   "dependencies": [
-    {"name":"puppetlabs-stdlib","version_requirement":">= 4.13.1"},
-    {"name":"flaf-homemade","version_requirement":">= 0.1.7"}
+    {"name":"puppetlabs-stdlib","version_requirement":">= 4.17.0"},
+    {"name":"flaf-homemade","version_requirement":">= 0.1.8"}
   ]
 }
 
