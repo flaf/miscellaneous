@@ -1,0 +1,11 @@
+<%-| |-%>
+### This file is managed by Puppet, don't edit it. ###
+
+[user]
+    name    = gitolite-admin
+    email   = gitolite-admin@<%= $::facts['networking']['fqdn'] %>
+
+[push]
+    default = simple
+
+
