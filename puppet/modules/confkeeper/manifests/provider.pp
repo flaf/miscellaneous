@@ -33,7 +33,7 @@ class confkeeper::provider {
         owner   => 'root',
         group   => 'root',
         require => Exec['create-ssh-keys-for-etckeeper'],
-        content => epp('confkeeper/provider/mv-old-repos.epp',
+        content => epp('confkeeper/provider/etckeeper_git_ssh.epp',
                        {
                          'etckeeper_sshkey_path' => $etckeeper_sshkey_path,
                          'etckeeper_known_hosts' => $etckeeper_known_hosts,
