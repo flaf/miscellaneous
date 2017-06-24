@@ -3,12 +3,19 @@ class confkeeper::collector {
   include '::confkeeper::collector::params'
 
   [
+    $collection,
     $supported_distributions,
   ] = Class['::confkeeper::collector::params']
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
   ensure_packages(['gitolite3'], { ensure => present })
+
+
+  ###################################################
+  ### Creation of git and gitolite-admin accounts ###
+  ### and management of homes.                    ###
+  ###################################################
 
   # A result of:
   #
@@ -115,7 +122,7 @@ class confkeeper::collector {
   }
 
   exec { 'init-git-repository':
-    environment => ['HOME=/home/git'],
+    environment => ['HOME=/home/git', 'USER=git'],
     creates     => '/home/git/repositories',
     command     => "gitolite setup -pk /home/git/admin.pub",
     user        => 'git',
@@ -126,6 +133,12 @@ class confkeeper::collector {
     require     => File['/home/git/admin.pub'],
   }
 
+  ####################################################
+  ### Management of the gitolite configuration via ###
+  ### the "gitolite-admin" repository              ###
+  ####################################################
+
+
   # To allow a local "git clone git@localhost:gitolite-admin.git"
   # without warning about fingerprint checking.
   sshkey {$::facts['networking']['fqdn']:
@@ -133,6 +146,7 @@ class confkeeper::collector {
     host_aliases => ['localhost'],
     key          => $::facts['ssh']['rsa']['key'],
     type         => 'ssh-rsa',
+    target       => '/home/gitolite-admin/.ssh/known_hosts',
     require      => Exec['init-git-repository'],
   }
 
@@ -147,12 +161,38 @@ class confkeeper::collector {
     require   => Sshkey[$::facts['networking']['fqdn']],
   }
 
+  $repositories = [
+    {
+      'relapath'    => 'toto/titi.git',
+      'permissions' => [{'rights' => 'RW+', 'target' => 'admin'}],
+    },
+    {
+      'relapath'    => 'tutu/titi.git',
+      'permissions' => [{'rights' => 'RW+', 'target' => 'admin'}],
+    },
+  ]
+
+  file { '/home/gitolite-admin/gitolite-admin/conf/gitolite.conf':
+    ensure  => file,
+    mode    => '0644',
+    owner   => 'gitolite-admin',
+    group   => 'gitolite-admin',
+    require => Exec['clone-gitolite-admin.git'],
+    notify  => [Exec['commit-push-gitolite-admin.git'], Exec['mv-old-repos']],
+    content => epp('confkeeper/collector/gitolite.conf.epp',
+                   {
+                     'repositories' => $repositories,
+                   }
+                  ),
+  }
+
   file { '/home/gitolite-admin/gitolite-admin/keydir':
     ensure  => directory,
     mode    => '0755',
     purge   => true,
     recurse => true,
     require => Exec['clone-gitolite-admin.git'],
+    notify  => Exec['commit-push-gitolite-admin.git'],
   }
 
   file { '/home/gitolite-admin/gitolite-admin/keydir/admin.pub':
@@ -162,20 +202,65 @@ class confkeeper::collector {
     group   => 'gitolite-admin',
     source  => '/home/git/admin.pub',
     require => Exec['clone-gitolite-admin.git'],
+    notify  => Exec['commit-push-gitolite-admin.git'],
   }
 
-  file { '/home/gitolite-admin/gitolite-admin/conf/gitolite.conf':
-    ensure  => file,
-    mode    => '0644',
-    owner   => 'gitolite-admin',
-    group   => 'gitolite-admin',
-    require => Exec['clone-gitolite-admin.git'],
-    content => epp('confkeeper/collector/gitolite.conf.epp',
-                   {
-                     'repositories' => $repositories,
-                   }
-                  ),
+  $sshpubkeys = [
+    {
+      'name'    => 'bob',
+      'type'    => 'ssh-rsa',
+      'value'   => 'AAAB3NzaC1yc2EAAAADAQABAAAAgQC/R1WcUYqwY0x2L/EGRPwUF4KJ6UWo6ml4hGxMy+uNoqW59zlCJAguZDKyS8AHN7WoLIoRzcwxAru5iu9YjadgmdpOTfAXUCBEfKGWCVu0LxYuEcQYlBB1cayGZvKdG0uX0v1ibVPeDpfeXxe+ASKJ+fxqBuRyUcauCeBop+RUFQ==',
+      'comment' => 'bob@srv1',
+    },
+  ]
+
+  $sshpubkeys.each |Confkeeper::SshPubKey $sshpubkey| {
+    $name    = $sshpubkey['name']
+    $type    = $sshpubkey['type']
+    $value   = $sshpubkey['value']
+    $comment = $sshpubkey['comment']
+
+    file { "/home/gitolite-admin/gitolite-admin/keydir/${name}.pub":
+      ensure  => file,
+      mode    => '0644',
+      owner   => 'gitolite-admin',
+      group   => 'gitolite-admin',
+      content => "${type} ${value} ${comment}\n",
+      require => Exec['clone-gitolite-admin.git'],
+      notify  => Exec['commit-push-gitolite-admin.git'],
+    }
   }
+
+  exec { 'commit-push-gitolite-admin.git':
+    command     => "sh -c 'git add . && git commit -m \"Automatic Puppet commit\" && git push'",
+    user        => 'gitolite-admin',
+    group       => 'gitolite-admin',
+    path        => '/usr/bin:/bin',
+    cwd         => '/home/gitolite-admin/gitolite-admin',
+    logoutput   => 'on_failure',
+    refreshonly => true,
+  }
+
+  file { '/usr/local/bin/mv-old-repos':
+    ensure  => file,
+    mode    => '0755',
+    owner   => 'root',
+    group   => 'root',
+    require => Exec['commit-push-gitolite-admin.git'],
+    content => epp('confkeeper/collector/mv-old-repos.epp', {}),
+  }
+
+  exec { 'mv-old-repos':
+    environment => ['HOME=/home/git'],
+    command     => 'mv-old-repos',
+    user        => 'git',
+    group       => 'git',
+    path        => '/usr/local/bin:/usr/bin:/bin',
+    logoutput   => 'on_failure',
+    refreshonly => true,
+    require     => File['/usr/local/bin/mv-old-repos'],
+  }
+
 }
 
 

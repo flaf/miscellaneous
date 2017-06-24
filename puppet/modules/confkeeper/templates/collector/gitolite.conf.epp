@@ -1,3 +1,14 @@
-<%-| Confkeeper:: |-%>
+<%-| Array[Confkeeper::GitRepository] $repositories |-%>
 ### This file is managed by Puppet, don't edit it. ###
+
+repo gitolite-admin
+    RW+ = admin
+
+<%- $repositories.each |$repository| { -%>
+repo <%= $repository['relapath'].regsubst(/\.git$/, '') %>
+  <%- $repository['permissions'].each |$permission| { -%>
+    <%= $permission['rights'] %> = <%= $permission['target'] %>
+  <%- } -%>
+
+<%- } -%>
 

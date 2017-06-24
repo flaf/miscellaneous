@@ -1,0 +1,31 @@
+<%-| |-%>
+#!/bin/sh
+
+### This file is managed by Puppet, don't edit it. ###
+
+export PATH='/usr/local/bin:/usr/bin:/bin'
+export LC_ALL='C'
+
+if [ "$(id -un)" != 'git' ]
+then
+    printf 'Sorry this command can be executed only by the git user.\n' >&2
+    exit 1
+fi
+
+trashdir='/home/git/old'
+f_repos=$(mktemp)
+f_phy_repos=$(mktemp)
+
+mkdir --mode='0700' -p "$trashdir"
+gitolite list-repos      | sort > "$f_repos"
+gitolite list-phy-repos | sort > "$f_phy_repos"
+
+# We take repos in f_phy_repos but not in f_repos.
+for repo in $(comm -23 "$f_phy_repos" "$f_repos")
+do
+    mv /home/git/repositories/${repo}.git "${trashdir}/${repo}.git.$(date '+%Y-%m-%d-%Hh%M.%S')"
+done
+
+rm "$f_repos" "$f_phy_repos"
+
+
