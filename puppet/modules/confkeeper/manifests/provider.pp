@@ -22,11 +22,29 @@ class confkeeper::provider {
     path      => '/usr/bin:/bin',
     cwd       => '/root',
     logoutput => 'on_failure',
-    require   => File['/home/gitolite-admin'],
+  }
+
+  # The ssh public key is exported.
+  @@file { "/home/gitolite-admin/gitolite-admin/keydir/root@${fqdn}.pub":
+    ensure  => file,
+    mode    => '0644',
+    owner   => 'gitolite-admin',
+    group   => 'gitolite-admin',
+    source  => "${etckeeper_sshkey_path}.pub",
+    tag     => [$collection, 'sshpubkey'],
+    require => Exec['create-ssh-keys-for-etckeeper'],
   }
 
   case $::facts['os']['distro']['codename'] {
+
     'trusty': {
+
+      # With Git version < 2.0 (which is the case on
+      # Trusty), the environment variable GIT_SSH_COMMAND is
+      # not available. So we have to use the environment
+      # variable GIT_SSH and we have provide a Git ssh
+      # wrapper script.
+
       file { '/usr/local/bin/etckeeper_git_ssh':
         ensure  => file,
         mode    => '0755',
@@ -42,10 +60,16 @@ class confkeeper::provider {
       }
 
       $git_ssh_envvars = ['GIT_SSH=/usr/local/bin/etckeeper_git_ssh']
+
     }
 
     default: {
-      $git_ssh_envvars = ["GIT_SSH_COMMAND='ssh -i ~/.ssh/etckeeper_id_rsa'"]
+
+      # With Git version > 2.0, we can use the environment
+      # variable GIT_SSH_COMMAND and it's not necessary to
+      # create a dedicated wrapper script.
+      $git_ssh_envvars = ["GIT_SSH_COMMAND='ssh -o 'UserKnownHostsFile=${etckeeper_known_hosts}' -i '${etckeeper_sshkey_path}'"]
+
     }
   }
 

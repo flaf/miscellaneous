@@ -1,0 +1,17 @@
+<%-|
+  String[1] $etckeeper_sshkey_path,
+  String[1] $etckeeper_known_hosts,
+|-%>
+#!/bin/sh
+
+### This file is managed by Puppet, don't edit it. ###
+
+export PATH='/usr/local/bin:/usr/bin:/bin'
+export LC_ALL='C'
+
+etckeeper_sshkey_path='<%= $etckeeper_sshkey_path %>'
+etckeeper_known_hosts='<%= $etckeeper_known_hosts %>'
+
+ssh -o "UserKnownHostsFile=$etckeeper_known_hosts" -i "$etckeeper_sshkey_path"  "$@"
+
+

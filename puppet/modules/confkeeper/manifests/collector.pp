@@ -214,6 +214,11 @@ class confkeeper::collector {
     },
   ]
 
+  File <<| tag == $collection and tag == 'sshpubkey' |>> {
+    require => Exec['clone-gitolite-admin.git'],
+    notify  => Exec['commit-push-gitolite-admin.git'],
+  }
+
   $sshpubkeys.each |Confkeeper::SshPubKey $sshpubkey| {
     $name    = $sshpubkey['name']
     $type    = $sshpubkey['type']
