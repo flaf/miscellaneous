@@ -9,6 +9,12 @@ class confkeeper::collector {
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
+  include '::confkeeper::provider::params'
+
+  [
+    $etckeeper_known_hosts,
+  ] = Class['::confkeeper::provider::params']
+
   ensure_packages(['gitolite3'], { ensure => present })
 
 
@@ -141,13 +147,21 @@ class confkeeper::collector {
 
   # To allow a local "git clone git@localhost:gitolite-admin.git"
   # without warning about fingerprint checking.
-  sshkey {$::facts['networking']['fqdn']:
+  sshkey {'localhost':
     ensure       => present,
-    host_aliases => ['localhost'],
     key          => $::facts['ssh']['rsa']['key'],
     type         => 'ssh-rsa',
     target       => '/home/gitolite-admin/.ssh/known_hosts',
     require      => Exec['init-git-repository'],
+  }
+
+  # ssh host key of the confkeeper server is exported.
+  @@sshkey {$::facts['networking']['fqdn']:
+    ensure       => present,
+    key          => $::facts['ssh']['rsa']['key'],
+    type         => 'ssh-rsa',
+    target       => $etckeeper_known_hosts,
+    tag          => $collection,
   }
 
   exec { 'clone-gitolite-admin.git':
@@ -158,10 +172,56 @@ class confkeeper::collector {
     path      => '/usr/bin:/bin',
     cwd       => '/home/gitolite-admin',
     logoutput => 'on_failure',
-    require   => Sshkey[$::facts['networking']['fqdn']],
+    require   => Sshkey['localhost'],
   }
 
-  $repositories = [
+  $puppetdb_query = "resources[parameters, certname]{ tag = '${collection}' and type = 'Confkeeper::Provider::Repos' and exported = true }"
+  $exported_repos = puppetdb_query($puppetdb_query)
+
+  $repos_by_host = $exported_repos.reduce({}) |$memo, $exported_repo| {
+
+    $certname         = $exported_repo['certname']
+    $ssh_pubkey       = $exported_repo['parameters']['etckeeper_ssh_pubkey']
+    $certname_in_memo = ($certname in $memo)
+
+    if $certname_in_memo and $memo[$certname]['ssh_pubkey'] != $ssh_pubkey {
+      @("END"/L$).fail
+        Class ${title}: the host ${certname} seems to have \
+        multiple Confkeeper::Provider::Repos exported resources \
+        but not with the same `etckeeper_ssh_pubkey` at each time. \
+        This is not allowed.
+        |-END
+    }
+
+    # The etckeeper ssh public key has probably been created
+    # but during the loading facts of the first puppet run,
+    # this is not the case and the custom fact gives an empty
+    # string.
+    if $ssh_pubkey == '' { next($memo) }
+
+    $directories = case $certname_in_memo {
+      true: {
+        ($memo[$certname]['directories'] + $exported_repo['parameters']['directories']).unique
+      }
+      default: {
+        $exported_repo['parameters']['directories']
+      }
+    }
+
+    $memo + {$certname => {'ssh_pubkey' => $ssh_pubkey, 'directories' => $directories}}
+
+  }
+
+  $repositories = $repos_by_host.reduce([]) |$memo, $repos_host| {
+
+    $certname = $repos_host[0]
+    $repos    = $repos_host[1]['directories'].map |$dir| { "${certname}${dir}.git"}
+
+    $memo + { 'relapath' => ${certname}/}
+
+  }
+
+  [
     {
       'relapath'    => 'toto/titi.git',
       'permissions' => [{'rights' => 'RW+', 'target' => 'admin'}],
@@ -205,36 +265,64 @@ class confkeeper::collector {
     notify  => Exec['commit-push-gitolite-admin.git'],
   }
 
-  $sshpubkeys = [
-    {
-      'name'    => 'bob',
-      'type'    => 'ssh-rsa',
-      'value'   => 'AAAB3NzaC1yc2EAAAADAQABAAAAgQC/R1WcUYqwY0x2L/EGRPwUF4KJ6UWo6ml4hGxMy+uNoqW59zlCJAguZDKyS8AHN7WoLIoRzcwxAru5iu9YjadgmdpOTfAXUCBEfKGWCVu0LxYuEcQYlBB1cayGZvKdG0uX0v1ibVPeDpfeXxe+ASKJ+fxqBuRyUcauCeBop+RUFQ==',
-      'comment' => 'bob@srv1',
-    },
-  ]
+  #$sshpubkeys = [
+  #  {
+  #    'name'    => 'bob',
+  #    'type'    => 'ssh-rsa',
+  #    'value'   => 'AAAB3NzaC1yc2EAAAADAQABAAAAgQC/R1WcUYqwY0x2L/EGRPwUF4KJ6UWo6ml4hGxMy+uNoqW59zlCJAguZDKyS8AHN7WoLIoRzcwxAru5iu9YjadgmdpOTfAXUCBEfKGWCVu0LxYuEcQYlBB1cayGZvKdG0uX0v1ibVPeDpfeXxe+ASKJ+fxqBuRyUcauCeBop+RUFQ==',
+  #    'comment' => 'bob@srv1',
+  #  },
+  #]
 
-  File <<| tag == $collection and tag == 'sshpubkey' |>> {
-    require => Exec['clone-gitolite-admin.git'],
-    notify  => Exec['commit-push-gitolite-admin.git'],
-  }
+  $repos_by_host.each |$certname, $settings| {
 
-  $sshpubkeys.each |Confkeeper::SshPubKey $sshpubkey| {
-    $name    = $sshpubkey['name']
-    $type    = $sshpubkey['type']
-    $value   = $sshpubkey['value']
-    $comment = $sshpubkey['comment']
+    $ssh_pubkey = $settings['ssh_pubkey']
 
-    file { "/home/gitolite-admin/gitolite-admin/keydir/${name}.pub":
+    file { "/home/gitolite-admin/gitolite-admin/keydir/root@${certname}.pub":
       ensure  => file,
       mode    => '0644',
       owner   => 'gitolite-admin',
       group   => 'gitolite-admin',
-      content => "${type} ${value} ${comment}\n",
+      content => "${ssh_pubkey}\n",
       require => Exec['clone-gitolite-admin.git'],
       notify  => Exec['commit-push-gitolite-admin.git'],
     }
+
   }
+
+  #$exported_repos.each |$exported_repo| {
+
+  #  $ssh_pubkey = $exported_repo['parameters']['etckeeper_ssh_pubkey']
+  #  $name       = $exported_repo['certname']
+
+  #  file { "/home/gitolite-admin/gitolite-admin/keydir/${name}.pub":
+  #    ensure  => file,
+  #    mode    => '0644',
+  #    owner   => 'gitolite-admin',
+  #    group   => 'gitolite-admin',
+  #    content => "${ssh_pubkey}\n",
+  #    require => Exec['clone-gitolite-admin.git'],
+  #    notify  => Exec['commit-push-gitolite-admin.git'],
+  #  }
+
+  #}
+
+#  $sshpubkeys.each |Confkeeper::SshPubKey $sshpubkey| {
+#    $name    = $sshpubkey['name']
+#    $type    = $sshpubkey['type']
+#    $value   = $sshpubkey['value']
+#    $comment = $sshpubkey['comment']
+#
+#    file { "/home/gitolite-admin/gitolite-admin/keydir/${name}.pub":
+#      ensure  => file,
+#      mode    => '0644',
+#      owner   => 'gitolite-admin',
+#      group   => 'gitolite-admin',
+#      content => "${type} ${value} ${comment}\n",
+#      require => Exec['clone-gitolite-admin.git'],
+#      notify  => Exec['commit-push-gitolite-admin.git'],
+#    }
+#  }
 
   exec { 'commit-push-gitolite-admin.git':
     command     => "sh -c 'git add . && git commit -m \"Automatic Puppet commit\" && git push'",

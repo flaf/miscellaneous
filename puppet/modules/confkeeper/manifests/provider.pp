@@ -24,15 +24,14 @@ class confkeeper::provider {
     logoutput => 'on_failure',
   }
 
-  # The ssh public key is exported.
-  @@file { "/home/gitolite-admin/gitolite-admin/keydir/root@${fqdn}.pub":
-    ensure  => file,
-    mode    => '0644',
-    owner   => 'gitolite-admin',
-    group   => 'gitolite-admin',
-    source  => "${etckeeper_sshkey_path}.pub",
-    tag     => [$collection, 'sshpubkey'],
+  Sshkey <<| tag == $collection |>> {
     require => Exec['create-ssh-keys-for-etckeeper'],
+  }
+
+  @@confkeeper::provider::repos { "${fqdn}_default_repos":
+    etckeeper_ssh_pubkey => $::facts['etckeeper_ssh_pubkey'],
+    directories          => ['/etc'],
+    tag                  => $collection,
   }
 
   case $::facts['os']['distro']['codename'] {
