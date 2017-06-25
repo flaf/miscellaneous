@@ -4,6 +4,8 @@ class confkeeper::provider {
 
   [
     $collection,
+    $repositories,
+    $etckeeper_ssh_pubkey,
     $supported_distributions,
     #
     $etckeeper_sshkey_path,
@@ -23,6 +25,19 @@ class confkeeper::provider {
     cwd       => '/root',
     logoutput => 'on_failure',
   }
+
+  $puppetdb_query    = "resources[parameters]{type = 'Class' and title = 'Confkeeper::Collector::params'}"
+  $collector_params = puppetdb_query($puppetdb_query).filter |$a_collector_params| {
+    $a_collector_params['parameters']['collection'] == $collection
+  }
+
+  if $collectors_params.empty {
+    # Probably no confkeeper collector has been installed
+    # yet. So, do nothing.
+    return
+  }
+
+
 
   Sshkey <<| tag == $collection |>> {
     require => Exec['create-ssh-keys-for-etckeeper'],
