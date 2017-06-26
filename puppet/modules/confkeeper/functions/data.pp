@@ -29,6 +29,7 @@ function confkeeper::data (
 
     confkeeper::provider::params::collection              => $default_collection,
     confkeeper::provider::params::repositories            => $default_repositories,
+    confkeeper::provider::params::fqdn                    => $fqdn,
     confkeeper::provider::params::etckeeper_ssh_pubkey    => $etckeeper_ssh_pubkey,
     confkeeper::provider::params::supported_distributions => $provider_sd,
 

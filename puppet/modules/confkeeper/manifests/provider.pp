@@ -5,7 +5,6 @@ class confkeeper::provider {
   [
     $collection,
     $repositories,
-    $etckeeper_ssh_pubkey,
     $supported_distributions,
     #
     $etckeeper_sshkey_path,
@@ -16,6 +15,59 @@ class confkeeper::provider {
 
   $fqdn = $::facts['networking']['fqdn']
 
+  $puppetdb_query    = "resources[parameters]{type = 'Class' and title = 'Confkeeper::Collector::Params'}"
+  $collectors_params = puppetdb_query($puppetdb_query)
+
+  if $collectors_params.empty {
+    @("END"/L$).fail
+      Class ${title}: no class retrieved `Confkeeper::Collector::params` \
+      via `puppetdb_query`. It seems that no confkeeper collector has \
+      been installed yet. To install a confkeeper provider, you have to \
+      install a confkeeper collector first.
+      |-END
+  }
+
+  $candidate_collectors_params = $collectors_params.filter |$a_collector_params| {
+    $a_collector_params['parameters']['collection'] == $collection
+  }
+
+  if $candidate_collectors_params.empty {
+    @("END"/L$).fail
+      Class ${title}: classes `Confkeeper::Collector::params` has been \
+      retrieved via `puppetdb_query` but none has the collection set to \
+      `${collection}`. This current confkeeper provider is "collectorless".
+      |-END
+  }
+
+  if $candidate_collectors_params.length > 1  {
+    @("END"/L$).fail
+      Class ${title}: multiple classes `Confkeeper::Collector::params` with \
+      the collection `${collection}` has been retrieved via `puppetdb_query` \
+      but a confkeeper provider must have only one confkeeper collector.
+      |-END
+  }
+
+  $collector_params          = $candidate_collectors_params[0]['parameters']
+  $collector_address         = $collector_params['address']
+  $collector_ssh_host_pubkey = $collector_params['ssh_host_pubkey']
+
+  if $collector_ssh_host_pubkey =~ Undef {
+    @("END"/L$).fail
+      Class ${title}: a unique class `Confkeeper::Collector::params` with \
+      the collection `${collection}` has been retrieved via `puppetdb_query` \
+      but its parameter `ssh_host_pubkey` is undef. A confkeeper provider \
+      must know the rsa ssh host public key of its collector.
+      |-END
+  }
+
+  sshkey {'collector-sshkey-for-provider':
+    name         => $collector_address,
+    ensure       => present,
+    key          => $collector_ssh_host_pubkey,
+    type         => 'ssh-rsa',
+    target       => $etckeeper_known_hosts,
+  }
+
   exec { 'create-ssh-keys-for-etckeeper':
     creates   => "${etckeeper_sshkey_path}.pub",
     command   => "ssh-keygen -b 4096 -t rsa -C 'root@${fqdn}' -P '' -f '${etckeeper_sshkey_path}'",
@@ -24,29 +76,6 @@ class confkeeper::provider {
     path      => '/usr/bin:/bin',
     cwd       => '/root',
     logoutput => 'on_failure',
-  }
-
-  $puppetdb_query    = "resources[parameters]{type = 'Class' and title = 'Confkeeper::Collector::params'}"
-  $collector_params = puppetdb_query($puppetdb_query).filter |$a_collector_params| {
-    $a_collector_params['parameters']['collection'] == $collection
-  }
-
-  if $collectors_params.empty {
-    # Probably no confkeeper collector has been installed
-    # yet. So, do nothing.
-    return
-  }
-
-
-
-  Sshkey <<| tag == $collection |>> {
-    require => Exec['create-ssh-keys-for-etckeeper'],
-  }
-
-  @@confkeeper::provider::repos { "${fqdn}_default_repos":
-    etckeeper_ssh_pubkey => $::facts['etckeeper_ssh_pubkey'],
-    directories          => ['/etc'],
-    tag                  => $collection,
   }
 
   case $::facts['os']['distro']['codename'] {

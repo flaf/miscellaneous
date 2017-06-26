@@ -17,15 +17,37 @@ f_repos=$(mktemp)
 f_phy_repos=$(mktemp)
 
 mkdir --mode='0700' -p "$trashdir"
-gitolite list-repos      | sort > "$f_repos"
+gitolite list-repos     | sort > "$f_repos"
 gitolite list-phy-repos | sort > "$f_phy_repos"
 
 # We take repos in f_phy_repos but not in f_repos.
 for repo in $(comm -23 "$f_phy_repos" "$f_repos")
 do
-    mv /home/git/repositories/${repo}.git "${trashdir}/${repo}.git.$(date '+%Y-%m-%d-%Hh%M.%S')"
+    src="/home/git/repositories/${repo}.git"
+    src_cleaned=$(readlink -f "$src")
+    dest="${trashdir}/${repo}.git.$(date '+%Y-%m-%d-%Hh%M.%S')"
+
+    if [ "$src" != "$src_cleaned" ]
+    then
+        printf "There is something wrong with the repository \"%s\".\n" "$repo" >&2
+        printf "The name of this repository appears incorrect.\n"               >&2
+        exit 2
+    fi
+    if [ ! -d "$src" ]
+    then
+        printf "The directory \"%s\" doesn't exist which is not normal.\n" "$repo" >&2
+        exit 3
+    fi
+
+    basename_dest="${dest%/*}"
+    mkdir --mode='0700' -p "$basename_dest"
+    mv "$src" "$dest"
 done
 
 rm "$f_repos" "$f_phy_repos"
+
+# We remove all empty directory directly at the root of
+# /home/git/repositories/.
+find /home/git/repositories/ -mindepth 1 -maxdepth 1 -type d -empty -delete
 
 

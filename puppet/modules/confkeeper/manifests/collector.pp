@@ -9,14 +9,7 @@ class confkeeper::collector {
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
-  include '::confkeeper::provider::params'
-
-  [
-    $etckeeper_known_hosts,
-  ] = Class['::confkeeper::provider::params']
-
   ensure_packages(['gitolite3'], { ensure => present })
-
 
   ###################################################
   ### Creation of git and gitolite-admin accounts ###
@@ -144,24 +137,15 @@ class confkeeper::collector {
   ### the "gitolite-admin" repository              ###
   ####################################################
 
-
   # To allow a local "git clone git@localhost:gitolite-admin.git"
   # without warning about fingerprint checking.
   sshkey {'localhost':
     ensure       => present,
     key          => $::facts['ssh']['rsa']['key'],
     type         => 'ssh-rsa',
+    host_aliases => $::facts['networking']['fqdn'],
     target       => '/home/gitolite-admin/.ssh/known_hosts',
     require      => Exec['init-git-repository'],
-  }
-
-  # ssh host key of the confkeeper server is exported.
-  @@sshkey {$::facts['networking']['fqdn']:
-    ensure       => present,
-    key          => $::facts['ssh']['rsa']['key'],
-    type         => 'ssh-rsa',
-    target       => $etckeeper_known_hosts,
-    tag          => $collection,
   }
 
   exec { 'clone-gitolite-admin.git':
@@ -175,62 +159,94 @@ class confkeeper::collector {
     require   => Sshkey['localhost'],
   }
 
-  $puppetdb_query = "resources[parameters, certname]{ tag = '${collection}' and type = 'Confkeeper::Provider::Repos' and exported = true }"
-  $exported_repos = puppetdb_query($puppetdb_query)
+  $puppetdb_query = "resources[parameters]{type = 'Class' and title = 'Confkeeper::Provider::Params'}"
 
-  $repos_by_host = $exported_repos.reduce({}) |$memo, $exported_repo| {
+  $exported_repos = puppetdb_query($puppetdb_query).map |$item| {
+    $item['parameters']
+  }.reduce({}) |$memo, $parameters| {
 
-    $certname         = $exported_repo['certname']
-    $ssh_pubkey       = $exported_repo['parameters']['etckeeper_ssh_pubkey']
-    $certname_in_memo = ($certname in $memo)
+    $fqdn = $parameters['fqdn']
 
-    if $certname_in_memo and $memo[$certname]['ssh_pubkey'] != $ssh_pubkey {
+    if $fqdn in $memo {
       @("END"/L$).fail
-        Class ${title}: the host ${certname} seems to have \
-        multiple Confkeeper::Provider::Repos exported resources \
-        but not with the same `etckeeper_ssh_pubkey` at each time. \
-        This is not allowed.
+        Class ${title}: the host ${fqdn} seems to have multiple \
+        classe Confkeeper::Provider::params which is not normal.
         |-END
     }
 
-    # The etckeeper ssh public key has probably been created
-    # but during the loading facts of the first puppet run,
-    # this is not the case and the custom fact gives an empty
-    # string.
-    if $ssh_pubkey == '' { next($memo) }
+    # The etckeeper ssh public key is created during the
+    # first puppet run of a provider but, during the loading
+    # facts of this first puppet run, the key is not yet
+    # defined and the value of the custom is temporarily
+    # undef.
+    if $parameters['etckeeper_ssh_pubkey'] =~ Undef {
+      next($memo)
+    }
 
-    $directories = case $certname_in_memo {
-      true: {
-        ($memo[$certname]['directories'] + $exported_repo['parameters']['directories']).unique
-      }
-      default: {
-        $exported_repo['parameters']['directories']
+    $memo + {
+      $fqdn => {
+      'ssh_pubkey'   => $parameters['etckeeper_ssh_pubkey'],
+      'repositories' => $parameters['repositories'],
       }
     }
 
-    $memo + {$certname => {'ssh_pubkey' => $ssh_pubkey, 'directories' => $directories}}
-
   }
 
-  $repositories = $repos_by_host.reduce([]) |$memo, $repos_host| {
-
-    $certname = $repos_host[0]
-    $repos    = $repos_host[1]['directories'].map |$dir| { "${certname}${dir}.git"}
-
-    $memo + { 'relapath' => ${certname}/}
-
-  }
-
-  [
-    {
-      'relapath'    => 'toto/titi.git',
-      'permissions' => [{'rights' => 'RW+', 'target' => 'admin'}],
-    },
-    {
-      'relapath'    => 'tutu/titi.git',
-      'permissions' => [{'rights' => 'RW+', 'target' => 'admin'}],
-    },
-  ]
+#  $puppetdb_query = "resources[parameters, certname]{ tag = '${collection}' and type = 'Confkeeper::Provider::Repos' and exported = true }"
+#
+#  $repos_by_host = $exported_repos.reduce({}) |$memo, $exported_repo| {
+#
+#    $certname         = $exported_repo['certname']
+#    $ssh_pubkey       = $exported_repo['parameters']['etckeeper_ssh_pubkey']
+#    $certname_in_memo = ($certname in $memo)
+#
+#    if $certname_in_memo and $memo[$certname]['ssh_pubkey'] != $ssh_pubkey {
+#      @("END"/L$).fail
+#        Class ${title}: the host ${certname} seems to have \
+#        multiple Confkeeper::Provider::Repos exported resources \
+#        but not with the same `etckeeper_ssh_pubkey` at each time. \
+#        This is not allowed.
+#        |-END
+#    }
+#
+#    # The etckeeper ssh public key has probably been created
+#    # but during the loading facts of the first puppet run,
+#    # this is not the case and the custom fact gives an empty
+#    # string.
+#    if $ssh_pubkey == '' { next($memo) }
+#
+#    $directories = case $certname_in_memo {
+#      true: {
+#        ($memo[$certname]['directories'] + $exported_repo['parameters']['directories']).unique
+#      }
+#      default: {
+#        $exported_repo['parameters']['directories']
+#      }
+#    }
+#
+#    $memo + {$certname => {'ssh_pubkey' => $ssh_pubkey, 'directories' => $directories}}
+#
+#  }
+#
+#  $repositories = $repos_by_host.reduce([]) |$memo, $repos_host| {
+#
+#    $certname = $repos_host[0]
+#    $repos    = $repos_host[1]['directories'].map |$dir| { "${certname}${dir}.git"}
+#
+#    $memo + { 'relapath' => ${certname}/}
+#
+#  }
+#
+#  [
+#    {
+#      'relapath'    => 'toto/titi.git',
+#      'permissions' => [{'rights' => 'RW+', 'target' => 'admin'}],
+#    },
+#    {
+#      'relapath'    => 'tutu/titi.git',
+#      'permissions' => [{'rights' => 'RW+', 'target' => 'admin'}],
+#    },
+#  ]
 
   file { '/home/gitolite-admin/gitolite-admin/conf/gitolite.conf':
     ensure  => file,
@@ -241,7 +257,7 @@ class confkeeper::collector {
     notify  => [Exec['commit-push-gitolite-admin.git'], Exec['mv-old-repos']],
     content => epp('confkeeper/collector/gitolite.conf.epp',
                    {
-                     'repositories' => $repositories,
+                     'exported_repos' => $exported_repos,
                    }
                   ),
   }
@@ -265,20 +281,11 @@ class confkeeper::collector {
     notify  => Exec['commit-push-gitolite-admin.git'],
   }
 
-  #$sshpubkeys = [
-  #  {
-  #    'name'    => 'bob',
-  #    'type'    => 'ssh-rsa',
-  #    'value'   => 'AAAB3NzaC1yc2EAAAADAQABAAAAgQC/R1WcUYqwY0x2L/EGRPwUF4KJ6UWo6ml4hGxMy+uNoqW59zlCJAguZDKyS8AHN7WoLIoRzcwxAru5iu9YjadgmdpOTfAXUCBEfKGWCVu0LxYuEcQYlBB1cayGZvKdG0uX0v1ibVPeDpfeXxe+ASKJ+fxqBuRyUcauCeBop+RUFQ==',
-  #    'comment' => 'bob@srv1',
-  #  },
-  #]
-
-  $repos_by_host.each |$certname, $settings| {
+  $exported_repos.each |$fqdn, $settings| {
 
     $ssh_pubkey = $settings['ssh_pubkey']
 
-    file { "/home/gitolite-admin/gitolite-admin/keydir/root@${certname}.pub":
+    file { "/home/gitolite-admin/gitolite-admin/keydir/root@${fqdn}.pub":
       ensure  => file,
       mode    => '0644',
       owner   => 'gitolite-admin',
@@ -349,6 +356,7 @@ class confkeeper::collector {
     user        => 'git',
     group       => 'git',
     path        => '/usr/local/bin:/usr/bin:/bin',
+    cwd         => '/home/git',
     logoutput   => 'on_failure',
     refreshonly => true,
     require     => File['/usr/local/bin/mv-old-repos'],

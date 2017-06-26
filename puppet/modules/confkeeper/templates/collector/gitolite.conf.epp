@@ -1,14 +1,18 @@
-<%-| Array[Confkeeper::GitRepository] $repositories |-%>
+<%-| Confkeeper::ExportedRepos $exported_repos |-%>
 ### This file is managed by Puppet, don't edit it. ###
 
+# The gitolite configuration.
 repo gitolite-admin
     RW+ = admin
 
-<%- $repositories.each |$repository| { -%>
+<%- $exported_repos.each |$fqdn, $settings| { -%>
+  <%- $settings['repositories'].each |$localpath, $repository| { -%>
+# Local directory <%= $localpath %> from the host <%= $fqdn %>.
 repo <%= $repository['relapath'].regsubst(/\.git$/, '') %>
-  <%- $repository['permissions'].each |$permission| { -%>
+    <%- $repository['permissions'].each |$permission| { -%>
     <%= $permission['rights'] %> = <%= $permission['target'] %>
-  <%- } -%>
+    <%- } -%>
 
+  <%- } -%>
 <%- } -%>
 
