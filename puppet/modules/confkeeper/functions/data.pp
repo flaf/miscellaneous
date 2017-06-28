@@ -9,6 +9,9 @@ function confkeeper::data (
     '/etc' => {
       'relapath'    => "${fqdn}/etc.git",
       'permissions' => [{'rights' => 'RW+', 'target' => "root@${fqdn}"}],
+    '/usr/local' => {
+      'relapath'    => "${fqdn}/usr-local.git",
+      'permissions' => [{'rights' => 'RW+', 'target' => "root@${fqdn}"}],
     },
   }
   $etckeeper_ssh_pubkey = $::facts.dig('etckeeper_ssh_pubkey')
