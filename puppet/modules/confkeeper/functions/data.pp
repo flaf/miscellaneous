@@ -5,23 +5,24 @@ function confkeeper::data (
 
   $default_collection   = 'all'
   $fqdn                 = $::facts['networking']['fqdn']
-  $default_repositories = {
-    '/etc'       => {
-      'relapath'    => "${fqdn}/etc.git",
-      'permissions' => [{'rights' => 'RW+', 'target' => "root@${fqdn}"}],
-    },
-    '/usr/local' => {
-      'relapath'    => "${fqdn}/usr-local.git",
-      'permissions' => [{'rights' => 'RW+', 'target' => "root@${fqdn}"}],
-    },
-  }
   $etckeeper_ssh_pubkey = $::facts.dig('etckeeper_ssh_pubkey')
   $ssh_host_pubkey      = $::facts.dig('ssh', 'rsa', 'key')
   $provider_sd          = [
                            'trusty',
                            'jessie',
                            'xenial',
-                          ];
+                          ]
+
+  $default_repositories = {
+    '/etc'       => {
+                      'relapath'    => "${fqdn}/etc.git",
+                      'permissions' => [{'rights' => 'RW+', 'target' => "root@${fqdn}"}],
+                    },
+    '/usr/local' => {
+                      'relapath'    => "${fqdn}/usr-local.git",
+                      'permissions' => [{'rights' => 'RW+', 'target' => "root@${fqdn}"}],
+                    },
+  };
 
   # TODO: add a filter tag (filter_tag) parameter in the collector::params class.
 
