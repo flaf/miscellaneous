@@ -22,7 +22,10 @@ class confkeeper::collector {
   #
   # So "git" is the password. But we don't care here because
   # the password will be locked below.
-  $pwd = '$6$8d7f75658c4bd0e3$pApb19j4GTGX1BfLJufjNS.znLLlwDbx3ztBMWbRvBhgUu9tGwcnQNP911pEHGHIEeOU.8KGn9icD3Apoiq/2.'
+  $pwd = @(END/L)
+    $6$8d7f75658c4bd0e3$pApb19j4GTGX1BfLJufjNS.znLLlwDbx3ztBMWb\
+    RvBhgUu9tGwcnQNP911pEHGHIEeOU.8KGn9icD3Apoiq/2.
+    |-END
 
   group {
     default:
@@ -102,7 +105,10 @@ class confkeeper::collector {
 
   exec { 'create-ssh-keys-for-gitolite-admin':
     creates   => '/home/gitolite-admin/.ssh/id_rsa.pub',
-    command   => "ssh-keygen -b 4096 -t rsa -C 'gitolite-admin@${fqdn}' -P '' -f /home/gitolite-admin/.ssh/id_rsa",
+    command   => @("END"/L$),
+      ssh-keygen -b 4096 -t rsa -C "gitolite-admin@${fqdn}" -P "" \
+      -f "/home/gitolite-admin/.ssh/id_rsa"
+      |-END
     user      => 'gitolite-admin',
     group     => 'gitolite-admin',
     path      => '/usr/bin:/bin',
@@ -159,94 +165,46 @@ class confkeeper::collector {
     require   => Sshkey['localhost'],
   }
 
-  $puppetdb_query = "resources[parameters]{type = 'Class' and title = 'Confkeeper::Provider::Params'}"
-
-  $exported_repos = puppetdb_query($puppetdb_query).map |$item| {
-    $item['parameters']
-  }.reduce({}) |$memo, $parameters| {
-
-    $fqdn = $parameters['fqdn']
-
-    if $fqdn in $memo {
-      @("END"/L$).fail
-        Class ${title}: the host ${fqdn} seems to have multiple \
-        classe Confkeeper::Provider::params which is not normal.
-        |-END
+  # The puppetdb query to retrieve all the "exported" repositories.
+  $puppetdb_query = @(END)
+    resources[parameters]{
+      type = 'Class' and title = 'Confkeeper::Provider::Params'
     }
+    |-END
 
-    # The etckeeper ssh public key is created during the
-    # first puppet run of a provider but, during the loading
-    # facts of this first puppet run, the key is not yet
-    # defined and the value of the custom is temporarily
-    # undef.
-    if $parameters['etckeeper_ssh_pubkey'] =~ Undef {
-      next($memo)
+  $exported_repos = puppetdb_query($puppetdb_query)
+    .map |$item| {
+      $item['parameters']
     }
+    .reduce({}) |$memo, $parameters| {
 
-    $memo + {
-      $fqdn => {
-      'ssh_pubkey'   => $parameters['etckeeper_ssh_pubkey'],
-      'repositories' => $parameters['repositories'],
+      $fqdn = $parameters['fqdn']
+
+      if $fqdn in $memo {
+        @("END"/L$).fail
+          Class ${title}: multiple hosts have declared the class \
+          Confkeeper::Provider::params with the same value `${fqdn}` \
+          for the `fqdn` parameter. This is not allowed.
+          |-END
       }
+
+      # The etckeeper ssh public key is created during the
+      # first puppet run of a provider but, during the loading
+      # facts of this first puppet run, the key is not yet
+      # defined and the value of the custom is temporarily
+      # undef.
+      if $parameters['etckeeper_ssh_pubkey'] =~ Undef {
+        next($memo)
+      }
+
+      $memo + {
+        $fqdn => {
+        'ssh_pubkey'   => $parameters['etckeeper_ssh_pubkey'],
+        'repositories' => $parameters['repositories'],
+        }
+      }
+
     }
-
-  }
-
-#  $puppetdb_query = "resources[parameters, certname]{ tag = '${collection}' and type = 'Confkeeper::Provider::Repos' and exported = true }"
-#
-#  $repos_by_host = $exported_repos.reduce({}) |$memo, $exported_repo| {
-#
-#    $certname         = $exported_repo['certname']
-#    $ssh_pubkey       = $exported_repo['parameters']['etckeeper_ssh_pubkey']
-#    $certname_in_memo = ($certname in $memo)
-#
-#    if $certname_in_memo and $memo[$certname]['ssh_pubkey'] != $ssh_pubkey {
-#      @("END"/L$).fail
-#        Class ${title}: the host ${certname} seems to have \
-#        multiple Confkeeper::Provider::Repos exported resources \
-#        but not with the same `etckeeper_ssh_pubkey` at each time. \
-#        This is not allowed.
-#        |-END
-#    }
-#
-#    # The etckeeper ssh public key has probably been created
-#    # but during the loading facts of the first puppet run,
-#    # this is not the case and the custom fact gives an empty
-#    # string.
-#    if $ssh_pubkey == '' { next($memo) }
-#
-#    $directories = case $certname_in_memo {
-#      true: {
-#        ($memo[$certname]['directories'] + $exported_repo['parameters']['directories']).unique
-#      }
-#      default: {
-#        $exported_repo['parameters']['directories']
-#      }
-#    }
-#
-#    $memo + {$certname => {'ssh_pubkey' => $ssh_pubkey, 'directories' => $directories}}
-#
-#  }
-#
-#  $repositories = $repos_by_host.reduce([]) |$memo, $repos_host| {
-#
-#    $certname = $repos_host[0]
-#    $repos    = $repos_host[1]['directories'].map |$dir| { "${certname}${dir}.git"}
-#
-#    $memo + { 'relapath' => ${certname}/}
-#
-#  }
-#
-#  [
-#    {
-#      'relapath'    => 'toto/titi.git',
-#      'permissions' => [{'rights' => 'RW+', 'target' => 'admin'}],
-#    },
-#    {
-#      'relapath'    => 'tutu/titi.git',
-#      'permissions' => [{'rights' => 'RW+', 'target' => 'admin'}],
-#    },
-#  ]
 
   file { '/home/gitolite-admin/gitolite-admin/conf/gitolite.conf':
     ensure  => file,
@@ -297,42 +255,11 @@ class confkeeper::collector {
 
   }
 
-  #$exported_repos.each |$exported_repo| {
-
-  #  $ssh_pubkey = $exported_repo['parameters']['etckeeper_ssh_pubkey']
-  #  $name       = $exported_repo['certname']
-
-  #  file { "/home/gitolite-admin/gitolite-admin/keydir/${name}.pub":
-  #    ensure  => file,
-  #    mode    => '0644',
-  #    owner   => 'gitolite-admin',
-  #    group   => 'gitolite-admin',
-  #    content => "${ssh_pubkey}\n",
-  #    require => Exec['clone-gitolite-admin.git'],
-  #    notify  => Exec['commit-push-gitolite-admin.git'],
-  #  }
-
-  #}
-
-#  $sshpubkeys.each |Confkeeper::SshPubKey $sshpubkey| {
-#    $name    = $sshpubkey['name']
-#    $type    = $sshpubkey['type']
-#    $value   = $sshpubkey['value']
-#    $comment = $sshpubkey['comment']
-#
-#    file { "/home/gitolite-admin/gitolite-admin/keydir/${name}.pub":
-#      ensure  => file,
-#      mode    => '0644',
-#      owner   => 'gitolite-admin',
-#      group   => 'gitolite-admin',
-#      content => "${type} ${value} ${comment}\n",
-#      require => Exec['clone-gitolite-admin.git'],
-#      notify  => Exec['commit-push-gitolite-admin.git'],
-#    }
-#  }
-
   exec { 'commit-push-gitolite-admin.git':
-    command     => "sh -c 'git add . && git commit -m \"Automatic Puppet commit\" && git push'",
+    environment => ['HOME=/home/gitolite-admin'],
+    command     => @(END/L),
+      sh -c 'git add . && git commit -m "Automatic Puppet commit" && git push'
+      |-END
     user        => 'gitolite-admin',
     group       => 'gitolite-admin',
     path        => '/usr/bin:/bin',
