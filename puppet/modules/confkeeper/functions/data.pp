@@ -6,9 +6,10 @@ function confkeeper::data (
   $default_collection   = 'all'
   $fqdn                 = $::facts['networking']['fqdn']
   $default_repositories = {
-    '/etc' => {
+    '/etc'       => {
       'relapath'    => "${fqdn}/etc.git",
       'permissions' => [{'rights' => 'RW+', 'target' => "root@${fqdn}"}],
+    },
     '/usr/local' => {
       'relapath'    => "${fqdn}/usr-local.git",
       'permissions' => [{'rights' => 'RW+', 'target' => "root@${fqdn}"}],
