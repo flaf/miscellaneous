@@ -3,7 +3,6 @@ class confkeeper::collector {
   include '::confkeeper::collector::params'
 
   [
-    $collection,
     $supported_distributions,
   ] = Class['::confkeeper::collector::params']
 

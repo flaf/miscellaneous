@@ -3,7 +3,6 @@ class confkeeper::provider {
   include '::confkeeper::provider::params'
 
   [
-    $collection,
     $repositories,
     $supported_distributions,
     #
@@ -32,20 +31,7 @@ class confkeeper::provider {
       |-END
   }
 
-  $candidate_collectors_params = $collectors_params.filter |$a_collector| {
-    $a_collector['parameters']['collection'] == $collection
-  }
-
-  if $candidate_collectors_params.empty {
-    @("END"/L$).fail
-      Class ${title}: some classes `Confkeeper::Collector::params` has \
-       been retrieved via Puppetdb but none has the collection parameter \
-       equal to `${collection}`. This current confkeeper provider is \
-       currently "collectorless".
-      |-END
-  }
-
-  if $candidate_collectors_params.length > 1  {
+  if $collectors_params.length > 1  {
     @("END"/L$).fail
       Class ${title}: multiple classes `Confkeeper::Collector::params` which \
       belong to the collection `${collection}` has been retrieved via \
@@ -54,7 +40,7 @@ class confkeeper::provider {
       |-END
   }
 
-  $collector_params          = $candidate_collectors_params[0]['parameters']
+  $collector_params          = $collectors_params[0]['parameters']
   $collector_address         = $collector_params['address']
   $collector_ssh_host_pubkey = $collector_params['ssh_host_pubkey']
 

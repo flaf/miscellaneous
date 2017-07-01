@@ -1,5 +1,4 @@
 class confkeeper::provider::params (
-  String[1]                   $collection,
   Confkeeper::GitRepositories $repositories,
   String[1]                   $fqdn,
   Optional[String[1]]         $etckeeper_ssh_pubkey,
