@@ -3,6 +3,7 @@ class confkeeper::provider {
   include '::confkeeper::provider::params'
 
   [
+    $collection,
     $repositories,
     $supported_distributions,
     #
@@ -14,9 +15,10 @@ class confkeeper::provider {
 
   $fqdn = $::facts['networking']['fqdn']
 
-  $puppetdb_query = @(END)
+  $puppetdb_query = @("END")
     resources[parameters]{
-      type = 'Class' and title = 'Confkeeper::Collector::Params'
+      type = "Class" and title = "Confkeeper::Collector::Params"
+        and parameters.collection = "${collection}"
     }
     |-END
 
@@ -24,19 +26,20 @@ class confkeeper::provider {
 
   if $collectors_params.empty {
     @("END"/L$).fail
-      Class ${title}: no class `Confkeeper::Collector::params` retrieved \
-      via Puppetdb. It seems that no confkeeper collector has been \
-      installed yet. To install a confkeeper provider, you have to \
-      install a confkeeper collector first.
+      Class ${title}: no resource Class['Confkeeper::Collector::Params'] \
+      with the `collection` parameter equal to "${collection}" have been \
+      retrieved in Puppetdb. The current node seems to be collector-less. \
+      To install a confkeeper provider, you have to install a confkeeper \
+      collector in the same collection first.
       |-END
   }
 
   if $collectors_params.length > 1  {
     @("END"/L$).fail
-      Class ${title}: multiple classes `Confkeeper::Collector::params` which \
-      belong to the collection `${collection}` has been retrieved via \
-      Puppetdb but a confkeeper provider must have only one confkeeper \
-      collector.
+      Class ${title}: multiple resources Class['Confkeeper::Collector::Params'] \
+      with the `colleciton` parameter equal to "${collection}" has been \
+      retrieved in Puppetdb but a confkeeper provider must have only one \
+      confkeeper collector.
       |-END
   }
 
@@ -46,10 +49,10 @@ class confkeeper::provider {
 
   if $collector_ssh_host_pubkey =~ Undef {
     @("END"/L$).fail
-      Class ${title}: a unique class `Confkeeper::Collector::params` which \
-      belongs to the collection `${collection}` has been retrieved via \
-      Puppetdb but its parameter `ssh_host_pubkey` is undef. A confkeeper \
-      provider must know the RSA ssh host public key of its collector.
+      Class ${title}: a unique resource Class['Confkeeper::Collector::Params'] \
+      with the `collection` parameter equal to "${collection}" has been \
+      retrieved in Puppetdb but its parameter `ssh_host_pubkey` is undef. A \
+      confkeeper provider must know the RSA ssh host public key of its collector.
       |-END
   }
 
@@ -72,6 +75,7 @@ class confkeeper::provider {
     path      => '/usr/bin:/bin',
     cwd       => '/root',
     logoutput => 'on_failure',
+    require   => Sshkey['collector-sshkey-for-provider']
   }
 
   case $::facts['os']['distro']['codename'] {
@@ -90,6 +94,7 @@ class confkeeper::provider {
         owner   => 'root',
         group   => 'root',
         require => Exec['create-ssh-keys-for-etckeeper'],
+        before  => Package['etckeeper'],
         content => epp('confkeeper/provider/etckeeper_git_ssh.epp',
                        {
                          'etckeeper_sshkey_path' => $etckeeper_sshkey_path,
@@ -116,7 +121,7 @@ class confkeeper::provider {
     }
   } # "default" case.
 
-  #ensure_packages(['gitolite3'], { ensure => present })
+  ensure_packages(['etckeeper', 'git'], { ensure => present })
 
 }
 

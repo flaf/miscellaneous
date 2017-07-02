@@ -3,6 +3,7 @@ class confkeeper::collector {
   include '::confkeeper::collector::params'
 
   [
+    $collection,
     $supported_distributions,
   ] = Class['::confkeeper::collector::params']
 
@@ -165,9 +166,10 @@ class confkeeper::collector {
   }
 
   # The puppetdb query to retrieve all the "exported" repositories.
-  $puppetdb_query = @(END)
+  $puppetdb_query = @("END")
     resources[parameters]{
-      type = 'Class' and title = 'Confkeeper::Provider::Params'
+      type = "Class" and title = "Confkeeper::Provider::Params"
+        and parameters.collection = "${collection}"
     }
     |-END
 

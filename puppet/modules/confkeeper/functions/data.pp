@@ -25,10 +25,12 @@ function confkeeper::data (
   };
 
   {
+    confkeeper::collector::params::collection              => $default_collection,
     confkeeper::collector::params::address                 => $fqdn,
     confkeeper::collector::params::ssh_host_pubkey         => $ssh_host_pubkey,
     confkeeper::collector::params::supported_distributions => ['xenial'],
 
+    confkeeper::provider::params::collection              => $default_collection,
     confkeeper::provider::params::repositories            => $default_repositories,
     confkeeper::provider::params::fqdn                    => $fqdn,
     confkeeper::provider::params::etckeeper_ssh_pubkey    => $etckeeper_ssh_pubkey,
