@@ -5,6 +5,7 @@ class confkeeper::provider {
   [
     $collection,
     $repositories,
+    $fqdn,
     $supported_distributions,
     #
     $etckeeper_sshkey_path,
@@ -13,7 +14,6 @@ class confkeeper::provider {
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
-  $fqdn         = $::facts['networking']['fqdn']
   $distribution = $::facts['os']['distro']['codename'] 
 
   $puppetdb_query = @("END")
@@ -105,7 +105,11 @@ class confkeeper::provider {
                    ),
       }
 
-      $git_ssh_envvars = ['GIT_SSH=/usr/local/bin/etckeeper_git_ssh']
+      $git_ssh_envvars = [
+                          "GIT_SSH='/usr/local/bin/etckeeper_git_ssh'",
+                          "GIT_AUTHOR_NAME='root'",
+                          "GIT_AUTHOR_EMAIL='root@${fqdn}'",
+                         ]
 
     } # "trusty" case.
 
@@ -117,8 +121,12 @@ class confkeeper::provider {
       $git_ssh_command = @("END"/L$)
         ssh -o UserKnownHostsFile="${etckeeper_known_hosts}" \
         -i "${etckeeper_sshkey_path}"
-      |-END
-      $git_ssh_envvars = ["GIT_SSH_COMMAND='${git_ssh_command}'"]
+        |-END
+      $git_ssh_envvars = [
+                          "GIT_SSH_COMMAND='${git_ssh_command}'",
+                          "GIT_AUTHOR_NAME='root'",
+                          "GIT_AUTHOR_EMAIL='root@${fqdn}'",
+                         ]
 
     }
   } # "default" case.
@@ -146,7 +154,9 @@ class confkeeper::provider {
     group   => 'root',
     content => epp('confkeeper/provider/etckeeper-push-all.epp',
                    {
-                     'repositories' => $repositories,
+                     'repositories'      => $repositories,
+                     'git_ssh_envvars'   => $git_ssh_envvars,
+                     'collector_address' => $collector_address,
                    }
                ),
     require => Package['etckeeper'],

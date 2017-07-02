@@ -1,0 +1,75 @@
+<%-|
+  Confkeeper::GitRepositories $repositories,
+  Array[String[1], 1]         $git_ssh_envvars,
+  String[1]                   $collector_address,
+|-%>
+#!/bin/sh
+
+### This file is managed by Puppet, don't edit it. ###
+
+export PATH="/usr/sbin:/usr/bin:/sbin:/bin"
+export LC_ALL='C'
+<%- $git_ssh_envvars.each |$envvar| { -%>
+export <%= $envvar %>
+<%- } -%>
+set -e
+
+rv='0'
+
+OLD_IFS="$IFS"
+LINE_FEED='
+'
+IFS="$LINE_FEED"
+
+REPOSITORIES='
+<%- $repositories.each |$path, $settings| { -%>
+<%= $path %>|git@<%= $collector_address %>:<%= $settings[relapath] %>
+<%- } -%>
+'
+
+for repository in $REPOSITORIES
+do
+    dir="${repository%%|*}"
+    git_origin="${repository#*|}"
+
+    if [ ! -d "$dir" ]
+    then
+        printf 'Sorry, the path "%s" must be a directory.\n' "$dir" >&2
+        rv='1'
+        continue # next repository
+    fi
+
+    # Path cleaning (remove the trailing slash if present etc).
+    dir=$(readlink -f "$dir")
+
+    printf 'Handle of "%s".\n' "$dir"
+
+    # On Ubuntu Trusty, by default /etc is initialized with
+    # the VCS bzr after the etckeeper installation.
+    if [ -d "${dir}/.bzr" ]
+    then
+        rm -rf --one-file-system "${dir}/.bzr"
+        rm -f "${dir}/.bzrignore"
+        rm -f "${dir}/etc/.etckeeper"
+    fi
+
+    [ ! -d  "${dir}/.git" ] && etckeeper init -d "$dir"
+
+    grep -qF "$git_origin" "${dir}/.git/config" || git remote add origin "$git_origin"
+
+    if etckeeper unclean -d "$dir"
+    then
+        etckeeper commit -d "$dir" "Automatic commit via cron"
+        (cd "$dir" && timeout --signal TERM --kill-after 60s 60s git push)
+    fi
+
+    unset -v dir
+    unset -v git_origin
+
+done
+
+IFS="$OLD_IFS"
+
+exit "$rv"
+
+
