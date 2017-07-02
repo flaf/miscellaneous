@@ -75,7 +75,8 @@ class confkeeper::provider {
     path      => '/usr/bin:/bin',
     cwd       => '/root',
     logoutput => 'on_failure',
-    require   => Sshkey['collector-sshkey-for-provider']
+    require   => Sshkey['collector-sshkey-for-provider'],
+    before    => Package['etckeeper'],
   }
 
   case $::facts['os']['distro']['codename'] {
