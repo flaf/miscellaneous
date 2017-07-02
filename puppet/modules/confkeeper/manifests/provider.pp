@@ -13,7 +13,8 @@ class confkeeper::provider {
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
-  $fqdn = $::facts['networking']['fqdn']
+  $fqdn         = $::facts['networking']['fqdn']
+  $distribution = $::facts['os']['distro']['codename'] 
 
   $puppetdb_query = @("END")
     resources[parameters]{
@@ -56,14 +57,6 @@ class confkeeper::provider {
       |-END
   }
 
-  sshkey {'collector-sshkey-for-provider':
-    name   => $collector_address,
-    ensure => present,
-    key    => $collector_ssh_host_pubkey,
-    type   => 'ssh-rsa',
-    target => $etckeeper_known_hosts,
-  }
-
   exec { 'create-ssh-keys-for-etckeeper':
     creates   => "${etckeeper_sshkey_path}.pub",
     command   => @("END"/L$),
@@ -75,11 +68,19 @@ class confkeeper::provider {
     path      => '/usr/bin:/bin',
     cwd       => '/root',
     logoutput => 'on_failure',
-    require   => Sshkey['collector-sshkey-for-provider'],
-    before    => Package['etckeeper'],
   }
 
-  case $::facts['os']['distro']['codename'] {
+  sshkey {'collector-sshkey-for-provider':
+    name    => $collector_address,
+    ensure  => present,
+    key     => $collector_ssh_host_pubkey,
+    type    => 'ssh-rsa',
+    target  => $etckeeper_known_hosts,
+    require => Exec['create-ssh-keys-for-etckeeper'],
+    before  => Package['etckeeper'],
+  }
+
+  case $distribution {
 
     'trusty': {
 
@@ -123,6 +124,33 @@ class confkeeper::provider {
   } # "default" case.
 
   ensure_packages(['etckeeper', 'git'], { ensure => present })
+
+  file { '/etc/etckeeper/etckeeper.conf':
+    ensure  => file,
+    mode    => '0644',
+    owner   => 'root',
+    group   => 'root',
+    content => epp('confkeeper/provider/etckeeper.conf.epp', {}),
+    require => Package['etckeeper'],
+  }
+
+  file { '/etc/apt/apt.conf.d/05etckeeper':
+    ensure  => absent,
+    require => Package['etckeeper'],
+  }
+
+  file { '/usr/local/sbin/etckeeper-push-all':
+    ensure  => file,
+    mode    => '0750',
+    owner   => 'root',
+    group   => 'root',
+    content => epp('confkeeper/provider/etckeeper-push-all.epp',
+                   {
+                     'repositories' => $repositories,
+                   }
+               ),
+    require => Package['etckeeper'],
+  }
 
 }
 
