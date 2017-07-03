@@ -5,6 +5,7 @@ class confkeeper::provider {
   [
     $collection,
     $repositories,
+    $wrapper_cron,
     $fqdn,
     $supported_distributions,
     #
@@ -82,13 +83,13 @@ class confkeeper::provider {
 
   case $distribution {
 
-    'trusty': {
+    /^(trusty|jessie)/: {
 
-      # With Git version < 2.0 (which is the case on
-      # Trusty), the environment variable GIT_SSH_COMMAND is
-      # not available. So we have to use the environment
-      # variable GIT_SSH and we have provide a Git ssh
-      # wrapper script.
+      # With Git version < 2.3 (which is the case on
+      # Trusty and Jessie), the environment variable
+      # GIT_SSH_COMMAND is not available. So we have to use
+      # the environment variable GIT_SSH and we have provide
+      # a Git ssh wrapper script.
 
       file { '/usr/local/bin/etckeeper_git_ssh':
         ensure  => file,
@@ -111,7 +112,7 @@ class confkeeper::provider {
                           "GIT_AUTHOR_EMAIL='root@${fqdn}'",
                          ]
 
-    } # "trusty" case.
+    } # "trusty" and "jessie" case.
 
     default: {
 
@@ -160,6 +161,25 @@ class confkeeper::provider {
                    }
                ),
     require => Package['etckeeper'],
+  }
+
+  $cron_cmd = case $wrapper_cron {
+    Undef:   { '/usr/local/sbin/etckeeper-push-all'                 }
+    default: { "${wrapper_cron} /usr/local/sbin/etckeeper-push-all" }
+  }
+
+  $seed = 'etckeeper-push-all'
+
+  cron { 'etckeeper-push-all':
+    ensure   => present,
+    user     => 'root',
+    command  => $cron_cmd,
+    hour     => 18 + fqdn_rand(6, $seed), # from 18 to 23
+    minute   => fqdn_rand(60, $seed),     # from 0 to 59
+    monthday => absent,                   # ie *
+    month    => absent,                   # ie *
+    weekday  => absent,                   # ie *
+    require  => File['/usr/local/sbin/etckeeper-push-all'],
   }
 
 }

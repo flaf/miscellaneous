@@ -14,7 +14,77 @@ export <%= $envvar %>
 <%- } -%>
 set -e
 
-rv='0'
+me=$(id --user --name)
+
+if [ "$me" != 'root' ]
+then
+    printf "Sorry, only root can run this script.\n" >&2
+    exit 1
+fi
+
+SCRIPT_NAME="${0##*/}"
+
+print_help () {
+    cat <<EOF
+The syntax is:
+    $SCRIPT_NAME --help
+    $SCRIPT_NAME [--verbose|--debug]
+
+EOF
+}
+
+if ! TEMP=$(getopt -o "h,v,d" -l "help,verbose,debug" -n "$SCRIPT_NAME" -- "$@")
+then
+    echo "Syntax error with $SCRIPT_NAME command." >&2
+    exit 1
+fi
+
+eval set -- "$TEMP"
+
+# Some default values.
+VERBOSE='false'
+DEBUG='false'
+
+while true
+do
+    case "$1" in
+
+        -v|--verbose)
+            VERBOSE='true'
+            shift 1
+        ;;
+
+        -d|--debug)
+            DEBUG='true'
+            shift 1
+        ;;
+
+        --help|-h)
+            print_help
+            exit 0
+        ;;
+
+        --)
+            shift 1
+            break
+        ;;
+
+    esac
+
+done
+
+if "$DEBUG"
+then
+    # Debug mode.
+    set -x
+elif "$VERBOSE"
+then
+    # Verbose mode, no specific setting.
+    true
+else
+    # Default mode, only stderr is displayed.
+    exec >/dev/null
+fi
 
 OLD_IFS="$IFS"
 LINE_FEED='
@@ -27,6 +97,9 @@ REPOSITORIES='
 <%- } -%>
 '
 
+RV='0'
+
+
 for repository in $REPOSITORIES
 do
     dir="${repository%%|*}"
@@ -35,7 +108,7 @@ do
     if [ ! -d "$dir" ]
     then
         printf 'Sorry, the path "%s" must be a directory.\n' "$dir" >&2
-        rv='1'
+        RV='1'
         continue # next repository
     fi
 
@@ -43,6 +116,41 @@ do
     dir=$(readlink -f "$dir")
 
     printf 'Handle of "%s".\n' "$dir"
+
+    # Specific handle if the repository is /usr/local. In
+    # this case, we make a copy of all bash histories in
+    # /usr/local/ before any commit.
+    if [ "$dir" = '/usr/local' ]
+    then
+        mkdir -p --mode='0700' '/usr/local/bash-history'
+
+        for bash_history in '/root/.bash_history' /home/*/.bash_history
+        do
+
+            # Maybe root has no .bash_history yet, or maybe
+            # there is no .bash_history in /home (in this
+            # case "$bash_history" = '/home/*/.bash_history').
+            [ ! -f "$bash_history" ] && continue
+
+            if [ "$bash_history" = '/root/.bash_history' ]
+            then
+                username='root'
+            else
+                username="${bash_history#/home/}"
+                username="${username%/.bash_history}"
+            fi
+
+            bash_history_copy="/usr/local/bash-history/$username"
+
+            [ ! -f "$bash_history_copy" ] && touch "$bash_history_copy"
+            chmod '0600' "$bash_history_copy"
+
+            if ! diff -q "$bash_history" "$bash_history_copy"
+            then
+                cp "$bash_history" "$bash_history_copy"
+            fi
+        done
+    fi
 
     # On Ubuntu Trusty, by default /etc is initialized with
     # the VCS bzr after the etckeeper installation.
@@ -55,13 +163,26 @@ do
 
     [ ! -d  "${dir}/.git" ] && etckeeper init -d "$dir"
 
-    grep -qF "$git_origin" "${dir}/.git/config" || git remote add origin "$git_origin"
 
-    if etckeeper unclean -d "$dir"
-    then
-        etckeeper commit -d "$dir" "Automatic commit via cron"
-        (cd "$dir" && timeout --signal TERM --kill-after 60s 60s git push)
-    fi
+    (
+        cd "$dir"
+
+        if [ "$git_origin" != "$(git config --local --get remote.origin.url)" ]
+        then
+            git remote add origin "$git_origin"
+        fi
+
+        if [ 'simple' != "$(git config --local --get push.default)" ]
+        then
+            git config --local push.default 'simple'
+        fi
+
+        if etckeeper unclean -d "$dir"
+        then
+            etckeeper commit -d "$dir" "Automatic commit via ${SCRIPT_NAME}"
+            timeout --signal TERM --kill-after 40s 20s git push origin master
+        fi
+    )
 
     unset -v dir
     unset -v git_origin
@@ -70,6 +191,6 @@ done
 
 IFS="$OLD_IFS"
 
-exit "$rv"
+exit "$RV"
 
 

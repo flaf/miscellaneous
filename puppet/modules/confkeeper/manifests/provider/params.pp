@@ -1,6 +1,7 @@
 class confkeeper::provider::params (
   String[1]                   $collection,
   Confkeeper::GitRepositories $repositories,
+  Optional[String[1]]         $wrapper_cron,
   String[1]                   $fqdn,
   Optional[String[1]]         $etckeeper_ssh_pubkey,
   Array[String[1], 1]         $supported_distributions,

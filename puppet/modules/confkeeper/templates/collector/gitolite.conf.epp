@@ -10,6 +10,7 @@ repo gitolite-admin
 # Host            => <%= $fqdn %>
 # Local directory => <%= $localpath %>
 repo <%= $repository['relapath'].regsubst(/\.git$/, '') %>
+    RW+ = admin
     <%- $repository['permissions'].each |$permission| { -%>
     <%= $permission['rights'] %> = <%= $permission['target'] %>
     <%- } -%>

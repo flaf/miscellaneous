@@ -1,0 +1,18 @@
+<%-| |-%>
+#!/bin/sh
+
+### This file is managed by Puppet, don't edit it. ###
+
+export PATH='/usr/local/bin:/usr/bin:/bin'
+export LC_ALL='C'
+
+if [ "$(id -un)" != 'gitolite-admin' ]
+then
+    printf 'Sorry this command can be executed only by the gitolite-admin user.\n' >&2
+    exit 1
+fi
+
+
+
+
+
