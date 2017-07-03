@@ -93,7 +93,7 @@ IFS="$LINE_FEED"
 
 REPOSITORIES='
 <%- $repositories.each |$path, $settings| { -%>
-<%= $path %>|git@<%= $collector_address %>:<%= $settings[relapath] %>
+<%= $path %>|git@<%= $collector_address %>:<%= $settings['relapath'] %>
 <%- } -%>
 '
 

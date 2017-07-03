@@ -1,4 +1,7 @@
-<%-| |-%>
+<%-|
+  Confkeeper::ExportedRepos $exported_repos,
+ String[1]                  $all_repos_path,
+|-%>
 #!/bin/sh
 
 ### This file is managed by Puppet, don't edit it. ###
@@ -12,7 +15,38 @@ then
     exit 1
 fi
 
+all_repos_path='<%= $all_repos_path %>'
+mkdir -p --mode='0700' "$all_repos_path"
 
+OLD_IFS="$IFS"
+LINE_FEED='
+'
+IFS="$LINE_FEED"
 
+REPOSITORIES='
+<%- $exported_repos.each |$fqdn, $repos| { -%>
+  <%- $repos['repositories'].each |$path, $settings| { -%>
+git@localhost:<%= $settings['relapath'] %>
+  <%- } -%>
+<%- } -%>
+'
+
+for repo in $REPOSITORIES
+do
+    printf 'Handle of %s\n' "$repo"
+    dir="${repo#git@localhost:}"
+    dir="${all_repos_path}/${dir}"
+
+    if [ ! -d "$dir" ]
+    then
+        mkdir -p --mode='0700' "${dir}"
+        (cd "$dir" && git clone "$repo" .)
+    else
+        (cd "$dir" && git pull)
+    fi
+
+done
+
+IFS="$OLD_IFS"
 
 

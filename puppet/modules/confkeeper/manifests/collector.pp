@@ -5,6 +5,8 @@ class confkeeper::collector {
   [
     $collection,
     $supported_distributions,
+    #
+    $all_repos_path,
   ] = Class['::confkeeper::collector::params']
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
@@ -288,6 +290,19 @@ class confkeeper::collector {
     logoutput   => 'on_failure',
     refreshonly => true,
     require     => File['/usr/local/bin/mv-old-repos'],
+  }
+
+  file { '/usr/local/bin/collect-all-git-repos':
+    ensure  => file,
+    mode    => '0755',
+    owner   => 'root',
+    group   => 'root',
+    content => epp('confkeeper/collector/collect-all-git-repos.epp',
+                   {
+                    'exported_repos' => $exported_repos,
+                    'all_repos_path' => $all_repos_path,
+                   }
+               ),
   }
 
 }
