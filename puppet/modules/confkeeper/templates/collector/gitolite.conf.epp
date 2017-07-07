@@ -7,6 +7,7 @@ repo gitolite-admin
 
 repo all-in-one
     RW+ = git
+    RW+ = admin
 
 <%- $exported_repos.keys.sort.each |$fqdn| { -%>
   <%- $exported_repos[$fqdn]['repositories'].each |$localpath, $repository| { -%>
