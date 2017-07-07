@@ -1,4 +1,8 @@
-TODO: Please, make a real README file...
+# TODO
+
+* Add a parameter to add repositories (with its permissions) manually in a collector.
+* Add a parameter to add specific gitolite account which will be "all-in-one.git" readers.
+
 
 # Module description
 
