@@ -28,6 +28,7 @@ function confkeeper::data (
     confkeeper::collector::params::collection              => $default_collection,
     confkeeper::collector::params::address                 => $fqdn,
     confkeeper::collector::params::ssh_host_pubkey         => $ssh_host_pubkey,
+    confkeeper::collector::params::wrapper_cron            => undef,
     confkeeper::collector::params::supported_distributions => ['xenial'],
 
     confkeeper::provider::params::collection              => $default_collection,

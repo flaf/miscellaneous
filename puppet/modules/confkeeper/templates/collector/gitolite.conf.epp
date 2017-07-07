@@ -5,11 +5,15 @@
 repo gitolite-admin
     RW+ = admin
 
+repo all-in-one
+    RW+ = git
+
 <%- $exported_repos.keys.sort.each |$fqdn| { -%>
   <%- $exported_repos[$fqdn]['repositories'].each |$localpath, $repository| { -%>
 # Host            => <%= $fqdn %>
 # Local directory => <%= $localpath %>
 repo <%= $repository['relapath'].regsubst(/\.git$/, '') %>
+    R   = git
     RW+ = admin
     <%- $repository['permissions'].each |$permission| { -%>
     <%= $permission['rights'] %> = <%= $permission['target'] %>

@@ -1,6 +1,5 @@
 <%-|
-  Confkeeper::ExportedRepos $exported_repos,
- String[1]                  $all_repos_path,
+ String[1] $non_bare_repos_path,
 |-%>
 #!/bin/sh
 
@@ -8,45 +7,68 @@
 
 export PATH='/usr/local/bin:/usr/bin:/bin'
 export LC_ALL='C'
+set -e
 
-if [ "$(id -un)" != 'gitolite-admin' ]
+if [ "$(id -un)" != 'git' ]
 then
-    printf 'Sorry this command can be executed only by the gitolite-admin user.\n' >&2
+    printf 'Sorry this command can be executed only by the git user.\n' >&2
     exit 1
 fi
 
-all_repos_path='<%= $all_repos_path %>'
-mkdir -p --mode='0700' "$all_repos_path"
+non_bare_repos_path='<%= $non_bare_repos_path %>'
+mkdir -p --mode='0700' "$non_bare_repos_path"
 
-OLD_IFS="$IFS"
-LINE_FEED='
-'
-IFS="$LINE_FEED"
-
-REPOSITORIES='
-<%- $exported_repos.each |$fqdn, $repos| { -%>
-  <%- $repos['repositories'].each |$path, $settings| { -%>
-git@localhost:<%= $settings['relapath'] %>
-  <%- } -%>
-<%- } -%>
-'
+REPOSITORIES=$(gitolite list-repos)
 
 for repo in $REPOSITORIES
 do
-    printf 'Handle of %s\n' "$repo"
-    dir="${repo#git@localhost:}"
-    dir="${all_repos_path}/${dir}"
 
-    if [ ! -d "$dir" ]
+    [ "$repo" = 'gitolite-admin' ] && continue
+    [ "$repo" = 'all-in-one' ]     && continue
+
+    printf 'Handle of %s\n' "$repo"
+
+    dir="${non_bare_repos_path}/${repo}.git"
+
+    [ ! -d "$dir" ] && mkdir -p --mode='0700' "${dir}"
+
+    if [ ! -d "$dir/.git" ]
     then
-        mkdir -p --mode='0700' "${dir}"
-        (cd "$dir" && git clone "$repo" .)
+        (cd "$dir" && git clone "git@localhost:${repo}.git" .)
     else
         (cd "$dir" && git pull)
     fi
 
 done
 
-IFS="$OLD_IFS"
+# Handle of the all-in-one repository.
+printf 'Handle of %s\n' "all-in-one.git"
+
+all_in_one='/home/git/all-in-one.git'
+mkdir -p --mode='0700' "$all_in_one" && cd "${all_in_one}"
+
+if [ ! -d  "${all_in_one}/.git" ]
+then
+    git init
+fi
+
+if [ "git@localhost:all-in-one.git" != "$(git config --local --get remote.origin.url)" ]
+then
+    git remote add origin "git@localhost:all-in-one.git"
+fi
+
+if [ 'simple' != "$(git config --local --get push.default)" ]
+then
+    git config --local push.default 'simple'
+fi
+
+rsync -axv --delete --exclude '.git/' "$non_bare_repos_path/" "${all_in_one}"
+
+git add .
+
+if git commit -m "Automatic commit" >/dev/null
+then
+    timeout --signal TERM --kill-after 40s 20s git push origin master
+fi
 
 

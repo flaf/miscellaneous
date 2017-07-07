@@ -4,14 +4,15 @@ class confkeeper::collector {
 
   [
     $collection,
+    $wrapper_cron,
     $supported_distributions,
     #
-    $all_repos_path,
+    $non_bare_repos_path,
   ] = Class['::confkeeper::collector::params']
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
-  ensure_packages(['gitolite3'], { ensure => present })
+  ensure_packages(['gitolite3', 'rsync'], { ensure => present })
 
   ###################################################
   ### Creation of git and gitolite-admin accounts ###
@@ -105,18 +106,21 @@ class confkeeper::collector {
 
   $fqdn = $::facts['networking']['fqdn']
 
-  exec { 'create-ssh-keys-for-gitolite-admin':
-    creates   => '/home/gitolite-admin/.ssh/id_rsa.pub',
-    command   => @("END"/L$),
-      ssh-keygen -b 4096 -t rsa -C "gitolite-admin@${fqdn}" -P "" \
-      -f "/home/gitolite-admin/.ssh/id_rsa"
-      |-END
-    user      => 'gitolite-admin',
-    group     => 'gitolite-admin',
-    path      => '/usr/bin:/bin',
-    cwd       => '/home/gitolite-admin',
-    logoutput => 'on_failure',
-    require   => File['/home/gitolite-admin'],
+  # Create a SSH keys for git and gitolite-admin.
+  ['git', 'gitolite-admin'].each |$user| {
+    exec { "create-ssh-keys-for-${user}":
+      creates   => "/home/${user}/.ssh/id_rsa.pub",
+      command   => @("END"/L$),
+        ssh-keygen -b 4096 -t rsa -C "${user}@${fqdn}" -P "" \
+        -f "/home/${user}/.ssh/id_rsa"
+        |-END
+      user      => $user,
+      group     => $user,
+      path      => '/usr/bin:/bin',
+      cwd       => "/home/${user}",
+      logoutput => 'on_failure',
+      require   => File["/home/${user}"],
+    }
   }
 
   file { '/home/git/admin.pub':
@@ -146,14 +150,17 @@ class confkeeper::collector {
   ####################################################
 
   # To allow a local "git clone git@localhost:gitolite-admin.git"
-  # without warning about fingerprint checking.
-  sshkey {'localhost':
-    ensure       => present,
-    key          => $::facts['ssh']['rsa']['key'],
-    type         => 'ssh-rsa',
-    host_aliases => $::facts['networking']['fqdn'],
-    target       => '/home/gitolite-admin/.ssh/known_hosts',
-    require      => Exec['init-git-repository'],
+  # without warning about fingerprint checking via the "git"
+  # and "gitolite-admin" unix accounts.
+  ['git', 'gitolite-admin'].each |$user| {
+    sshkey {"localhost-for-${user}":
+      ensure       => present,
+      key          => $::facts['ssh']['rsa']['key'],
+      type         => 'ssh-rsa',
+      host_aliases => ['localhost', $::facts['networking']['fqdn']],
+      target       => "/home/${user}/.ssh/known_hosts",
+      require      => Exec['init-git-repository'],
+    }
   }
 
   exec { 'clone-gitolite-admin.git':
@@ -164,7 +171,10 @@ class confkeeper::collector {
     path      => '/usr/bin:/bin',
     cwd       => '/home/gitolite-admin',
     logoutput => 'on_failure',
-    require   => Sshkey['localhost'],
+    require   => [
+                  Sshkey['localhost-for-git'],
+                  Sshkey['localhost-for-gitolite-admin'],
+                 ],
   }
 
   # The puppetdb query to retrieve all the "exported" repositories.
@@ -172,6 +182,7 @@ class confkeeper::collector {
     resources[parameters]{
       type = "Class" and title = "Confkeeper::Provider::Params"
         and parameters.collection = "${collection}"
+        and nodes { deactivated is null and expired is null }
     }
     |-END
 
@@ -232,14 +243,17 @@ class confkeeper::collector {
     notify  => Exec['commit-push-gitolite-admin.git'],
   }
 
-  file { '/home/gitolite-admin/gitolite-admin/keydir/admin.pub':
-    ensure  => file,
-    mode    => '0644',
-    owner   => 'gitolite-admin',
-    group   => 'gitolite-admin',
-    source  => '/home/git/admin.pub',
-    require => Exec['clone-gitolite-admin.git'],
-    notify  => Exec['commit-push-gitolite-admin.git'],
+  $h = {'git' => 'git', 'gitolite-admin' => 'admin'}
+  $h.each |$user, $keyname| {
+    file { "/home/gitolite-admin/gitolite-admin/keydir/${keyname}.pub":
+      ensure  => file,
+      mode    => '0644',
+      owner   => 'gitolite-admin',
+      group   => 'gitolite-admin',
+      source  => "/home/${user}/.ssh/id_rsa.pub",
+      require => Exec['clone-gitolite-admin.git'],
+      notify  => Exec['commit-push-gitolite-admin.git'],
+    }
   }
 
   $exported_repos.each |$fqdn, $settings| {
@@ -277,7 +291,11 @@ class confkeeper::collector {
     owner   => 'root',
     group   => 'root',
     require => Exec['commit-push-gitolite-admin.git'],
-    content => epp('confkeeper/collector/mv-old-repos.epp', {}),
+    content => epp('confkeeper/collector/mv-old-repos.epp',
+                   {
+                    'non_bare_repos_path' => $non_bare_repos_path,
+                   }
+               ),
   }
 
   exec { 'mv-old-repos':
@@ -299,10 +317,28 @@ class confkeeper::collector {
     group   => 'root',
     content => epp('confkeeper/collector/collect-all-git-repos.epp',
                    {
-                    'exported_repos' => $exported_repos,
-                    'all_repos_path' => $all_repos_path,
+                    'non_bare_repos_path' => $non_bare_repos_path,
                    }
                ),
+  }
+
+  $seed = 'etckeeper-push-all'
+
+  $cron_cmd = case $wrapper_cron {
+    Undef:   { '/usr/local/bin/collect-all-git-repos'                 }
+    default: { "${wrapper_cron} /usr/local/bin/collect-all-git-repos" }
+  }
+
+  cron { 'collect-all-git-repos':
+    ensure   => present,
+    user     => 'git',
+    command  => $cron_cmd,
+    hour     => 1 + fqdn_rand(6, $seed), # from 1 to 6
+    minute   => fqdn_rand(60, $seed),    # from 0 to 59
+    monthday => absent,                  # ie *
+    month    => absent,                  # ie *
+    weekday  => absent,                  # ie *
+    require  => File['/usr/local/bin/collect-all-git-repos'],
   }
 
 }

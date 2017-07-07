@@ -1,16 +1,22 @@
-<%-| |-%>
+<%-|
+  String $non_bare_repos_path,
+|-%>
 #!/bin/sh
 
 ### This file is managed by Puppet, don't edit it. ###
 
 export PATH='/usr/local/bin:/usr/bin:/bin'
 export LC_ALL='C'
+set -e
 
 if [ "$(id -un)" != 'git' ]
 then
     printf 'Sorry this command can be executed only by the git user.\n' >&2
     exit 1
 fi
+
+non_bare_repos_path='<%= $non_bare_repos_path %>'
+mkdir -p --mode='0700' "$non_bare_repos_path"
 
 trashdir='/home/git/old'
 f_repos=$(mktemp)
@@ -24,8 +30,11 @@ gitolite list-phy-repos | sort > "$f_phy_repos"
 for repo in $(comm -23 "$f_phy_repos" "$f_repos")
 do
     src="/home/git/repositories/${repo}.git"
+    non_bare_src="${non_bare_repos_path}/${repo}.git"
     src_cleaned=$(readlink -f "$src")
-    dest="${trashdir}/${repo}.git.$(date '+%Y-%m-%d-%Hh%M.%S')"
+    date=$(date '+%Y-%m-%d-%Hh%M.%S')
+    dest="${trashdir}/${repo}.git.${date}"
+    non_bare_dest="${trashdir}/${repo}.git.nonbare.${date}"
 
     if [ "$src" != "$src_cleaned" ]
     then
@@ -42,6 +51,8 @@ do
     basename_dest="${dest%/*}"
     mkdir --mode='0700' -p "$basename_dest"
     mv "$src" "$dest"
+    mv "$non_bare_src" "$non_bare_dest"
+
 done
 
 rm "$f_repos" "$f_phy_repos"
@@ -49,5 +60,9 @@ rm "$f_repos" "$f_phy_repos"
 # We remove all empty directory directly at the root of
 # /home/git/repositories/.
 find /home/git/repositories/ -mindepth 1 -maxdepth 1 -type d -empty -delete
+
+# We remove all empty directory directly at the root of
+# $non_bare_repos_path.
+find "$non_bare_repos_path" -mindepth 1 -maxdepth 1 -type d -empty -delete
 
 

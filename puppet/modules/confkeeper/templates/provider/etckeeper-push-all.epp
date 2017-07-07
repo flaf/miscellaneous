@@ -163,7 +163,6 @@ do
 
     [ ! -d  "${dir}/.git" ] && etckeeper init -d "$dir"
 
-
     (
         cd "$dir"
 

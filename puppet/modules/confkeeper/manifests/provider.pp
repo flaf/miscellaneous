@@ -21,6 +21,7 @@ class confkeeper::provider {
     resources[parameters]{
       type = "Class" and title = "Confkeeper::Collector::Params"
         and parameters.collection = "${collection}"
+        and nodes { deactivated is null and expired is null }
     }
     |-END
 
