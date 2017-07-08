@@ -2,6 +2,7 @@
 
 * Add a parameter to add repositories (with its permissions) manually in a collector.
 * Add a parameter to add specific gitolite account which will be "all-in-one.git" readers.
+* Make a completed readme file.
 
 
 # Module description
