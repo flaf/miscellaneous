@@ -192,7 +192,7 @@ class confkeeper::collector {
     }
     |-END
 
-  $exported_repos = $additional_exported_repos + puppetdb_query($puppetdb_query)
+  $puppetdb_exported_repos = puppetdb_query($puppetdb_query)
     .map |$item| {
       $item['parameters']
     }
@@ -233,7 +233,11 @@ class confkeeper::collector {
         }
       }
 
-    } # End: $exported_repos.
+    } # End of $puppetdb_exported_repos.
+
+    $exported_repos = ($additional_exported_repos + $puppetdb_exported_repos).
+
+
 
   file { '/home/gitolite-admin/gitolite-admin/conf/gitolite.conf':
     ensure  => file,
