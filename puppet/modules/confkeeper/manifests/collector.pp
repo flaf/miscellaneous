@@ -12,6 +12,8 @@ class confkeeper::collector {
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
+  $fqdn = $::facts['networking']['fqdn']
+
   ensure_packages(['gitolite3', 'rsync'], { ensure => present })
 
   ###################################################
@@ -50,7 +52,7 @@ class confkeeper::collector {
   user {
     default:
       ensure         => present,
-      password       => "!${pwd}", # <= password locked with "!".
+      password       => "!${pwd}", # <= password locked via the "!" character.
       managehome     => false,
       shell          => '/bin/bash',
       membership     => 'inclusive',
@@ -100,11 +102,13 @@ class confkeeper::collector {
       owner   => 'gitolite-admin',
       group   => 'gitolite-admin',
       require => User['gitolite-admin'],
-      content => epp('confkeeper/collector/dotgitconfig.epp', {}),
+      content => epp('confkeeper/collector/dotgitconfig.epp',
+                     {
+                      'fqdn' => $fqdn,
+                     }
+                 ),
     ;
   }
-
-  $fqdn = $::facts['networking']['fqdn']
 
   # Create a SSH keys for git and gitolite-admin.
   ['git', 'gitolite-admin'].each |$user| {
@@ -135,7 +139,7 @@ class confkeeper::collector {
   exec { 'init-git-repository':
     environment => ['HOME=/home/git', 'USER=git'],
     creates     => '/home/git/repositories',
-    command     => "gitolite setup -pk /home/git/admin.pub",
+    command     => 'gitolite setup -pk /home/git/admin.pub',
     user        => 'git',
     group       => 'git',
     path        => '/usr/bin:/bin',
@@ -164,17 +168,18 @@ class confkeeper::collector {
   }
 
   exec { 'clone-gitolite-admin.git':
-    creates   => '/home/gitolite-admin/gitolite-admin',
-    command   => "git clone git@localhost:gitolite-admin.git",
-    user      => 'gitolite-admin',
-    group     => 'gitolite-admin',
-    path      => '/usr/bin:/bin',
-    cwd       => '/home/gitolite-admin',
-    logoutput => 'on_failure',
-    require   => [
-                  Sshkey['localhost-for-git'],
-                  Sshkey['localhost-for-gitolite-admin'],
-                 ],
+    environment => ['HOME=/home/gitolite-admin', 'USER=gitolite-admin'],
+    creates     => '/home/gitolite-admin/gitolite-admin',
+    command     => "git clone git@localhost:gitolite-admin.git",
+    user        => 'gitolite-admin',
+    group       => 'gitolite-admin',
+    path        => '/usr/bin:/bin',
+    cwd         => '/home/gitolite-admin',
+    logoutput   => 'on_failure',
+    require     => [
+                    Sshkey['localhost-for-git'],
+                    Sshkey['localhost-for-gitolite-admin'],
+                   ],
   }
 
   # The puppetdb query to retrieve all the "exported" repositories.
@@ -203,10 +208,10 @@ class confkeeper::collector {
       }
 
       # The etckeeper ssh public key is created during the
-      # first puppet run of a provider but, during the loading
-      # facts of this first puppet run, the key is not yet
-      # defined and the value of the custom is temporarily
-      # undef.
+      # first puppet run of a provider but, during the
+      # loading facts of this first puppet run, the key is
+      # not yet defined and the value of the custom fact is
+      # temporarily undef.
       if $parameters['etckeeper_ssh_pubkey'] =~ Undef {
         next($memo)
       }
@@ -273,7 +278,7 @@ class confkeeper::collector {
   }
 
   exec { 'commit-push-gitolite-admin.git':
-    environment => ['HOME=/home/gitolite-admin'],
+    environment => ['HOME=/home/gitolite-admin', 'USER=gitolite-admin'],
     command     => @(END/L),
       sh -c 'git add . && git commit -m "Automatic Puppet commit" && git push'
       |-END

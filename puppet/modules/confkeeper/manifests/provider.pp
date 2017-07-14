@@ -27,10 +27,10 @@ class confkeeper::provider {
 
   $collectors_params = puppetdb_query($puppetdb_query)
 
-  if $collectors_params.empty {
+  if $collectors_params.length == 0 {
     @("END"/L$).fail
       Class ${title}: no resource Class['Confkeeper::Collector::Params'] \
-      with the `collection` parameter equal to "${collection}" have been \
+      with the `collection` parameter equal to "${collection}" has been \
       retrieved in Puppetdb. The current node seems to be collector-less. \
       To install a confkeeper provider, you have to install a confkeeper \
       collector in the same collection first.
@@ -40,7 +40,7 @@ class confkeeper::provider {
   if $collectors_params.length > 1  {
     @("END"/L$).fail
       Class ${title}: multiple resources Class['Confkeeper::Collector::Params'] \
-      with the `colleciton` parameter equal to "${collection}" has been \
+      with the `colleciton` parameter equal to "${collection}" have been \
       retrieved in Puppetdb but a confkeeper provider must have only one \
       confkeeper collector.
       |-END

@@ -1,9 +1,9 @@
-<%-| |-%>
+<%-| String[1] $fqdn |-%>
 ### This file is managed by Puppet, don't edit it. ###
 
 [user]
     name    = gitolite-admin
-    email   = gitolite-admin@<%= $::facts['networking']['fqdn'] %>
+    email   = gitolite-admin@<%= $fqdn %>
 
 [push]
     default = simple
