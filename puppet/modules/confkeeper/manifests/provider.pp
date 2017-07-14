@@ -15,6 +15,11 @@ class confkeeper::provider {
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
+  $repositories_completed = ::confkeeper::complete_repos_settings(
+    $repositories,
+    $fqdn,
+  )
+
   $distribution = $::facts['os']['distro']['codename'] 
 
   $puppetdb_query = @("END")
@@ -156,13 +161,44 @@ class confkeeper::provider {
     group   => 'root',
     content => epp('confkeeper/provider/etckeeper-push-all.epp',
                    {
-                     'repositories'      => $repositories,
+                     'repositories'      => $repositories_completed,
                      'git_ssh_envvars'   => $git_ssh_envvars,
                      'collector_address' => $collector_address,
                    }
                ),
     require => Package['etckeeper'],
   }
+
+  # Initialization of the repositories.
+  $repositories_completed.each |$localdir, $settings| {
+
+    exec { "etckeeper-init-of-${localdir}":
+      creates   => "${localdir}/.git",
+      command   => "etckeeper init -d '${localdir}'",
+      user      => 'root',
+      group     => 'root',
+      path      => '/usr/bin:/bin',
+      cwd       => '/root',
+      logoutput => 'on_failure',
+      require   => File['/etc/etckeeper/etckeeper.conf'],
+    }
+
+    unless $settings['gitignore'] =~ Undef {
+      file { "${localdir}/.gitignore":
+        ensure  => file,
+        mode    => '0644',
+        owner   => 'root',
+        group   => 'root',
+        content => epp('confkeeper/provider/gitignore.epp',
+                       {
+                        'lines' => $settings['gitignore'],
+                       }
+                   ),
+        require => Exec["etckeeper-init-of-${localdir}"],
+      }
+    }
+
+  } # End: initialization of the repositories.
 
   $cron_cmd = case $wrapper_cron {
     Undef:   { '/usr/local/sbin/etckeeper-push-all'                 }

@@ -1,0 +1,7 @@
+<%-| Array[String] $lines |-%>
+### This file is managed by Puppet, don't edit it. ###
+
+<%- $lines.each |$a_line| { -%>
+<%= $a_line %>
+<%- } -%>
+

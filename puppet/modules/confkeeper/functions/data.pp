@@ -13,23 +13,20 @@ function confkeeper::data (
                            'xenial',
                           ]
 
+  # By default, repositories are /etc and /usr/local with
+  # almost default settings.
   $default_repositories = {
-    '/etc'       => {
-                      'relapath'    => "${fqdn}/etc.git",
-                      'permissions' => [{'rights' => 'RW+', 'target' => "root@${fqdn}"}],
-                    },
-    '/usr/local' => {
-                      'relapath'    => "${fqdn}/usr-local.git",
-                      'permissions' => [{'rights' => 'RW+', 'target' => "root@${fqdn}"}],
-                    },
+    '/etc'       => {'gitignore' => undef},
+    '/usr/local' => {},
   };
 
   {
-    confkeeper::collector::params::collection              => $default_collection,
-    confkeeper::collector::params::address                 => $fqdn,
-    confkeeper::collector::params::ssh_host_pubkey         => $ssh_host_pubkey,
-    confkeeper::collector::params::wrapper_cron            => undef,
-    confkeeper::collector::params::supported_distributions => ['xenial'],
+    confkeeper::collector::params::collection                => $default_collection,
+    confkeeper::collector::params::address                   => $fqdn,
+    confkeeper::collector::params::ssh_host_pubkey           => $ssh_host_pubkey,
+    confkeeper::collector::params::wrapper_cron              => undef,
+    confkeeper::collector::params::additional_exported_repos => {},
+    confkeeper::collector::params::supported_distributions   => ['xenial'],
 
     confkeeper::provider::params::collection              => $default_collection,
     confkeeper::provider::params::repositories            => $default_repositories,

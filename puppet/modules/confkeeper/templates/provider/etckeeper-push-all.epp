@@ -161,6 +161,8 @@ do
         rm -f "${dir}/etc/.etckeeper"
     fi
 
+    # Normally, the git repository should be already
+    # initialized by Puppet.
     [ ! -d  "${dir}/.git" ] && etckeeper init -d "$dir"
 
     (

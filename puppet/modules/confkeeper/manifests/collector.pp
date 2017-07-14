@@ -5,6 +5,7 @@ class confkeeper::collector {
   [
     $collection,
     $wrapper_cron,
+    $additional_exported_repos,
     $supported_distributions,
     #
     $non_bare_repos_path,
@@ -216,10 +217,15 @@ class confkeeper::collector {
         next($memo)
       }
 
+      $repositories_completed = ::confkeeper::complete_repos_settings(
+        $parameters['repositories'],
+        $fqdn,
+      )
+
       $memo + {
         $fqdn => {
         'ssh_pubkey'   => $parameters['etckeeper_ssh_pubkey'],
-        'repositories' => $parameters['repositories'],
+        'repositories' => $repositories_completed,
         }
       }
 
