@@ -192,7 +192,7 @@ class confkeeper::collector {
     }
     |-END
 
-  $exported_repos = puppetdb_query($puppetdb_query)
+  $exported_repos = $additional_exported_repos + puppetdb_query($puppetdb_query)
     .map |$item| {
       $item['parameters']
     }
@@ -217,19 +217,23 @@ class confkeeper::collector {
         next($memo)
       }
 
+      $account = $parameters.dig('account').lest || {'root'}
+
       $repositories_completed = ::confkeeper::complete_repos_settings(
         $parameters['repositories'],
+        $account,
         $fqdn,
       )
 
       $memo + {
         $fqdn => {
         'ssh_pubkey'   => $parameters['etckeeper_ssh_pubkey'],
+        'account'      => $account,
         'repositories' => $repositories_completed,
         }
       }
 
-    }
+    } # End: $exported_repos.
 
   file { '/home/gitolite-admin/gitolite-admin/conf/gitolite.conf':
     ensure  => file,
@@ -270,8 +274,9 @@ class confkeeper::collector {
   $exported_repos.each |$fqdn, $settings| {
 
     $ssh_pubkey = $settings['ssh_pubkey']
+    $account    = $settings['account']
 
-    file { "/home/gitolite-admin/gitolite-admin/keydir/root@${fqdn}.pub":
+    file { "/home/gitolite-admin/gitolite-admin/keydir/${account}@${fqdn}.pub":
       ensure  => file,
       mode    => '0644',
       owner   => 'gitolite-admin',

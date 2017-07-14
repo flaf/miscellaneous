@@ -17,6 +17,7 @@ class confkeeper::provider {
 
   $repositories_completed = ::confkeeper::complete_repos_settings(
     $repositories,
+    'root',
     $fqdn,
   )
 

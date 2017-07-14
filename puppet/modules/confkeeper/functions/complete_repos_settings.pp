@@ -3,6 +3,7 @@
 #
 function confkeeper::complete_repos_settings (
   Confkeeper::GitRepositories $repositories,
+  String[1] $account,
   String[1] $fqdn,
 ) {
 
@@ -15,7 +16,7 @@ function confkeeper::complete_repos_settings (
 
     $default_settings = {
       'relapath'    => "${fqdn}/${git_basename}.git",
-      'permissions' => [{'rights' => 'RW+', 'target' => "root@${fqdn}"}],
+      'permissions' => [{'rights' => 'RW+', 'target' => "${account}@${fqdn}"}],
       'gitignore'   => [],
     }
 
