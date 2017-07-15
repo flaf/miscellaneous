@@ -18,7 +18,7 @@ function confkeeper::data (
   $default_repositories = {
     '/etc'       => {'gitignore' => undef},
     '/usr/local' => {},
-    '/opt'       => {'gitignore' => ['/opt/puppetlabs/']},
+    '/opt'       => {'gitignore' => ['/puppetlabs/']},
   };
 
   {
