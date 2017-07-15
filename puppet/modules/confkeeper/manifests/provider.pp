@@ -173,17 +173,6 @@ class confkeeper::provider {
   # Initialization of the repositories.
   $repositories_completed.each |$localdir, $settings| {
 
-    exec { "etckeeper-init-of-${localdir}":
-      creates   => "${localdir}/.git",
-      command   => "etckeeper init -d '${localdir}'",
-      user      => 'root',
-      group     => 'root',
-      path      => '/usr/bin:/bin',
-      cwd       => '/root',
-      logoutput => 'on_failure',
-      require   => File['/etc/etckeeper/etckeeper.conf'],
-    }
-
     unless $settings['gitignore'] =~ Undef {
       file { "${localdir}/.gitignore":
         ensure  => file,
@@ -195,8 +184,19 @@ class confkeeper::provider {
                         'lines' => $settings['gitignore'],
                        }
                    ),
-        require => Exec["etckeeper-init-of-${localdir}"],
+        before  => Exec["etckeeper-init-of-${localdir}"],
       }
+    }
+
+    exec { "etckeeper-init-of-${localdir}":
+      creates   => "${localdir}/.git",
+      command   => "etckeeper init -d '${localdir}'",
+      user      => 'root',
+      group     => 'root',
+      path      => '/usr/bin:/bin',
+      cwd       => '/root',
+      logoutput => 'on_failure',
+      require   => File['/etc/etckeeper/etckeeper.conf'],
     }
 
   } # End: initialization of the repositories.
