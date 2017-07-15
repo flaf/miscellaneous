@@ -8,7 +8,7 @@ class roles::confkeeper (
   # the "provider" installation part.
   if $first_time {
     class { '::roles::generic':
-      excluded_classes => 'confkeeper::provider',
+      excluded_classes => ['confkeeper::provider'],
     }
   } else {
     include '::roles::generic'
