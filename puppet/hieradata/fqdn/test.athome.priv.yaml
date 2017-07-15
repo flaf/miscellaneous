@@ -3,8 +3,6 @@ enc_included_classes:
   - [ 'flaf', '::roles::confkeeper' ]
 enc_datacenter: 'vboxhome'
 
-roles::confkeeper::first_time: true
-
 network::params::ifaces:
   eth0:
     in_networks: [ 'vbox_adm' ]
@@ -12,23 +10,23 @@ network::params::ifaces:
     inet:
       method: 'dhcp'
 
-confkeeper::provider::params::repositories:
-  '/a/b':
-    gitignore:
-      - '*.pyc'
-      - '*.swp'
+#confkeeper::provider::params::repositories:
+#  '/a/b':
+#    gitignore:
+#      - '*.pyc'
+#      - '*.swp'
 
-confkeeper::collector::params::additional_exported_repos:
-  foofoo.athome.priv:
-    account: 'admin'
-    ssh_pubkey: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDNq07pd/NMP9\
-                 /Hisa39t/1rsx25wnSvrQrdCo3emIcA9ETPQDGGJHt8MVCInCk\
-                 8exJNsztdn0ePgQOQUpVCV1zxLe8EzI/QKy1DKhRtJ7tJEiygZ\
-                 NOutQinTv57hnhqM0/r/KkFD6KnNqjpo78LQ+92nIufPC+EPik\
-                 ru6ZeyqBeL4zrkNRCfoMWSk6LI18reApz1WP8EdIP1ZSCEGxZf\
-                 384dWQXHT2HSoVIJrqqpLBXon94B3OuCBBLETS+Zs8NuySTO2f\
-                 +q6roRnwhcBcLN5J9ODFv56QkzSqmD/mOgtMsFkOMhTB8OzKgz\
-                 4gDtfwacaN4EcUwkBAFzY0MeOUTtDb blabla"
-    repositories:
-      '/web/foo': {}
+#confkeeper::collector::params::additional_exported_repos:
+#  foofoo.athome.priv:
+#    account: 'admin'
+#    ssh_pubkey: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDNq07pd/NMP9\
+#                 /Hisa39t/1rsx25wnSvrQrdCo3emIcA9ETPQDGGJHt8MVCInCk\
+#                 8exJNsztdn0ePgQOQUpVCV1zxLe8EzI/QKy1DKhRtJ7tJEiygZ\
+#                 NOutQinTv57hnhqM0/r/KkFD6KnNqjpo78LQ+92nIufPC+EPik\
+#                 ru6ZeyqBeL4zrkNRCfoMWSk6LI18reApz1WP8EdIP1ZSCEGxZf\
+#                 384dWQXHT2HSoVIJrqqpLBXon94B3OuCBBLETS+Zs8NuySTO2f\
+#                 +q6roRnwhcBcLN5J9ODFv56QkzSqmD/mOgtMsFkOMhTB8OzKgz\
+#                 4gDtfwacaN4EcUwkBAFzY0MeOUTtDb blabla"
+#    repositories:
+#      '/web/foo': {}
 

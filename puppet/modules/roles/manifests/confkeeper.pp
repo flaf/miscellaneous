@@ -2,13 +2,18 @@ class roles::confkeeper (
   Boolean $first_time = false,
 ) {
 
+  # Frequent puppet run for a confkeeper collector.
+  class { '::puppetagent::params':
+    cron => 'per-day',
+  }
+
   # If this is the first time of the puppet run, there is no
   # collector (the collector will be UP after this first
   # puppet run). So we have to install the collector without
   # the "provider" installation part.
   if $first_time {
     class { '::roles::generic':
-      excluded_classes => ['confkeeper::provider'],
+      excluded_classes => ['::confkeeper::provider'],
     }
   } else {
     include '::roles::generic'

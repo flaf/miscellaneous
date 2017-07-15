@@ -50,8 +50,8 @@ do
 
     basename_dest="${dest%/*}"
     mkdir --mode='0700' -p "$basename_dest"
-    mv "$src" "$dest"
-    mv "$non_bare_src" "$non_bare_dest"
+    [ -d "$src" ]          && mv "$src" "$dest"
+    [ -d "$non_bare_src" ] && mv "$non_bare_src" "$non_bare_dest"
 
 done
 
