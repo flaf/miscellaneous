@@ -190,7 +190,11 @@ class confkeeper::provider {
 
     exec { "etckeeper-init-of-${localdir}":
       creates   => "${localdir}/.git",
-      command   => "etckeeper init -d '${localdir}'",
+      command   => @("END"/L$),
+        rm -rf --one-file-system "${localdir}/.bzr" && \
+        rm -f "${localdir}/.bzrignore" && \
+        etckeeper init -d "${localdir}"
+        |-END
       user      => 'root',
       group     => 'root',
       path      => '/usr/bin:/bin',
