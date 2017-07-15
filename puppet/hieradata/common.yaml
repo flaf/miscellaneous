@@ -103,26 +103,24 @@ snmp::params::snmpv3_accounts:
 unix_accounts::params::ssh_public_keys:
   francois@flpc.athome.priv:
     type: 'ssh-rsa'
-    keyvalue: >
-      AAAAB3NzaC1yc2EAAAADAQABAAABAQDNq07pd/NMP9/Hisa39t/1rsx
-      25wnSvrQrdCo3emIcA9ETPQDGGJHt8MVCInCk8exJNsztdn0ePgQOQU
-      pVCV1zxLe8EzI/QKy1DKhRtJ7tJEiygZNOutQinTv57hnhqM0/r/KkF
-      D6KnNqjpo78LQ+92nIufPC+EPikru6ZeyqBeL4zrkNRCfoMWSk6LI18
-      reApz1WP8EdIP1ZSCEGxZf384dWQXHT2HSoVIJrqqpLBXon94B3OuCB
-      BLETS+Zs8NuySTO2f+q6roRnwhcBcLN5J9ODFv56QkzSqmD/mOgtMsF
-      kOMhTB8OzKgz4gDtfwacaN4EcUwkBAFzY0MeOUTtDb
+    keyvalue: "AAAAB3NzaC1yc2EAAAADAQABAAABAQDNq07pd/NMP9/Hisa39t/1rsx\
+               25wnSvrQrdCo3emIcA9ETPQDGGJHt8MVCInCk8exJNsztdn0ePgQOQU\
+               pVCV1zxLe8EzI/QKy1DKhRtJ7tJEiygZNOutQinTv57hnhqM0/r/KkF\
+               D6KnNqjpo78LQ+92nIufPC+EPikru6ZeyqBeL4zrkNRCfoMWSk6LI18\
+               reApz1WP8EdIP1ZSCEGxZf384dWQXHT2HSoVIJrqqpLBXon94B3OuCB\
+               BLETS+Zs8NuySTO2f+q6roRnwhcBcLN5J9ODFv56QkzSqmD/mOgtMsF\
+               kOMhTB8OzKgz4gDtfwacaN4EcUwkBAFzY0MeOUTtDb"
     tags:
       - 'ppbackup@puppet.athome.priv'
   francois@dtic-flaf.atwork.priv:
     type: 'ssh-rsa'
-    keyvalue: >
-      AAAAB3NzaC1yc2EAAAADAQABAAABAQCt1PCCTyhW/dvX+7Yyt6sut5e
-      BD4d+nqFqp1a1d7YSomQ2Bzc8wz0rSZFplr+MHepbjblzPrGfTxbyA8
-      tyyV5iiQU3nYwCEt7OPAEKktF700Gukny3if9OqTUeaVlTECn0+rQPa
-      hj6VaipuJFJBSOwoaHWacP7MaerrmUWu6gVT32YQP/zglXnjgB/M2Aa
-      b23ssrSSfPB1Sw06wVeiIjTlmG/UDhsPuPeu/VXi9j96XhIz3UwuMqq
-      3dUyLTR3tPisEqa4TwxaZRb6vZrk2rSwhN/Fjk1hR45TeYUDxxw5u3A
-      QcsOI0Nur1Gr/uHmnDRWhoIDrO5HMxmsb6eGMWDpg/
+    keyvalue: "AAAAB3NzaC1yc2EAAAADAQABAAABAQCt1PCCTyhW/dvX+7Yyt6sut5e\
+               BD4d+nqFqp1a1d7YSomQ2Bzc8wz0rSZFplr+MHepbjblzPrGfTxbyA8\
+               tyyV5iiQU3nYwCEt7OPAEKktF700Gukny3if9OqTUeaVlTECn0+rQPa\
+               hj6VaipuJFJBSOwoaHWacP7MaerrmUWu6gVT32YQP/zglXnjgB/M2Aa\
+               b23ssrSSfPB1Sw06wVeiIjTlmG/UDhsPuPeu/VXi9j96XhIz3UwuMqq\
+               3dUyLTR3tPisEqa4TwxaZRb6vZrk2rSwhN/Fjk1hR45TeYUDxxw5u3A\
+               QcsOI0Nur1Gr/uHmnDRWhoIDrO5HMxmsb6eGMWDpg/"
     tags:
       - 'ppbackup@puppet.atwork.priv'
 

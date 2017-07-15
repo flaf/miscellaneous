@@ -6,6 +6,7 @@ class confkeeper::collector {
     $collection,
     $wrapper_cron,
     $additional_exported_repos,
+    $allinone_readers,
     $supported_distributions,
     #
     $non_bare_repos_path,
@@ -14,6 +15,28 @@ class confkeeper::collector {
   ::homemade::is_supported_distrib($supported_distributions, $title)
 
   $fqdn = $::facts['networking']['fqdn']
+
+  # Check $allinone_readers.
+  $allinone_readers.each |$allinone_reader| {
+
+    $username = $allinone_reader['username']
+
+    if $username in ['admin', 'git'] {
+      @("END"/L$).fail
+        Class ${title}: username `git` and `admin` are forbidden \
+        for the all-in-one readers in the parameter `allinone_readers`.
+        |-END
+    }
+
+    if "\n" in $allinone_reader['ssh_pubkey'] {
+      @("END"/L$).fail
+        Class ${title}: username `${username}` in the `allinone_readers` \
+        parameter has a `ssh_pubkey` value with a newline character which \
+        is forbidden.
+        |-END
+    }
+
+  }
 
   ensure_packages(['gitolite3', 'rsync'], { ensure => present })
 
@@ -193,51 +216,73 @@ class confkeeper::collector {
     |-END
 
   $puppetdb_exported_repos = puppetdb_query($puppetdb_query)
-    .map |$item| {
-      $item['parameters']
+  .map |$item| {
+    $item['parameters']
+  }
+  .reduce({}) |$memo, $parameters| {
+
+    $fqdn = $parameters['fqdn']
+
+    if $fqdn in $memo {
+      @("END"/L$).fail
+        Class ${title}: multiple hosts have declared the class \
+        Confkeeper::Provider::params with the same value `${fqdn}` \
+        for the `fqdn` parameter. This is not allowed.
+        |-END
     }
-    .reduce({}) |$memo, $parameters| {
 
-      $fqdn = $parameters['fqdn']
+    # The etckeeper ssh public key is created during the
+    # first puppet run of a provider but, during the
+   # loading facts of this first puppet run, the key is
+    # not yet defined and the value of the custom fact is
+    # temporarily undef.
+    if $parameters['etckeeper_ssh_pubkey'] =~ Undef {
+      next($memo)
+    }
 
-      if $fqdn in $memo {
-        @("END"/L$).fail
-          Class ${title}: multiple hosts have declared the class \
-          Confkeeper::Provider::params with the same value `${fqdn}` \
-          for the `fqdn` parameter. This is not allowed.
-          |-END
+    $memo + {
+      $fqdn => {
+      'ssh_pubkey'   => $parameters['etckeeper_ssh_pubkey'],
+      'repositories' => $parameters['repositories'],
       }
+    }
 
-      # The etckeeper ssh public key is created during the
-      # first puppet run of a provider but, during the
-      # loading facts of this first puppet run, the key is
-      # not yet defined and the value of the custom fact is
-      # temporarily undef.
-      if $parameters['etckeeper_ssh_pubkey'] =~ Undef {
-        next($memo)
-      }
+  } # End of $puppetdb_exported_repos.
 
-      $account = $parameters.dig('account').lest || {'root'}
+  # We check that there is common fqdn between $puppetdb_exported_repos
+  # and $additional_exported_repos.
+  $additional_exported_repos.each |$fqdn, $repos| {
+    if $fqdn in $puppetdb_exported_repos {
+      @("END"/L$).fail
+        Class ${title}: the fqdn `${fqdn}` is present simultaneously in \
+        the parameter `\$additional_exported_repos` and in the exported \
+        repositories from the Puppetdb, this is not allowed.
+        |-END
+    }
+  }
 
-      $repositories_completed = ::confkeeper::complete_repos_settings(
-        $parameters['repositories'],
-        $account,
-        $fqdn,
-      )
+  # All the exported repositories.
+  $exported_repos = ($additional_exported_repos + $puppetdb_exported_repos)
+  .reduce({}) |$memo, $item| {
 
-      $memo + {
-        $fqdn => {
-        'ssh_pubkey'   => $parameters['etckeeper_ssh_pubkey'],
-        'account'      => $account,
-        'repositories' => $repositories_completed,
-        }
-      }
+    [$fqdn, $params] = $item
 
-    } # End of $puppetdb_exported_repos.
+    $account = $params.dig('account').lest || {'root'}
 
-    $exported_repos = ($additional_exported_repos + $puppetdb_exported_repos).
+    $repositories_completed = ::confkeeper::complete_repos_settings(
+      $params['repositories'],
+      $account,
+      $fqdn,
+    )
 
+    $new_params = $params + {
+      'account'      => $account,
+      'repositories' => $repositories_completed
+    }
 
+    $memo + {$fqdn => $new_params}
+
+  } # End of $exported_repos
 
   file { '/home/gitolite-admin/gitolite-admin/conf/gitolite.conf':
     ensure  => file,
@@ -248,7 +293,8 @@ class confkeeper::collector {
     notify  => [Exec['commit-push-gitolite-admin.git'], Exec['mv-old-repos']],
     content => epp('confkeeper/collector/gitolite.conf.epp',
                    {
-                     'exported_repos' => $exported_repos,
+                     'exported_repos'   => $exported_repos,
+                     'allinone_readers' => $allinone_readers,
                    }
                   ),
   }
@@ -281,6 +327,23 @@ class confkeeper::collector {
     $account    = $settings['account']
 
     file { "/home/gitolite-admin/gitolite-admin/keydir/${account}@${fqdn}.pub":
+      ensure  => file,
+      mode    => '0644',
+      owner   => 'gitolite-admin',
+      group   => 'gitolite-admin',
+      content => "${ssh_pubkey}\n",
+      require => Exec['clone-gitolite-admin.git'],
+      notify  => Exec['commit-push-gitolite-admin.git'],
+    }
+
+  }
+
+  $allinone_readers.each |$allinone_reader| {
+
+    $ssh_pubkey = $allinone_reader['ssh_pubkey']
+    $username   = $allinone_reader['username']
+
+    file { "/home/gitolite-admin/gitolite-admin/keydir/${username}.pub":
       ensure  => file,
       mode    => '0644',
       owner   => 'gitolite-admin',

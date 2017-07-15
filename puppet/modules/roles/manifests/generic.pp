@@ -19,6 +19,7 @@ class roles::generic (
     '::mcollective::server',
     '::snmp',
     '::autoupgrade',
+    '::confkeeper::provider',
   ],
   Array[String[1]] $included_classes = $authorized_classes,
   Array[String[1]] $excluded_classes = [],
@@ -366,6 +367,18 @@ class roles::generic (
 
       }
 
+      ############################
+      ### confkeeper::provider ###
+      ############################
+      '::confkeeper::provider': {
+
+        class { '::confkeeper::provider::params':
+          wrapper_cron => ::roles::wrap_cron_mon('etckeeper-push-all'),
+        }
+
+        include '::confkeeper::provider'
+
+      }
 
       ########################
       ### The default case ###

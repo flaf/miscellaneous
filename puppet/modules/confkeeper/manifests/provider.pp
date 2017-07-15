@@ -21,7 +21,7 @@ class confkeeper::provider {
     $fqdn,
   )
 
-  $distribution = $::facts['os']['distro']['codename'] 
+  $distribution = $::facts['os']['distro']['codename']
 
   $puppetdb_query = @("END")
     resources[parameters]{

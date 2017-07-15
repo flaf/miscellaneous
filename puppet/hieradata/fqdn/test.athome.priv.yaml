@@ -1,8 +1,6 @@
 ---
 enc_included_classes:
-  - [ 'flaf', '::roles::generic' ]
-  - [ 'flaf', '::confkeeper::collector' ]
-  - [ 'flaf', '::confkeeper::provider' ]
+  - [ 'flaf', '::roles::confkeeper' ]
 enc_datacenter: 'vboxhome'
 
 network::params::ifaces:
@@ -17,12 +15,18 @@ confkeeper::provider::params::repositories:
     gitignore:
       - '*.pyc'
       - '*.swp'
+
 confkeeper::collector::params::additional_exported_repos:
-  toto.dom.tld:
+  foofoo.athome.priv:
     account: 'admin'
-    ssh_pubkey: 'AAAAB3NzaC1yc2EAAAADAQABAAABAQDNq07pd/NMP9/Hisa39t/1rsx25wnSvrQrdCo3emIcA9ETPQDGGJHt8MVCInCk8exJNsztdn0ePgQOQUpVCV1zxLe8EzI/QKy1DKhRtJ7tJEiygZNOutQinTv57hnhqM0/r/KkFD6KnNqjpo78LQ+92nIufPC+EPikru6ZeyqBeL4zrkNRCfoMWSk6LI18reApz1WP8EdIP1ZSCEGxZf384dWQXHT2HSoVIJrqqpLBXon94B3OuCBBLETS+Zs8NuySTO2f+q6roRnwhcBcLN5J9ODFv56QkzSqmD/mOgtMsFkOMhTB8OzKgz4gDtfwacaN4EcUwkBAFzY0MeOUTtDb'
+    ssh_pubkey: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDNq07pd/NMP9\
+                 /Hisa39t/1rsx25wnSvrQrdCo3emIcA9ETPQDGGJHt8MVCInCk\
+                 8exJNsztdn0ePgQOQUpVCV1zxLe8EzI/QKy1DKhRtJ7tJEiygZ\
+                 NOutQinTv57hnhqM0/r/KkFD6KnNqjpo78LQ+92nIufPC+EPik\
+                 ru6ZeyqBeL4zrkNRCfoMWSk6LI18reApz1WP8EdIP1ZSCEGxZf\
+                 384dWQXHT2HSoVIJrqqpLBXon94B3OuCBBLETS+Zs8NuySTO2f\
+                 +q6roRnwhcBcLN5J9ODFv56QkzSqmD/mOgtMsFkOMhTB8OzKgz\
+                 4gDtfwacaN4EcUwkBAFzY0MeOUTtDb blabla"
     repositories:
       '/web/foo': {}
-
-
 

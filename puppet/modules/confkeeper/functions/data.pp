@@ -18,6 +18,7 @@ function confkeeper::data (
   $default_repositories = {
     '/etc'       => {'gitignore' => undef},
     '/usr/local' => {},
+    '/opt'       => {'gitignore' => ['/opt/puppetlabs/']},
   };
 
   {
@@ -26,6 +27,7 @@ function confkeeper::data (
     confkeeper::collector::params::ssh_host_pubkey           => $ssh_host_pubkey,
     confkeeper::collector::params::wrapper_cron              => undef,
     confkeeper::collector::params::additional_exported_repos => {},
+    confkeeper::collector::params::allinone_readers          => [],
     confkeeper::collector::params::supported_distributions   => ['xenial'],
 
     confkeeper::provider::params::collection              => $default_collection,

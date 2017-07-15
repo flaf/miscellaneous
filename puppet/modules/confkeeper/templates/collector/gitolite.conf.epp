@@ -1,13 +1,20 @@
-<%-| Confkeeper::ExportedRepos $exported_repos |-%>
+<%-|
+  Confkeeper::ExportedRepos         $exported_repos,
+  Array[Confkeeper::AllinoneReader] $allinone_readers,
+|-%>
 ### This file is managed by Puppet, don't edit it. ###
 
 # The gitolite configuration.
 repo gitolite-admin
     RW+ = admin
 
+# The very special "All-in-one" repository.
 repo all-in-one
     RW+ = git
     RW+ = admin
+<%- $allinone_readers.each |$allinone_reader| { -%>
+    R   = <%= $allinone_reader['username'] %>
+<%- } -%>
 
 <%- $exported_repos.keys.sort.each |$fqdn| { -%>
   <%- $exported_repos[$fqdn]['repositories'].each |$localpath, $repository| { -%>
