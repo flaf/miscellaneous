@@ -2,9 +2,9 @@ class roles::confkeeper (
   Boolean $no_provider = false,
 ) {
 
-  # Frequent puppet runs for a confkeeper collector.
+  # Frequent (per day) puppet runs for a confkeeper collector.
   class { '::puppetagent::params':
-    cron => 'per-day',
+    cron => {'per-day' => {'hour' => 17, 'minute' => 30}},
   }
 
   # If this is the first time of the puppet run, there is no
@@ -22,7 +22,8 @@ class roles::confkeeper (
   include '::unix_accounts::params'
 
   $sudoers = $::unix_accounts::params::users.filter |$username, $settings| {
-    $is_sudo = ('is_sudo' in $settings) and $settings['is_sudo'] and ('ssh_authorized_keys' in $settings)
+    $is_sudo = ('is_sudo' in $settings) and $settings['is_sudo']
+               and ('ssh_authorized_keys' in $settings)
   }
 
   $allinone_readers = $sudoers.reduce([]) |$memo, $sudoer| {

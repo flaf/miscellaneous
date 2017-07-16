@@ -66,7 +66,7 @@ values:
 For a cron per day or per week, it's possible to force the
 minute and the hour of the cron task (and the weekday too
 for a cron per week). In these cases, you can set the
-parameter `cron` via a hash. For instance:
+parameter `cron` to a hash. For instance:
 
 ```puppet
 $cron = {
