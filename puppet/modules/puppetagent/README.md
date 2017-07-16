@@ -56,15 +56,42 @@ the client does some SSL operations. The default value of
 this parameter is the string `$server`, ie the CA server is
 the same as the puppetmaster.
 
-The `cron` parameter accepts only 3 values:
+The `cron` parameter can be a string with only 3 possible
+values:
 
 - `per-day` for per-day cron,
 - `per-week` for per-week cron,
 - `disabled`where no cron will run puppet.
 
-Its default value is `per-week`. The cron task do absolutely
-nothing if the file `${etcdir}/no-run-via-cron` exists (it's a
-basic way to temporarily disable the cron task).
+For a cron per day or per week, it's possible to force the
+minute and the hour of the cron task (and the weekday too
+for a cron per week). In these cases, you can set the
+parameter `cron` via a hash. For instance:
+
+```puppet
+$cron = {
+  'per-day' => {
+    'hour'   => 23, # Optional.
+    'minute' => 58, # Optional.
+  }
+}
+
+# With a cron per week, you can set the weekday too :
+$cron = {
+  'per-week' => {
+    'weekday' => 2   # Optional.
+    'hour'    => 23, # Optional.
+    'minute'  => 58, # Optional.
+  }
+}
+```
+
+With the hash form, if a key is not present (for instance
+`minute`), a random value will be used automatically. The
+default value of the `cron` parameter is `'per-week'` (ie
+just the string). The cron task do absolutely nothing if the
+file `${etcdir}/no-run-via-cron` exists (it's a basic way to
+temporarily disable the cron task).
 
 The `puppetconf_path` parameter is a non-empty string and
 its default value is `'/etc/puppetlabs/puppet/puppet.conf'`.

@@ -158,7 +158,18 @@ class puppetagent {
   # seed for the fqdn_rand() function.
   $seed = 'cron-puppet-run'
 
-  case $cron {
+  # The goal is to use a hash. For instance, if $cron == 'per-day'
+  # then $cron_hash will be equal to { 'per-day' => {} }.
+  $cron_hash = case ($cron =~ String[1]) {
+    true: {
+      {"${cron}" => {}}
+    }
+    false: {
+      $cron
+    }
+  }
+
+  case $cron_hash.keys[0] {
 
     'per-day': {
       $ensure_cron  = 'present'
@@ -169,7 +180,7 @@ class puppetagent {
     'per-week': {
       $ensure_cron  = 'present'
       $cron_enabled = true
-      $weekday      = fqdn_rand(7, $seed)
+      $weekday      = $cron_hash.dig('weekday').lest || {fqdn_rand(7, $seed)}
     }
 
     'disabled': {
@@ -217,8 +228,8 @@ class puppetagent {
     ensure  => $ensure_cron,
     user    => 'root',
     command => $cron_bin,
-    hour    => fqdn_rand(24, $seed),
-    minute  => fqdn_rand(60, $seed),
+    hour    => $cron_hash.dig('hour').lest   || {fqdn_rand(24, $seed)},
+    minute  => $cron_hash.dig('minute').lest || {fqdn_rand(60, $seed)},
     weekday => $weekday,
     require => File[$cron_bin],
   }
