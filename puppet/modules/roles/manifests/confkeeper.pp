@@ -30,9 +30,9 @@ class roles::confkeeper (
 
     [$login, $settings] = $sudoer
 
-    $keyname   = $settings['ssh_authorized_keys'][0]
-    $keytype   = $::unix_accounts::params::ssh_public_keys[$keyname]['type']
-    $keyvalue  = $::unix_accounts::params::ssh_public_keys[$keyname]['keyvalue']
+    $keyname    = $settings['ssh_authorized_keys'][0]
+    $keytype    = $::unix_accounts::params::ssh_public_keys[$keyname]['type']
+    $keyvalue   = $::unix_accounts::params::ssh_public_keys[$keyname]['keyvalue']
     $ssh_pubkey = "${keytype} ${keyvalue} ${keyname}"
 
     $memo + [{'username' => $login, 'ssh_pubkey' => $ssh_pubkey}]
