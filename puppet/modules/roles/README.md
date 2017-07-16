@@ -27,6 +27,7 @@ List of roles provided:
   to retrieve haproxy logs from moolb.
 * The role `proxmox` which has no parameter.
 * The role `httpproxy` which has no parameter.
+* [The role `confkeeper`](README-confkeeper.md)
 
 If a role has no parameter, there is no specific README and
 no detail. In this case, the code is the documentation.
