@@ -32,15 +32,27 @@ collector (via gitolite) and with the class
 host which will export its configuration (via etckeeper).
 
 
-
-
 # Usage
 
 Here is an example:
 
 ```puppet
-class { '::confkeeper':
-  # ...
+# For the collector.
+class { '::confkeeper::collector::params':
+  collection                => 'all',
+  address                   => $::facts['networking']['fqdn'],
+  ssh_host_pubkey           => $::facts['ssh']['rsa']['key'],
+  wrapper_cron              => undef,
+  additional_exported_repos => {},
+  allinone_readers          =>,
+}
+
+include '::confkeeper::collector'
+
+
+# For a provider.
+class { '::confkeeper::provider::params':
+  collection => 'all',
 }
 ```
 
