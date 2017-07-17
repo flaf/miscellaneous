@@ -25,7 +25,11 @@ exported_repos = {
 
 # Module description
 
-Module to export configurations in a server
+Module to export configurations in a server, the collector.
+With the class `confkeeper::collector`, you can install a
+collector (via gitolite) and with the class
+`confkeeper::provider`, you can install a provider, ie a
+host which will export its configuration (via etckeeper).
 
 
 
