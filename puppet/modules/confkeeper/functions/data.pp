@@ -13,8 +13,8 @@ function confkeeper::data (
                            'xenial',
                           ]
 
-  # By default, repositories are /etc and /usr/local with
-  # almost default settings.
+  # By default, repositories are /etc, /usr/local and /opt
+  # with almost default settings.
   $default_repositories = {
     '/etc'       => {'gitignore' => undef},
     '/usr/local' => {},

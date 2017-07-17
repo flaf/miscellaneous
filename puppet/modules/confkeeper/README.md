@@ -70,7 +70,34 @@ include '::confkeeper::provider'
 
 
 
-# Parameters
+# Parameters of the class `confkeeper::collector::params`
+
+The `collection` parameter is a string to define the set of
+providers that the collector will retrieve. In a given
+collection, it must have only one collector. It should have
+several providers but there is only one collector (a
+collector can be a provider too). The default value of this
+parameter is `'all'`.
+
+The `address` parameter is the address (fqdn or IP address
+etc.) of the collector. In fact, this parameter is not used
+at all by the collector. This parameter is used by the
+providers via the Puppetdb. This address is required by
+providers to push configurations. The default value of this
+parameter is `$facts['networking']['fqdn']` and normally you
+shouldn't change this value.
+
+The parameter `ssh_host_pubkey` is the value of a ssh host
+public key of the collector. This parameter is not used at
+all by the collector. This parameter is used by the
+providers via the Puppetdb to avoid warning concerning the
+fingerprint during a git push. The default value of this
+parameter is `$facts['ssh']['rsa']['key']` and normally you
+shouldn't change this value.
+
+The `wrapper_cron` parameter 
+
+
 
 TODO...
 
