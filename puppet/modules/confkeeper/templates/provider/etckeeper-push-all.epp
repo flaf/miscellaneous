@@ -168,8 +168,11 @@ do
     (
         cd "$dir"
 
-        if [ "$git_origin" != "$(git config --local --get remote.origin.url)" ]
+        current_git_origin=$(git config --local --get remote.origin.url || true)
+
+        if [ "$git_origin" != "$current_git_origin" ]
         then
+            [ -n "$current_git_origin" ] && git remote remove origin
             git remote add origin "$git_origin"
         fi
 
