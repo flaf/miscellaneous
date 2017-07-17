@@ -49,11 +49,22 @@ class { '::confkeeper::collector::params':
 
 include '::confkeeper::collector'
 
+$repositories = {
+  '/etc'       => {'gitignore' => undef},
+  '/usr/local' => {},
+  '/opt'       => {'gitignore' => ['/puppetlabs/']}, # exclude /opt/puppetlabs/
+}
 
 # For a provider.
 class { '::confkeeper::provider::params':
-  collection => 'all',
+  collection           => 'all',
+  repositories         => $repositories,
+  wrapper_cron         => undef,
+  fqdn                 => $::facts['networking']['fqdn'],
+  etckeeper_ssh_pubkey => $::facts['etckeeper_ssh_pubkey'],
 }
+
+include '::confkeeper::provider'
 ```
 
 
