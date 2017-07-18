@@ -32,6 +32,83 @@ collector (via gitolite) and with the class
 host which will export its configuration (via etckeeper).
 
 
+# The type `Confkeeper::GitRepositories`
+
+This data type represents a list of git repositories in a
+provider which will be copied in the collector. It's a hash
+where each key is the local path of a git directory (the
+path mustn't have a trailing slash). Here is an example of
+data type `Confkeeper::GitRepositories`:
+
+```puppet
+# Just for convenience:
+$fqdn = $facts['networking']['fqdn']
+
+$repositories = {
+  '/path/foo/bar' => {
+                      relapath    => "${fqdn}/path-foo-bar.git",
+                      permissions => [{'rights' => 'RW+', 'target' => "root@${fqdn}"}],
+                      gitignore   => [],
+                     },
+  '/etc'          => {
+                      gitignore   => undef
+                     },
+  '/usr/local'    => {
+                      # Use all default values.
+                     },
+  '/opt'          => {
+                      gitignore   => ['/puppetlabs/'] # exclude the directory /opt/puppetlabs/.
+                     },
+}
+```
+
+For each local repository (each key), the value has this
+structure:
+
+```puppet
+# Just for convenience:
+$fqdn = $facts['networking']['fqdn']
+
+
+{
+  # To define the remote origin URL of the git repository.
+  # With this value, the URL will be:
+  #
+  #     git@${collector_address}:aaa/foo.git
+  #
+  # This key is optional and, for the directory
+  # "/path/foo/bar" (for instance), its default value is:
+  #
+  #     ${fqdn}/path-foo-bar.git.
+  #
+  relapath    => 'aaa/foo.git',
+
+  # To define the gitolite permissions of the git
+  # repository. This key is optional and its default value
+  # is the value below where "root@${fqdn}" is a gitolite
+  # user which corresponds to a ssh key pair automatically
+  # created by Puppet in the provider and the public ssh key
+  # is automatically exported in the collector server.
+  permissions => [
+                  {'rights' => 'RW+', 'target' => "root@${fqdn}"},
+                 ],
+
+  # To define the content of the .gitignore in the git
+  # repository. It's an array where a element is a line in
+  # the .gitignore file. The key is optional and its default
+  # value is `[]` (an empty array) to have an empty
+  # .gitignore. The special value `undef` is possible: in
+  # this case, a default .gitignore file is created by
+  # etckeeper. This default .gitignore is relevant for the
+  # repository /etc but probably not for another directory.
+  gitignore   => [
+                  '*.pyc',
+                  '*.swp',
+                 ],
+```
+
+
+
 # Usage
 
 Here is an example:
