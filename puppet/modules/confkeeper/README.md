@@ -273,11 +273,10 @@ repositories).
 
 # Parameters of the class `confkeeper::provider::params`
 
-The `collection` parameter is a string to define the set in
-which the provider belongs to. In a given collection, it
-must have only one collector but it should have several
-providers of course. The default value of this parameter is
-`'all'`.
+The `collection` parameter is a string to define the set to
+which the provider belongs. In a given collection, it must
+have only one collector but it should have several providers
+of course. The default value of this parameter is `'all'`.
 
 The `repositories` parameter must match with the data type
 `Confkeeper::GitRepositories`. It defines the local git
@@ -327,3 +326,39 @@ provider and create a gitolite user related to this key.
 
 
 # The timing of puppet runs between the collector and the providers
+
+For a given collection, first, you have to install the
+collector. When the collector is installed and only when the
+collector is installed, you can install providers.
+
+1. During the first puppet run of a provider, the custom
+   fact `$facts['etckeeper_ssh_pubkey']` is loaded but the
+   ssh key is not created yet (indeed the key is created during
+   the puppet run *after* the loading of facts). So the fact is
+   `undef` during the first puppet run. The installation of the
+   provider is done but the provider will not be taken into
+   account by the collector because the custom fact
+   `$facts['etckeeper_ssh_pubkey']` is `undef` and this key is
+   required to create a gitolite user related to the
+   provider host in the collector.
+
+2. During the second puppet run of the provider, the custom
+   fact `$facts['etckeeper_ssh_pubkey']` is not undefined
+   (because the custom fact has been created during the first
+   puppet run). After this second puppet run, the provider is
+   candidate as provider by the collector.
+
+3. Now, during the puppet run in the collector, the git
+   repositories of the provider will be created and, after
+   that, commits and pushs will be possible in the provider
+   (via the cron task).
+
+In a provider, the cron task which commits and pushes in all
+local git repositories is launched daily at a random time
+between 18:00 and 23:59.
+
+In a collector, the cron task which collects all
+repositories of the collection in the all-in-one repository
+is launched daily at a random time between 01:00 to 06:59.
+
+
