@@ -1,28 +1,3 @@
-# TODO
-
-* Add a parameter to add specific gitolite account which will be "all-in-one.git" readers.
-* Make a completed readme file.
-
-
-```puppet
-exported_repos = {
-  fqdn1 => {
-    account      => 'root', # <= Optional, default is "root".
-    ssh_pubkey   => 'xxx....xxx',
-    repositories => {
-      '/path/foo/bar' => {
-        relapath    => 'fqdn1/path-foo-bar.git',                        # <= Opiotnal.
-        permissions => [{'rights' => 'RW+', 'target' => "root@fqdn1"}], # <= Optional.
-        gitignore   => [],                                              # <= Optional.
-      }
-      # ...
-    }
-  }
-  # ...
-
-}
-```
-
 # Module description
 
 Module to export configurations in a server, the collector.
@@ -32,10 +7,10 @@ collector (via gitolite) and with the class
 host which will export its configuration (via etckeeper).
 
 
-# The type `Confkeeper::GitRepositories`
+# The data type `Confkeeper::GitRepositories`
 
-This data type represents a list of git repositories in a
-provider which will be copied in the collector. It's a hash
+This data type represents a list of git repositories **in a
+provider** which will be copied in the collector. It's a hash
 where each key is the local path of a git directory (the
 path mustn't have a trailing slash). Here is an example of
 data type `Confkeeper::GitRepositories`:
@@ -51,18 +26,18 @@ $repositories = {
                       gitignore   => [],
                      },
   '/etc'          => {
-                      gitignore   => undef
+                      gitignore   => undef,
                      },
   '/usr/local'    => {
                       # Use all default values.
                      },
   '/opt'          => {
-                      gitignore   => ['/puppetlabs/'] # exclude the directory /opt/puppetlabs/.
+                      gitignore   => ['/puppetlabs/'], # exclude the directory /opt/puppetlabs/.
                      },
 }
 ```
 
-For each local repository (each key), the value has this
+For each local repository (ie each key), the value has this
 structure:
 
 ```puppet
@@ -108,24 +83,115 @@ $fqdn = $facts['networking']['fqdn']
 ```
 
 
+# The data type `Confkeeper::ExportedRepos`
+
+This data type represents a list of git repositories **in the
+collector**. It's a hash where each key is the fqdn of a host
+and each value is the repositories provided by the host. Here
+is an example of the structure:
+
+```puppet
+# We assume that These variables match with `Confkeeper::GitRepositories`.
+$repositories_srv_1 = ...
+$repositories_srv_2 = ...
+
+$exported_repos = {
+  'srv-1.dom.tld' => {
+    account      => 'root', # Optional.
+    ssh_pubkey   => 'ssh-rsa AAAA3aC1yc2E...Ip root@srv-1.dom.tld',
+    repositories => $repositories_srv_1,
+  }
+  'srv-2.dom.tld' => {
+    account      => 'root', # Optional.
+    ssh_pubkey   => 'ssh-rsa AAAA3dd1ye2a...mL root@srv-2.dom.tld',
+    repositories => $repositories_srv_2,
+  }
+}
+```
+
+For each fqdn (each key), the `account` key is optional. If
+not present, the default value is `'root'`. The `ssh_pubkey`
+value is the content of a ssh public key (for instance the
+complete content of a file `id_rsa.pub`). For instance with
+the `repositories` value `$repositories_srv_1` above, the
+gitolite user `root@srv-1.dom.tld` (ie `<account>@<fqdn>`)
+will be created in the collector related to the ssh public
+key given by the `ssh_pubkey` value (which will be created
+too in the collector).
+
+
+# The data type `Confkeeper::AllinoneReader`
+
+This data type represents a gitolite user which will be able
+to read all git repositories in the collector, except the
+specific git repository `gitolite-admin` only readable (and
+writable) by the `admin` gitolite user. Here is an example
+of the structure:
+
+```puppet
+$a_all_in_on_reader = {
+  username   => 'bob',
+  ssh_pubkey => 'ssh-rsa AAAA3dd1ye2a...mL bob@my.desktop.tld',
+}
+```
+
+Each key is required. The `usernmae` value can't be `admin`
+and `git` which are reserved. The `ssh_pubkey` value is the
+content of a ssh public key (for instance the complete
+content of a file `id_rsa.pub`).
+
 
 # Usage
 
 Here is an example:
 
 ```puppet
-# For the collector.
+# Additional exported git repositories for hosts where
+# Puppet is not available.
+$additional_exported_repos = {
+  'old-srv1.dom.tld' => {
+    account      => 'root',
+    ssh_pubkey   => 'ssh-rsa AAAA3aC1yc2E...Ip root@old-srv1.dom.tld',
+    repositories => {
+                      '/etc'       => {},
+                      '/usr/local' => {},
+                      '/opt'       => {},
+                    },
+  }
+  'switch1.dom.tld' => {
+    account      => 'admin',
+    ssh_pubkey   => 'ssh-rsa AAAATaa1ycEd...yt root@oswitch1.dom.tld',
+    repositories => {
+                      '/config' => {},
+                    },
+  }
+}
+
+$allinone_readers = [
+  {
+    username   => 'bob',
+    ssh_pubkey => 'ssh-rsa AAAA3dd1ye2a...mL bob@my.desktop.tld',
+  },
+  {
+    username   => 'alice',
+    ssh_pubkey => 'ssh-rsa AAAAy7u1eeDt...pL alice@my.desktop.tld',
+  },
+}
+
+# 1. For the collector.
 class { '::confkeeper::collector::params':
   collection                => 'all',
   address                   => $::facts['networking']['fqdn'],
   ssh_host_pubkey           => $::facts['ssh']['rsa']['key'],
   wrapper_cron              => undef,
-  additional_exported_repos => {},
-  allinone_readers          =>,
+  additional_exported_repos => $additional_exported_repos,
+  allinone_readers          => $allinone_readers,
 }
 
 include '::confkeeper::collector'
 
+
+# 2. For the provider.
 $repositories = {
   '/etc'       => {'gitignore' => undef},
   '/usr/local' => {},
@@ -143,8 +209,6 @@ class { '::confkeeper::provider::params':
 
 include '::confkeeper::provider'
 ```
-
-
 
 
 # Parameters of the class `confkeeper::collector::params`
