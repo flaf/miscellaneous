@@ -280,10 +280,10 @@ must have only one collector but it should have several
 providers of course. The default value of this parameter is
 `'all'`.
 
-The `repositories` parameter must match with the data
-type `Confkeeper::GitRepositories`. It defines the local
-git repositories which will be daily commited and pushed in the remote collector.
-Its default value is:
+The `repositories` parameter must match with the data type
+`Confkeeper::GitRepositories`. It defines the local git
+repositories which will be daily commited and pushed in the
+remote collector. Its default value is:
 
 ```puppet
 {
@@ -317,5 +317,13 @@ The default value of this parameter is
 `$::facts['networking']['fqdn']` and you should probably not
 change this value.
 
+The `etckeeper_ssh_pubkey` parameter is not used in the
+`provider` class. It's the ssh public key used by the
+provider to push its local git repository. The default value
+of this parameter is `$facts['etckeeper_ssh_pubkey']` which
+is a custom fact of this module and you shouldn't change
+this value. In fact, this parameter is used by the collector
+via Puppetdb to retrieve the ssh public key used by the
+provider and create a gitolite user related to this key.
 
 
