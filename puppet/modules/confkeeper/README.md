@@ -198,7 +198,6 @@ $repositories = {
   '/opt'       => {'gitignore' => ['/puppetlabs/']}, # exclude /opt/puppetlabs/
 }
 
-# For a provider.
 class { '::confkeeper::provider::params':
   collection           => 'all',
   repositories         => $repositories,
@@ -327,3 +326,4 @@ via Puppetdb to retrieve the ssh public key used by the
 provider and create a gitolite user related to this key.
 
 
+# The timing of puppet runs between the collector and the providers
