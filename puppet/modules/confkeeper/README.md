@@ -42,7 +42,7 @@ structure:
 
 ```puppet
 # Just for convenience:
-$fqdn = $facts['networking']['fqdn']
+$fqdn = $::confkeeper::provider::params::fqdn
 
 
 {
@@ -216,9 +216,9 @@ include '::confkeeper::provider'
 The `collection` parameter is a string to define the set of
 providers that the collector will retrieve. In a given
 collection, it must have only one collector. It should have
-several providers but there is only one collector (a
-collector can be a provider too). The default value of this
-parameter is `'all'`.
+several providers but there is only one collector for a
+given collection (a collector can be a provider too). The
+default value of this parameter is `'all'`.
 
 The `address` parameter is the address (fqdn or IP address
 etc.) of the collector. In fact, this parameter is not used
@@ -236,10 +236,86 @@ fingerprint during a git push. The default value of this
 parameter is `$facts['ssh']['rsa']['key']` and normally you
 shouldn't change this value.
 
-The `wrapper_cron` parameter 
+The `wrapper_cron` parameter can be useful for the cron task
+which is launched daily to put all git repositories (except
+the specific repository `gitolite-admin`) in a unique and
+special all-in-one and non-bare git repository. It's just
+for convenience. The parameter `wrapper_cron`, if defined,
+allows to add a wrapper script to monitor the cron task. The
+default value of this parameter is `undef`. In this case,
+the cron task has no wrapper script.
+
+Concerning the all-in-one repository:
+
+```
+local path: /home/git/all-in-one.git
+URL:        git@${address-of-the-collector}:all-in-one.git
+```
+
+The `additional_exported_repos` allows to add "manual"
+repositories. Indeed, the collector in the collection `$foo`
+retrieves by default all the git repositories from all the
+providers in the same collection. But sometimes, you want to
+add git repositories from hosts where puppet is not
+installed. This is the goal of the parameter
+`additional_exported_repos` which must match with the data
+type `Confkeeper::ExportedRepos`. Its default value is `{}`
+ie no additional git repository.
+
+The `allinone_readers` parameter allows to add gitolite
+users which will be able to read (not able to write) the
+"all-in-one" repository. This parameter must match with
+`Array[Confkeeper::AllinoneReader]` and its default value is
+`[]` ie no "all-in-one" reader (except `git` which is the
+account used to created this "all-in-one" repository and the
+user `gitolite-admin` which can read and write in all
+repositories).
 
 
+# Parameters of the class `confkeeper::provider::params`
 
-TODO...
+The `collection` parameter is a string to define the set in
+which the provider belongs to. In a given collection, it
+must have only one collector but it should have several
+providers of course. The default value of this parameter is
+`'all'`.
+
+The `repositories` parameter must match with the data
+type `Confkeeper::GitRepositories`. It defines the local
+git repositories which will be daily commited and pushed in the remote collector.
+Its default value is:
+
+```puppet
+{
+  '/etc'       => {'gitignore' => undef},
+  '/usr/local' => {},
+  '/opt'       => {'gitignore' => ['/puppetlabs/']},
+}
+```
+
+The repository `/usr/local` is special because, before the
+commit-and-push, all the bash histories (in
+`/root/.bash_history` and in `/home/*/.bash_history`) are
+copied in `/usr/local/bash-history/`.
+
+The `wrapper_cron` parameter can be useful for the cron task
+which is launched daily to commit and push all the local
+git repositories of the provider. The parameter
+`wrapper_cron`, if defined, allows to add a wrapper script
+to monitor this cron task. The default value of this
+parameter is `undef`. In this case, the cron task has no
+wrapper script.
+
+The `fqdn` parameter is not really used by the provider
+except for some default values of the `repositories`
+parameter. The parameter is mostly used by the collector to
+sort the remote git repositories in specific directories.
+For instance, all the git repositories of the provider where
+the `fqdn` parameter is equal to `srv1.dom.tld` will be put
+in the directory `/home/git/srv1.dom.tld/` in the provider.
+The default value of this parameter is
+`$::facts['networking']['fqdn']` and you should probably not
+change this value.
+
 
 
