@@ -19,7 +19,8 @@ class roles::generic (
     '::mcollective::server',
     '::snmp',
     '::autoupgrade',
-    '::confkeeper::provider',
+    # Currently not in production.
+    #'::confkeeper::provider',
   ],
   Array[String[1]] $included_classes = $authorized_classes,
   Array[String[1]] $excluded_classes = [],
