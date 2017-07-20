@@ -169,7 +169,9 @@ class puppetagent {
     }
   }
 
-  case $cron_hash.keys[0] {
+  $cron_key = $cron_hash.keys[0]
+
+  case $cron_key {
 
     'per-day': {
       $ensure_cron  = 'present'
@@ -180,7 +182,7 @@ class puppetagent {
     'per-week': {
       $ensure_cron  = 'present'
       $cron_enabled = true
-      $weekday      = $cron_hash.dig('weekday').lest || {fqdn_rand(7, $seed)}
+      $weekday      = $cron_hash.dig($cron_key, 'weekday').lest || {fqdn_rand(7, $seed)}
     }
 
     'disabled': {
@@ -228,8 +230,8 @@ class puppetagent {
     ensure  => $ensure_cron,
     user    => 'root',
     command => $cron_bin,
-    hour    => $cron_hash.dig('hour').lest   || {fqdn_rand(24, $seed)},
-    minute  => $cron_hash.dig('minute').lest || {fqdn_rand(60, $seed)},
+    hour    => $cron_hash.dig($cron_key, 'hour').lest   || {fqdn_rand(24, $seed)},
+    minute  => $cron_hash.dig($cron_key, 'minute').lest || {fqdn_rand(60, $seed)},
     weekday => $weekday,
     require => File[$cron_bin],
   }
