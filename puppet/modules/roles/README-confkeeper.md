@@ -19,6 +19,6 @@ If this is the first time of the puppet run, there is no
 collector server (the collector will be UP after this first
 puppet run), so you have to install first the collector
 without the "provider" installation part. So you have to set
-this parameter to `true` for the first puppet run.
+this parameter to `true` for the first puppet run only.
 
 
