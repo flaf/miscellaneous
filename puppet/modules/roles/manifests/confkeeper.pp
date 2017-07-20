@@ -40,7 +40,7 @@ class roles::confkeeper (
   }
 
   class { '::confkeeper::collector::params':
-    wrapper_cron     => ::roles::wrap_cron_mon('collect-all-git-repos'),
+    wrapper_cron     => ::roles::wrap_cron_mon('update-all-in-one'),
     allinone_readers => $allinone_readers,
   }
 

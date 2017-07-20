@@ -205,7 +205,7 @@ $repositories = {
 class { '::confkeeper::provider::params':
   collection           => 'all',
   repositories         => $repositories,
-  wrapper_cron         => '/usr/bin/wrapper_cron --name push-all-repos --',
+  wrapper_cron         => '/usr/bin/wrapper_cron --name etckeeper-push-all --',
   fqdn                 => $::facts['networking']['fqdn'],
   etckeeper_ssh_pubkey => $::facts['etckeeper_ssh_pubkey'],
 }
