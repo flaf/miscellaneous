@@ -39,12 +39,25 @@ class roles::confkeeper (
 
   }
 
+  $cron_all_in_one_name = 'update-all-in-one'
+
   class { '::confkeeper::collector::params':
-    wrapper_cron     => ::roles::wrap_cron_mon('update-all-in-one'),
+    wrapper_cron     => ::roles::wrap_cron_mon($cron_all_in_one_name),
     allinone_readers => $allinone_readers,
   }
 
   include '::confkeeper::collector'
+
+  # The cron task which updates the all-in-one git
+  # repository is launched by git not root, so the file in
+  # /usr/local/cron-status/ must be created.
+  file { "/usr/local/cron-status/${cron_all_in_one_name}":
+    ensure  => 'file',
+    owner   => 'git',
+    group   => 'staff',
+    mode    => '0644',
+    require => Class['::confkeeper::collector'],
+  }
 
 }
 
