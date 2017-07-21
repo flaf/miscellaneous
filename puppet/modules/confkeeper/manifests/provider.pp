@@ -6,6 +6,7 @@ class confkeeper::provider {
     $collection,
     $repositories,
     $wrapper_cron,
+    $devnull_cron,
     $fqdn,
     $supported_distributions,
     #
@@ -205,9 +206,13 @@ class confkeeper::provider {
 
   } # End: initialization of the repositories.
 
-  $cron_cmd = case $wrapper_cron {
-    Undef:   { '/usr/local/sbin/etckeeper-push-all'                 }
-    default: { "${wrapper_cron} /usr/local/sbin/etckeeper-push-all" }
+  $cmd_push_all = '/usr/local/sbin/etckeeper-push-all'
+
+  $cron_cmd = case [$wrapper_cron, $devnull_cron] {
+    [Undef, false]:  { "${cmd_push_all}"                                 }
+    [Undef, true]:   { "${cmd_push_all} >/dev/null 2>&1"                 }
+    [String, false]: { "${wrapper_cron} ${cmd_push_all}"                 }
+    [String, true]:  { "${wrapper_cron} ${cmd_push_all} >/dev/null 2>&1" }
   }
 
   $seed = 'etckeeper-push-all'

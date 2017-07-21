@@ -206,6 +206,7 @@ class { '::confkeeper::provider::params':
   collection           => 'all',
   repositories         => $repositories,
   wrapper_cron         => '/usr/bin/wrapper_cron --name etckeeper-push-all --',
+  devnull_cron         => true,
   fqdn                 => $::facts['networking']['fqdn'],
   etckeeper_ssh_pubkey => $::facts['etckeeper_ssh_pubkey'],
 }
@@ -248,6 +249,10 @@ for convenience. The parameter `wrapper_cron`, if defined,
 allows to add a wrapper script to monitor the cron task. The
 default value of this parameter is `undef`: in this case,
 the cron task has no wrapper script.
+
+The `devnull_cron` parameter is a boolean to add
+`">/dev/null 2>&1"` to the cron task. Its default value is
+`true`.
 
 Concerning the all-in-one repository:
 

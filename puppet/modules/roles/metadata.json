@@ -1,6 +1,6 @@
 {
   "name": "flaf-roles",
-  "version": "0.19.4",
+  "version": "0.19.5",
   "author": "flaf",
   "summary": "Module to implement roles, ie very top level classes",
   "license": "Apache-2.0",
@@ -35,7 +35,7 @@
     {"name":"flaf-httpproxy","version_requirement":"0.1.2"},
     {"name":"flaf-simplekeepalived","version_requirement":"0.1.1"},
     {"name":"flaf-autoupgrade","version_requirement":"0.1.3"},
-    {"name":"flaf-confkeeper","version_requirement":"0.1.2"},
+    {"name":"flaf-confkeeper","version_requirement":"0.1.3"},
     {"name":"olecam-keepalived_vip","version_requirement":"0.3.4"}
   ]
 }
