@@ -72,6 +72,7 @@ chmod 600 "$puppetdb_gz"
 tar -zcf "$targzfile" /etc "$puppetdb_backup_dir" 2>/dev/null
 mcrypt --config "$config" --quiet "$targzfile"
 rm "$targzfile"
+rm "$puppetdb_gz"
 chown ppbackup:ppbackup "${targzfile}.nc"
 
 # We remove backups older than 100 days.

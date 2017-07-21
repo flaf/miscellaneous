@@ -183,7 +183,7 @@ do
 
         if etckeeper unclean -d "$dir"
         then
-            etckeeper commit -d "$dir" "Automatic commit via ${SCRIPT_NAME}"
+            etckeeper commit -d "$dir" "Automatic commit via ${SCRIPT_NAME}" || true
             timeout --signal TERM --kill-after 40s 20s git push origin master
         fi
     )
