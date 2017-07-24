@@ -171,6 +171,36 @@ class puppetagent {
 
   $cron_key = $cron_hash.keys[0]
 
+  unless $cron_hash.dig($cron_key, 'hour_range') =~ Undef {
+    $range = $cron_hash[$cron_key]['hour_range']
+    $min   = $range[0]
+    $max   = $range[1]
+    unless $min < $max {
+      @("END"/L$).fail
+        Class ${title}: in the `cron` parameter of the params class \
+        has a value for the key `hour_range` which is not correct \
+        because the first element must be strictly lower than the second.
+        |-END
+    }
+  }
+
+  $cron_hour = $cron_hash.dig($cron_key, 'hour').lest || {
+    if $cron_hash.dig($cron_key, 'hour_range') =~ Undef {
+      fqdn_rand(24, $seed)
+    } else {
+      $range = $cron_hash[$cron_key]['hour_range']
+      $min   = $range[0]
+      $max   = $range[1]
+      $min + fqdn_rand($max-$min, $seed)
+    }
+  }
+
+  $final_cron_params = {
+    'hour'    => $cron_hour,
+    'minute'  => $cron_hash.dig($cron_key, 'minute').lest || {fqdn_rand(60, $seed)},
+    'weekday' => $cron_hash.dig($cron_key, 'weekday').lest || {fqdn_rand(7, $seed)},
+  }
+
   case $cron_key {
 
     'per-day': {
@@ -182,7 +212,7 @@ class puppetagent {
     'per-week': {
       $ensure_cron  = 'present'
       $cron_enabled = true
-      $weekday      = $cron_hash.dig($cron_key, 'weekday').lest || {fqdn_rand(7, $seed)}
+      $weekday      = $final_cron_params['weekday']
     }
 
     'disabled': {
@@ -230,17 +260,17 @@ class puppetagent {
     ensure  => $ensure_cron,
     user    => 'root',
     command => $cron_bin,
-    hour    => $cron_hash.dig($cron_key, 'hour').lest   || {fqdn_rand(24, $seed)},
-    minute  => $cron_hash.dig($cron_key, 'minute').lest || {fqdn_rand(60, $seed)},
+    hour    => $final_cron_params['hour'],
+    minute  => $final_cron_params['minute'],
     weekday => $weekday,
     require => File[$cron_bin],
   }
 
   file { '/usr/local/sbin/upgrade-puppet-agent.puppet':
-    ensure => present,
-    owner  => 'root',
-    group  => 'root',
-    mode   => '0750',
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0750',
     content => epp( 'puppetagent/upgrade-puppet-agent.puppet.epp',
                     {
                       'cron_enabled'     => $cron_enabled,

@@ -59,8 +59,8 @@ the same as the puppetmaster.
 The `cron` parameter can be a string with only 3 possible
 values:
 
-- `per-day` for per-day cron,
-- `per-week` for per-week cron,
+- `per-day` for per-day cron  (hour and minute chosen randomly),
+- `per-week` for per-week cron (hour, minute and weekday chosen randomly),
 - `disabled`where no cron will run puppet.
 
 For a cron per day or per week, it's possible to force the
@@ -85,6 +85,26 @@ $cron = {
   }
 }
 ```
+
+For the hour, you can force just a range with the key
+`'hour_range'`. For instance:
+
+```puppet
+# One puppet run per week somewhere between 21:00 and 22:59
+# (23:00 is excluded). "minute" and "weekday" are chosen
+# randomly.
+$cron = {
+  'per-week' => {
+    'hour_range' => [21, 23], # Optional.
+    #'weekday'   => 1,        # If you want to fore the weekday etc.
+  }
+}
+```
+
+The keys `'hour_range'` and `'hour'` can be present
+simultaneously, in this case the value of `'hour'` takes the
+precedence (and the value of `'hour_range'` is just
+ignored).
 
 With the hash form, if a key is not present (for instance
 `minute`), a random value will be used automatically. The
