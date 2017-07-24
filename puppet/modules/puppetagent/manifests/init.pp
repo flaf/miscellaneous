@@ -177,9 +177,9 @@ class puppetagent {
     $max   = $range[1]
     unless $min < $max {
       @("END"/L$).fail
-        Class ${title}: in the `cron` parameter of the params class \
-        has a value for the key `hour_range` which is not correct \
-        because the first element must be strictly lower than the second.
+        Class ${title}: the `cron` parameter of the `params` class has \
+        a value for the key `hour_range` which is not correct because \
+        the first element must be strictly lower than the second.
         |-END
     }
   }
