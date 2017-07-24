@@ -19,8 +19,8 @@ class roles::generic (
     '::mcollective::server',
     '::snmp',
     '::autoupgrade',
-    # Currently not in production.
-    #'::confkeeper::provider',
+    # Currently not in production, just for few hosts.
+    '::confkeeper::provider',
   ],
   Array[String[1]] $included_classes = $authorized_classes,
   Array[String[1]] $excluded_classes = [],
@@ -373,11 +373,24 @@ class roles::generic (
       ############################
       '::confkeeper::provider': {
 
-        class { '::confkeeper::provider::params':
-          wrapper_cron => ::roles::wrap_cron_mon('etckeeper-push-all'),
-        }
+        $test_providers = [
+          'cargo02.dc2.backbone.education',
+          'confkeeper.lss1.backbone.education',
+          'elea-builder.dc2.backbone.education',
+          'lemming.lss1.backbone.education',
+          'pmx-1.lss1.backbone.education',
+          'puppet.lss1.backbone.education',
+          'puppetforge.lss1.backbone.education',
+          'wproxy-eleapoc.mly.backbone.education',
+        ]
 
-        include '::confkeeper::provider'
+        if $::facts['networking']['fqdn'] in $test_providers {
+          class { '::confkeeper::provider::params':
+            wrapper_cron => ::roles::wrap_cron_mon('etckeeper-push-all'),
+          }
+
+          include '::confkeeper::provider'
+        }
 
       }
 
