@@ -40,8 +40,8 @@ class autoupgrade {
   }
 
   $final_hour = $hour.lest || {
-    $min = $range[0]
-    $max = $range[1]
+    $min = $hour_range[0]
+    $max = $hour_range[1]
     $min + fqdn_rand($max-$min, 'upgradereboot-hour')
   }
 
