@@ -10,9 +10,12 @@ A module to upgrade and reboot a host automatically.
 Here is an example:
 
 ```puppet
+$seed = 'autoupgrade-puppet'
+
 class { '::autoupgrade::params':
   apply                  => true,
-  hour                   => fqdn_rand(6, $seed),  # from 0 to 5.
+  hour_range             => [0, 5],
+  hour                   => undef,
   minute                 => fqdn_rand(60, $seed), # from 0 to 59.
   monthday               => absent,               # ie * (any day of the month).
   month                  => absent,               # ie * (any month).
@@ -42,7 +45,14 @@ are enabled. The default value of this parameter is `false`.
 The parameters `hour`, `minute`, `monthday`, `month` and
 `weekday` define when the upgrade cron task is launched. The
 default values of these parameters are displayed in the
-example above (ie one automatic upgrade peer week).
+example above (ie one automatic upgrade peer week). The
+default value of `hour` is `undef`. In this case, the hour
+of the cron task is chosen randomly in the range given by
+the parameter `hour_range`. For instance, with the value
+`[0, 5]`, which is the default, the hour of the cron can be
+0, 1, 2, 3 or 4 (5 is excluded). If the value of the `hour`
+parameter is not `undef`, its value takes the precedence
+and the parameter `hour_range` is ignored.
 
 The boolean `reboot` tells if the node must reboot after
 each automatic upgrade. If set to `true`, the default, a

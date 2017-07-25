@@ -4,6 +4,7 @@ class autoupgrade {
 
   [
     $apply,
+    $hour_range,
     $hour,
     $minute,
     $monthday,
@@ -25,6 +26,24 @@ class autoupgrade {
   ] = Class['::autoupgrade::params']
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
+
+  with($hour_range) |$range| {
+    $min = $range[0]
+    $max = $range[1]
+    unless $min < $max {
+      @("END"/L$).fail
+        Class ${title}: the `hour_range` parameter of the `params` \
+        is not correct because the first element must be strictly \
+        lower than the second.
+        |-END
+    }
+  }
+
+  $final_hour = $hour.lest || {
+    $min = $range[0]
+    $max = $range[1]
+    $min + fqdn_rand($max-$min, 'upgradereboot-hour')
+  }
 
   case $apply {
     true: {
@@ -74,7 +93,7 @@ class autoupgrade {
     ensure   => $ensure_cron,
     user     => 'root',
     command  => $cron_cmd,
-    hour     => $hour,
+    hour     => $final_hour,
     minute   => $minute,
     monthday => $monthday,
     month    => $month,

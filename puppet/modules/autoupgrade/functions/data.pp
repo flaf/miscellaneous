@@ -12,7 +12,8 @@ function autoupgrade::data (
 
   {
     autoupgrade::params::apply                   => false,
-    autoupgrade::params::hour                    => fqdn_rand(6, $seed),  # from 0 to 5.
+    autoupgrade::params::hour_range              => [0, 5],
+    autoupgrade::params::hour                    => undef,
     autoupgrade::params::minute                  => fqdn_rand(60, $seed), # from 0 to 59.
     autoupgrade::params::monthday                => absent,               # ie * (any day of the month).
     autoupgrade::params::month                   => absent,               # ie * (any month).

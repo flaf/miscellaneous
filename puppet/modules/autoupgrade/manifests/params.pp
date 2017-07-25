@@ -1,5 +1,6 @@
 class autoupgrade::params (
   Boolean                         $apply,
+  Array[Integer[0, 24], 2, 2]     $hour_range,
   Data                            $hour,
   Data                            $minute,
   Data                            $monthday,
