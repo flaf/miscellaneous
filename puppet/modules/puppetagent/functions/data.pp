@@ -22,6 +22,7 @@ function puppetagent::data (
     puppetagent::params::server            => $server,
     puppetagent::params::ca_server         => '$server',
     puppetagent::params::cron              => 'per-week',
+    puppetagent::params::cron_hour_range   => [0, 24],
     puppetagent::params::puppetconf_path   => "${etcdir}/puppet.conf",
     puppetagent::params::manage_puppetconf => true,
     puppetagent::params::dedicated_log     => true,

@@ -8,6 +8,7 @@ class puppetagent {
     $server,
     $ca_server,
     $cron,
+    $cron_hour_range,
     $puppetconf_path,
     $manage_puppetconf,
     $dedicated_log,
@@ -22,6 +23,18 @@ class puppetagent {
   ] = Class['::puppetagent::params']
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
+
+  with($cron_hour_range) |$range| {
+    $min   = $range[0]
+    $max   = $range[1]
+    unless $min < $max {
+      @("END"/L$).fail
+        Class ${title}: the `cron_hour_range` parameter of the `params` \
+        is not correct because the first element must be strictly lower \
+        than the second.
+        |-END
+    }
+  }
 
   $ensure_dedicated_log = case $dedicated_log {
     true:    { 'file'   }
@@ -171,28 +184,10 @@ class puppetagent {
 
   $cron_key = $cron_hash.keys[0]
 
-  unless $cron_hash.dig($cron_key, 'hour_range') =~ Undef {
-    $range = $cron_hash[$cron_key]['hour_range']
-    $min   = $range[0]
-    $max   = $range[1]
-    unless $min < $max {
-      @("END"/L$).fail
-        Class ${title}: the `cron` parameter of the `params` class has \
-        a value for the key `hour_range` which is not correct because \
-        the first element must be strictly lower than the second.
-        |-END
-    }
-  }
-
   $cron_hour = $cron_hash.dig($cron_key, 'hour').lest || {
-    if $cron_hash.dig($cron_key, 'hour_range') =~ Undef {
-      fqdn_rand(24, $seed)
-    } else {
-      $range = $cron_hash[$cron_key]['hour_range']
-      $min   = $range[0]
-      $max   = $range[1]
-      $min + fqdn_rand($max-$min, $seed)
-    }
+    $min = $cron_hour_range[0]
+    $max = $cron_hour_range[1]
+    $min + fqdn_rand($max-$min, $seed)
   }
 
   $final_cron_params = {

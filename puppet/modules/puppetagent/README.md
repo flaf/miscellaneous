@@ -15,7 +15,8 @@ class { '::puppetagent::params':
   runinterval       => '7d',
   server            => 'puppet4.mydomain.tld',
   ca_server         => '$server',
-  cron              => 'per-week',
+  cron              => {'per-week' => {}},
+  cron_hour_range   => [10, 15],
   puppetconf_path   => '/etc/puppetlabs/puppet/puppet.conf',
   manage_puppetconf => true,
   dedicated_log     => true,
@@ -86,32 +87,22 @@ $cron = {
 }
 ```
 
-For the hour, you can force just a range with the key
-`'hour_range'`. For instance:
-
-```puppet
-# One puppet run per week somewhere between 21:00 and 22:59
-# (23:00 is excluded). "minute" and "weekday" are chosen
-# randomly.
-$cron = {
-  'per-week' => {
-    'hour_range' => [21, 23], # Optional.
-    #'weekday'   => 1,        # If you want to fore the weekday etc.
-  }
-}
-```
-
-The keys `'hour_range'` and `'hour'` can be present
-simultaneously, in this case the value of `'hour'` takes the
-precedence (and the value of `'hour_range'` is just
-ignored).
-
 With the hash form, if a key is not present (for instance
 `minute`), a random value will be used automatically. The
 default value of the `cron` parameter is `'per-week'` (ie
 just the string). The cron task do absolutely nothing if the
 file `${etcdir}/no-run-via-cron` exists (it's a basic way to
 temporarily disable the cron task).
+
+For the random hour, you can force a range with the
+parameter `cron_hour_range`. For instance with
+`cron_hour_range => [10, 22]`, the hour of the cron will be
+chosen between 10:00 and 22:00 (21:59 in fact). The default
+value of this parameter is `[0, 24]`.
+
+If the key `'hour'` is present in the `cron` parameter, the
+value of `'hour'` takes the precedence (and the value of the
+`cron_hour_range` parameter is just ignored).
 
 The `puppetconf_path` parameter is a non-empty string and
 its default value is `'/etc/puppetlabs/puppet/puppet.conf'`.

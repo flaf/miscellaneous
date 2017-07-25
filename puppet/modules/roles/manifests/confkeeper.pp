@@ -4,7 +4,7 @@ class roles::confkeeper (
 
   # Frequent (per day) puppet runs for a confkeeper collector.
   class { '::puppetagent::params':
-    cron => {'per-day' => {'hour' => 17, 'minute' => 30}},
+    cron => {'per-day' => {}},
   }
 
   # If this is the first time of the puppet run, there is no
