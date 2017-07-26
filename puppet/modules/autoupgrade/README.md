@@ -52,7 +52,8 @@ the parameter `hour_range`. For instance, with the value
 `[0, 5]`, which is the default, the hour of the cron can be
 0, 1, 2, 3 or 4 (5 is excluded). If the value of the `hour`
 parameter is not `undef`, its value takes the precedence
-and the parameter `hour_range` is ignored.
+but, if it's an integer, it must belong to the range given
+by the value of the parameter `hour_range`.
 
 The boolean `reboot` tells if the node must reboot after
 each automatic upgrade. If set to `true`, the default, a

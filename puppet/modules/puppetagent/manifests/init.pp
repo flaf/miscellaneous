@@ -29,7 +29,7 @@ class puppetagent {
     $max   = $range[1]
     unless $min < $max {
       @("END"/L$).fail
-        Class ${title}: the `cron_hour_range` parameter of the `params` \
+        Class ${title}: the `cron_hour_range` parameter of the `params` class \
         is not correct because the first element must be strictly lower \
         than the second.
         |-END
@@ -183,6 +183,21 @@ class puppetagent {
   }
 
   $cron_key = $cron_hash.keys[0]
+
+  # If defined, the hour must be in the "hour" range.
+  with($cron_hash.dig($cron_key, 'hour')) |$hour| {
+    if $hour !~ Undef {
+      $min = $cron_hour_range[0]
+      $max = $cron_hour_range[1]
+      unless ($min <= $hour) and ($hour < $max) {
+        @("END"/L$).fail
+          Class ${title}: the `cron` parameter of the `params` class \
+          defines an hour (${hour}) which does not belong to the range \
+          given by the parameter `cron_hour_range` ie [$min, $max[.
+          |-END
+      }
+    }
+  }
 
   $cron_hour = $cron_hash.dig($cron_key, 'hour').lest || {
     $min = $cron_hour_range[0]

@@ -32,10 +32,25 @@ class autoupgrade {
     $max = $range[1]
     unless $min < $max {
       @("END"/L$).fail
-        Class ${title}: the `hour_range` parameter of the `params` \
+        Class ${title}: the `hour_range` parameter of the `params` class \
         is not correct because the first element must be strictly \
         lower than the second.
         |-END
+    }
+  }
+
+  # If it's an integer, the hour must be in the "hour" range.
+  with($hour, $hour_range) |$hour, $range| {
+    if $hour =~ Integer[0, 23] {
+      $min = $range[0]
+      $max = $range[1]
+      unless ($min <= $hour) and ($hour < $max) {
+        @("END"/L$).fail
+          Class ${title}: the `hour` parameter of the `params` class \
+          defines an hour (${hour}) which does not belong to the range \
+          given by the parameter `hour_range` ie [$min, $max[.
+          |-END
+      }
     }
   }
 

@@ -101,8 +101,9 @@ chosen between 10:00 and 22:00 (21:59 in fact). The default
 value of this parameter is `[0, 24]`.
 
 If the key `'hour'` is present in the `cron` parameter, the
-value of `'hour'` takes the precedence (and the value of the
-`cron_hour_range` parameter is just ignored).
+value of `'hour'` takes the precedence but must belong to
+the "hour" range given by the value of the `cron_hour_range`
+parameter. If not, the module raises an error.
 
 The `puppetconf_path` parameter is a non-empty string and
 its default value is `'/etc/puppetlabs/puppet/puppet.conf'`.
