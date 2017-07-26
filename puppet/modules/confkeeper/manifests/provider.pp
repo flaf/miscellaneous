@@ -6,6 +6,7 @@ class confkeeper::provider {
     $collection,
     $repositories,
     $wrapper_cron,
+    $hour_range_cron,
     $devnull_cron,
     $fqdn,
     $supported_distributions,
@@ -15,6 +16,18 @@ class confkeeper::provider {
   ] = Class['::confkeeper::provider::params']
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
+
+  with($hour_range_cron) |$range| {
+    $min = $range[0]
+    $max = $range[1]
+    unless $min < $max {
+      @("END"/L$).fail
+        Class ${title}: the `hour_range_cron` parameter of the `params` class \
+        is not correct because the first element must be strictly lower than \
+        the second.
+        |-END
+    }
+  }
 
   $repositories_completed = ::confkeeper::complete_repos_settings(
     $repositories,
@@ -217,11 +230,17 @@ class confkeeper::provider {
 
   $seed = 'etckeeper-push-all'
 
+  $cron_hour = with($hour_range_cron) |$range| {
+    $min = $range[0]
+    $max = $range[1]
+    $min + fqdn_rand($max-$min, $seed)
+  }
+
   cron { 'etckeeper-push-all':
     ensure   => present,
     user     => 'root',
     command  => $cron_cmd,
-    hour     => 18 + fqdn_rand(6, $seed), # from 18 to 23
+    hour     => $cron_hour,
     minute   => fqdn_rand(60, $seed),     # from 0 to 59
     monthday => absent,                   # ie *
     month    => absent,                   # ie *

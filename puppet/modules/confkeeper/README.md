@@ -188,6 +188,7 @@ class { '::confkeeper::collector::params':
   address                   => $::facts['networking']['fqdn'],
   ssh_host_pubkey           => $::facts['ssh']['rsa']['key'],
   wrapper_cron              => '/usr/bin/wrapper_cron --name update-all-in-one --',
+  hour_range_cron           => [5, 6],
   additional_exported_repos => $additional_exported_repos,
   allinone_readers          => $allinone_readers,
 }
@@ -206,6 +207,7 @@ class { '::confkeeper::provider::params':
   collection           => 'all',
   repositories         => $repositories,
   wrapper_cron         => '/usr/bin/wrapper_cron --name etckeeper-push-all --',
+  hour_range_cron      => [18, 23],
   devnull_cron         => true,
   fqdn                 => $::facts['networking']['fqdn'],
   etckeeper_ssh_pubkey => $::facts['etckeeper_ssh_pubkey'],
@@ -249,6 +251,13 @@ for convenience. The parameter `wrapper_cron`, if defined,
 allows to add a wrapper script to monitor the cron task. The
 default value of this parameter is `undef`: in this case,
 the cron task has no wrapper script.
+
+The `hour_range_cron` parameter allows to ensure the hour of
+the daily cron task which updates the special all-in-one git
+repository. For instance, if set to `[5, 7]`, the hour of
+the cron task could be 5 or 6 (7 is excluded). The minute of
+the cron task is chosen randomly. The default value of this
+parameter is `[5,6]`.
 
 The `devnull_cron` parameter is a boolean to add
 `">/dev/null 2>&1"` to the cron task. Its default value is
@@ -317,6 +326,13 @@ wrapper script to monitor this cron task. The default value
 of this parameter is `undef`: in this case, the cron task
 has no wrapper script.
 
+The `hour_range_cron` parameter allows to ensure the hour of
+the daily cron task which commits and pushed all the local
+git repositories. For instance, if set to `[18, 23]` which is
+the default value, the hour of the cron task could be 18,
+19, 20, 21 or 22 (23 is excluded). The minute of the cron
+task is chosen randomly.
+
 The `fqdn` parameter is not really used by the provider
 except for some default values of the `repositories`
 parameter. The parameter is mostly used by the collector to
@@ -370,10 +386,13 @@ the collector is installed**, you can install providers.
 
 In a provider, the cron task which commits and pushes in all
 local git repositories is launched daily at a random time
-between 18:00 and 23:59.
+between 18:00 and 22:59 unless you change the value of the
+`hour_range_cron` parameter.
 
 In a collector, the cron task which collects all
 repositories of the collection in the all-in-one repository
-is launched daily at a random time between 01:00 to 06:59.
+is launched daily at a random time between 05:00 to 05:59
+unless you change the value of the `hour_range_cron`
+parameter.
 
 

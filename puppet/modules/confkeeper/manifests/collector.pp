@@ -5,6 +5,7 @@ class confkeeper::collector {
   [
     $collection,
     $wrapper_cron,
+    $hour_range_cron,
     $additional_exported_repos,
     $allinone_readers,
     $supported_distributions,
@@ -13,6 +14,18 @@ class confkeeper::collector {
   ] = Class['::confkeeper::collector::params']
 
   ::homemade::is_supported_distrib($supported_distributions, $title)
+
+  with($hour_range_cron) |$range| {
+    $min = $range[0]
+    $max = $range[1]
+    unless $min < $max {
+      @("END"/L$).fail
+        Class ${title}: the `hour_range_cron` parameter of the `params` class \
+        is not correct because the first element must be strictly lower than \
+        the second.
+        |-END
+    }
+  }
 
   $fqdn = $::facts['networking']['fqdn']
 
@@ -407,6 +420,12 @@ class confkeeper::collector {
 
   $seed = 'etckeeper-push-all'
 
+  $cron_hour = with($hour_range_cron) |$range| {
+    $min = $range[0]
+    $max = $range[1]
+    $min + fqdn_rand($max-$min, $seed)
+  }
+
   $cron_cmd = case $wrapper_cron {
     Undef:   { '/usr/local/bin/collect-all-git-repos'                 }
     default: { "${wrapper_cron} /usr/local/bin/collect-all-git-repos" }
@@ -416,7 +435,7 @@ class confkeeper::collector {
     ensure   => present,
     user     => 'git',
     command  => $cron_cmd,
-    hour     => 1 + fqdn_rand(6, $seed), # from 1 to 6
+    hour     => $cron_hour,
     minute   => fqdn_rand(60, $seed),    # from 0 to 59
     monthday => absent,                  # ie *
     month    => absent,                  # ie *
