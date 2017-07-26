@@ -1,6 +1,6 @@
 {
   "name": "flaf-confkeeper",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "author": "flaf",
   "summary": "Module to export configurations in a server",
   "license": "Apache-2.0",
