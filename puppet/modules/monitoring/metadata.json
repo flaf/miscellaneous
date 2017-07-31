@@ -1,0 +1,13 @@
+{
+  "name": "flaf-monitoring",
+  "version": "0.1.0",
+  "author": "flaf",
+  "summary": "Module to generate Nagios-like configurations",
+  "license": "Apache-2.0",
+  "source": "",
+  "project_page": null,
+  "issues_url": null,
+  "dependencies": [
+    {"name": "puppetlabs-stdlib", "version_requirement": ">= 4.17.0"}
+  ]
+}

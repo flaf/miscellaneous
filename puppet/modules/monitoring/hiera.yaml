@@ -1,0 +1,7 @@
+---
+version: 5
+hierarchy:
+  - name: "Module monitoring default values"
+    data_hash: "monitoring::data"
+
+
