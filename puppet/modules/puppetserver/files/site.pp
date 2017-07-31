@@ -71,18 +71,31 @@ if $::facts['os']['family'].downcase == 'debian' {
 
 } else {
 
-  $a_family = $::facts['os']['family']
+  $os_family = $::facts['os']['family']
 
-  @("END").regsubst('\n', ' ', 'G').fail
-    site.pp: package resource must be defined by default to be
-    unable to remove packages during an installation. This is
-    not the case with this current node. Update the code of
-    `site.pp` to implement this setting with the OS family of
-    this current node (ie $a_family).
+  @("END"/L$).fail
+    ${title}: package resource must be defined by default to be \
+    unable to remove packages during an installation. This is \
+    not the case with this current node. Update the code of \
+    `site.pp` to implement this setting with the OS family of \
+    this current node, ie ${os_family}.
     |- END
 
 }
 
+# We ensure the global variable $::datacenter is well
+# defined by the ENC (and is a string).
+unless $::datacenter =~ String[1] {
+  @("END"/L$).fail
+    ${title}: sorry you must define the ENC global variable \
+    \$::datacenter as a non-empty string, this is not the case \
+    currently.
+    |- END
+}
+
+# Now we can add the tag $::datacenter to all classes and
+# resources:
+tag($::datacenter)
 
 # We assume that the $::included_classes variable must
 # be defined by the ENC and must be a non-empty array of
@@ -113,13 +126,12 @@ if $::included_classes =~ Array[Array[String[1], 2, 2], 1] {
 
 } else {
 
-  $msg_not_defined = @(END).regsubst('\n', ' ', 'G')
-      Sorry, the node must have a `$::included_classes` global
-      variable defined (for instance by the ENC) and it must be
-      an non-empty array of elements with this form
+  @("END"/L$).fail
+      ${title}: sorry, the node must have a `\$::included_classes` \
+      global variable defined (for instance by the ENC) and it must be \
+      an non-empty array of elements with this form \
       `[ '<author>', '<fully-qualified-class-name>' ]`
       |- END
-  fail($msg_not_defined)
 
 }
 
