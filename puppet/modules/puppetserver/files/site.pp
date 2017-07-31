@@ -74,7 +74,7 @@ if $::facts['os']['family'].downcase == 'debian' {
   $os_family = $::facts['os']['family']
 
   @("END"/L$).fail
-    ${title}: package resource must be defined by default to be \
+    ${title}: `package` resource must be defined by default to be \
     unable to remove packages during an installation. This is \
     not the case with this current node. Update the code of \
     `site.pp` to implement this setting with the OS family of \
@@ -87,9 +87,9 @@ if $::facts['os']['family'].downcase == 'debian' {
 # defined by the ENC (and is a string).
 unless $::datacenter =~ String[1] {
   @("END"/L$).fail
-    ${title}: sorry you must define the ENC global variable \
-    \$::datacenter as a non-empty string, this is not the case \
-    currently.
+    ${title}: sorry you must define the global variable \
+    \$::datacenter (for instance by the ENC) as a non-empty \
+    string, this is not the case currently.
     |- END
 }
 
