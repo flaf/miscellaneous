@@ -21,6 +21,7 @@ class roles::generic (
     '::autoupgrade',
     # Currently not in production, just for few hosts.
     '::confkeeper::provider',
+    '::monitoring::host',
   ],
   Array[String[1]] $included_classes = $authorized_classes,
   Array[String[1]] $excluded_classes = [],

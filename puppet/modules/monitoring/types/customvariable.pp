@@ -8,6 +8,7 @@ type Monitoring::CustomVariable = Struct[{
                  Array[String[1], 1],
                  1
                ],                    # or value is multivalued keys.
+             ]
 
 }]
 

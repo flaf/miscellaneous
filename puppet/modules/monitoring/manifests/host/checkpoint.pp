@@ -1,10 +1,10 @@
 define monitoring::host::checkpoint (
-  Monitoring::Hostname              $host_name = $::facts['networking']['hostname'],
-  String[1]                         $address = $::facts['networking']['ip'],
+  Monitoring::Hostname              $host_name = $::facts['networking']['fqdn'],
+  Optional[Monitoring::Address]     $address = undef,
   Array[Monitoring::Template]       $templates = [],
   Array[Monitoring::CustomVariable] $custom_variables = [],
-  Array[Monitoring::ExtraInfo]      $extra_info = [],
-  Boolean                           $notification = true,
+  Monitoring::ExtraInfo             $extra_info = {},
+  Optional[Boolean]                 $monitored = undef,
 ) {
 
   if $templates.empty and $custom_variables.empty and $extra_info.empty {
