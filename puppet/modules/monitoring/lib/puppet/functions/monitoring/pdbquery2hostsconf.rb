@@ -1,7 +1,7 @@
 Puppet::Functions.create_function(:'monitoring::pdbquery2hostsconf') do
 
   dispatch :pdbquery2hostsconf do
-    required_param 'Array[Struct[{ title => String[1], certname => String[1], parameters => Monitoring::CheckPoint }], 1]', :pdbquery
+    required_param 'Monitoring::PdbQuery', :pdbquery
   end
 
   def pdbquery2hostsconf(pdbquery)
@@ -23,6 +23,12 @@ Puppet::Functions.create_function(:'monitoring::pdbquery2hostsconf') do
       extra_info = checkpoint['extra_info']             # can be nil.
       monitored = checkpoint['monitored']               # can be nil.
 
+      # If not nil, custom_variables is sorted by varname.
+      # It is the only sorting requirement in this code.
+      if not custom_variables.nil?
+        custom_variables.sort_by! {|cv| cv['varname']}
+      end
+
       if hostsconf_hash.key?(host_name)
 
         #############################################
@@ -31,7 +37,9 @@ Puppet::Functions.create_function(:'monitoring::pdbquery2hostsconf') do
 
         current_hostconf = hostsconf_hash[host_name]
 
+        ###########################
         ### Handle of "address" ###
+        ###########################
         if not address.nil?
           current_address = current_hostconf['address']
           if current_address.nil?
@@ -42,14 +50,16 @@ Puppet::Functions.create_function(:'monitoring::pdbquery2hostsconf') do
               |#{function_name}(): problem with the checkpoint resource `#{title}`
               |of the host_name `#{host_name}` which has an `address` parameter
               |set to `#{address}` which is different of a value already recorded
-              |in another checkpoint resource.
+              |in a previous checkpoint resource with the value `#{current_address}`.
               EOS
               raise(Puppet::ParseError, msg)
             end
           end
         end
 
+        #############################
         ### Handle of "templates" ###
+        #############################
         if (not templates.nil?) and (not templates.empty?)
           current_templates = current_hostconf['templates']
           if current_templates.nil? or current_templates.empty?
@@ -59,7 +69,9 @@ Puppet::Functions.create_function(:'monitoring::pdbquery2hostsconf') do
           end
         end
 
+        ####################################
         ### Handle of "custom_variables" ###
+        ####################################
         if (not custom_variables.nil?) and (not custom_variables.empty?)
           current_custom_variables = current_hostconf['custom_variables']
 
@@ -84,35 +96,152 @@ Puppet::Functions.create_function(:'monitoring::pdbquery2hostsconf') do
               end
 
               if current_variable.nil?
-                # a_variable is not already present.
+                # a_variable is not already present, so it's
+                # added and after it's sorted.
                 current_custom_variables << a_variable
+                current_custom_variables.sort_by! {|cv| cv['varname']}
               else
                 # a_variable is already present in
                 # current_custom_variables.
                 current_value = current_variable['value']
 
+                # Test if the type of current_value and value are the same.
+                if current_value.class != value.class
+                  msg = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
+                  |#{function_name}(): problem with the checkpoint resource
+                  |`#{title}` of the host_name `#{host_name}` which has a
+                  |custom variable `#{varname}` set to  the value `#{value}`
+                  |whose type is `#{value.class}`. This custom variable has
+                  |been already recorded in a previous checkpoint resource
+                  |with a different type: the type `#{current_value.class}`
+                  |(and the value `#{current_value}`). If a custom variable
+                  |is updated by an additional checkpoint, its type must
+                  |remain exactly the same.
+                  EOS
+                  raise(Puppet::ParseError, msg)
+                end
+
+
                 if current_value.is_a?(String)
-                  raise(Puppet::ParseError, 'Error')
+                  msg = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
+                  |#{function_name}(): problem with the checkpoint resource
+                  |`#{title}` of the host_name `#{host_name}` which has a
+                  |custom variable `#{varname}` set to the String `#{value}`
+                  |but this custom variable has been already recorded in a
+                  |previous checkpoint resource with the String value
+                  |`#{current_value}`. It's not allowed to update a custom
+                  |variable of type String.
+                  EOS
+                  raise(Puppet::ParseError, msg)
                 end
 
                 if current_value.is_a?(Array)
-                  if not value.is_a?(Array)
-                    raise(Puppet::ParseError, 'Error')
-                  end
-                  current_custom_variables[current_index]['value'] = current_value.concat(value).uniq
+                  current_custom_variables[current_index]['value'] = current_value
+                  .concat(value).uniq
                 end
 
                 if current_value.is_a?(Hash)
-                  if not value.is_a?(Hash)
-                    raise(Puppet::ParseError, 'Error')
-                  end
-                  current_custom_variables[current_index]['value'] = current_value.merge(value) {|k, v1, v2|
-                    raise(Puppet::ParseError, 'Error')
+                  current_custom_variables[current_index]['value'] = current_value
+                  .merge(value) {|k, v1, v2|
+                    msg = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
+                    |#{function_name}(): problem with the checkpoint resource
+                    |`#{title}` of the host_name `#{host_name}` which has a
+                    |custom variable `#{varname}` set to the Hash `#{value}`.
+                    |This custom variable has been already recorded in a
+                    |previous checkpoint resource with the Hash value
+                    |`#{current_value}`. There is a common  key `#{k}` which
+                    |is not allowed. When a Hash custom variable is updated,
+                    |the value of a key can't not be modified, only new keys
+                    |can be added.
+                    EOS
+                    raise(Puppet::ParseError, msg)
                   }
                 end
               end
 
             end
+          end
+        end
+
+        ##############################
+        ### Handle of "extra_info" ###
+        ##############################
+        if (not extra_info.nil?) and (not extra_info.empty?)
+          current_extra_info = current_hostconf['extra_info']
+          if current_extra_info.nil? or current_extra_info.empty?
+            current_hostconf['extra_info'] = extra_info
+          else
+
+            ################################
+            ### Handle of "ipmi_address" ###
+            ################################
+            if extra_info.key?('ipmi_address')
+              if current_extra_info.key?('ipmi_address')
+                msg = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
+                |#{function_name}(): problem with the checkpoint resource
+                |`#{title}` of the host_name `#{host_name}` which has the
+                |extra info `ipmi_address` set to the String
+                |`#{extra_info['ipmi_address']}`. This extra info has been
+                |already recorded in a previous checkpoint resource with the
+                |String value `#{current_extra_info['ipmi_address']}`.
+                |This is not allowed. The `ipmi_address` extra info can be
+                |defined at least in only one checkpoint resource.
+                EOS
+                raise(Puppet::ParseError, msg)
+              else
+                current_extra_info['ipmi_address'] = extra_info['ipmi_address']
+              end
+            end
+
+            #############################
+            ### Handle of "blacklist" ###
+            #############################
+            if not extra_info['blacklist'].nil? and not extra_info['blacklist'].empty?
+
+              # If the host_name field of a rule is not
+              # present, we have to the host_name of the
+              # current checkpoint resource.
+              extra_info['blacklist'].each do |rule|
+                if rule['host_name'].nil?
+                  rule['host_name'] = host_name
+                end
+              end
+
+              if current_extra_info.key?('blacklist')
+                current_extra_info['blacklist'] = current_extra_info['blacklist']
+                .concat(extra_info['blacklist'])
+              else
+                current_extra_info['blacklist'] = extra_info['blacklist']
+              end
+
+            end
+
+            #############################
+            ### Handle of "check_dns" ###
+            #############################
+            if not extra_info['check_dns'].nil? and not extra_info['check_dns'].empty?
+              if current_extra_info.key?('check_dns')
+                current_extra_info['check_dns'] = current_extra_info['check_dns']
+                .merge(extra_info['check_dns']) {|desc, oldv, newv|
+                  msg = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
+                  |#{function_name}(): problem with the checkpoint resource
+                  |`#{title}` of the host_name `#{host_name}` which has the
+                  |extra info `check_dns` set to the Hash
+                  |`#{extra_info['check_dns']}`. The key `#{desc}` has been
+                  |already recorded in the `check_dns` extra info of a previous
+                  |checkpoint resource with the Hash value
+                  |`#{current_extra_info['check_dns']}`. This is not allowed.
+                  |The extra info `check_dns` can be merged from different
+                  |checkpoint resources but with different keys, ie different
+                  |description.
+                  EOS
+                  raise(Puppet::ParseError, msg)
+                }
+              else
+                current_extra_info['check_dns'] = extra_info['check_dns']
+              end
+            end
+
           end
         end
 
