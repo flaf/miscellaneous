@@ -29,7 +29,7 @@ Puppet::Functions.create_function(:'monitoring::pdbquery2hostsconf') do
         ### Begin: update of the current hostconf ###
         #############################################
 
-        current_hostconf = hostsconf_hash['host_name']
+        current_hostconf = hostsconf_hash[host_name]
 
         ### Handle of "address" ###
         if not address.nil?
@@ -50,25 +50,68 @@ Puppet::Functions.create_function(:'monitoring::pdbquery2hostsconf') do
         end
 
         ### Handle of "templates" ###
-        if not templates.nil?
+        if (not templates.nil?) and (not templates.empty?)
           current_templates = current_hostconf['templates']
-          if current_templates.nil?
-            current_hostconf['templates'] = templates.uniq!
+          if current_templates.nil? or current_templates.empty?
+            current_hostconf['templates'] = templates.uniq
           else
-            current_hostconf['templates'] = current_templates.concat(templates).uniq!
+            current_hostconf['templates'] = current_templates.concat(templates).uniq
           end
         end
 
         ### Handle of "custom_variables" ###
-        if not custom_variables.nil?
+        if (not custom_variables.nil?) and (not custom_variables.empty?)
           current_custom_variables = current_hostconf['custom_variables']
-          if current_custom_variables.nil?
+
+          if current_custom_variables.nil? or current_custom_variables.empty?
             current_hostconf['custom_variables'] = custom_variables
           else
             custom_variables.each do |a_variable|
               varname = a_variable['varname']
               value = a_variable['value']
-              
+
+              # Test is a_variable is already present in
+              # current_custom_variables ie a variable with
+              # the same varname.
+              current_variable = nil
+              current_index = nil
+              current_custom_variables.each_with_index do |e, index|
+                if e['varname'] == varname
+                  current_variable = e
+                  current_index = index
+                  break
+                end
+              end
+
+              if current_variable.nil?
+                # a_variable is not already present.
+                current_custom_variables << a_variable
+              else
+                # a_variable is already present in
+                # current_custom_variables.
+                current_value = current_variable['value']
+
+                if current_value.is_a?(String)
+                  raise(Puppet::ParseError, 'Error')
+                end
+
+                if current_value.is_a?(Array)
+                  if not value.is_a?(Array)
+                    raise(Puppet::ParseError, 'Error')
+                  end
+                  current_custom_variables[current_index]['value'] = current_value.concat(value).uniq
+                end
+
+                if current_value.is_a?(Hash)
+                  if not value.is_a?(Hash)
+                    raise(Puppet::ParseError, 'Error')
+                  end
+                  current_custom_variables[current_index]['value'] = current_value.merge(value) {|k, v1, v2|
+                    raise(Puppet::ParseError, 'Error')
+                  }
+                end
+              end
+
             end
           end
         end
@@ -86,7 +129,7 @@ Puppet::Functions.create_function(:'monitoring::pdbquery2hostsconf') do
 
     # TODO: check that "address" is well defined for each host in hostsconf_hash.
 
-    hostsconf_hash
+    hostsconf_hash.values
 
   end # End of def.
 
