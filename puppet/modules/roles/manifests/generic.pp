@@ -19,9 +19,9 @@ class roles::generic (
     '::mcollective::server',
     '::snmp',
     '::autoupgrade',
+    '::monitoring::host',
     # Currently not in production, just for few hosts.
     '::confkeeper::provider',
-    '::monitoring::host',
   ],
   Array[String[1]] $included_classes = $authorized_classes,
   Array[String[1]] $excluded_classes = [],
@@ -306,6 +306,13 @@ class roles::generic (
 
         class { '::puppetagent':
           require => Class['::repository::puppet'],
+        }
+
+        $puppetagent_checkpoint_title = $::facts['networking']['fqdn'].with |$fqdn| {
+          "${fqdn} from ${title} for puppetagent"
+        }
+        monitoring::host::checkpoint {$puppetagent_checkpoint_title:
+          templates => ['puppet_tpl'],
         }
 
       }

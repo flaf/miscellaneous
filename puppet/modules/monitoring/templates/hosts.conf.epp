@@ -117,7 +117,7 @@ define host {
 # Dummy host for DNS checks related to the host <%= $host['host_name'] %>.
 define host {
 
-    host_name dummy-dns.<%= $host['host_name'] %>
+    host_name <%= $host['host_name'] %>.dummy-dns
     address   not-relevant
     use       dummy-host_tpl,dns_tpl
 
@@ -143,7 +143,7 @@ define host {
 # unique host.
 define host {
 
-    host_name dummy-ipmi.<%= $::facts['networking']['domain'] %>
+    host_name <%= $::facts['networking']['domain'] %>.dummy-ipmi
     address   not-relevant
     use       dummy-host_tpl,ping_tpl
 

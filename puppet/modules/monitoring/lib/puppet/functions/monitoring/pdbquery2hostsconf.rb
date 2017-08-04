@@ -57,7 +57,7 @@ Puppet::Functions.create_function(:'monitoring::pdbquery2hostsconf') do
         if not address.nil?
           current_address = current_hostconf['address']
           if current_address.nil?
-            current_hostconf['address'] = current_address
+            current_hostconf['address'] = address
           else
             msg = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
             |#{function_name}(): problem with the checkpoint resource `#{title}`
