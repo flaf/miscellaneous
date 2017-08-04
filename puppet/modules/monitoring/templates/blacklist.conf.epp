@@ -1,0 +1,66 @@
+<%- |
+  Array[Monitoring::HostConf] $hosts_conf,
+  Monitoring::Blacklist       $additional_blacklist,
+| -%>
+### This file is managed by Puppet, don't edit it. ###
+
+# This file contains rules to cancel notification. Each line
+# is a rule and all the rules are a blacklist.
+#
+# For a service, the syntax is:
+#
+#   <contact regex>:<host regex>:<service description regex>:<timeslots>:<weekdays>
+#
+# For a host, the syntax is (service description is empty):
+#
+#   <contact regex>:<host regex>::<timeslots>:<weekdays>
+#
+# If a regex begins with ! (exclamation mark), the matching
+# is reversed. By example, with this rule:
+#
+#   !^joe$:.*:^load-cpu$:[00h00;11h00][17h00;23h59]:*
+#
+# there is no "load-cpu" notification (for any host), except for "joe"
+# from 5:00 PM to 11:00 AM. For the weekdays, it's _iso_ weekdays. So:
+#
+#       [1,5,7] means "Monday, Friday and Sunday"
+#
+# For the weekday, the special character * means "all the
+# days", so * is strictly equivalent to [1,2,3,4,5,6,7].
+
+<%- unless $additional_blacklist.empty { -%>
+###
+### Manual rules.
+###
+  <%- $additional_blacklist.each |$rule| { -%>
+    <%- if 'comment' in $rule { -%>
+      <%- $rule['comment'].each |$line| { -%>
+# <%= $line %>
+      <%- } -%>
+    <%- } -%>
+<%= "${rule['contact']}:${rule['host_name']}:${rule['description']}:${rule['timeslots']}:${rule['weekdays']}" %>
+  <%- } -%>
+<%- } -%>
+
+
+<%- $hosts_conf.filter |$host| {
+      $bl = $host.dig('extra_info', 'blacklist')
+      $bl !~ Undef and !($bl.empty)
+    }.each |$index, $host| { -%>
+  <%-
+    $bl = $host['extra_info']['blacklist']
+  -%>
+###
+### Rules for the host <%= $host['host_name'] %>.
+###
+  <%- $bl.each |$rule| { -%>
+  <%- if 'comment' in $rule { -%>
+    <%- $rule['comment'].each |$line| { -%>
+# <%= $line %>
+    <%- } -%>
+  <%- } -%>
+<%= "${rule['contact']}:${rule['host_name']}:${rule['description']}:${rule['timeslots']}:${rule['weekdays']}" %>
+  <%- } -%>
+
+<%- } -%>
+

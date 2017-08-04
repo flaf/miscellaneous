@@ -2,6 +2,7 @@ Puppet::Functions.create_function(:'monitoring::pdbquery2hostsconf') do
 
   dispatch :pdbquery2hostsconf do
     required_param 'Monitoring::PdbQuery', :pdbquery
+    return_type 'Array[Monitoring::HostConf]'
   end
 
   def pdbquery2hostsconf(pdbquery)
@@ -13,7 +14,6 @@ Puppet::Functions.create_function(:'monitoring::pdbquery2hostsconf') do
     pdbquery.each do |checkpoint_wrapper|
 
       title = checkpoint_wrapper['title']
-      certname = checkpoint_wrapper['certname']
       checkpoint = checkpoint_wrapper['parameters']
 
       host_name = checkpoint['host_name']
@@ -28,6 +28,20 @@ Puppet::Functions.create_function(:'monitoring::pdbquery2hostsconf') do
       if not custom_variables.nil?
         custom_variables.sort_by! {|cv| cv['varname']}
       end
+
+      # If the host_name field of a rule in the blacklist is
+      # not present, we have to set it to the host_name of
+      # the current checkpoint resource. We add ^ and $
+      # because it's a regex and we escape the dot
+      # character.
+      if not extra_info.nil? and not extra_info['blacklist'].nil? and not extra_info['blacklist'].empty?
+        extra_info['blacklist'].each do |rule|
+          if rule['host_name'].nil?
+            rule['host_name'] = '^' + host_name.gsub('.', '\.') + '$'
+          end
+        end
+      end
+
 
       if hostsconf_hash.key?(host_name)
 
@@ -45,15 +59,15 @@ Puppet::Functions.create_function(:'monitoring::pdbquery2hostsconf') do
           if current_address.nil?
             current_hostconf['address'] = current_address
           else
-            if current_address != address
-              msg = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
-              |#{function_name}(): problem with the checkpoint resource `#{title}`
-              |of the host_name `#{host_name}` which has an `address` parameter
-              |set to `#{address}` which is different of a value already recorded
-              |in a previous checkpoint resource with the value `#{current_address}`.
-              EOS
-              raise(Puppet::ParseError, msg)
-            end
+            msg = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
+            |#{function_name}(): problem with the checkpoint resource `#{title}`
+            |of the host_name `#{host_name}` which has an `address` parameter
+            |set to `#{address}` but this parameter is already recorded in a
+            |previous checkpoint resource (with the value `#{current_address}`).
+            |This is not allowed, the `address` parameter must be set exactly
+            |in only one checkpoint resource (for a given host).
+            EOS
+            raise(Puppet::ParseError, msg)
           end
         end
 
@@ -167,7 +181,9 @@ Puppet::Functions.create_function(:'monitoring::pdbquery2hostsconf') do
         ### Handle of "extra_info" ###
         ##############################
         if (not extra_info.nil?) and (not extra_info.empty?)
+
           current_extra_info = current_hostconf['extra_info']
+
           if current_extra_info.nil? or current_extra_info.empty?
             current_hostconf['extra_info'] = extra_info
           else
@@ -198,15 +214,6 @@ Puppet::Functions.create_function(:'monitoring::pdbquery2hostsconf') do
             #############################
             if not extra_info['blacklist'].nil? and not extra_info['blacklist'].empty?
 
-              # If the host_name field of a rule is not
-              # present, we have to the host_name of the
-              # current checkpoint resource.
-              extra_info['blacklist'].each do |rule|
-                if rule['host_name'].nil?
-                  rule['host_name'] = host_name
-                end
-              end
-
               if current_extra_info.key?('blacklist')
                 current_extra_info['blacklist'] = current_extra_info['blacklist']
                 .concat(extra_info['blacklist'])
@@ -233,7 +240,7 @@ Puppet::Functions.create_function(:'monitoring::pdbquery2hostsconf') do
                   |`#{current_extra_info['check_dns']}`. This is not allowed.
                   |The extra info `check_dns` can be merged from different
                   |checkpoint resources but with different keys, ie different
-                  |description.
+                  |descriptions.
                   EOS
                   raise(Puppet::ParseError, msg)
                 }
@@ -242,6 +249,27 @@ Puppet::Functions.create_function(:'monitoring::pdbquery2hostsconf') do
               end
             end
 
+          end
+        end
+
+        #############################
+        ### Handle of "monitored" ###
+        #############################
+        if not monitored.nil?
+          current_monitored = current_hostconf['monitored']
+          if current_monitored.nil?
+            current_hostconf['monitored'] = monitored
+          else
+            msg = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
+            |#{function_name}(): problem with the checkpoint resource
+            |`#{title}` of the host_name `#{host_name}` which has the
+            |`monitored` parameter set to `#{monitored}`. This parameter
+            |has been already recorded in a previous checkpoint resource
+            |with the value `#{current_monitored}`. This is not allowed,
+            |this parameter must be defined in only one checkpoint
+            |resource (for a given host).
+            EOS
+            raise(Puppet::ParseError, msg)
           end
         end
 
@@ -256,13 +284,57 @@ Puppet::Functions.create_function(:'monitoring::pdbquery2hostsconf') do
 
     end # Enf of the loop on pdbquery.
 
-    # TODO: check that "address" is well defined for each host in hostsconf_hash.
+    ################################
+    ### Some cleaning and checks ###
+    ################################
+    hostsconf_hash.each do |host_name, checkpoint|
 
-    hostsconf_hash.values
+      if checkpoint['address'].nil?
+        msg = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
+        |#{function_name}(): problem with the host `#{host_name}`
+        |after collecting all the checkpoint resources: the `address`
+        |parameter of this host has never been set in any checkpoint
+        |resource. This is not allowed, a host must have an address.
+        EOS
+        raise(Puppet::ParseError, msg)
+      end
+
+      if checkpoint['templates'].nil? or checkpoint['templates'].empty?
+        msg = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
+        |#{function_name}(): problem with the host `#{host_name}`
+        |after collecting all the checkpoint resources: the `templates`
+        |parameter of this host has never been set in any checkpoint
+        |resource (or maybe set to an empty array). This is not allowed,
+        |a host must have at least one template.
+        EOS
+        raise(Puppet::ParseError, msg)
+      end
+
+      if checkpoint['custom_variables'].nil?
+        checkpoint['custom_variables'] = []
+      end
+
+      if checkpoint['extra_info'].nil?
+        checkpoint['extra_info'] = {}
+      end
+
+      if checkpoint['monitored'].nil?
+        msg = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
+        |#{function_name}(): problem with the host `#{host_name}`
+        |after collecting all the checkpoint resources: the `monitored`
+        |parameter of this host has never been set in any checkpoint
+        |resource. This is not allowed, a host must have this parameter
+        |defined.
+        EOS
+        raise(Puppet::ParseError, msg)
+      end
+
+    end
+
+    hostsconf_hash.values.sort_by {|a_hostconf| a_hostconf['host_name']}
 
   end # End of def.
 
-end # Enf of def
-
+end
 
 

@@ -1,0 +1,156 @@
+<%- |
+  Array[Monitoring::HostConf] $hosts_conf,
+  Hash[String[1], String[1]]  $ipmis,
+| -%>
+### This file is managed by Puppet, don't edit it. ###
+
+<%- $hosts_conf.each |$index, $host| { -%>
+###
+### Host number <%= $index + 1 %>.
+###
+define host {
+
+    host_name <%= $host['host_name'] %>
+    address   <%= $host['address'] %>
+    use       <%= $host['templates'].join(',') %>
+  <%- unless $host['custom_variables'].empty { -%>
+    <%-
+      $max = $host['custom_variables'].map |$variable| {
+        $variable['varname'].size
+      }.reduce(0) |$memo, $entry| { max($memo, $entry) }
+      $marge = ::homemade::ljust(' ', $max, ' ')
+    -%>
+
+    # Customized variables.
+    <%- $host['custom_variables'].each |$variable| { -%>
+      <%-
+
+        $value = case $variable['value'] {
+          String: {
+            $variable['value']
+          }
+          Array: {
+            $variable['value'].sort.join(', ')
+          }
+          Hash: {
+            $variable['value'].keys.sort.reduce([]) |$memo, $desc| {
+              $values = $variable['value'][$desc]
+              $str = $values.join(')$ $(')
+              $memo + "${desc}$(${str})$"
+            }.join(", \\\n     ${marge}")
+          }
+        }
+
+      -%>
+    <%= ::homemade::ljust($variable['varname'], $max, ' ') %> <%= $value %>
+    <%- } -%>
+  <%- } -%>
+  <%- unless $host['extra_info'].empty { -%>
+
+    # Extra info.
+    <%- if 'ipmi_address' in $host['extra_info'] { -%>
+
+    ; ipmi_address    <%= $host['extra_info']['ipmi_address'] %>
+    <%- } -%>
+    <%- if 'blacklist' in $host['extra_info'] { -%>
+
+    ; Blacklist rules.
+    ;
+      <%- $host['extra_info']['blacklist'].each |$rule| { -%>
+      <%- if 'comment' in $rule { -%>
+        <%- $rule['comment'].each |$line| { -%>
+    ;   comment: <%= $line %>
+        <%- } -%>
+      <%- } -%>
+    ;   <%= "${rule['contact']}:${rule['host_name']}:${rule['description']}:${rule['timeslots']}:${rule['weekdays']}" %>
+      <%- } -%>
+    <%- } -%>
+    <%- if 'check_dns' in $host['extra_info'] { -%>
+
+    ; DNS checks.
+      <%- $host['extra_info']['check_dns'].each |$desc, $settings| { -%>
+    ;
+    ;   description:      <%= $desc %>
+    ;   fqdn:             <%= $settings['fqdn'] %>
+        <%- if 'server' in $settings { -%>
+    ;   server            <%= $settings['server'] %>
+        <%- } -%>
+        <%- if 'expected-address' in $settings { -%>
+    ;   expected-address: <%= $settings['expected-address'] %>
+        <%- } -%>
+        <%- if 'options' in $settings { -%>
+    ;   options:          <%= $settings.dig['options'] %>
+        <%- } -%>
+      <%- } -%>
+    <%- } -%>
+  <%- } -%>
+
+}
+
+  <%- unless $host.dig('extra_info', 'check_dns') =~ Undef or $host['extra_info']['check_dns'].empty { -%>
+    <%-
+      $dns_lookups = $host['extra_info']['check_dns'].reduce({a=>[], b=>[]}) |$memo, $v| {
+        [$desc, $dns]     = $v
+        $fqdn             = $dns['fqdn']
+        $server           = $dns.dig('server')
+        $expected_address = $dns.dig('expected-address').with |$addr| {
+          if $addr == '$HOSTADDRESS$' {
+            $host['address']
+          } else {
+            $addr
+          }
+        }
+        $options          = $dns.dig('options')
+        $new_options      = $expected_address ? {
+          undef   => $options,
+          default => "-a ${expected_address} ${options}".regsubst(/ *$/, '', 'G'),
+        }
+        if $server =~ Undef {
+          $old = $memo['a']
+          $memo + {a => $old + "${desc}$(${fqdn})$ $(${new_options})$" }
+        } else {
+          $old = $memo['b']
+          $memo + {b => $old + "${desc}$(${server})$ $(${fqdn})$ $(${new_options})$" }
+        }
+      }
+    -%>
+# Dummy host for DNS checks related to the host <%= $host['host_name'] %>.
+define host {
+
+    host_name dummy-dns.<%= $host['host_name'] %>
+    address   not-relevant
+    use       dummy-host_tpl,dns_tpl
+
+    # Customized variables.
+    <%- unless $dns_lookups['a'].empty { -%>
+    _resolvconf_dns_lookups <%= $dns_lookups['a'].join(", \\\n                            ") %>
+    <%- } -%>
+    <%- unless $dns_lookups['b'].empty { -%>
+    _dns_lookups <%= $dns_lookups['b'].join(", \\\n                 ") %>
+    <%- } -%>
+}
+
+  <%- } -%>
+<%- } -%>
+<%- unless $ipmis.empty { -%>
+  <%-
+    $ipmi_str = $ipmis.reduce([]) |$memo, $v| {
+      [$host_name, $address] = $v
+      $memo + ["ipmi.${host_name}$(${address})$"]
+    }.join(", \\\n                    ")
+  -%>
+# Special and dummy host to bring all IPMI checks in a
+# unique host.
+define host {
+
+    host_name dummy-ipmi.<%= $::facts['networking']['domain'] %>
+    address   not-relevant
+    use       dummy-host_tpl,ping_tpl
+
+    # Customized variables.
+    _ping_addresses <%= $ipmi_str %>
+
+}
+
+<%- } -%>
+

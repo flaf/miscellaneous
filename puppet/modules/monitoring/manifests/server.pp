@@ -8,6 +8,15 @@ class monitoring::server {
     $filter_tags,
   ] = Class['::monitoring::server::params']
 
+  $additional_blacklist.each |$index, $rule| {
+    if $rule.dig('host_name') =~ Undef {
+      @("END"/L$).fail
+        ${title}: problem with the `additional_blacklist` parameter in Hiera \
+        where the `host_name` field is not defined which is not allowed.
+        |- END
+    }
+  }
+
   # The puppetdb query to collect all the checkpoint resources.
   $query = inline_epp(@(END), {'tags' => $filter_tags})
     <%- |$tags| -%>
@@ -20,15 +29,57 @@ class monitoring::server {
     }
     |- END
 
-  $big_array = puppetdb_query($query)
+  $additional_pdbquery = $additional_checkpoints.map |$index, $checkpoint| {
+    {
+      'title'      => "checkpoint ${index} from Hiera via monitoring::server",
+      'certname'   => $::facts['networking']['fqdn'], # Not relevant here.
+      'parameters' =>  {'monitored' => true} + $checkpoint, # In hiera, monitored is optional.
+    }
+  }
 
-  #$pretty_array = inline_template('<%- require "json" -%> <%= JSON.pretty_generate(@big_array) %>')
-  #notify { 'Test': message => "${pretty_array}" }
+  $pdbquery   = puppetdb_query($query)
+  $hosts_conf = ::monitoring::pdbquery2hostsconf($pdbquery + $additional_pdbquery)
 
-  $new_array = ::monitoring::pdbquery2hostsconf($big_array)
+  #$pretty_array = inline_template('<%- require "json" -%> <%= JSON.pretty_generate(@hosts_conf) %>')
+  #notify { 'Check of the hosts conf': message => "${pretty_array}" }
 
-  $pretty_new_array = inline_template('<%- require "json" -%> <%= JSON.pretty_generate(@new_array) %>')
-  notify { 'Test_new': message => "${pretty_new_array}" }
+  $all_ipmi_addresses = $hosts_conf.reduce({}) |$memo, $host| {
+    $ipmi = $host.dig('extra_info', 'ipmi_address')
+    if $ipmi =~ Undef {
+      $memo
+    } else {
+      $memo + {$host['host_name'] => $ipmi}
+    }
+  }
+
+  file {
+    default:
+      ensure  => 'file',
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0600',
+    ;
+
+    '/tmp/hosts.conf':
+      content => epp(
+                   'monitoring/hosts.conf.epp',
+                   {
+                    'hosts_conf' => $hosts_conf,
+                    'ipmis'      => $all_ipmi_addresses,
+                   },
+                 ),
+    ;
+
+    '/tmp/blacklist.conf':
+      content => epp(
+                   'monitoring/blacklist.conf.epp',
+                   {
+                    'hosts_conf'           => $hosts_conf,
+                    'additional_blacklist' => $additional_blacklist,
+                   },
+                 ),
+    ;
+  }
 
 }
 
