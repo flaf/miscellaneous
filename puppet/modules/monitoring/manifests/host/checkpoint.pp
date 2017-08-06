@@ -37,7 +37,7 @@ define monitoring::host::checkpoint (
           templates must be different two by two.
           |- END
       }
-      $memo + [$varname]
+      $memo + [$template]
     }
   }
 
