@@ -28,39 +28,62 @@
 # For the weekday, the special character * means "all the
 # days", so * is strictly equivalent to [1,2,3,4,5,6,7].
 
-<%- unless $additional_blacklist.empty { -%>
+<%-
+unless $additional_blacklist.empty {
+-%>
 ###
 ### Manual rules.
 ###
-  <%- $additional_blacklist.each |$rule| { -%>
-    <%- if 'comment' in $rule { -%>
-      <%- $rule['comment'].each |$line| { -%>
+<%-
+  $additional_blacklist.each |$rule| {
+    if 'comment' in $rule {
+      $rule['comment'].each |$line| {
+-%>
 # <%= $line %>
-      <%- } -%>
-    <%- } -%>
-<%= "${rule['contact']}:${rule['host_name']}:${rule['description']}:${rule['timeslots']}:${rule['weekdays']}" %>
-  <%- } -%>
-<%- } -%>
+<%-
+      }
+    }
+    $contact     = $rule['contact']
+    $host_name   = $rule['host_name']
+    $description = $rule['description']
+    $timeslots   = $rule['timeslots']
+    $weekdays    = $rule['weekdays']
+-%>
+<%= "${contact}:${host_name}:${description}:${timeslots}:${weekdays}" %>
+<%-
+  }
+}
+-%>
 
 
-<%- $hosts_conf.filter |$host| {
-      $bl = $host.dig('extra_info', 'blacklist')
-      $bl !~ Undef and !($bl.empty)
-    }.each |$index, $host| { -%>
-  <%-
-    $bl = $host['extra_info']['blacklist']
-  -%>
+<%-
+$hosts_conf.filter |$host| {
+  $bl = $host.dig('extra_info', 'blacklist')
+  $bl !~ Undef and !($bl.empty)
+}.each |$index, $host| {
+  $bl = $host['extra_info']['blacklist']
+-%>
 ###
-### Rules for the host <%= $host['host_name'] %>.
+### Rules from the host <%= $host['host_name'] %>.
 ###
-  <%- $bl.each |$rule| { -%>
-  <%- if 'comment' in $rule { -%>
-    <%- $rule['comment'].each |$line| { -%>
+<%-
+  $bl.each |$rule| {
+  if 'comment' in $rule {
+    $rule['comment'].each |$line| {
+-%>
 # <%= $line %>
-    <%- } -%>
-  <%- } -%>
-<%= "${rule['contact']}:${rule['host_name']}:${rule['description']}:${rule['timeslots']}:${rule['weekdays']}" %>
-  <%- } -%>
-
-<%- } -%>
+<%-
+    }
+  }
+  $contact     = $rule['contact']
+  $host_name   = $rule['host_name']
+  $description = $rule['description']
+  $timeslots   = $rule['timeslots']
+  $weekdays    = $rule['weekdays']
+-%>
+<%= "${contact}:${host_name}:${description}:${timeslots}:${weekdays}" %>
+<%-
+  }
+}
+-%>
 
