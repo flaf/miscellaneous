@@ -12,7 +12,8 @@ class monitoring::server {
     if $rule.dig('host_name') =~ Undef {
       @("END"/L$).fail
         ${title}: problem with the `additional_blacklist` parameter in Hiera \
-        where the `host_name` field is not defined which is not allowed.
+        where the `host_name` field is not defined in the rule index number \
+        ${index} (at least). This is not allowed.
         |- END
     }
   }
@@ -32,16 +33,27 @@ class monitoring::server {
   $additional_pdbquery = $additional_checkpoints.map |$index, $checkpoint| {
     {
       'title'      => "checkpoint ${index} from Hiera via monitoring::server",
-      'certname'   => $::facts['networking']['fqdn'], # Not relevant here.
-      'parameters' =>  {'monitored' => true} + $checkpoint, # In hiera, monitored is optional.
+      # `certname` is Not relevant here.
+      'certname'   => $::facts['networking']['fqdn'],
+      # In hiera, `monitored` will be optional and the
+      # default will be `true`.
+      'parameters' =>  {'monitored' => true} + $checkpoint,
     }
   }
 
   $pdbquery   = puppetdb_query($query)
   $hosts_conf = ::monitoring::pdbquery2hostsconf($pdbquery + $additional_pdbquery)
 
-  #$pretty_array = inline_template('<%- require "json" -%> <%= JSON.pretty_generate(@hosts_conf) %>')
-  #notify { 'Check of the hosts conf': message => "${pretty_array}" }
+  # To debug.
+  #
+  #$pretty_array = inline_template(@(END))
+  #  '<%- require "json" -%>
+  #  <%= JSON.pretty_generate(@hosts_conf) %>'
+  #| END
+  #
+  #notify { 'Check of the hosts conf':
+  #  message => "${pretty_array}",
+  #}
 
   $all_ipmi_addresses = $hosts_conf.reduce({}) |$memo, $host| {
     $ipmi = $host.dig('extra_info', 'ipmi_address')
