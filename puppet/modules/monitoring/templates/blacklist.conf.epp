@@ -4,29 +4,36 @@
 | -%>
 ### This file is managed by Puppet, don't edit it. ###
 
-# This file contains rules to cancel notification. Each line
-# is a rule and all the rules are a blacklist.
+#####################################################
+###    Explanations about the syntax of a rule    ###
+#####################################################
+#
+# This file contains rules to cancel notification,
+# so handle it with caution. Each line is a "rule"
+# and all the rules form what is called a "blacklist".
 #
 # For a service, the syntax is:
 #
-#   <contact regex>:<host regex>:<service description regex>:<timeslots>:<weekdays>
+#       <contact regex>:<host regex>:<service description regex>:<timeslots>:<weekdays>
 #
 # For a host, the syntax is (service description is empty):
 #
-#   <contact regex>:<host regex>::<timeslots>:<weekdays>
+#       <contact regex>:<host regex>::<timeslots>:<weekdays>
 #
 # If a regex begins with ! (exclamation mark), the matching
 # is reversed. By example, with this rule:
 #
 #   !^joe$:.*:^load-cpu$:[00h00;11h00][17h00;23h59]:*
 #
-# there is no "load-cpu" notification (for any host), except for "joe"
-# from 5:00 PM to 11:00 AM. For the weekdays, it's _iso_ weekdays. So:
+# there is no "*/load-cpu" notification (for any host),
+# from 5:00 PM to 11:00 AM except for "joe". For the
+# weekdays, it's _iso_ weekdays, so:
 #
 #       [1,5,7] means "Monday, Friday and Sunday"
 #
-# For the weekday, the special character * means "all the
-# days", so * is strictly equivalent to [1,2,3,4,5,6,7].
+# For the weekday, the special character * means "all
+# the days", so * is strictly equivalent to [1,2,3,4,5,6,7].
+
 
 <%-
   unless $additional_blacklist.empty {
