@@ -31,9 +31,9 @@
 <%-
   unless $additional_blacklist.empty {
 -%>
-###
-### Manual rules.
-###
+##########################
+###    Manual rules    ###
+##########################
 <%= monitoring::blacklist2str($additional_blacklist) %>
 <%-
   }
@@ -43,13 +43,17 @@
 <%-
   $hosts_conf.filter |$host| {
     $bl = $host.dig('extra_info', 'blacklist')
-    $bl !~ Undef and !($bl.empty)
+    $monitored = $host['monitored']
+    $monitored and $bl !~ Undef and !($bl.empty)
   }.each |$index, $host| {
     $bl = $host['extra_info']['blacklist']
+
+    # It is purely aesthetic.
+    $b_title     = "###    Rules from the host ${host['host_name']}    ###"
+    $b_line      = inline_template('<%= "#" * @b_title.size %>')
+    $begin_title = "${b_line}\n${b_title}\n${b_line}"
 -%>
-###
-### Rules from the host <%= $host['host_name'] %>.
-###
+<%= $begin_title %>
 <%= monitoring::blacklist2str($bl) %>
 
 <%-
