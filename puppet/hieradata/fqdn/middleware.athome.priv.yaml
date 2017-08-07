@@ -11,4 +11,22 @@ network::params::ifaces:
     inet:
       method: 'dhcp'
 
+monitoring::host::params::extra_info:
+  blacklist:
+    - contact: '.*'
+      description: '^cron-foo$'
+      timeslots: '[00h00;23h59]'
+      weekdays: '*'
+      comment:
+        - blabla blabla blabla blabla...
+        - blabla blabla blabla blabla...
+    - contact: '.*'
+      description: '^cron-bar$'
+      timeslots: '[00h00;23h59]'
+      weekdays: '*'
+      comment:
+        - blabla blabla blabla blabla...
+        - blabla blabla blabla blabla...
+  ipmi_address: '192.168.0.233'
+
 

@@ -5,7 +5,7 @@ type Monitoring::CustomVariable = Struct[{
                Array[String[1], 1],  # or value is an Array of string(s),
                Hash[
                  Pattern[/^[-._a-z0-9]+$/],
-                 Array[String[1], 1],
+                 Array[String, 1],
                  1
                ],                    # or value is multivalued keys.
              ]

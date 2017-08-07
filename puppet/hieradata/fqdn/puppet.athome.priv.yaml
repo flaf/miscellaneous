@@ -34,6 +34,22 @@ pxeserver::params::host_records:
 
 
 monitoring::server::params::additional_checkpoints:
+  - host_name: 'titi'
+    address: '1.2.3.5'
+    templates: ['linux_tpl']
+    extra_info:
+      check_dns:
+        dns-titi:
+          fqdn: 'titi'
+          expected-address: '$HOSTADDRESS$'
+        dns-titi-vip:
+          fqdn: 'titi-vip'
+          server: 8.8.8.8
+  - host_name: 'tutu'
+    address: '1.2.3.5'
+    templates: ['linux_tpl']
+    extra_info:
+      ipmi_address: 'a.b.c.12'
   - host_name: 'toto'
     address: '1.2.3.4'
     templates: ['linux_tpl']
@@ -49,3 +65,45 @@ monitoring::server::params::additional_blacklist:
     description: 'foo'
     timeslots: '[00h00;00h30]'
     weekdays: [1,2,4]
+  - contact: '.*'
+    host_name: 'titi'
+    description: 'foo'
+    timeslots: '[00h00;00h30]'
+    weekdays: [1,2,4]
+    comment:
+      - blabla blabla blabla blabla...
+      - blabla blabla blabla blabla...
+
+monitoring::host::params::extra_info:
+  blacklist:
+    - contact: '.*'
+      description: '^cron-foo$'
+      timeslots: '[00h00;23h59]'
+      weekdays: '*'
+      comment:
+        - blabla blabla blabla blabla...
+        - blabla blabla blabla blabla...
+    - contact: '.*'
+      description: '^cron-bar$'
+      timeslots: '[00h00;23h59]'
+      weekdays: '*'
+      comment:
+        - blabla blabla blabla blabla...
+        - blabla blabla blabla blabla...
+  ipmi_address: '192.168.0.233'
+  check_dns:
+    dns-puppetforge:
+      fqdn: 'puppetforge.%{::facts.networking.domain}'
+      expected-address: '$HOSTADDRESS$'
+
+monitoring::host::params::custom_variables:
+  - varname: _https
+    value:
+      site-foo: ['aaaaaa', 'bbbbbbbb']
+      site-baaaaaaaaar: ['aaaaaa', 'bbbbbbbb']
+      site-baar2: ['aaaaaa', 'bbbbbbbb']
+  - varname: _loooooooooooong
+    value: 'xxxxxxxxxxxxxxxx'
+
+
+
