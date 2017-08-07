@@ -10,13 +10,13 @@ function monitoring::dummy2customvars (
     '_dns_lookups'            => {},
   }
 
+  # Handle of the DNS part if needed.
   if $check_dns =~ Undef {
 
     $custom_variables = []
 
   } else {
 
-    # Handle the DNS part.
     $custom_variables = $check_dns.reduce($init) |$memo, $item| {
 
       [$desc, $dns]     = $item
@@ -52,6 +52,7 @@ function monitoring::dummy2customvars (
 
   }
 
+  # Add the IPMI part if needed.
   $ipmi_address.then |$ipmi_addr| {
     $ipmi_var = {
       'varname' => '_ping_addresses',
