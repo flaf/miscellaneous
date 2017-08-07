@@ -1,7 +1,4 @@
-<%- |
-  Array[Monitoring::HostConf] $hosts_conf,
-  Hash[String[1], String[1]]  $ipmis,
-| -%>
+<%- |Array[Monitoring::HostConf] $hosts_conf| -%>
 ### This file is managed by Puppet, don't edit it. ###
 
 <%-

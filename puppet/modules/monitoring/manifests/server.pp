@@ -55,15 +55,6 @@ class monitoring::server {
   #  message => "${pretty_array}",
   #}
 
-  $all_ipmi_addresses = $hosts_conf.reduce({}) |$memo, $host| {
-    $ipmi = $host.dig('extra_info', 'ipmi_address')
-    if $ipmi =~ Undef {
-      $memo
-    } else {
-      $memo + {$host['host_name'] => $ipmi}
-    }
-  }
-
   file {
     default:
       ensure  => 'file',
@@ -77,7 +68,6 @@ class monitoring::server {
                    'monitoring/hosts.conf.epp',
                    {
                     'hosts_conf' => $hosts_conf,
-                    'ipmis'      => $all_ipmi_addresses,
                    },
                  ),
     ;
