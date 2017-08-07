@@ -1,12 +1,16 @@
 <%- |Array[Monitoring::HostConf] $hosts_conf| -%>
 ### This file is managed by Puppet, don't edit it. ###
 
+
 <%-
   $hosts_conf.each |$index, $host| {
+    # It is purely aesthetic.
+    $human_index = $index + 1
+    $b_title     = "###    Host ${human_index}: ${host['host_name']}    ###"
+    $b_line      = inline_template('<%= "#" * @b_title.size %>')
+    $begin_title = "${b_line}\n${b_title}\n${b_line}"
 -%>
-###
-### Host number <%= $index + 1 %>.
-###
+<%= $begin_title %>
 define host {
 
     host_name <%= $host['host_name'] %>
@@ -85,7 +89,9 @@ define host {
                          true
                        }.lest || {false}
 
-    if $has_check_dns or $has_ipmi {
+    $required_dummy_host = ($has_check_dns or $has_ipmi)
+
+    if $required_dummy_host {
 
       $dummy_custom_vars = ::monitoring::dummy2customvars(
         $host_name    = $host['host_name'],
@@ -100,7 +106,8 @@ define host {
           if $add { $memo + [$tpl] } else { $memo }
         }
 -%>
-# Dummy host for checks indirectly related to the host <%= $host['host_name'] %>.
+# Dummy host for checks which care _indirectly_ related
+# to the host <%= $host['host_name'] %>.
 define host {
 
     host_name <%= $host['host_name'] %>.dummy
@@ -112,9 +119,12 @@ define host {
 }
 
 <%-
-    }
+    } # End of the "if-required-dummy-host".
+-%>
 
+
+
+<%-
   } # End of the loop "$hosts_conf.each".
-
 -%>
 
