@@ -5,7 +5,7 @@
 ### This file is managed by Puppet, don't edit it. ###
 
 <%-
-$hosts_conf.each |$index, $host| {
+  $hosts_conf.each |$index, $host| {
 -%>
 ###
 ### Host number <%= $index + 1 %>.
@@ -16,92 +16,92 @@ define host {
     address   <%= $host['address'] %>
     use       <%= $host['templates'].join(',') %>
 <%-
-  $host.dig('custom_variables').then |$custom_vars| {
-    if $custom_vars.empty { next() }
+    $host.dig('custom_variables').then |$custom_vars| {
+      if $custom_vars.empty { next() }
 -%>
 
     # Customized variables.
 <%= $custom_vars.::monitoring::customvars2str($indent=4) %>
 <%-
   }
-  $host.dig('extra_info').then |$extra_info| {
-    if $extra_info.empty { next() }
+    $host.dig('extra_info').then |$extra_info| {
+      if $extra_info.empty { next() }
 -%>
 
     # Extra info.
 <%-
-    $host.dig('extra_info', 'ipmi_address').then |$ipmi| {
+      $host.dig('extra_info', 'ipmi_address').then |$ipmi| {
 -%>
 
     ; ipmi_address    <%= $ipmi %>
 <%-
-    }
-    $host.dig('extra_info', 'blacklist').then |$bl| {
-      if $bl.empty { next() }
+      }
+      $host.dig('extra_info', 'blacklist').then |$bl| {
+        if $bl.empty { next() }
 -%>
 
     ; Blacklist rules.
     ;
 <%= ::monitoring::blacklist2str($bl, $indent_str='    ;  ') %>
 <%-
-    }
-    $host.dig('extra_info', 'check_dns').then |$check_dns| {
-      if $check_dns.empty { next() }
+      }
+      $host.dig('extra_info', 'check_dns').then |$check_dns| {
+        if $check_dns.empty { next() }
 -%>
 
     ; DNS checks.
 <%-
-      $check_dns.each |$desc, $settings| {
+        $check_dns.each |$desc, $settings| {
 -%>
     ;
     ;   description:      <%= $desc %>
     ;   fqdn:             <%= $settings['fqdn'] %>
 <%-
-        if 'server' in $settings {
+          if 'server' in $settings {
 -%>
     ;   server            <%= $settings['server'] %>
 <%-
-        }
-        if 'expected-address' in $settings {
+          }
+          if 'expected-address' in $settings {
 -%>
     ;   expected-address: <%= $settings['expected-address'] %>
 <%-
-        }
-        if 'options' in $settings {
+          }
+          if 'options' in $settings {
 -%>
     ;   options:          <%= $settings.dig['options'] %>
 <%-
+          }
         }
-      }
-    } # Enf of "if-check-dns".
-  } # Enf of "if-extra-info".
+      } # Enf of "if-check-dns".
+    } # Enf of "if-extra-info".
 -%>
 
 }
 
 <%-
-  $has_ipmi      = $host.dig('extra_info', 'ipmi_address')
-                     .then |$v| {true}.lest || {false}
-  $has_check_dns = $host.dig('extra_info', 'check_dns')
-                     .then |$v| {
-                       if $v.empty { next(false) }
-                       true
-                     }.lest || {false}
+    $has_ipmi      = $host.dig('extra_info', 'ipmi_address')
+                       .then |$v| {true}.lest || {false}
+    $has_check_dns = $host.dig('extra_info', 'check_dns')
+                       .then |$v| {
+                         if $v.empty { next(false) }
+                         true
+                       }.lest || {false}
 
-  if $has_check_dns or $has_ipmi {
+    if $has_check_dns or $has_ipmi {
 
-    $dummy_custom_vars = ::monitoring::dummy2customvars(
-      $host_name    = $host['host_name'],
-      $host_address = $host['address'],
-      $ipmi_address = $host.dig('extra_info', 'ipmi_address'),
-      $check_dns    = $host.dig('extra_info', 'check_dns'),
-    )
+      $dummy_custom_vars = ::monitoring::dummy2customvars(
+        $host_name    = $host['host_name'],
+        $host_address = $host['address'],
+        $ipmi_address = $host.dig('extra_info', 'ipmi_address'),
+        $check_dns    = $host.dig('extra_info', 'check_dns'),
+      )
 
-    $dummy_tpls = {'ping_tpl' => $has_ipmi, 'dns_tpl' => $has_check_dns}.
-      reduce(['dummy-host_tpl']) |$memo, $v| {
-        [$tpl, $add] = $v
-        if $add { $memo + [$tpl] } else { $memo }
-      }
+      $dummy_tpls = {'ping_tpl' => $has_ipmi, 'dns_tpl' => $has_check_dns}
+        .reduce(['dummy-host_tpl']) |$memo, $v| {
+          [$tpl, $add] = $v
+          if $add { $memo + [$tpl] } else { $memo }
+        }
 -%>
 # Dummy host for checks indirectly related to the host <%= $host['host_name'] %>.
 define host {
@@ -115,9 +115,9 @@ define host {
 }
 
 <%-
-  }
+    }
 
-} # End of the loop "$hosts_conf.each".
+  } # End of the loop "$hosts_conf.each".
 
 -%>
 
