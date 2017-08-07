@@ -16,6 +16,7 @@ function monitoring::dummy2customvars (
 
   } else {
 
+    # Handle the DNS part.
     $custom_variables = $check_dns.reduce($init) |$memo, $item| {
 
       [$desc, $dns]     = $item
@@ -51,8 +52,12 @@ function monitoring::dummy2customvars (
 
   }
 
-  $ipmi_address.then |$ipmi| {
-    [{'varname' => '_ping_addresses', 'value' => {"ipmi.${host_name}" => [$ipmi]}}] + $custom_variables
+  $ipmi_address.then |$ipmi_addr| {
+    $ipmi_var = {
+      'varname' => '_ping_addresses',
+      'value'   => {"ipmi.${host_name}" => [$ipmi_addr]},
+    }
+    [$ipmi_var] + $custom_variables
   }.lest || {
     $custom_variables
   }
