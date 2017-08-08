@@ -18,11 +18,11 @@ function monitoring::customvars2str (
         $variable['value']
       }
       Array: {
-        $variable['value'].sort.join(', ')
+        $variable['value'].join(', ')
       }
       Hash: {
-        $variable['value'].keys.sort.reduce([]) |$memo, $desc| {
-          $values = $variable['value'][$desc]
+        $variable['value'].reduce([]) |$memo, $a_value| {
+          [$desc, $values] = $a_value
           $str = $values.join(')$ $(')
           $memo + "${desc}$(${str})$"
         }.join(", \\\n${$spaces}")

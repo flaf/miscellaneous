@@ -37,6 +37,14 @@ monitoring::server::params::additional_checkpoints:
   - host_name: 'titi'
     address: '1.2.3.5'
     templates: ['linux_tpl']
+    custom_variables:
+      - varname: '_array'
+        value: ['z', 'w', 'x', 'a', 'b']
+      - varname: '_hash'
+        value:
+          a: ['a', 'b', 'c']
+          w: ['c', 'f', 'a']
+          b: ['a', 'c', 'b']
     extra_info:
       check_dns:
         dns-titi:
@@ -81,14 +89,14 @@ monitoring::host::params::extra_info:
       timeslots: '[00h00;23h59]'
       weekdays: '*'
       comment:
-        - blabla blabla blabla blabla...
+        - foofoo blabla blabla blabla...
         - blabla blabla blabla blabla...
     - contact: '.*'
       description: '^cron-bar$'
       timeslots: '[00h00;23h59]'
       weekdays: '*'
       comment:
-        - blabla blabla blabla blabla...
+        - barbar blabla blabla blabla...
         - blabla blabla blabla blabla...
   ipmi_address: '192.168.0.233'
   check_dns:

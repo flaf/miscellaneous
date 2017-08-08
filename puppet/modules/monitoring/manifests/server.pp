@@ -46,6 +46,7 @@ class monitoring::server {
 
   $pdbquery   = puppetdb_query($query)
   $hosts_conf = ::monitoring::pdbquery2hostsconf($pdbquery + $additional_pdbquery)
+                  .::monitoring::sorthostsconf
 
   # To debug.
   #

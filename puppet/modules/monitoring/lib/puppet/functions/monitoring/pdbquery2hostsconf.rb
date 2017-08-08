@@ -23,11 +23,6 @@ Puppet::Functions.create_function(:'monitoring::pdbquery2hostsconf') do
       extra_info = checkpoint['extra_info']             # can be nil.
       monitored = checkpoint['monitored']               # can be nil.
 
-      # If not nil, custom_variables is sorted by varname.
-      if not custom_variables.nil?
-        custom_variables.sort_by! {|cv| cv['varname']}
-      end
-
       # If the host_name field of a rule in the blacklist is
       # not present, we have to set it to the host_name of
       # the current checkpoint resource. We add ^ and $
@@ -92,7 +87,7 @@ Puppet::Functions.create_function(:'monitoring::pdbquery2hostsconf') do
         if (not templates.nil?) and (not templates.empty?)
           current_templates = current_hostconf['templates']
           if current_templates.nil? or current_templates.empty?
-            current_hostconf['templates'] = templates.uniq
+            current_hostconf['templates'] = templates
           else
             star_tpl = templates.select {|t| t =~ /\*$/}
             if star_tpl.size > 0
@@ -113,7 +108,7 @@ Puppet::Functions.create_function(:'monitoring::pdbquery2hostsconf') do
                 end
               end
             end
-            current_hostconf['templates'] = current_templates.concat(templates).uniq
+            current_hostconf['templates'] = current_templates.concat(templates)
           end
         end
 
@@ -144,10 +139,8 @@ Puppet::Functions.create_function(:'monitoring::pdbquery2hostsconf') do
               end
 
               if current_variable.nil?
-                # a_variable is not already present, so it's
-                # added and after it's sorted.
+                # a_variable is not already present, so it's added.
                 current_custom_variables << a_variable
-                current_custom_variables.sort_by! {|cv| cv['varname']}
               else
                 # a_variable is already present in
                 # current_custom_variables.
@@ -185,7 +178,7 @@ Puppet::Functions.create_function(:'monitoring::pdbquery2hostsconf') do
 
                 if current_value.is_a?(Array)
                   current_custom_variables[current_index]['value'] = current_value
-                  .concat(value).uniq
+                  .concat(value)
                 end
 
                 if current_value.is_a?(Hash)
@@ -354,13 +347,6 @@ Puppet::Functions.create_function(:'monitoring::pdbquery2hostsconf') do
         |must be unique.
         EOS
         raise(Puppet::ParseError, msg)
-      elsif star_tpl.size == 1
-        star_tpl = star_tpl[0]
-        checkpoint['templates'].delete(star_tpl)
-        remaining_tpl = checkpoint['templates'].sort
-        checkpoint['templates'] = [star_tpl[0..-2]].concat(remaining_tpl)
-      else
-        checkpoint['templates'] = checkpoint['templates'].sort
       end
 
       if checkpoint['custom_variables'].nil?
@@ -384,7 +370,7 @@ Puppet::Functions.create_function(:'monitoring::pdbquery2hostsconf') do
 
     end
 
-    hostsconf_hash.values.sort_by {|a_hostconf| a_hostconf['host_name']}
+    hostsconf_hash.values
 
   end # End of def.
 
