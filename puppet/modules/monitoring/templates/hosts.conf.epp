@@ -103,21 +103,31 @@ define host {
       )
 
       $dummy_tpls = {'ping_tpl' => $has_ipmi, 'dns_tpl' => $has_check_dns}
-        .reduce(['dummy-host_tpl']) |$memo, $v| {
+        .reduce(['dummy-host_tpl*']) |$memo, $v| {
           [$tpl, $add] = $v
           if $add { $memo + [$tpl] } else { $memo }
         }
+
+      $dummy_host = [{
+        'host_name'        => "${host['host_name']}.dummy",
+        'address'          => 'not-relevant',
+        'templates'        => $dummy_tpls,
+        'custom_variables' => $dummy_custom_vars,
+        'extra_info'       => {},
+        'monitored'        => true,
+      }].::monitoring::sorthostsconf()[0]
+
 -%>
 # Dummy host for checks which care _indirectly_ related
 # to the host <%= $host['host_name'] %>.
 define host {
 
-    host_name <%= $host['host_name'] %>.dummy
-    address   not-relevant
-    use       <%= $dummy_tpls.join(',') %>
+    host_name <%= $dummy_host['host_name'] %>
+    address   <%= $dummy_host['address'] %>
+    use       <%= $dummy_host['templates'].join(',') %>
 
     # Customized variables.
-<%= $dummy_custom_vars.::monitoring::customvars2str($indent=4) %>
+<%= $dummy_host['custom_variables'].::monitoring::customvars2str($indent=4) %>
 }
 
 <%-
