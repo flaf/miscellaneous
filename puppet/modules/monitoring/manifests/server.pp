@@ -31,8 +31,11 @@ class monitoring::server {
     |- END
 
   $additional_pdbquery = $additional_checkpoints.map |$index, $checkpoint| {
+
+    $host_name = $checkpoint['host_name'];
+
     {
-      'title'      => "checkpoint ${index} from Hiera via monitoring::server",
+      'title'      => "checkpoint index=${index} from Hiera via monitoring::server",
       # `certname` is Not relevant here.
       'certname'   => $::facts['networking']['fqdn'],
       # In hiera, `monitored` will be optional and the

@@ -18,7 +18,7 @@ function monitoring::data (
   {
     monitoring::host::params::host_name        => $fqdn,
     monitoring::host::params::address          => $ip,
-    monitoring::host::params::templates        => ['linux_tpl'],
+    monitoring::host::params::templates        => ['linux_tpl*'],
     monitoring::host::params::custom_variables => [],
     monitoring::host::params::extra_info       => $default_extra_info,
     monitoring::host::params::monitored        => true,

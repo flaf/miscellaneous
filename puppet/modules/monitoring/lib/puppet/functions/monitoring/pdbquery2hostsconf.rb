@@ -24,7 +24,6 @@ Puppet::Functions.create_function(:'monitoring::pdbquery2hostsconf') do
       monitored = checkpoint['monitored']               # can be nil.
 
       # If not nil, custom_variables is sorted by varname.
-      # It is the only sorting requirement in this code.
       if not custom_variables.nil?
         custom_variables.sort_by! {|cv| cv['varname']}
       end
@@ -39,6 +38,22 @@ Puppet::Functions.create_function(:'monitoring::pdbquery2hostsconf') do
           if rule['host_name'].nil?
             rule['host_name'] = '^' + host_name.gsub('.', '\.') + '$'
           end
+        end
+      end
+
+      # If not nil or empty, the templates array can contain
+      # only one `*` template (0 or 1).
+      if not templates.nil? and not templates.empty?
+        star_tpl = templates.select {|t| t =~ /\*$/}
+        if star_tpl.size > 1
+          msg = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
+          |#{function_name}(): problem with the checkpoint resource `#{title}`
+          |of the host_name `#{host_name}` which has a `templates` parameter
+          |which contains at least 2 templates with the trailing character `*`:
+          |`#{star_tpl}`. This is not allowed, if defined, the `*` template
+          |must be unique.
+          EOS
+          raise(Puppet::ParseError, msg)
         end
       end
 
@@ -79,6 +94,25 @@ Puppet::Functions.create_function(:'monitoring::pdbquery2hostsconf') do
           if current_templates.nil? or current_templates.empty?
             current_hostconf['templates'] = templates.uniq
           else
+            star_tpl = templates.select {|t| t =~ /\*$/}
+            if star_tpl.size > 0
+              # We are sure that the star template is unique.
+              star_tpl = star_tpl[0]
+              current_star_tpl = current_templates.select {|t| t =~ /\*$/}
+              if current_star_tpl.size > 0
+                if not current_star_tpl.include?(star_tpl)
+                  msg = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
+                  |#{function_name}(): problem with the checkpoint resource `#{title}`
+                  |of the host_name `#{host_name}` and its `templates` parameter.
+                  |This parameter set `#{star_tpl}` as `*` template but a previous
+                  |checkpoint resource has been already recorded with this `*`
+                  |template: `#{current_star_tpl}`. This is not allowed, if defined,
+                  |the `*` template must be unique (for a given host).
+                  EOS
+                  raise(Puppet::ParseError, msg)
+                end
+              end
+            end
             current_hostconf['templates'] = current_templates.concat(templates).uniq
           end
         end
@@ -308,6 +342,25 @@ Puppet::Functions.create_function(:'monitoring::pdbquery2hostsconf') do
         |a host must have at least one template.
         EOS
         raise(Puppet::ParseError, msg)
+      end
+
+      star_tpl = checkpoint['templates'].select {|t| t =~ /\*$/}
+      if star_tpl.size > 1
+        msg = <<-"EOS".gsub(/^\s*\|/, '').split("\n").join(' ')
+        |#{function_name}(): problem with the host `#{host_name}`
+        |after collecting all the checkpoint resources: the `templates`
+        |parameter of this host has at least 2 `*` templates
+        |`#{star_tpl}`. This is not allowed, if defined, the `*`
+        |must be unique.
+        EOS
+        raise(Puppet::ParseError, msg)
+      elsif star_tpl.size == 1
+        star_tpl = star_tpl[0]
+        checkpoint['templates'].delete(star_tpl)
+        remaining_tpl = checkpoint['templates'].sort
+        checkpoint['templates'] = [star_tpl[0..-2]].concat(remaining_tpl)
+      else
+        checkpoint['templates'] = checkpoint['templates'].sort
       end
 
       if checkpoint['custom_variables'].nil?

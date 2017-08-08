@@ -47,7 +47,7 @@ monitoring::server::params::additional_checkpoints:
           server: 8.8.8.8
   - host_name: 'tutu'
     address: '1.2.3.5'
-    templates: ['linux_tpl']
+    templates: ['linux_tpl', 'foo_tpl*', 'bar_tpl']
     extra_info:
       ipmi_address: 'a.b.c.12'
   - host_name: 'toto'

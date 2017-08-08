@@ -27,6 +27,7 @@ define monitoring::host::checkpoint (
   # If not empty, $templates must contain different
   # templates two by two.
   unless $templates.empty {
+
     $templates.reduce([]) |$memo, $template| {
       if $template in $memo {
         @("END"/L$).fail
@@ -39,6 +40,18 @@ define monitoring::host::checkpoint (
       }
       $memo + [$template]
     }
+
+    $s = $templates.filter |$tpl| { $tpl =~ /\*$/ }.size
+    if $s > 1 {
+      @("END"/L$).fail
+        Problem with the defined resource \
+        `Monitoring::Host::Checkpoint['${title}']` and its Array \
+        parameter `templates` which contains at least 2 templates \
+        with the trailing character `*`. This is not allowed, if \
+        defined, the `*` template must be unique.
+        |- END
+    }
+
   }
 
   # If not empty, $custom_variables must contain variables
