@@ -32,8 +32,6 @@ class monitoring::server {
 
   $additional_pdbquery = $additional_checkpoints.map |$index, $checkpoint| {
 
-    $host_name = $checkpoint['host_name'];
-
     {
       'title'      => "checkpoint index=${index} from Hiera via monitoring::server",
       # `certname` is Not relevant here.
@@ -49,15 +47,17 @@ class monitoring::server {
                   .::monitoring::sorthostsconf
 
   # To debug.
-  #
-  #$pretty_array = inline_template(@(END))
-  #  '<%- require "json" -%>
-  #  <%= JSON.pretty_generate(@hosts_conf) %>'
-  #| END
-  #
-  #notify { 'Check of the hosts conf':
-  #  message => "${pretty_array}",
-  #}
+  $debug = false
+  if $debug {
+    $pretty_array = inline_template(@(END))
+      '<%- require "json" -%>
+      <%= JSON.pretty_generate(@hosts_conf) %>'
+    | END
+
+    notify { 'Check of the hosts conf':
+      message => "${pretty_array}",
+    }
+  }
 
   file {
     default:
