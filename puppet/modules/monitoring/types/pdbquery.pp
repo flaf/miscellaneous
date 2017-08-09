@@ -3,8 +3,7 @@ type Monitoring::PdbQuery = Array[
     title      => String[1],
     certname   => String[1],
     parameters => Monitoring::CheckPoint,
-  }],
-  1
+  }]
 ]
 
 

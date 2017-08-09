@@ -42,11 +42,11 @@
 ###    Manual rules    ###
 ##########################
 <%= monitoring::blacklist2str($additional_blacklist) %>
+
+
 <%-
   }
 -%>
-
-
 <%-
   $hosts_conf.filter |$host| {
     $bl = $host.dig('extra_info', 'blacklist')
