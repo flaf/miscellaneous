@@ -183,15 +183,24 @@ The `address` parameter is the `address` field of the host
 bloc (in the Nagios configuration) to which the checkpoint
 resource will be related. Its default value is `undef` which
 an allowed value. Indeed, for N checkpoint resource *of a
-given `host_name`*, a non `undef` value for the `address`
-parameter is required on just one (at least) resource. So
-you can let the `undef` default value on the N-1 checkpoint
-resources and set the `address` value on just 1 checkpoint
-resource. For a given `host_name`, you can set the `address`
-parameter on 2 or more checkpoint resources if you want but,
-in this case, the address must be the same.
+given `host_name`*, a non `undef` value for **the `address`
+parameter is required on just one and only one resource**:
+so you have to let the `undef` default value on N-1
+checkpoint resources and set the `address` value on just 1
+checkpoint resource.
+
+The `templates` parameter allows to *add* templates on the
+`host_name` bloc to which the checkpoint resource is related.
 
 
+The `monitored` parameter can be `true`, `false` or `undef`
+which is the default value. If set to `false`, the
+`host_name` to which the checkpoint resource is related will
+be not present in the final Nagios configuration generated
+by the class `monitoring::server`. Like the `address`
+parameter, for a given `host_name`, the `monitored`
+parameter must be set to a non `undef` value (ie `true` or
+`false`) on one and only one checkpoint resource.
 
 
 # Parameters
