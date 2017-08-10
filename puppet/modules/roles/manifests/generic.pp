@@ -355,6 +355,20 @@ class roles::generic (
           }
         }
 
+        $mcoserver_checkpoint_title = $::facts['networking']['fqdn'].with |$fqdn| {
+          "${fqdn} from ${title} for mcollective::server"
+        }
+        monitoring::host::checkpoint {$mcoserver_checkpoint_title:
+          templates        => ['linux_tpl'],
+          custom_variables => [
+            {
+              'varname' => '_present_processes',
+              'value'   => {'process-mcollectived' => ['mcollectived']},
+              'comment' => ['The process "mcollectived" must be up.'],
+            }
+          ],
+        }
+
       }
 
 
