@@ -138,7 +138,7 @@ Two files which contains the Nagios configuration will be
 generated:
 
 * `/tmp/blacklist.conf`
-* `and the main file /tmp/hosts.conf`.
+* and the main file `/tmp/hosts.conf`.
 
 
 
