@@ -1,6 +1,6 @@
 {
   "name": "flaf-monitoring",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "flaf",
   "summary": "Module to generate Nagios-like configurations",
   "license": "Apache-2.0",
