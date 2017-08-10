@@ -245,10 +245,10 @@ which are related to the host but which will not generate
 checks in the host block of this host. For instance the IPMI
 address concerns the host but the check of the IPMI (a ping)
 will be not defined in the host-block of the host. It will
-be defined special dummy host. It's the same for DNS checks.
-The default value of this parameter is `{}` ie no exta
-informations added. Currently, this hash parameter can accept
-only 3 keys:
+be defined in a dedicated dummy host. It's the same for DNS
+checks. The default value of this parameter is `{}` ie no
+exta informations added. Currently, this hash parameter can
+accept only 3 keys:
 
 * `ipmi_address` whose its value is a string (in fact a pattern
   to avoid special character).
