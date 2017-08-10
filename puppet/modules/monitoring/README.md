@@ -356,6 +356,21 @@ and the default merge policy of each parameter.
 
 # The class `monitoring::server`
 
+This class allows to generate the final Nagios-like
+configuration. Here is an example:
+
+```puppet
+$datacenter = 'dc3'
+
+class {'monitoring::server::params':
+  additional_checkpoints =>,
+  additional_blacklist   =>,
+  filter_tags            => [$datacenter],
+}
+
+include 'monitoring::server'
+```
+
 
 
 
