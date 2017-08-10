@@ -263,6 +263,8 @@ class roles::generic (
       ############
       '::raid': {
 
+        include '::raid'
+
         $raid_checkpoint_title = $::facts['networking']['fqdn'].with |$fqdn| {
           "${fqdn} from ${title} for raid"
         }
