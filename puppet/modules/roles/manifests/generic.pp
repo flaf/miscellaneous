@@ -259,6 +259,21 @@ class roles::generic (
 
 
       ############
+      ### raid ###
+      ############
+      '::raid': {
+
+        $raid_checkpoint_title = $::facts['networking']['fqdn'].with |$fqdn| {
+          "${fqdn} from ${title} for raid"
+        }
+        monitoring::host::checkpoint {$raid_checkpoint_title:
+          templates => ['raid_tpl'],
+        }
+
+      }
+
+
+      ############
       ### snmp ###
       ############
       '::snmp': {
