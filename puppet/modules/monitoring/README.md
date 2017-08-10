@@ -7,44 +7,53 @@ Module to generate Nagios-like configurations.
 
 # Introduction: main principle of this module
 
-The goal of this module is to generate, some `host`
-Nagios-like configurations like this:
+The goal of this module is to generate some `host` blocks of
+a Nagios-like configuration like this:
 
 ```cfg
-# A host in the Nagios-like configuration.
+# A host block in the Nagios-like configuration.
 define host {
 
-    # The hostname of in the Nagios configuration. The fqdn
-    # is a good value because the "host_name" value must be
-    # unique in all the Nagios configuration.
+    # The fqdn is a good value for this parameter because
+    # the "host_name" value must be unique in all the Nagios
+    # configuration. The "host_name" value is like a primary
+    # key of the host in the Nagios-like configurations.
     host_name srv.dom.tld
 
-    # The address can be a fqdn or an IP address etc.
+    # The address can be a fqdn or an IP address etc. This
+    # is not a primary key of the host block, because it's
+    # perfectly possible to have two host blocks with the
+    # same address.
     address   192.168.0.252
 
     # The list of templates used by this Nagios host. Very
-    # important because to define the checks which will be
-    # applied to the host.
+    # important because this list defines the list of checks
+    # which will be applied to the host.
     use       linux_tpl,puppet_tpl,https_tpl
 
     # Customized variables (if needed, its depends on the
     # templates used) to configure some checks.
     #
-    # Here a "simple" variable: its value is a string.
+    # Here a "simple" variable, ie its value is a string.
     _bar   xxxxxxxxxxxxxxxx
     #
-    # Here an "array" variable.
+    # Here an "array" variable, ie its value is an array.
     _foo   aaa, bbb, ccc
     #
-    # Here a "multi-valued keys" variable where the value
-    # is a hash where the keys are the descriptions and
-    # the values are arrays of strings.
+    # Here a "multi-valued keys" variable, ie its value is a
+    # hash where the keys are the descriptions of the check
+    # and the values are parameters of the check (an arrays
+    # of strings).
     _https admin-site$(srv.dom.tld/admin)$ $(pattern1)$, \
            main-site$(srv.dom.tld/)$ $(pattern2)$,
 
-    # Some extra info, related to this host but not
-    # useful the this "host" block definition.
+    # Some extra info, related to this host but not useful
+    # in this "host" block definition. So these are just
+    # comments.
     #
+    # For instance, the IPMI address below will be used in
+    # another block host, a dummy host to ping the IP
+    # address.
     ; ipmi_address    192.168.20.252
     ; # etc...
     ; # etc...
@@ -53,8 +62,8 @@ define host {
 ```
 
 The main element of this module is the user-defined resource
-`monitoring::host::checkpoint`. Here is an example (more
-details about this resource type below):
+`monitoring::host::checkpoint`. Here is a quick example
+(more details about this resource type below):
 
 ```puppet
 $fqdn = $::facts['networking']['fqdn']
@@ -72,12 +81,11 @@ monitoring::host::checkpoint {"base-checkpoint ${fqdn}":
 A checkpoint resource **does nothing, manages no resource**
 etc. It's just an empty user-defined resource (like an empty
 shell) which will be **recorded in the Puppetdb** with its
-parameters, that's all.
-
-In your puppet nodes, you can define checkpoint resources as
-much as you want. **Be very careful to define a unique title
-for each checkpoint resource** in all the Puppetdb. For
-instance, you can use this kind of title in a class :
+parameters, that's all. In your puppet nodes, you can define
+checkpoint resources as much as you want. **Be very careful
+to define a unique title for each checkpoint resource** in
+all Puppetdb. For instance, you can use this kind of title
+in a class :
 
 ```puppet
 class raid {
@@ -86,7 +94,7 @@ class raid {
 
   $fqdn = $::facts['networking']['fqdn']
 
-  # This title Should be unique in all Puppet.
+  # This title Should be unique in all Puppetdb.
   monitoring::host::checkpoint {"${fqdn} from class ${title}":
     host_name => $fqdn,
     templates => ['raid_tpl'],
