@@ -250,28 +250,30 @@ checks. The default value of this parameter is `{}` ie no
 exta informations added. Currently, this hash parameter can
 accept only 3 keys:
 
-* `ipmi_address` whose its value is a string (in fact a pattern
-  to avoid special character).
+* `ipmi_address` whose its value is a string (in fact a it's
+  a pattern to avoid special characters).
 * `check_dns` whose the value has the type `Monitoring::CheckDns`
   (see [this file](types/checkdns.pp) to have more details).
 * `blacklist` whose the value has the type `Monitoring::Blacklist`
   (see [this file](types/blacklist.pp) to have more details)
 
 If the keys `ipmi_address` and/or `check_dns` are present, a
-dummy host will be created in the final Nagios configuration
-to check the IPMI address and/or the DNS records.
+dummy host will be automatically created in the final Nagios
+configuration to check the IPMI address and/or the DNS
+record(s).
 
 The parameter `extra_info` can be merged from different
-checkpoint resource under certain conditions:
+checkpoint resources under certain conditions:
 
 * The values of `ipmi_address` can't be merged. If defined,
   it must be defined in a only one checkpoint resource.
 * The values of `check_dns` can be merged but only if the
-  hashes `$extra_info['check_dns']` have no common key
-  (ie common description).
+  hashes `$extra_info['check_dns']` (from each different
+  checkpoint resources) have no common key (ie no common
+  service description).
 * The values of `blacklist` can be merged without restriction.
 
-In `check_dns` the value `$HOSTADDRESS` is possible for the
+In `check_dns`, the value `$HOSTADDRESS$` is possible for the
 key `expected-address` and this value will be changed to the
 value of the `address` parameter of the checkpoint resource.
 
@@ -288,9 +290,9 @@ parameter must be set to a non `undef` value (ie `true` or
 Remark: in a checkpoint resource, each parameter below can
 be empty:
 
-* `templates` equal to `[]`,
-* `custom_variables` equal to `[]`,
-* `extra_info` equal to `{}`.
+* `templates` can be equal to `[]`,
+* `custom_variables` can be equal to `[]`,
+* `extra_info` can be equal to `{}`.
 
 But they can be empty simultaneously (in this case the
 checkpoint resource has no sense).
@@ -301,7 +303,7 @@ checkpoint resource has no sense).
 # The class `monitoring::host`
 
 This class just defines a checkpoint resource which will be
-a kind of main checkpoint of the current host and which will
+a kind of *main* checkpoint of the current host and which will
 be settable via Hieradata. Here is an example:
 
 ```puppet
@@ -340,8 +342,9 @@ include 'monitoring::host'
 ```
 
 All the parameters of this class are exactly the parameters
-of the checkpoint resource declared in this class. So see
-explanations above about these parameters.
+of the checkpoint resource declared in this class. Details
+about these parameters has been given in the section
+dedicated to the custom type `monitoring::host::checkpoint`.
 
 However, the default value of each parameter is not
 necessarily the same default value of a checkpoint resource.
