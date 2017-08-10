@@ -265,11 +265,17 @@ class roles::generic (
 
         include '::raid'
 
-        $raid_checkpoint_title = $::facts['networking']['fqdn'].with |$fqdn| {
-          "${fqdn} from ${title} for raid"
-        }
-        monitoring::host::checkpoint {$raid_checkpoint_title:
-          templates => ['raid_tpl'],
+        # Warning: the class "raid" do nothing by default
+        # unless the custom fact $raid_controllers is not
+        # empty. So we add a checkpoint only if this fact is
+        # not empty.
+        unless $raid_controllers.empty {
+          $raid_checkpoint_title = $::facts['networking']['fqdn'].with |$fqdn| {
+            "${fqdn} from ${title} for raid"
+          }
+          monitoring::host::checkpoint {$raid_checkpoint_title:
+            templates => ['raid_tpl'],
+          }
         }
 
       }
