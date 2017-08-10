@@ -407,12 +407,31 @@ class roles::generic (
         ]
 
         if $::facts['networking']['fqdn'] in $test_providers {
+
+          $etckeeper_cron_name = 'etckeeper-push-all'
+
           class { '::confkeeper::provider::params':
-            wrapper_cron => ::roles::wrap_cron_mon('etckeeper-push-all'),
+            wrapper_cron => ::roles::wrap_cron_mon($etckeeper_cron_name),
           }
 
           include '::confkeeper::provider'
-        }
+
+          $etckeeper_checkpoint_title = $::facts['networking']['fqdn'].with |$fqdn| {
+            "${fqdn} from ${title} for confkeeper::provider"
+          }
+
+          monitoring::host::checkpoint {$etckeeper_checkpoint_title:
+            templates        => ['linux_tpl'],
+            custom_variables => [
+              {
+                'varname' => '_crons',
+                'value'   => {"cron-${etckeeper_cron_name}" => [$etckeeper_cron_name, '1d']},
+                'comment' => ['The host should push its configuration daily.'],
+              }
+            ],
+          }
+
+        } # Enf of "if".
 
       }
 
