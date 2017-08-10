@@ -110,8 +110,13 @@ monitoring::host::params::custom_variables:
       site-foo: ['aaaaaa', 'bbbbbbbb']
       site-baaaaaaaaar: ['aaaaaa', 'bbbbbbbb']
       site-baar2: ['aaaaaa', 'bbbbbbbb']
+    comment:
+      - 'Very Important...'
+      - 'To be or not to be, that is the question.'
   - varname: _loooooooooooong
     value: 'xxxxxxxxxxxxxxxx'
-
+    comment:
+      - 'Not very Important...'
+      - 'pfeuuuuu !!!'
 
 

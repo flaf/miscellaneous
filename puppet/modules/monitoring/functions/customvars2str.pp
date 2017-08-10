@@ -30,8 +30,14 @@ function monitoring::customvars2str (
     } # $value of the custom variables.
 
     $varname_str = ::homemade::ljust($variable['varname'], $max, ' ')
+    $varline     = "${varname_str} ${value_str}"
 
-    "${varname_str} ${value_str}"
+    if 'comment' in $variable {
+      $cmt = $variable['comment'].map |$c| {"# ${c}"}.join("\n")
+      "${cmt}\n${varline}"
+    } else {
+    "${varline}"
+    }
 
   }
 

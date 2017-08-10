@@ -24,6 +24,7 @@ define host {
 -%>
 
     # Customized variables.
+
 <%= $custom_vars.::monitoring::customvars2str($indent=4) %>
 <%-
   }
@@ -127,6 +128,7 @@ define host {
     use       <%= $dummy_host['templates'].join(',') %>
 
     # Customized variables.
+
 <%= $dummy_host['custom_variables'].::monitoring::customvars2str($indent=4) %>
 }
 

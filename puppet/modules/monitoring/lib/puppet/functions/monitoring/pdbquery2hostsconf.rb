@@ -124,6 +124,7 @@ Puppet::Functions.create_function(:'monitoring::pdbquery2hostsconf') do
             custom_variables.each do |a_variable|
               varname = a_variable['varname']
               value = a_variable['value']
+              comment = a_variable.key?('comment') ? a_variable['comment'] : []
 
               # Test is a_variable is already present in
               # current_custom_variables ie a variable with
@@ -197,6 +198,16 @@ Puppet::Functions.create_function(:'monitoring::pdbquery2hostsconf') do
                     EOS
                     raise(Puppet::ParseError, msg)
                   }
+                end
+
+                # Update of "comment".
+                if current_custom_variables[current_index].key?('comment')
+                  current_comment = current_custom_variables[current_index]['comment']
+                  current_custom_variables[current_index]['comment'] = current_comment.concat(comment)
+                else
+                  if not comment.empty?
+                    current_custom_variables[current_index]['comment'] = comment
+                  end
                 end
               end
 

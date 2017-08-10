@@ -3,6 +3,8 @@
 Module to generate Nagios-like configurations.
 
 
+
+
 # Introduction: main principle of this module
 
 The goal of this module is to generate, some `host`
@@ -146,6 +148,7 @@ $custom_variables = [
     # A "simple" variable.
     'varname' => '_foo',
     'value'   => 'xxx',
+    'comment' => ['Very Important...', 'Blabla blabla...'],
   },
   {
     # An "array" variable.
@@ -165,8 +168,10 @@ $custom_variables = [
 $extra_info = {
   'ipmi_address' => '192.168.20.14',
   'check_dns'    => {
-                      'fqdn'             => $fqdn,
-                      'expected-address' => '$HOSTADDRESS',
+                      "dns-${fqdn}" => {
+                                         'fqdn'             => $fqdn,
+                                         'expected-address' => '$HOSTADDRESS',
+                                       },
                     },
 }
 
@@ -224,6 +229,9 @@ conditions:
 * The (hash) values of a "multi-valued keys" variable `_foo`
   can be merged but only if they haven't a common key.
 
+See [this file](types/customvariable.pp) to have more
+details concerning the type of a custom variable.
+
 The `extra_info` parameter allows to set meta informations
 which are related to the host but which will not generate
 checks in the host block of this host. For instance the IPMI
@@ -237,11 +245,28 @@ only 3 keys:
 * `ipmi_address` whose its value is a string (in fact a pattern
   to avoid special character).
 * `check_dns` whose the value has the type `Monitoring::CheckDns`
-  (see the file [types/checkdns.pp](types/checkdns.pp) to have
-  more details).
+  (see [this file](types/checkdns.pp) to have more details).
 * `blacklist` whose the value has the type `Monitoring::Blacklist`
-  (see the file [types/blacklist.pp](types/blacklist.pp) to have
-  more details)
+  (see [this file](types/blacklist.pp) to have more details)
+
+If the keys `ipmi_address` and/or `check_dns` are present, a
+dummy host will be created in the final Nagios configuration
+to check the IPMI address and/or the DNS records.
+
+The parameter `extra_info` can be merged from different
+checkpoint resource under certain conditions:
+
+* The values of `ipmi_address` can't be merged. If defined,
+  it must be defined in a only one checkpoint resource.
+* The values of `check_dns` can be merged but only if the
+  hashes `$extra_info['check_dns']` have no common key
+  (ie common description).
+* The values of `blacklist` can be merged without restriction.
+
+In `check_dns` the value `$HOSTADDRESS` is possible for the
+key `expected-address` and this value will be changed to the
+value of the `address` parameter of the checkpoint resource.
+
 
 The `monitored` parameter can be `true`, `false` or `undef`
 which is the default value. If set to `false`, the
@@ -262,8 +287,65 @@ be empty:
 But they can be empty simultaneously (in this case the
 checkpoint resource has no sense).
 
-# Parameters
 
-TODO...
+
+
+# The class `monitoring::host`
+
+This class just defines a checkpoint resource which will be
+a kind of main checkpoint of the current host and which will
+be settable via Hieradata. Here is an example:
+
+```puppet
+$fqdn = $::facts['networking']['fqdn']
+
+$custom_variable = [
+  {
+    'varname' => '_https',
+    'value'   => {
+                  'site-main'  => ['$HOSTADDRESS$/main', 'pattern1'],
+                  'site-admin' => ['$HOSTADDRESS$/admin', 'pattern2'],
+                 },
+  },
+]
+
+$extra_info = {
+  'check_dns' => {
+    "dns-${fqdn}" => {
+      'fqdn'             => $fqdn,
+      'expected-address' => '$HOSTADDRESS$',
+    },
+  },
+}
+
+
+class {'monitoring::host::params':
+  host_name       => $fqdn,
+  address         => $::facts['networking']['ip'],
+  templates       => ['linux_tpl*', 'raid_tpl', 'https_tpl'],
+  custom_variable => $custom_variable,
+  extra_info      => $extra_info,
+  monitored       => true,
+}
+
+include 'monitoring::host'
+```
+
+All the parameters of this class are exactly the parameters
+of the checkpoint resource declared in this class. So see
+explanations above about these parameters.
+
+However, the default value of each parameter is not
+necessarily the same default value of a checkpoint resource.
+See [this file](functions/data.pp) to know the default value
+and the default merge policy of each parameter.
+
+
+
+
+# The class `monitoring::server`
+
+
+
 
 
