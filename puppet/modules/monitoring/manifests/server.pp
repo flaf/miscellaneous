@@ -30,16 +30,45 @@ class monitoring::server {
     }
     |- END
 
+  # With additional checkpoints from Hiera, "address" and
+  # "templates" keys are required with a non-empty array for
+  # the "templates" value, but "custom_variables",
+  # "extra_info" and "monitored" keys will have the default
+  # values below if not present.
+  $defaults_from_hiera = {
+    'custom_variables' => [],
+    'extra_info'       => {},
+    'monitored'        => true,
+  }
+
   $additional_pdbquery = $additional_checkpoints.map |$index, $checkpoint| {
 
-    {
-      'title'      => "checkpoint index=${index} from Hiera via monitoring::server",
+    $hiera_title = "checkpoint index=${index} from Hiera via monitoring::server"
+
+    $pdbquery = {
+      'title'      => $hiera_title,
       # `certname` is Not relevant here.
       'certname'   => $::facts['networking']['fqdn'],
       # In hiera, `monitored` will be optional and the
       # default will be `true`.
-      'parameters' =>  {'monitored' => true} + $checkpoint,
+      'parameters' =>  $defaults_from_hiera  + $checkpoint,
     }
+
+    $host_conf = $pdbquery['parameters']
+
+    unless $host_conf =~ Monitoring::HostConf {
+      $host_name = $checkpoint['host_name']
+      @("END"/L$).fail
+        ${title}: problem with the checkpoint resource `${hiera_title}` of the \
+        host_name `${host_name}` where the `address` value and/or `templates` \
+        values have been probably forgotten or have the wrong type. Here is \
+        the current checkpoint state: `${host_conf}`. It must match with the \
+        type `Monitoring::HostConf` which is not the case currently.
+        |- END
+    }
+
+    $pdbquery
+
   }
 
   $pdbquery   = puppetdb_query($query)

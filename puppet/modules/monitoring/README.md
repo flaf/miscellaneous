@@ -360,17 +360,40 @@ This class allows to generate the final Nagios-like
 configuration. Here is an example:
 
 ```puppet
-$datacenter = 'dc3'
+$additional_checkpoints = ...
+$additional_blacklist   = ...
+$datacenter             = 'dc3'
 
 class {'monitoring::server::params':
-  additional_checkpoints =>,
-  additional_blacklist   =>,
+  additional_checkpoints => $additional_checkpoints,
+  additional_blacklist   => $additional_blacklist,
   filter_tags            => [$datacenter],
 }
 
 include 'monitoring::server'
 ```
 
+The `additional_checkpoints` parameter is an array of
+`Monitoring::CheckPoint`, ie an array of structure where the
+keys are exactly the parameters of a checkpoint resource:
+
+* The key `host_name` is mandatory.
+* The key `address` is mandatory too and mustn't be `undef`.
+* The key `templates` is mandatory too and can't be empty.
+* The keys `custom_variables`, `extra_info` and `monitored`
+  can be omitted and, in this case, it's equivalent to set
+  it respectively to `[]`, `{}` and `true`.
+
+The `additional_blacklist` parameter must match with
+`Monitoring::Blacklist` (see [this file](types/blacklist.pp))
+except that the `host_name` key is required.
+
+The `filter_tags` parameter is an array of strings which
+allows to filter the Puppetdb collection of checkpoints by
+tags. For instance, if you set a tag by datacenter, you can
+generate a Nagios configuration with only hosts from a
+specific datacenter with this parameter. The default value
+of this parameter is `[]`, ie no filter.
 
 
 
