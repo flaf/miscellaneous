@@ -73,7 +73,7 @@ shell) which will be **recorded in the Puppetdb** with its
 parameters, that's all.
 
 In your puppet nodes, you can define checkpoint resources as
-much as you want. **Be very careful to define unique titles
+much as you want. **Be very careful to define a unique title
 for each checkpoint resource** in all the Puppetdb. For
 instance, you can use this kind of title in a class :
 
@@ -224,7 +224,24 @@ conditions:
 * The (hash) values of a "multi-valued keys" variable `_foo`
   can be merged but only if they haven't a common key.
 
-The `extra_info` parameter...
+The `extra_info` parameter allows to set meta informations
+which are related to the host but which will not generate
+checks in the host block of this host. For instance the IPMI
+address concerns the host but the check of the IPMI (a ping)
+will be not defined in the host-block of the host. It will
+be defined special dummy host. It's the same for DNS checks.
+The default value of this parameter is `{}` ie no exta
+informations added. Currently, this hash parameter can accept
+only 3 keys:
+
+* `ipmi_address` whose its value is a string (in fact a pattern
+  to avoid special character).
+* `check_dns` whose the value has the type `Monitoring::CheckDns`
+  (see the file [types/checkdns.pp](types/checkdns.pp) to have
+  more details).
+* `blacklist` whose the value has the type `Monitoring::Blacklist`
+  (see the file [types/blacklist.pp](types/blacklist.pp) to have
+  more details)
 
 The `monitored` parameter can be `true`, `false` or `undef`
 which is the default value. If set to `false`, the
@@ -235,6 +252,15 @@ parameter, for a given `host_name`, the `monitored`
 parameter must be set to a non `undef` value (ie `true` or
 `false`) on one and only one checkpoint resource.
 
+Remark: in a checkpoint resource, each parameter below can
+be empty:
+
+* `templates` equal to `[]`,
+* `custom_variables` equal to `[]`,
+* `extra_info` equal to `{}`.
+
+But they can be empty simultaneously (in this case the
+checkpoint resource has no sense).
 
 # Parameters
 

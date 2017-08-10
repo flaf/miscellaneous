@@ -228,7 +228,7 @@ Puppet::Functions.create_function(:'monitoring::pdbquery2hostsconf') do
                 |already recorded in a previous checkpoint resource with the
                 |String value `#{current_extra_info['ipmi_address']}`.
                 |This is not allowed. The `ipmi_address` extra info can be
-                |defined at least in only one checkpoint resource.
+                |defined in only one checkpoint resource.
                 EOS
                 raise(Puppet::ParseError, msg)
               else
