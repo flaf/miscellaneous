@@ -106,7 +106,7 @@ class raid {
 ```
 
 Then, once that all checkpoint resources are recorded in
-Puppetdb (in other words once that each node of you
+Puppetdb (in other words once that each node of your
 infrastructure has made its puppet run), you can generate
 all the Nagios configuration **on the puppetserver** with:
 
@@ -129,16 +129,16 @@ puppet apply -e 'include monitoring::server' --pluginfactdest=~/facts.d/ --show_
 ```
 
 The class `monitoring::server` just:
-1. collects all checkpoint resources (and its parameters)
-   from Puppetdb,
+1. collects all checkpoint resources (and especially its
+   parameters) from Puppetdb,
 2. makes some handles and checks of these data,
 3. and then, from these data, generates the Nagios-configuration.
 
 Two files which contains the Nagios configuration will be
 generated:
 
-* `/tmp/blacklist.conf`.
-* `/tmp/hosts.conf`, the main file.
+* `/tmp/blacklist.conf`
+* `and the main file /tmp/hosts.conf`.
 
 
 
