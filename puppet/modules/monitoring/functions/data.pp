@@ -8,7 +8,7 @@ function monitoring::data (
 
   $default_extra_info = {
     'check_dns' => {
-      "dns-${fqdn}" => {
+      "DNS-${fqdn}" => {
         'fqdn'             => $fqdn,
         'expected-address' => '$HOSTADDRESS$',
       },

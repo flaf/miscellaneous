@@ -176,7 +176,7 @@ $custom_variables = [
 $extra_info = {
   'ipmi_address' => '192.168.20.14',
   'check_dns'    => {
-                      "dns-${fqdn}" => {
+                      "DNS-${fqdn}" => {
                                          'fqdn'             => $fqdn,
                                          'expected-address' => '$HOSTADDRESS',
                                        },
@@ -247,7 +247,7 @@ address concerns the host but the check of the IPMI (a ping)
 will be not defined in the host-block of the host. It will
 be defined in a dedicated dummy host. It's the same for DNS
 checks. The default value of this parameter is `{}` ie no
-exta informations added. Currently, this hash parameter can
+extra informations added. Currently, this hash parameter can
 accept only 3 keys:
 
 * `ipmi_address` whose its value is a string (in fact a it's
@@ -321,7 +321,7 @@ $custom_variable = [
 
 $extra_info = {
   'check_dns' => {
-    "dns-${fqdn}" => {
+    "DNS-${fqdn}" => {
       'fqdn'             => $fqdn,
       'expected-address' => '$HOSTADDRESS$',
     },
