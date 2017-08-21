@@ -99,6 +99,7 @@ apt-get --no-remove --yes --quiet              \
 
 if "$apt_clean"
 then
+    printf '\nAPT clean...\n'
     # Clear out the local repository of retrieved package files.
     apt-get clean
 fi
