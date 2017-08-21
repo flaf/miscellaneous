@@ -7,6 +7,7 @@
   String[1]        $logfile,
   String[1]        $flag_puppet_run_at_reboot,
   String[1]        $upgrade_subcmd,
+  Boolean          $apt_clean,
 |-%>
 #!/bin/sh
 
@@ -24,6 +25,7 @@ logfile='<%= $logfile %>'
 flag_puppet_run_at_reboot='<%= $flag_puppet_run_at_reboot %>'
 flag_no_puppet_run='<%= $flag_no_puppet_run %>'
 upgrade_subcmd='<%= $upgrade_subcmd %>'
+apt_clean='<%= if $apt_clean { "true" } else { "false" } %>'
 
 create_logfile () {
     touch "$logfile"
@@ -94,6 +96,12 @@ apt-get --no-remove --yes --quiet              \
     --option Dpkg::options::='--force-confdef' \
     --option Dpkg::options::='--force-confold' \
     "$upgrade_subcmd" | grep -vE '^\(Reading database \.\.\.'
+
+if "$apt_clean"
+then
+    # Clear out the local repository of retrieved package files.
+    apt-get clean
+fi
 
 # We don't launch a puppet run here if a reboot is required.
 # If a reboot is required, the puppet run will be launched after the reboot.

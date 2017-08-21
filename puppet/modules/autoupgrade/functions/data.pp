@@ -25,6 +25,7 @@ function autoupgrade::data (
     autoupgrade::params::puppet_bin              => '/opt/puppetlabs/bin/puppet',
     autoupgrade::params::upgrade_wrapper         => undef,
     autoupgrade::params::upgrade_subcmd          => 'dist-upgrade',
+    autoupgrade::params::apt_clean               => true,
     autoupgrade::params::supported_distributions => $supported_distributions,
   }
 }

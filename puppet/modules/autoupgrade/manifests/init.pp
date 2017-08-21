@@ -17,6 +17,7 @@ class autoupgrade {
     $puppet_bin,
     $upgrade_wrapper,
     $upgrade_subcmd,
+    $apt_clean,
     $supported_distributions,
     #
     $autoupgrade_script,
@@ -95,6 +96,7 @@ class autoupgrade {
                       'logfile'                   => $logfile,
                       'flag_puppet_run_at_reboot' => $flag_puppet_run_at_reboot,
                       'upgrade_subcmd'            => $upgrade_subcmd,
+                      'apt_clean'                 => $apt_clean,
                     }
                   ),
   }

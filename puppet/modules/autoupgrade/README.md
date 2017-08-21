@@ -27,6 +27,7 @@ class { '::autoupgrade::params':
   puppet_bin             => '/opt/puppetlabs/bin/puppet',
   upgrade_wrapper        => undef,
   upgrade_subcmd         => 'dist-upgrade',
+  apt_clean              => true,
 }
 
 include '::autoupgrade'
@@ -90,4 +91,10 @@ value of this parameter is `undef`, ie no wrapper.
 The parameter `upgrade_subcmd` can take only 2 values:
 `'upgrade'` or `'dist-upgrade'` (the default) which are
 subcommands from the `apt-get` command.
+
+The parameter `apt_clean` is a boolean to trigger a `apt-get
+clean` after the upgrade if set to `true`, which is its
+default value. It allows to avoid a swelling of the
+`/var/cache/apt/archives/` directory.
+
 

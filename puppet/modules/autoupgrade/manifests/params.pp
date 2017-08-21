@@ -13,6 +13,7 @@ class autoupgrade::params (
   String[1]                       $puppet_bin,
   Optional[String[1]]             $upgrade_wrapper,
   Enum['upgrade', 'dist-upgrade'] $upgrade_subcmd,
+  Boolean                         $apt_clean,
   Array[String[1], 1]             $supported_distributions,
 ) {
 
