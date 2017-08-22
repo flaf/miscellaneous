@@ -420,8 +420,7 @@ class roles::generic (
             "${fqdn} from ${title} for autoupgrade"
           }
 
-          # TODO: set the blacklist
-          $autoupgrade_custom_variables = with(
+          $autoupgrade_checkpoint_settings = with(
             $::autoupgrade::params::reboot,
             ::autoupgrade::get_final_hour(),
             $::autoupgrade::params::minute,
@@ -480,13 +479,45 @@ class roles::generic (
               'comment' => [$h['comment']],
             }
 
-            if $reboot { [$cron_var, $max_reboot_var] } else { [$cron_var] }
+            if $reboot {
+              $z_hour      = if $hour < 10 { "0${hour}" } else { "${hour}" }
+              $z_minute    = if $minute < 10 { "0${minute}" } else { "${minute}" }
+              $wd          = $h['weekdays'][0] # works if == '*'.
+              $msg_reboot  = "A reboot is scheduled at ${z_hour}:${z_minute} weekday ${wd}."
+              $msg_upgrade = "An upgrade is scheduled at ${z_hour}:${z_minute} weekday ${wd}."
+
+              $custom_variables = [$cron_var, $max_reboot_var]
+              $extra_info       = {
+                'blacklist' => [
+                  {
+                    'comment'     => [$msg_reboot],
+                    'contact'     => '.*',
+                    'description' => '^reboot$',
+                    'timeslots'   => "[${z_hour}h${z_minute};+00h30]",
+                    'weekdays'    => $h['weekdays'],
+                  },
+                  {
+                    'comment'     => [$msg_upgrade],
+                    'contact'     => '.*',
+                    'description' => '^uname$',
+                    'timeslots'   => "[${z_hour}h${z_minute};+01h30]",
+                    'weekdays'    => $h['weekdays'],
+                  },
+                ],
+              }
+            } else {
+              $custom_variables = [$cron_var]
+              $extra_info       = undef
+            };
+
+            {'custom_variables' => $custom_variables, 'extra_info' => $extra_info}
 
           } # End of the "with" block.
 
           monitoring::host::checkpoint {$autoupgrade_checkpoint_title:
             templates        => ['linux_tpl'],
-            custom_variables => $autoupgrade_custom_variables,
+            custom_variables => $autoupgrade_checkpoint_settings['custom_variables'],
+            extra_info       => $autoupgrade_checkpoint_settings['extra_info'],
           }
 
         } # End of Handle of the resource monitoring::host::checkpoint.
