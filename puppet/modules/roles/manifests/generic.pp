@@ -470,7 +470,7 @@ class roles::generic (
             $cron_var = {
               'varname' => '_crons',
               'value'   => {"cron-${autoupgrade_cron_name}" => [$autoupgrade_cron_name, $h['period']]},
-              'comment' => ['Check of the automatic upgrade.'],
+              'comment' => ["Check of the automatic upgrade (${autoupgrade_cron_name})."],
             }
 
             $max_reboot_var = {
@@ -560,7 +560,7 @@ class roles::generic (
               {
                 'varname' => '_crons',
                 'value'   => {"cron-${etckeeper_cron_name}" => [$etckeeper_cron_name, '1d']},
-                'comment' => ['The host should push its configuration daily.'],
+                'comment' => ["The host should push its configuration daily (${etckeeper_cron_name})."],
               }
             ],
           }
