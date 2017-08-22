@@ -26,8 +26,15 @@
 #   !^joe$:.*:^load-cpu$:[00h00;11h00][17h00;23h59]:*
 #
 # there is no "*/load-cpu" notification (for any host),
-# from 5:00 PM to 11:00 AM except for "joe". For the
-# weekdays, it's _iso_ weekdays, so:
+# from 5:00 PM to 11:00 AM except for "joe".
+#
+# In the "timeslots" field, a '+' character is possible. For
+# instance like in [23h00;+01h31] which means "from 23:00
+# during 01:31, ie until 00h31". So:
+#
+#    [23h00;+01h31] <==> [23h00;23h59][00h00;00h31]
+
+# For the weekdays, it's _iso_ weekdays, so:
 #
 #       [1,5,7] means "Monday, Friday and Sunday"
 #
