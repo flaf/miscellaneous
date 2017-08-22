@@ -33,7 +33,7 @@ pxeserver::params::host_records:
   'apt.%{::domain}': [ 'apt', '192.168.0.1' ]
 
 
-autoupgrade::params::apply: true
+#autoupgrade::params::apply: true
 
 monitoring::server::params::additional_checkpoints:
   - host_name: 'titi'
