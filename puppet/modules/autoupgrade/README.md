@@ -56,6 +56,14 @@ parameter is not `undef`, its value takes the precedence
 but, if it's an integer, it must belong to the range given
 by the value of the parameter `hour_range`.
 
+**Remark:** the function `autoupgrade::get_final_hour()`
+(which has no parameter) gives the final value of the cron
+hour. It can be useful when the parameter
+`autoupgrade::hour` is `undef`. If not, the function just
+returns the value of the parameter `autoupgrade::hour`.
+Warning, this function makes an include of the class
+`autoupgrade::params`.
+
 The boolean `reboot` tells if the node must reboot after
 each automatic upgrade. If set to `true`, the default, a
 reboot is triggered after each upgrade. If set to `false`,
