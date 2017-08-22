@@ -55,11 +55,7 @@ class autoupgrade {
     }
   }
 
-  $final_hour = $hour.lest || {
-    $min = $hour_range[0]
-    $max = $hour_range[1]
-    $min + fqdn_rand($max-$min, 'upgradereboot-hour')
-  }
+  $final_hour = ::autoupgrade::get_final_hour()
 
   case $apply {
     true: {

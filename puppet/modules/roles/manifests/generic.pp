@@ -404,12 +404,92 @@ class roles::generic (
         # same flag file to disable any puppet run.
         include '::puppetagent::params'
 
+        $autoupgrade_cron_name = 'autoupgrade'
+
         class { '::autoupgrade::params':
-          upgrade_wrapper    => ::roles::wrap_cron_mon('autoupgrade'),
+          upgrade_wrapper    => ::roles::wrap_cron_mon($autoupgrade_cron_name),
           flag_no_puppet_run => $::puppetagent::params::flag_puppet_cron,
         }
 
         include '::autoupgrade'
+
+        # Handle of the resource monitoring::host::checkpoint.
+        if $::autoupgrade::params::apply {
+
+          $autoupgrade_checkpoint_title = $::facts['networking']['fqdn'].with |$fqdn| {
+            "${fqdn} from ${title} for autoupgrade"
+          }
+
+          # TODO: set the blacklist
+          $autoupgrade_custom_variables = with(
+            $::autoupgrade::params::reboot,
+            ::autoupgrade::get_final_hour(),
+            $::autoupgrade::params::minute,
+            $::autoupgrade::params::monthday,
+            $::autoupgrade::params::month,
+            $::autoupgrade::params::weekday,
+          ) |$reboot, $hour, $minute, $monthday, $month, $weekday| {
+
+            unless $monthday =~ Enum['absent', '*'] and $month =~ Enum['absent', '*'] {
+              @("END"/L$).fail
+                ${title}: sorry, the values of the parameters \$::autoupgrade::params::monthday \
+                and \$::autoupgrade::params::month are `${monthday}` and `${month}` but only \
+                the values `*` or `absent` are supported (yet) to define a relevant checkpoint \
+                resource `${autoupgrade_checkpoint_title}`.
+                |- END
+            }
+
+            $one_day  = String.new(60*24   + 50) # in minutes
+            $one_week = String.new(60*24*7 + 50) # in minutes
+
+            $h = case $weekday {
+              Enum['absent', '*']: {
+                {
+                 'period'     => '1d',
+                 'max-uptime' => $one_day,
+                 'comment'    => "A reboot is scheduled: ${one_day} is 1 day and 50 minutes.",
+                 'weekdays'   => '*',
+                }
+              }
+              Variant[Integer[0,7], Enum['0','1','2','3','4','5','6','7']]: {
+                {
+                 'period'     => '7d',
+                 'max-uptime' => $one_week,
+                 'comment'    => "A reboot is scheduled: ${one_week} is 1 week and 50 minutes.",
+                 'weekdays'   => [Integer.new($weekday)],
+                }
+              }
+              default: {
+                @("END"/L$).fail
+                  ${title}: sorry, the value of the parameter \$::autoupgrade::params::weekday \
+                  `${::autoupgrade::params::weekday}` is not supported (yet) to define a relevant \
+                  checkpoint resource `${autoupgrade_checkpoint_title}`.
+                  |- END
+              }
+            }
+
+            $cron_var = {
+              'varname' => '_crons',
+              'value'   => {"cron-${autoupgrade_cron_name}" => [$autoupgrade_cron_name, $h['period']]},
+              'comment' => ['Check of the automatic upgrade.'],
+            }
+
+            $max_reboot_var = {
+              'varname' => '_REBOOT_MAX_UPTIME',
+              'value'   => $h['max-uptime'],
+              'comment' => [$h['comment']],
+            }
+
+            if $reboot { [$cron_var, $max_reboot_var] } else { [$cron_var] }
+
+          } # End of the "with" block.
+
+          monitoring::host::checkpoint {$autoupgrade_checkpoint_title:
+            templates        => ['linux_tpl'],
+            custom_variables => $autoupgrade_custom_variables,
+          }
+
+        } # End of Handle of the resource monitoring::host::checkpoint.
 
       }
 
