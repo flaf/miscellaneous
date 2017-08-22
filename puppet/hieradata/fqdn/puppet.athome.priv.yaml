@@ -33,7 +33,7 @@ pxeserver::params::host_records:
   'apt.%{::domain}': [ 'apt', '192.168.0.1' ]
 
 
-#autoupgrade::params::apply: true
+autoupgrade::params::apply: true
 #autoupgrade::params::weekday: '*'
 
 monitoring::server::params::additional_checkpoints:
@@ -121,5 +121,12 @@ monitoring::host::params::custom_variables:
     comment:
       - 'Not very Important...'
       - 'pfeuuuuu !!!'
+  - varname: _crons
+    value:
+      cron-aaa: ['aaa', '7d']
+      cron-foo: ['foo', '7d']
+    comment:
+      - 'zzzzzzzz...'
+      - 'aaaaaaaa...'
 
 
