@@ -451,11 +451,16 @@ class roles::generic (
                 }
               }
               Variant[Integer[0,7], Enum['0','1','2','3','4','5','6','7']]: {
+                # Warning: in blacklist, the "weekdays"
+                # field uses iso weekdays where 0 is not
+                # allowed.
+                $int_weekday = Integer.new($weekday)
+                $iso_weekday = if $int_weekday == 0 {7} else {$int_weekday};
                 {
                  'period'     => '7d',
                  'max-uptime' => $one_week,
                  'comment'    => "A reboot is scheduled: ${one_week} is 1 week and 50 minutes.",
-                 'weekdays'   => [Integer.new($weekday)],
+                 'weekdays'   => [$iso_weekday],
                 }
               }
               default: {
