@@ -78,12 +78,14 @@ class roles::pxeserver (
 
   }
 
+  $cron_update_di_name = 'update-di'
+
   class { '::pxeserver::params':
     dhcp_confs             => $dhcp_confs,
     no_dhcp_interfaces     => $no_dhcp_interfaces,
     apache_listen_to       => $apache_listen_to,
     backend_dns            => $backend_dns,
-    cron_wrapper           => ::roles::wrap_cron_mon('update-di'),
+    cron_wrapper           => ::roles::wrap_cron_mon($cron_update_di_name),
     apt_proxy              => $apt_proxy,
     puppet_collection      => $::repository::puppet::params::collection,
     pinning_puppet_version => $::repository::puppet::params::pinning_agent_version,
@@ -94,6 +96,23 @@ class roles::pxeserver (
   }
 
   include '::pxeserver'
+
+  # Add a checpoint to check the update of D-I.
+
+  $pxe_checkpoint_title = $::facts['networking']['fqdn'].with |$fqdn| {
+    "${fqdn} from ${title}"
+  }
+
+  monitoring::host::checkpoint {$pxe_checkpoint_title:
+    templates        => ['linux_tpl', 'http_tpl'],
+    custom_variables => [
+      {
+        'varname' => '_crons',
+        'value'   => {"cron-${cron_update_di_name}" => [$cron_update_di_name, '7d']},
+        'comment' => ["Debian Installer should be updated weekly"],
+      }
+    ],
+  }
 
 }
 
