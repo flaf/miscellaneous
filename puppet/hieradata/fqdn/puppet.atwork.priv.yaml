@@ -4,9 +4,6 @@ enc_included_classes:
 enc_datacenter: 'vboxwork'
 enc_groups: [ 'puppetserver' ]
 
-roles::generic::excluded_classes:
-  - '::confkeeper::provider'
-
 network::params::ifaces:
   eth0:
     in_networks: [ 'net97' ]
