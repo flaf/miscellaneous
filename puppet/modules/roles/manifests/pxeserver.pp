@@ -109,7 +109,7 @@ class roles::pxeserver (
       {
         'varname' => '_crons',
         'value'   => {"cron-${cron_update_di_name}" => [$cron_update_di_name, '7d']},
-        'comment' => ["Debian Installer should be updated weekly"],
+        'comment' => ["Debian Installer should be updated weekly (${cron_update_di_name})."],
       }
     ],
   }
