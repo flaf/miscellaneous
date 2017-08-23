@@ -37,7 +37,7 @@ class roles::gitlab {
   }
 
   monitoring::host::checkpoint {$gitlab_checkpoint_title:
-    templates        => ['linux_tpl'],
+    templates        => ['linux_tpl', 'https_tpl'],
     custom_variables => [
       {
         'varname' => '_crons',
