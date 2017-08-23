@@ -25,6 +25,22 @@ class roles::shadowldap {
     hasrestart => true,
   }
 
+  # Checkpoint to check is the process slapd is UP.
+
+  $shadowldap_checkpoint_title = $::facts['networking']['fqdn'].with |$fqdn| { 
+    "${fqdn} from ${title}"
+  }
+
+  monitoring::host::checkpoint {$shadowldap_checkpoint_title:
+    templates        => ['linux_tpl'],
+    custom_variables => [
+      {
+        'varname' => '_present_processes',
+        'value'   => {'process-slapd' => ['slapd']},
+      },
+    ],
+  }
+
 }
 
 
