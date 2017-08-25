@@ -33,6 +33,10 @@ pxeserver::params::host_records:
   'apt.%{::domain}': [ 'apt', '192.168.0.1' ]
 
 
+#confkeeper::provider::params::repositories:
+#  /opt: {'gitignore': ['/gitlab/']}
+
+
 autoupgrade::params::apply: true
 #autoupgrade::params::weekday: '*'
 
