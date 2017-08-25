@@ -15,6 +15,8 @@ function gitlab::data (
     gitlab::params::backup_cron_minute      => 0,
     gitlab::params::ssl_cert                => '',
     gitlab::params::ssl_key                 => '',
+    gitlab::params::sign_in_regex           => undef,
+    gitlab::params::health_page_token       => undef,
     gitlab::params::supported_distributions => ['trusty'],
   }
 

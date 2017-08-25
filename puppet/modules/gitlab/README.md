@@ -31,6 +31,8 @@ class { '::gitlab::params':
   backup_cron_minute  => 0,
   ssl_cert            => '...', # The content of the ssl certificate.
   ssl_key             => '...', # The content of the ssl private key.
+  sign_in_regex       => 'The Gitlab repository of the World compagny',
+  health_page_token   => 'A3v-gQkY1TBxoxodFybF4',
 }
 
 include '::gitlab'
@@ -81,6 +83,14 @@ The parameters `backup_cron_hour` and `backup_cron_minute`
 allow to set the hour when the backup cron is launched.
 The default values are respectively `3` and `0`, ie the
 backup cron is launched every day at 3:00 AM by default.
+
+The parameters `sign_in_regex` and `health_page_token` are
+completely unused by this module and their default value is
+`undef`. But these parameters can be set to a string value
+and used by another module to make some monitoring. The
+parameter `sign_in_regex` can be used to contain a regex of
+the "sign in" page of Gitlab. The parameter `health_page_token`
+can be used to contain the token of the "health check" page.
 
 
 # How to trigger a manual backup?

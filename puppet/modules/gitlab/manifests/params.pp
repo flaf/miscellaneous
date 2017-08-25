@@ -8,6 +8,8 @@ class gitlab::params (
   Integer             $backup_cron_minute,
   String              $ssl_cert,
   String              $ssl_key,
+  Optional[String[1]] $sign_in_regex,
+  Optional[String[1]] $health_page_token,
   Array[String[1], 1] $supported_distributions,
 ) {
 
