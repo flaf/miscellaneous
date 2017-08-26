@@ -62,7 +62,7 @@ class roles::gitlab {
     require => Class['::repository::gitlab']
   }
 
-  # Add a checpoint to check the backup.
+  # Add a checkpoint to check the backup.
 
   $gitlab_checkpoint_title = $::facts['networking']['fqdn'].with |$fqdn| {
     "${fqdn} from ${title}"

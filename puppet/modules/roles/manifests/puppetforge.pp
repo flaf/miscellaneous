@@ -34,6 +34,34 @@ class roles::puppetforge {
 
   include '::puppetforge'
 
+  # Add a checkpoint.
+
+  $puppetforge_port             = $::puppetforge::params::port
+  $fqdn                         = $::facts['networking']['fqdn']
+  $puppetforge_checkpoint_title = "${fqdn} from ${title}"
+
+  $custom_variables = [
+    {
+      'varname' => '_present_processes',
+      'value'   => {'process-update-pp-module' => ['update-pp-modul']},
+      'comment' => [
+                     'The daemon which updates Puppet modules must be UP.',
+                     'Warning, its name is truncated.',
+                   ],
+    },
+    {
+      'varname' => '_http_page',
+      'value'   => {
+        'http-puppetforge' => ["${fqdn}:${puppetforge_port}", 'Welcome to your Internal Puppet Forge'],
+      },
+    },
+  ]
+
+  monitoring::host::checkpoint {$puppetforge_checkpoint_title:
+    templates        => ['linux_tpl', 'http_tpl'],
+    custom_variables => $custom_variables,
+  }
+
 }
 
 
