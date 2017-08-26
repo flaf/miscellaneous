@@ -21,6 +21,11 @@ class { '::roles::generic':
 class { '::roles::generic':
   included_classes => [ '::network' ]
 }
+
+# 4. To install a nullclient in addition.
+class { '::roles::generic':
+  nullclient => true,
+}
 ```
 
 
@@ -54,6 +59,34 @@ will be an error during the catalog compilation.
 
 **Note:** finally the classes applied by the node are always
 `$included_classes - $excluded_classes`.
+
+The `nullclient` parameter is a boolean. Its default value
+is `false`. If set to `true`, a SMTP nullclient will
+installed too.
+
+There is the parameter `classes_params` too. See below.
+
+
+## The special parameter `classes_params`
+
+This parameter allows you to set some parameters of classes
+included by this role. For instance, if you set this parameter
+to:
+
+```puppet
+{
+  'modA::params::var1' => 'xxx',
+  'modA::params::var2' => 'yyy',
+}
+```
+
+the parameters `var1` and `var2` from the class
+`modA::params` will be set to `'xxx'` and `'yyy'`
+respectively. **Warning**, you can't set any parameters you
+want by this way. Only an explicit list of parameters
+hardcoded in this role are allowed: see the signature of
+this role to know this list. The default value of this
+parameter is `{}`, ie no parameter is set.
 
 
 ## Warning, keep it simple

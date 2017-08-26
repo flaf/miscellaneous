@@ -5,10 +5,6 @@ This module implements roles, ie very **top level** classes.
 List of roles provided:
 
 * [The role `generic`](README-generic.md)
-* The role `generic_nullclient`. The only difference with
-  the role `generic` is that the installation of a smtp
-  null client is added (see the README of the `generic`
-  role for more details).
 * [The role `puppetserver`](README-puppetserver.md)
 * The role `puppetforge` which has no parameter.
 * The role `mcomiddleware` which has no parameter.

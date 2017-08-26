@@ -542,6 +542,7 @@ class roles::generic (
 
         class { '::confkeeper::provider::params':
           wrapper_cron => ::roles::wrap_cron_mon($etckeeper_cron_name),
+          *            => $classes_params.::roles::reduce2prefix('confkeeper::provider::params'),
         }
 
         include '::confkeeper::provider'

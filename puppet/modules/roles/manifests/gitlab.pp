@@ -1,6 +1,18 @@
 class roles::gitlab {
 
-  include '::roles::generic_nullclient'
+  # With gitlab, we have to add "/gitlab/" in the gitignore
+  # of the /opt local repository.
+  $default_repos = lookup('confkeeper::provider::params::repositories')
+  $opt_gitignore = $default_repos['/opt']['gitignore'] + ['/gitlab/']
+  $final_repo    = $default_repos + {'/opt' => {'gitignore' => $opt_gitignore}}
+
+  class {'::roles::generic':
+    nullclient     => true,
+    classes_params => {
+      'confkeeper::provider::params::repositories' => $final_repo,
+    },
+  }
+
   include '::repository::gitlab'
 
   $cron_backup_name = 'backup-gitlab'

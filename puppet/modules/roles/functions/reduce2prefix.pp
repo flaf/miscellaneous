@@ -17,16 +17,16 @@
 #  }
 #
 #
-function reduce2prefix(
+function roles::reduce2prefix(
   Hash[String[1], Data] $hash,
   String[1] $prefix,
 ) >> Hash[String[1], Data] {
 
   $regex = Regexp.new("^${prefix}::")
 
-  $hash.filter |$k, $v| { $k =~ $regex }.reduce({}) |$memo, $item| {
+  $hash.filter |$k, $v| {$k =~ $regex}.reduce({}) |$memo, $item| {
     [$k, $v] = $item;
-    { $k.regsubst($regex, '') => $v }
+    {$k.regsubst($regex, '') => $v}
   }
 
 }
