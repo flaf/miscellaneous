@@ -24,6 +24,10 @@ class roles::generic (
   ],
   Array[String[1]] $included_classes = $authorized_classes,
   Array[String[1]] $excluded_classes = [],
+  Boolean          $nullclient       = false,
+  Struct[{
+    Optional['confkeeper::provider::params::repositories'] => NotUndef[Data],
+  }]               $classes_params   = {}
 ) {
 
   # Checks concerning the ENC variables $::datacenter and
@@ -528,6 +532,7 @@ class roles::generic (
 
       }
 
+
       ############################
       ### confkeeper::provider ###
       ############################
@@ -558,6 +563,7 @@ class roles::generic (
 
       }
 
+
       ########################
       ### The default case ###
       ########################
@@ -567,9 +573,50 @@ class roles::generic (
       }
 
 
+    } # End of "case $a_class"
+
+  } # End of "each.$remaining_classes"
+
+
+  ##################################
+  ### The case of eximnullclient ###
+  ##################################
+  if $nullclient {
+
+    include '::network::params'
+
+    $interfaces         = $::network::params::interfaces
+    $inventory_networks = $::network::params::inventory_networks
+    $admin_email        = ::network::get_param($interfaces, $inventory_networks, 'admin_email')
+    $smtp_relay         = ::network::get_param($interfaces, $inventory_networks, 'smtp_relay')
+    $smtp_port          = ::network::get_param($interfaces, $inventory_networks, 'smtp_port')
+
+    unless $admin_email =~ NotUndef {
+      @("END"/L$).fail
+        ${title}: sorry the variable \$admin_email is undefined.
+        |- END
     }
 
-  }
+    unless $smtp_relay =~ NotUndef {
+      @("END"/L$).fail
+        ${title}: sorry the variable \$smtp_relay is undefined.
+        |- END
+    }
+
+    unless $smtp_port =~ NotUndef {
+      @("END"/L$).fail
+        ${title}: sorry the variable \$smtp_port is undefined.
+        |- END
+    }
+
+    class { '::eximnullclient::params':
+      dc_smarthost         => [ { 'address' => $smtp_relay, 'port' => $smtp_port } ],
+      redirect_local_mails => $admin_email,
+    }
+
+    include '::eximnullclient'
+
+  } # End of "if $nullclient".
 
 }
 
