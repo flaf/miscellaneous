@@ -1,4 +1,7 @@
 ---
+roles::generic::excluded_classes:
+  - '::confkeeper::provider'
+
 _admin_email_: 'francois.lafont@ac-versailles.fr'
 _smtp_relay_: 'smtp.googlemail.com'
 _smtp_port_: 587
