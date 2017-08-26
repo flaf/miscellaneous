@@ -533,6 +533,22 @@ class roles::generic (
       }
 
 
+      ########################
+      ### monitoring::host ###
+      ########################
+      '::monitoring::host': {
+
+        # When the host has an IPMI address, we want to add
+        # the template "ipmi-sensors_tpl".
+        class { '::monitoring::host::params':
+          ipmi_template => 'ipmi-sensors_tpl',
+        }
+
+        include '::monitoring::host'
+
+      }
+
+
       ############################
       ### confkeeper::provider ###
       ############################

@@ -21,6 +21,7 @@ function monitoring::data (
     monitoring::host::params::templates        => ['linux_tpl*'],
     monitoring::host::params::custom_variables => [],
     monitoring::host::params::extra_info       => $default_extra_info,
+    monitoring::host::params::ipmi_template    => undef,
     monitoring::host::params::monitored        => true,
 
     monitoring::server::params::additional_checkpoints => [],

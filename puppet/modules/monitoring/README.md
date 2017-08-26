@@ -336,20 +336,29 @@ class {'monitoring::host::params':
   custom_variable => $custom_variable,
   extra_info      => $extra_info,
   monitored       => true,
+  ipmi_template   => 'ipmi-sensors_tpl',
 }
 
 include 'monitoring::host'
 ```
 
 All the parameters of this class are exactly the parameters
-of the checkpoint resource declared in this class. Details
-about these parameters has been given in the section
-dedicated to the custom type `monitoring::host::checkpoint`.
+of the checkpoint resource declared in this class (except
+the parameter `ipmi_template`, see below). Details about
+these parameters has been given in the section dedicated to
+the custom type `monitoring::host::checkpoint`.
 
 However, the default value of each parameter is not
 necessarily the same default value of a checkpoint resource.
 See [this file](functions/data.pp) to know the default value
 and the default merge policy of each parameter.
+
+The parameter `ipmi_template` can be `undef` (the default
+value) or a template (ie the data type `Monitoring::Template`).
+If it is set to a template (ie not `undef`), then this
+template will be automatically added to the checkpoint
+resource if the `extra_info` parameter has the key
+`ipmi_address`.
 
 
 
