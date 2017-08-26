@@ -37,6 +37,7 @@ class roles::shadowldap {
       {
         'varname' => '_present_processes',
         'value'   => {'process-slapd' => ['slapd']},
+        'comment' => ['The process "slapd" must be up.'],
       },
     ],
   }
