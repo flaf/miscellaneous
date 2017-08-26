@@ -26,7 +26,7 @@ function roles::reduce2prefix(
 
   $hash.filter |$k, $v| {$k =~ $regex}.reduce({}) |$memo, $item| {
     [$k, $v] = $item;
-    {$k.regsubst($regex, '') => $v}
+    $memo + {$k.regsubst($regex, '') => $v}
   }
 
 }
