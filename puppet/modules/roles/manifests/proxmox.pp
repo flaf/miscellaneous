@@ -63,7 +63,7 @@ class roles::proxmox {
     },
   ]
 
-  monitoring::host::checkpoint {$promox_checkpoint_title:
+  monitoring::host::checkpoint {$proxmox_checkpoint_title:
     templates        => ['https_tpl'],
     custom_variables => $custom_variables,
   }
