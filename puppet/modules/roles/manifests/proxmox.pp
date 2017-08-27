@@ -51,6 +51,24 @@ class roles::proxmox {
   }
   include '::proxmox'
 
+  # Add a checkpoint.
+  $fqdn                     = $::facts['networking']['fqdn']
+  $proxmox_checkpoint_title = "${fqdn} from ${title}"
+  $custom_variables         = [
+    {
+      'varname' => '_https_page',
+      'value'   => {
+        'webUI-proxmox' => ["${fqdn}:8006}", 'PVE.UserName'],
+      },
+    },
+  ]
+
+  monitoring::host::checkpoint {$promox_checkpoint_title:
+    templates        => ['https_tpl'],
+    custom_variables => $custom_variables,
+  }
+
+
 }
 
 
