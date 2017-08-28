@@ -1,6 +1,3 @@
-TODO: Please, make a real README file...
-
-
 # Module description
 
 Module to manage a HTTP proxy.
@@ -89,22 +86,25 @@ And then the Puppet code:
 # $squidguard_conf have the values in the Hiera code above.
 
 class { '::httpproxy::params':
-  enable_apt_cacher_ng   => true,
-  apt_cacher_ng_adminpwd => 'ABCD1234',
-  apt_cacher_ng_port     => 3142,
+  enable_apt_cacher_ng    => true,
+  apt_cacher_ng_adminpwd  => 'ABCD1234',
+  apt_cacher_ng_port      => 3142,
   #
-  enable_keyserver       => true,
-  keyserver_fqdn         => "keyserver.${::domain}",
-  pgp_pubkeys            => $pgp_pubkeys,
+  enable_keyserver        => true,
+  keyserver_fqdn          => "keyserver.${::domain}",
+  pgp_pubkeys             => $pgp_pubkeys,
   #
-  enable_puppetforgeapi  => true,
-  puppetforgeapi_fqdn    => "puppetforgeapi.${::domain}",
+  enable_puppetforgeapi   => true,
+  puppetforgeapi_fqdn     => "puppetforgeapi.${::domain}",
   #
-  enable_squidguard      => true,
-  squid_allowed_networks => ['192.168.0.0/16', '172.16.0.0/16'],
-  squid_port             => 3128,
-  squidguard_conf        => $squidguard_conf,
-  squidguard_admin_email => "admin@${domain}",
+  enable_squidguard       => true,
+  squid_allowed_networks  => ['192.168.0.0/16', '172.16.0.0/16'],
+  squid_port              => 3128,
+  squidguard_conf         => $squidguard_conf,
+  squidguard_admin_email  => "admin@${domain}",
+  #
+  httpproxy_external_fqdn => "httpproxy.${domain}",
+  aptproxy_external_fqdn  => "aptproxy.${domain}",
 }
 
 include '::httpproxy'
@@ -237,5 +237,18 @@ The string `squidguard_admin_email` allows to set the email
 address of the administrator which is displayed on the HTTP
 redirect page of SquidGuard. The default value of this
 parameter is `admin@${::domain}`.
+
+The parameters:
+
+- `httpproxy_external_fqdn`
+- `aptproxy_external_fqdn`
+
+are not used at all by the module. The default value of
+these parameters is `$::facts['networking']['fqdn']` and
+they represent the fqdn used by the clients to request
+respectively the HTTP proxy (ie Squid) and the APT proxy (ie
+apt-cacher-ng). These data can be useful, for instance, for
+a monitoring module which needs to retrieve these fqdns
+(which can be fqdns for a VIP).
 
 

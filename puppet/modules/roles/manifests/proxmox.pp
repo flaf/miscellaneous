@@ -68,7 +68,6 @@ class roles::proxmox {
     custom_variables => $custom_variables,
   }
 
-
 }
 
 

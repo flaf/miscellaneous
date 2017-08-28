@@ -16,6 +16,9 @@ class httpproxy::params (
   Httpproxy::SquidguardConf      $squidguard_conf,
   String[1]                      $squidguard_admin_email,
   #
+  String[1]                      $httpproxy_external_fqdn,
+  String[1]                      $aptproxy_external_fqdn,
+  #
   Array[String[1], 1]            $supported_distributions,
 ) {
 

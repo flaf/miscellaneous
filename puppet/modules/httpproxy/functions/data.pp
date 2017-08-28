@@ -3,6 +3,7 @@ function httpproxy::data (
   Puppet::LookupContext $context,
 ) {
 
+  $fqdn                    = $::facts['networking']['fqdn']
   $domain                  = $::facts['networking']['domain']
   # Minimal SquidGuard configuration "do nothing".
   $default_squidguard_conf  = {
@@ -33,6 +34,9 @@ function httpproxy::data (
     httpproxy::params::squid_port              => 3128,
     httpproxy::params::squidguard_conf         => $default_squidguard_conf,
     httpproxy::params::squidguard_admin_email  => "admin@${domain}",
+
+    httpproxy::params::httpproxy_external_fqdn => $fqdn,
+    httpproxy::params::aptproxy_external_fqdn  => $fqdn,
 
     httpproxy::params::supported_distributions => $supported_distributions,
   }
