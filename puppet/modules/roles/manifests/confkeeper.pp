@@ -59,6 +59,34 @@ class roles::confkeeper (
     require => Class['::confkeeper::collector'],
   }
 
+  # Add a checkpoint.
+
+  $fqdn                        = $::facts['networking']['fqdn']
+  $confkeeper_checkpoint_title = "${fqdn} from ${title}"
+
+  $custom_variables = [
+    {
+      'varname' => '_crons',
+      'value'   => {"cron-${cron_all_in_one_name}" => [$cron_all_in_one_name, '1d']},
+      'comment' => ["There is a daily update of the all-in-one Git repository (${cron_all_in_one_name})."],
+    },
+  ]
+
+  $extra_info = {
+    'check_dns' => {
+      'DNS-external-fqdn' => {
+        'fqdn'             => $::confkeeper::collector::params::address,
+        'expected-address' => '$HOSTADDRESS$',
+      },
+    },
+  }
+
+  monitoring::host::checkpoint {$confkeeper_checkpoint_title:
+    templates        => ['linux_tpl'],
+    custom_variables => $custom_variables,
+    extra_info       => $extra_info,
+  }
+
 }
 
 
