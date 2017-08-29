@@ -18,6 +18,7 @@ class roles::moobotnode (
   $inventory_networks = $::network::params::inventory_networks
   $smtp_relay         = ::network::get_param($interfaces, $inventory_networks, 'smtp_relay')
   $smtp_port          = ::network::get_param($interfaces, $inventory_networks, 'smtp_port')
+  $fqdn               = $::facts['networking']['fqdn']
 
   include '::moo::params'
   $moobot_tmp = $::moo::params::moobot_conf
@@ -38,10 +39,11 @@ class roles::moobotnode (
       $iptables_allow_dns         = true
       $docker_iface               = lookup('moo::cargo::params::docker_iface')
       $docker_bridge_cidr_address = lookup('moo::cargo::params::docker_bridge_cidr_address')
+      $backup_tag_name            = 'backup-moodles'
 
       # To monitor the "backup" cron task.
       $default_backup_cmd = ::moo::data()['moo::cargo::params::backup_cmd']
-      $backup_cmd         = ::roles::wrap_cron_mon('backup-moodles', $default_backup_cmd)
+      $backup_cmd         = ::roles::wrap_cron_mon($backup_tag_name, $default_backup_cmd)
       $rsync_filedir_cmd  = ::roles::wrap_cron_mon('rsync-filedirs', "${default_backup_cmd} --no-sqldump")
 
       class { '::network::resolv_conf::params':
@@ -75,10 +77,16 @@ class roles::moobotnode (
       include '::ceph::params'
       $ceph_account = $::ceph::client_accounts[0]
 
-      case $::hostname {
+      case $::facts['networking']['hostname'] {
 
         /^cargo01$/: {
           $make_backups = true
+          monitoring::host::checkpoint {"${backup_tag_name} in ${fqdn} from ${title}":
+            templates        => ['linux_tpl'],
+            custom_variables => [
+              {'varname' => '_crons', 'value' => {"cron-${backup_tag_name}" => [$backup_tag_name, '1d']}},
+            ],
+          }
         }
 
         /-eleapoc$/: {
@@ -98,6 +106,13 @@ class roles::moobotnode (
             minute  => fqdn_rand(60, $seed),
             weekday => fqdn_rand(7, $seed),
             require => Class["::moo::${nodetype}"],
+          }
+          $rsync_tag_name = 'rsync-filedirs'
+          monitoring::host::checkpoint {"${rsync_tag_name} in ${fqdn} from ${title}":
+            templates        => ['linux_tpl'],
+            custom_variables => [
+              {'varname' => '_crons', 'value' => {"cron-${rsync_tag_name}" => [$rsync_tag_name, '7d']}},
+            ],
           }
         }
       }
