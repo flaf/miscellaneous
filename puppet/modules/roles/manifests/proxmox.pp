@@ -58,7 +58,7 @@ class roles::proxmox {
     {
       'varname' => '_https_pages',
       'value'   => {
-        'webUI-proxmox' => ["${fqdn}:8006}", 'PVE.UserName'],
+        'webUI-proxmox' => ["${fqdn}:8006", 'PVE.UserName'],
       },
     },
   ]
