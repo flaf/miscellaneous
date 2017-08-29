@@ -56,7 +56,7 @@ class roles::proxmox {
   $proxmox_checkpoint_title = "${fqdn} from ${title}"
   $custom_variables         = [
     {
-      'varname' => '_https_page',
+      'varname' => '_https_pages',
       'value'   => {
         'webUI-proxmox' => ["${fqdn}:8006}", 'PVE.UserName'],
       },

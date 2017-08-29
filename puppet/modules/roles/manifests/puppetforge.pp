@@ -50,7 +50,7 @@ class roles::puppetforge {
                    ],
     },
     {
-      'varname' => '_http_page',
+      'varname' => '_http_pages',
       'value'   => {
         'http-puppetforge' => ["${fqdn}:${puppetforge_port}", 'Welcome to your Internal Puppet Forge'],
       },
