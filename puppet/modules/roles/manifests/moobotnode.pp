@@ -19,6 +19,9 @@ class roles::moobotnode (
   $smtp_relay         = ::network::get_param($interfaces, $inventory_networks, 'smtp_relay')
   $smtp_port          = ::network::get_param($interfaces, $inventory_networks, 'smtp_port')
   $fqdn               = $::facts['networking']['fqdn']
+  $hostname           = $::facts['networking']['hostname']
+  $regex_eleapoc      = Regexp.new('-eleapoc$') # No backup, no checkpoint with eleapoc.
+
 
   include '::moo::params'
   $moobot_tmp = $::moo::params::moobot_conf
@@ -77,7 +80,7 @@ class roles::moobotnode (
       include '::ceph::params'
       $ceph_account = $::ceph::client_accounts[0]
 
-      case $::facts['networking']['hostname'] {
+      case $hostname {
 
         /^cargo01$/: {
           $make_backups = true
@@ -89,7 +92,7 @@ class roles::moobotnode (
           }
         }
 
-        /-eleapoc$/: {
+        $regex_eleapoc: {
           $make_backups = false
         }
 
@@ -152,7 +155,37 @@ class roles::moobotnode (
         moobot_conf => $moobot_conf,
       }
 
-    }
+      if $hostname !~ $regex_eleapoc {
+
+        if ::roles::is_number_one() {
+          # In this role, we assume that the first load
+          # balancer must has the VIP. We take the first VIP
+          # only (and we hope the only VIP).
+          $vrrp_instances       = $::keepalived_vip::params::vrrp_instances
+          $first_vrrp_instance  = $vrrp_instances.keys.dig(0)
+          $vip                  = $vrrp_instances
+                                    .dig($first_vrrp_instance, 'virtual_ipaddress', 0)
+                                    .lest || {
+            @("END"/L$).fail
+              ${title}: sorry, no VIP address has been found in the module \
+              `keepalived_vip` and it is required in this role for a `lb` node.
+              |- END
+          }
+          $lb_custom_variables = [
+            {'varname' => '_has_ip', 'value' => {'virtual-ip' => [$vip]}},
+          ]
+        } else {
+          $lb_custom_variables = undef
+        }
+
+        monitoring::host::checkpoint {"${fqdn} from ${title}":
+          templates        => ['linux_tpl', 'haproxy_tpl'],
+          custom_variables => $lb_custom_variables,
+        }
+
+      } # End of if "$hostname !~ $regex_eleapoc"
+
+    } # End of the 'lb' case.
 
     'captain': {
 
