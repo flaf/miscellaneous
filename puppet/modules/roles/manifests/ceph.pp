@@ -57,6 +57,14 @@ class roles::ceph {
         'varname' => '_present_processes',
         'value'   => {'processes-ceph' => [$processes_ceph]},
       },
+      {
+        'varname' => '_STORAGE_WARN',
+        'value'   => '60',
+      },
+      {
+        'varname' => '_STORAGE_CRIT',
+        'value'   => '70',
+      },
     ],
   }
 
