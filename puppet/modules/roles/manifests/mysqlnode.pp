@@ -47,8 +47,11 @@ class roles::mysqlnode {
       {'varname' => '_has_ip', 'value' => {'virtual-ip' => [$vip]}},
     ]
   } else {
-    undef
-  }
+    []
+  } + [
+    'varname' => '_present_processes',
+    'value'   => {'processes-mysql' => ['mysqld mysqld_safe']},
+  ]
 
   monitoring::host::checkpoint {"${fqdn} from ${title}":
     templates        => ['linux_tpl', 'mysql-repl_tpl'],
