@@ -25,6 +25,7 @@ List of roles provided:
 * The role `httpproxy` which has no parameter.
 * [The role `confkeeper`](README-confkeeper.md)
 * The role `mongodb` which has no parameter.
+* The role `memcached` which has no parameter.
 
 If a role has no parameter, there is no specific README and
 no detail. In this case, the code is the documentation.
