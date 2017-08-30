@@ -205,7 +205,10 @@ class roles::moobotnode (
         monitoring::host::checkpoint {"${fqdn} from ${title}":
           templates        => ['linux_tpl', 'mysql_tpl'],
           custom_variables => [
-            {'varname' => "cron-${dump_captain_tag}", 'value'=> [$dump_captain_tag, '1d']},
+            {
+              'varname' => '_crons',
+              'value'   => {"cron-${dump_captain_tag}" => [$dump_captain_tag, '1d']},
+            },
           ],
         }
       }
