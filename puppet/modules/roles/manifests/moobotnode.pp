@@ -190,14 +190,24 @@ class roles::moobotnode (
     'captain': {
 
       # To monitor the "backup" cron task.
+      $dump_captain_tag   = 'dump-captain-db'
       $default_backup_cmd = ::moo::data()['moo::captain::params::backup_cmd']
-      $backup_cmd         = ::roles::wrap_cron_mon('dump-captain-db', $default_backup_cmd)
+      $backup_cmd         = ::roles::wrap_cron_mon($dump_captain_tag, $default_backup_cmd)
 
       include 'roles::generic'
 
       class { "moo::${nodetype}::params":
         moobot_conf => $moobot_conf,
         backup_cmd  => $backup_cmd,
+      }
+
+      if $hostname !~ $regex_eleapoc {
+        monitoring::host::checkpoint {"${fqdn} from ${title}":
+          templates        => ['linux_tpl', 'mysql_tpl'],
+          custom_variables => [
+            {'varname' => "cron-${dump_captain_tag}", 'value'=> [$dump_captain_tag, '1d']},
+          ],
+        }
       }
 
     }
