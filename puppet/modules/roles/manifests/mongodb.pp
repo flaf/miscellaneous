@@ -1,4 +1,4 @@
-class roles::mysqlnode {
+class roles::mongodb {
 
   include '::roles::generic'
   include '::mongodb'
