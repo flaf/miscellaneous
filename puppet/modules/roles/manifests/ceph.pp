@@ -1,5 +1,8 @@
 class roles::ceph {
 
+  $fqdn     = $::facts['networking']['fqdn']
+  $hostname = $::facts['networking']['hostname']
+
   # We want to handle the class ::network::hosts as a specific case.
   class { '::roles::generic':
     excluded_classes => [ '::network::hosts' ],
@@ -40,6 +43,21 @@ class roles::ceph {
       user        => 'root',
       refreshonly => true,
     }
+  }
+
+  $processes_ceph = case $hostname {
+    /^ceph0[123]/: { 'ceph-osd ceph-mon ceph-mds' }
+    default:       { 'ceph-osd'                   }
+  }
+
+  monitoring::host::checkpoint {"${fqdn} from ${title}":
+    templates        => ['ceph_tpl'],
+    custom_variables => [
+      {
+        'varname' => '_present_processes',
+        'value'   => {'processes-ceph' => [$processes_ceph]},
+      },
+    ],
   }
 
 }

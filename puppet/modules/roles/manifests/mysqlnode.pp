@@ -23,6 +23,7 @@ class roles::mysqlnode {
 
   # Add the checkpoint.
   $hostname      = $::facts['networking']['hostname']
+  $fqdn          = $::facts['networking']['fqdn']
   $regex_eleapoc = Regexp.new('-eleapoc$')
 
   if $hostname =~ $regex_eleapoc {
