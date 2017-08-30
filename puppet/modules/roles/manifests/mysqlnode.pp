@@ -49,8 +49,10 @@ class roles::mysqlnode {
   } else {
     []
   } + [
-    'varname' => '_present_processes',
-    'value'   => {'processes-mysql' => ['mysqld mysqld_safe']},
+    {
+      'varname' => '_present_processes',
+      'value'   => {'processes-mysql' => ['mysqld mysqld_safe']},
+    },
   ]
 
   monitoring::host::checkpoint {"${fqdn} from ${title}":
