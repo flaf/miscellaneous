@@ -8,7 +8,9 @@
     unless $host['monitored'] { next($memo_index) }
 
     # It is purely aesthetic.
-    $b_title     = "###    Host ${memo_index}: ${host['host_name']}    ###"
+    # We don't put the index finally.
+    #$b_title     = "###    Host ${memo_index}: ${host['host_name']}    ###"
+    $b_title     = "###    Host ${host['host_name']}    ###"
     $b_line      = inline_template('<%= "#" * @b_title.size %>')
     $begin_title = "${b_line}\n${b_title}\n${b_line}"
 -%>
