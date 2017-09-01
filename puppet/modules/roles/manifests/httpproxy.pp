@@ -157,12 +157,43 @@ class roles::httpproxy {
         }
       ]
     } else {
-      $cm
+      # In this case, the host can have the VIP or not. If
+      # it doesn't, after a reboot the process "squidGuard"
+      # is not present while the host is not requested via
+      # the squid port. So we add a check to the host to
+      # just ensure that the "squidGuard" process is UP.
+      $cm + [
+        {
+          'varname' => '_http_pages',
+          'value'   => {
+            'duckduckgo-via-squidproxy' => [
+              "${fqdn}:${http_proxy_port} uri->http://duckduckgo.com",
+              'Sorry this page is not allowed for you',
+            ],
+          },
+          'comment' => [
+            'This host has probably not the VIP, so we have',
+            'to check squidGuard because the process is not UP',
+            'after a reboot while the host is not requested.',
+          ],
+        },
+      ]
     }
   }
 
+  # Don't forget to add the "http_tpl" template if needed.
+  $http_tpl_not_required = $custom_vars.filter |$a_var| {
+    '_http_pages' == $a_var['varname']
+  }.empty
+
+  $templates = if $http_tpl_not_required {
+    ['linux_tpl']
+  } else {
+    ['linux_tpl', 'http_tpl']
+  }
+
   monitoring::host::checkpoint {"${fqdn} from ${title}":
-    templates        => ['linux_tpl'],
+    templates        => $templates,
     custom_variables => $custom_vars,
   }
 
