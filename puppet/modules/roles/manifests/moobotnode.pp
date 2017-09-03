@@ -75,7 +75,7 @@ class roles::moobotnode (
         custom_variables => [
           {
             'varname' => '_present_processes',
-            'value'   => {'processes-ceph' => ['ceph-fuse']},
+            'value'   => {'process-ceph' => ['ceph-fuse']},
           },
         ],
       }
