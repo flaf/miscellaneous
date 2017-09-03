@@ -45,13 +45,19 @@ class roles::ceph {
     }
   }
 
+  # The checkpoint below is added only for "clusternode".
+  if $::ceph::params::nodetype != 'clusternode' {
+    # End of the class if the node is not a "clusternode".
+    return()
+  }
+
   $processes_ceph = case $hostname {
     /^ceph0[123]/: { 'ceph-osd ceph-mon ceph-mds' }
     default:       { 'ceph-osd'                   }
   }
 
   monitoring::host::checkpoint {"${fqdn} from ${title}":
-    templates        => ['ceph_tpl'],
+    templates        => ['linux_tpl', 'ceph_tpl'],
     custom_variables => [
       {
         'varname' => '_present_processes',

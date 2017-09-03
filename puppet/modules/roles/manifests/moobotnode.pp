@@ -68,6 +68,18 @@ class roles::moobotnode (
           |-END
       }
 
+      # Checkpoint to ensure that ceph-fuse is present in a
+      # cargo server.
+      monitoring::host::checkpoint {"ceph-fuse in ${fqdn} from ${title}":
+        templates        => ['linux_tpl'],
+        custom_variables => [
+          {
+            'varname' => '_present_processes',
+            'value'   => {'processes-ceph' => ['ceph-fuse']},
+          },
+        ],
+      }
+
       # The value of $docker_gateway is the gateway of the
       # interface $docker_iface.
       $docker_gateway = ::network::get_param(
