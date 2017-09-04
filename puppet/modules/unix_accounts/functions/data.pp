@@ -1,4 +1,7 @@
-function unix_accounts::data {
+function unix_accounts::data (
+  Hash                  $options,
+  Puppet::LookupContext $context,
+) {
 
   {
     unix_accounts::params::users                   => {},

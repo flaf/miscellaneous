@@ -1,7 +1,7 @@
 function unix_accounts::defaults (
   String[1]                    $login,
   Unix_accounts::Ensure        $ensure,
-  Unix_accounts::SshPublicKeys $ssh_public_keys,
+  Unix_accounts::SshPublicKeys $ssh_public_keys = {},
 ) {
 
   $home = $login ? {

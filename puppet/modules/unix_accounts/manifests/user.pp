@@ -3,23 +3,30 @@ define unix_accounts::user (
   Unix_accounts::UserSettings $settings,
 ) {
 
+
+  $default_settings   = ::unix_accounts::defaults(
+                          $login,
+                          $settings['ensure'],
+                        )
+  $settings_completed = $default_settings + $settings
+
   # Tag: USER_PARAMS
-  $password             = $settings['password']
-  $ensure               = $settings['ensure']
-  $uid                  = $settings['uid']
-  $gid                  = $settings['gid']
-  $home                 = $settings['home']
-  $home_unix_rights     = $settings['home_unix_rights']
-  $managehome           = $settings['managehome']
-  $shell                = $settings['shell']
-  $fqdn_in_prompt       = $settings['fqdn_in_prompt']
-  $supplementary_groups = $settings['supplementary_groups']
-  $membership           = $settings['membership']
-  $is_sudo              = $settings['is_sudo']
-  $ssh_authorized_keys  = $settings['ssh_authorized_keys']
-  $purge_ssh_keys       = $settings['purge_ssh_keys']
-  $ssh_public_keys      = $settings['ssh_public_keys']
-  $email                = $settings['email']
+  $password             = $settings_completed['password']
+  $ensure               = $settings_completed['ensure']
+  $uid                  = $settings_completed['uid']
+  $gid                  = $settings_completed['gid']
+  $home                 = $settings_completed['home']
+  $home_unix_rights     = $settings_completed['home_unix_rights']
+  $managehome           = $settings_completed['managehome']
+  $shell                = $settings_completed['shell']
+  $fqdn_in_prompt       = $settings_completed['fqdn_in_prompt']
+  $supplementary_groups = $settings_completed['supplementary_groups']
+  $membership           = $settings_completed['membership']
+  $is_sudo              = $settings_completed['is_sudo']
+  $ssh_authorized_keys  = $settings_completed['ssh_authorized_keys']
+  $purge_ssh_keys       = $settings_completed['purge_ssh_keys']
+  $ssh_public_keys      = $settings_completed['ssh_public_keys']
+  $email                = $settings_completed['email']
 
   # An explicit name of the resource for error messages.
   $rsrc_name = "Unix_accounts::User['${title}']"

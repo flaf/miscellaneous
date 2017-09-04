@@ -23,23 +23,27 @@ $ssh_public_keys = {
   },
 }
 
+$settings = {
+  'password'             => '$6$ba08106dfd57328e$Z8fC...gfZmD',
+  'ensure'               => present,
+  #'uid'                 => 1001,
+  #'gid'                 => 1001,
+  #'home'                => '/home/foo',
+  'home_unix_rights'     => '0750',
+  'managehome'           => true,
+  'shell'                => '/bin/bash',
+  'fqdn_in_prompt'       => true,
+  'supplementary_groups' => [ 'adm' ],
+  'membership'           => 'inclusive',
+  'is_sudo'              => true,
+  'ssh_authorized_keys'  => [ 'foo@desktop-1', 'foo@desktop-1' ],
+  'purge_ssh_keys'       => true,
+  'ssh_public_keys'      => $ssh_public_keys,
+}
+
 unix_accounts::user { 'foo':
-  #login               => 'foo',
-  password             => '$6$ba08106dfd57328e$Z8fC...gfZmD',
-  ensure               => present,
-  #uid                 => 1001,
-  #gid                 => 1001,
-  #home                => '/home/foo',
-  home_unix_rights     => '0750',
-  managehome           => true,
-  shell                => '/bin/bash',
-  fqdn_in_prompt       => true,
-  supplementary_groups => [ 'adm' ],
-  membership           => 'inclusive',
-  is_sudo              => true,
-  ssh_authorized_keys  => [ 'foo@desktop-1', 'foo@desktop-1' ],
-  purge_ssh_keys       => true,
-  ssh_public_keys      => $ssh_public_keys,
+  #login   => 'foo',
+  settings => $settings,
 }
 ```
 
@@ -69,7 +73,7 @@ by the resource are :
 So, for instance, the `password` parameter is completely
 ignored when the resource is used for the root account. In
 other words, you should not use this defined resource to
-manage the root account. But the module (different of
+manage the root account. But the *module* (different of the
 defined resource above), can manage the password of the root
 account (see below).
 
@@ -83,14 +87,17 @@ default of this parameter is the title of the resource.
 This parameter is the equivalent of the `name` parameter
 in the built-in `user` resource.
 
-The `password` parameter is a string which contains de
-user password in the "shadow" format. This parameter
-has no default value, you must provide a value yourself.
-This parameter is the equivalent of the `password` parameter
-in the built-in `user` resource.
+The `settings` parameter must match with the structure
+of the type `Unix_accounts::UserSettings` and has no
+default value. Here is some explanations about its keys.
 
-The `ensure` parameter is a string where only 3 values
-are allowed :
+The value of the `password` key is a string which contains
+the user password in the "shadow" format. This key is
+mandatory. This key is the equivalent of the `password`
+attribute in the built-in `user` resource.
+
+The value of the `ensure` key is a string where only 3
+values are allowed :
 
 - `'present'` in this case the user is created if needed etc.
 - `'absent'` in this case the user will be removed if needed.
@@ -99,14 +106,17 @@ are allowed :
 - `'ignore'` in this case the user will be not managed at
   all, even its ssh authorized keys or its `.vimrc` etc.
 
-The `uid` and `gid` parameters are the equivalent of the
-`uid` and `gid` parameters in the built-in `user` resource.
-The `uid` must be an integer and the `gid` can be a integer
-of a name. The default value of these parameters is `undef`
-and, in this case, when creating a new user, then one uid
-and gid will be chosen automatically. The best is to let
-these parameters undefined. But if you use these parameter,
-it's not a good idea to change it or you can change it but
+The key `ensure` is mandatory.
+
+The values of the `uid` and `gid` keys are the equivalent of
+the `uid` and `gid` attributes in the built-in `user`
+resource. The value of `uid` must be an integer and the
+value of `gid` can be an integer or a name (ie a string).
+These keys are optional and the default value of these keys
+is `undef` and, in this case, when creating a new user, then
+one uid and one gid will be chosen automatically. The best
+is to not provide these keys. But, if you use these keys,
+it's not a good idea to change it: you can change it but
 it's better to first remove the user (with `ensure ==
 absent`) and recreate it after with the new values. If `gid`
 is undefined, the primary group `foo` of a user `foo` will
@@ -115,34 +125,38 @@ be automatically created (or removed) by Puppet. But if the
 at all (neither created, nor removed) and must exist before
 the creation of the account.
 
-The `home` parameter is the equivalent of the `home`
-parameter in the built-in `user` resource. Its default value
-is `/home/${login}` or `/root` if `$login == 'root'`.
+The `home` key is the equivalent of the `home` attribute in
+the built-in `user` resource. This key is optional and its
+default value is `/home/${login}` or `/root` if `$login ==
+'root'`.
 
-The `home_unix_rights` is the Unix right of the home
-directory. Its default value is `0750`.
+The value of the `home_unix_rights` key is the Unix right of
+the home directory. This key is optional and its default
+value is `0750`.
 
-The `managehome` parameter is a boolean to tell if Puppet
-must manage, ie create or remove, the home directory during
-the creation or the deleting of the user. This parameter
-is the equivalent of the `managehome` parameter of the
-built-in `user` resource. Its default value here is `true`.
+The value of the `managehome` key is a boolean to tell if
+Puppet must manage, ie create or remove, the home directory
+during the creation or the deleting of the user. This key is
+the equivalent of the `managehome` attribute of the built-in
+`user` resource. This key is optional and its default value
+here is `true`.
 
-The `shell` parameter is the equivalent of the `shell`
-parameter of the built-in `user` resource. Its default
-value is `/bin/bash`.
+The `shell` key is the equivalent of the `shell` attribute
+of the built-in `user` resource. This key is optional and
+its default value is `/bin/bash`.
 
-The `fqdn_in_prompt` is a boolean to tell is the prompt
-should print the short name of the host or its fqdn.
-Its default value is `false`. Warning, this parameter
-is only effective for the shell bash.
+The value of the `fqdn_in_prompt` key is a boolean to tell
+is the prompt should print the short name of the host or its
+fqdn. This key is optional and its default value is `false`.
+Warning, this parameter is only effective for the shell
+bash.
 
-The `supplementary_groups` is the equivalent of the
-parameter `groups` in the built-in `user` resource.
-Its an array of strings. If the account is sudo, the
-sudo group will be automatically added in the array.
-The primary group mustn't be put in this parameter.
-The default value of this parameter is `[]`.
+The `supplementary_groups` key is the equivalent of the
+parameter `groups` in the built-in `user` resource. Its an
+array of strings. If the account is sudo, the sudo group
+will be automatically added in the array. The primary group
+mustn't be put in this parameter. This key is optional and
+its default value is `[]`.
 
 **Warnings:** each supplementary group *must exist*. If not,
 it will raise an error.
@@ -151,35 +165,37 @@ The `membership` is the equivalent of the parameter
 `membership` in the built-in `user` resource. The
 only allowed values are `'inclusive'` and `'minimum'`.
 If set to `'inclusive'`, the user account can't have
-supplementary groups except the groups listed explicitly
-in the `supplementary_groups` parameter. If set to
-`'minimum'`, the groups listed in the `supplementary_groups`
-parameter will be supplementary groups of the account,
-but the account can belong to other groups. The default
-value of the `membership` is `'inclusive'`.
+supplementary groups except the groups listed explicitly in
+the value of the key `supplementary_groups`. If set to
+`'minimum'`, the groups listed in the value of the key
+`supplementary_groups` will be supplementary groups of the
+account, but the account can belong to other groups. This
+key is optional and its default value key is `'inclusive'`.
 
-The `is_sudo` parameter is a boolean. If set to `true`,
-the account will be sudo and a file `/etc/sudoers.d/${login}`
-will be managed. The default value of this parameter
-is `false`.
+The value of the `is_sudo` key is a boolean. If set to
+`true`, the account will be sudo and a file
+`/etc/sudoers.d/${login}` will be managed. This key is
+optional and its default value is `false`.
 
-The `ssh_authorized_keys` parameter is an array of strings
-which contains the names of the ssh public keys added in
-the file `.ssh/authorized_keys` of the account. The public keys
-are present in the `ssh_public_keys` parameter. The default
-value of the parameter `ssh_authorized_keys` is `[]`.
+The value of the key `ssh_authorized_keys` is an array of
+strings which contains the names of the ssh public keys
+added in the file `.ssh/authorized_keys` of the account. The
+public keys are present in the `ssh_public_keys` parameter.
+This key is optional and its default value is `[]`.
 
-The `purge_ssh_keys` parameter is a boolean. If set to
-`true`, then if a ssh public key is present in the file
-`.ssh/authorized_keys` but not present in the paramater
-`ssh_authorized_keys`, the key will be removed. The key will
-be kept if set to `false`. The default value of this
-parameter is `true`.
+The value of the key `purge_ssh_keys` is a boolean. If set
+to `true`, then if a ssh public key is present in the file
+`.ssh/authorized_keys` but not present in the value of the
+key `ssh_authorized_keys`, the key will be removed. The key
+will be kept if it set to `false`. This key is optional and
+its default value is `true` if the value of `ensure` is
+`true`, else it's `false`.
 
-The `ssh_public_keys` parameter is a hash of public key.
-This parameter must have the same structure as above.
-However, the `type` key is optional and in this case the
-default type is `ssh-rsa`.
+The value of the key `ssh_public_keys` is a hash of public
+keys. The value of this key must have the same structure as
+above. However, the `type` key is optional and in this case
+the default type is `ssh-rsa`. The key `ssh_public_keys` is
+optional and its default value is `{}`.
 
 
 
@@ -202,6 +218,7 @@ unix_account::params::ssh_public_keys:
 
 unix_account::params::users:
   root:
+    ensure: 'present'
     password: '$6$ba08106dfd57328e$Z8fC...gfZmD'
     fqdn_in_prompt: true
     ssh_authorized_keys: [ 'bob@foo', 'joe@bar' ]
@@ -222,11 +239,17 @@ and a simple include:
 include '::unix_account'
 ```
 
-In a user, the entries are exactly the parameters of the
-defined resource `unix_accounts::user` except `login` and
-`ssh_public_keys`. The default values are exactly the same
-except for `purge_ssh_keys` which is `true` if `ensure ==
-'present'` and `false` if not.
+In a user key (root, bob) in the yaml file, the entries must
+match with the type `Unix_accounts::UserSettings` (ie the
+same structure as the `settings` parameter in the defined
+resource `unix_account::user`).
+
+In a user key in the yaml file, the default values for the
+absent keys are exactly the same as the default value of the
+keys in the `settings` parameter in the defined resource
+`unix_account::user` **except** for the key
+`ssh_public_keys` where the default value is the value of
+the parameter `unix_account::params::ssh_public_keys`.
 
 
 
