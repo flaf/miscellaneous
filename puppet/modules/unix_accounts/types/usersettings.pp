@@ -1,8 +1,8 @@
 type Unix_accounts::UserSettings = Struct[{
   'password'                       => String[1],
   'ensure'                         => Unix_accounts::Ensure,
-  Optional['uid']                  => Integer,
-  Optional['gid']                  => Variant[Integer, String[1]],
+  'uid'                            => Optional[Integer],
+  'gid'                            => Optional[Variant[Integer, String[1]]],
   Optional['home']                 => String[1],
   Optional['home_unix_rights']     => Unix_accounts::Unixrights,
   Optional['managehome']           => Boolean,
@@ -14,7 +14,7 @@ type Unix_accounts::UserSettings = Struct[{
   Optional['ssh_authorized_keys']  => Array[String[1]],
   Optional['purge_ssh_keys']       => Boolean,
   Optional['ssh_public_keys']      => Unix_accounts::SshPublicKeys,
-  Optional['email']                => String[1],
+  'email'         ]                => Option[String[1]],
 }]
 # Tag: USER_PARAMS
 
