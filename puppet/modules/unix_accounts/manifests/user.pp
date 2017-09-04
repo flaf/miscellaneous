@@ -1,42 +1,65 @@
-# Tag: USER_PARAMS
-#
 define unix_accounts::user (
-  String[1]                             $login = $title,
-  String[1]                             $password,
-  Unix_accounts::Ensure                 $ensure = ::unix_accounts::defaults($login)['ensure'],
-  Optional[Integer]                     $uid = ::unix_accounts::defaults($login)['uid'],
-  Optional[Variant[Integer, String[1]]] $gid = ::unix_accounts::defaults($login)['gid'],
-  String[1]                             $home = ::unix_accounts::defaults($login)['home'],
-  Unix_accounts::Unixrights             $home_unix_rights = ::unix_accounts::defaults($login)['home_unix_rights'],
-  Boolean                               $managehome = ::unix_accounts::defaults($login)['managehome'],
-  String[1]                             $shell = ::unix_accounts::defaults($login)['shell'],
-  Boolean                               $fqdn_in_prompt = ::unix_accounts::defaults($login)['fqdn_in_prompt'],
-  Array[String[1]]                      $supplementary_groups = ::unix_accounts::defaults($login)['supplementary_groups'],
-  Unix_accounts::Membership             $membership = ::unix_accounts::defaults($login)['membership'],
-  Boolean                               $is_sudo = ::unix_accounts::defaults($login)['is_sudo'],
-  Array[String[1]]                      $ssh_authorized_keys = ::unix_accounts::defaults($login)['ssh_authorized_keys'],
-  Boolean                               $purge_ssh_keys = ::unix_accounts::defaults($login)['purge_ssh_keys'],
-  Unix_accounts::SshPublicKeys          $ssh_public_keys = ::unix_accounts::defaults($login)['ssh_public_keys'],
-  Optional[String[1]]                   $email = ::unix_accounts::defaults($login)['email'],
+  Unix_accounts::Login        $login = $title,
+  Unix_accounts::UserSettings $settings,
 ) {
+
+  # Tag: USER_PARAMS
+  $password             = $settings['password']
+  $ensure               = $settings['ensure']
+  $uid                  = $settings['uid']
+  $gid                  = $settings['gid']
+  $home                 = $settings['home']
+  $home_unix_rights     = $settings['home_unix_rights']
+  $managehome           = $settings['managehome']
+  $shell                = $settings['shell']
+  $fqdn_in_prompt       = $settings['fqdn_in_prompt']
+  $supplementary_groups = $settings['supplementary_groups']
+  $membership           = $settings['membership']
+  $is_sudo              = $settings['is_sudo']
+  $ssh_authorized_keys  = $settings['ssh_authorized_keys']
+  $purge_ssh_keys       = $settings['purge_ssh_keys']
+  $ssh_public_keys      = $settings['ssh_public_keys']
+  $email                = $settings['email']
 
   # An explicit name of the resource for error messages.
   $rsrc_name = "Unix_accounts::User['${title}']"
 
   if $login == 'root' and $ensure != 'present' {
-    @("END").regsubst('\n', ' ', 'G').fail
-      ${rsrc_name}: the `root` account has the `ensure`
-      parameter not set to 'present' which is forbidden
+    @("END"/L$).fail
+      ${rsrc_name}: the `root` account has the `ensure` \
+      parameter not set to 'present' which is forbidden \
       for this account.
       |- END
   }
 
   if $login == 'root' and $home != '/root' {
-    @("END").regsubst('\n', ' ', 'G').fail
-      ${rsrc_name}: the `root` account has the `home`
-      parameter not set to '/root' which is forbidden
+    @("END"/L$).fail
+      ${rsrc_name}: the `root` account has the `home` \
+      parameter not set to '/root' which is forbidden \
       for this account.
       |- END
+  }
+
+  if $login in $supplementary_groups {
+    @("END"/L$).fail
+      ${rsrc_name}: `$login` account has the `supplementary_groups` which \
+      contains the group `$login`. It is forbidden because `$login` is \
+      automatically the primary group of the account. You must remove \
+      the group `$login` from the supplementary groups.
+      |- END
+  }
+
+  if ( 'sudo' in $supplementary_groups ) and !$is_sudo {
+    @("END"/L$).fail
+      ${rsrc_name}: `$login` account has the `supplementary_groups` which \
+      contains the group `sudo` but its parameter `is_sudo` set to false. \
+      It is inconsistent.
+      |- END
+  }
+
+  if $ensure == 'ignore' {
+    # It's simple, in this case, the resource does nothing.
+    return()
   }
 
 
@@ -46,86 +69,67 @@ define unix_accounts::user (
   ### The Unix account management ###
   ###################################
   #
-  # .bashrc.puppet, .vimrc dans ssh authorized keys are not
-  # managed in this part. Futhermore, root is not concerned
+  # .bashrc.puppet, .vimrc and ssh_authorized_ keys are not
+  # handled in this part. Furthermore, root is not concerned
   # by this part.
   #
-  if $ensure != 'ignore' {
+  #
+  # The root Unix account is not handled by this user
+  # defined resource in this part. The root Unix account is
+  # a specific case.
+  if $login != 'root' {
 
-    if $login in $supplementary_groups {
-      @("END").regsubst('\n', ' ', 'G').fail
-        ${rsrc_name}: `$login` account has the `supplementary_groups` which
-        contains the group `$login`. It is forbidden because `$login` is
-        automatically the primary group of the account. You must remove
-        the group `$login` from the supplementary groups.
-        |- END
+    ensure_packages(['sudo'], {ensure => present})
+
+    $suppl_groups = case $is_sudo {
+      true:    { unique(['sudo'] + $supplementary_groups) }
+      default: { unique($supplementary_groups)            }
     }
 
-    if ( 'sudo' in $supplementary_groups ) and !$is_sudo {
-      @("END").regsubst('\n', ' ', 'G').fail
-        ${rsrc_name}: `$login` account has the `supplementary_groups` which
-        contains the group `sudo` but its parameter `is_sudo` set to false.
-        It is inconsistent.
-        |- END
+    # Tag: USER_PARAMS
+    # This part doesn't contain all the user parameters.
+    user { $login:
+      password       => $password,
+      name           => $login,
+      ensure         => $ensure,
+      uid            => $uid,
+      gid            => $gid,
+      home           => $home,
+      managehome     => $managehome,
+      shell          => $shell,
+      groups         => $suppl_groups,
+      membership     => $membership,
+      purge_ssh_keys => $purge_ssh_keys,
+      expiry         => absent,
+      system         => false,
     }
 
-    # The root Unix account is not handled by this user
-    # defined resource. The root Unix account is a specific
-    # case.
-    if $login != 'root' {
-
-      ensure_packages( ['sudo'], { ensure => present } )
-
-      case $is_sudo {
-        true:    { $suppl_groups = unique(['sudo'] + $supplementary_groups) }
-        default: { $suppl_groups = unique($supplementary_groups)            }
+    # Set the Unix rights of the home directory.
+    if $ensure == 'present' {
+      file { "${home}":
+        ensure  => directory,
+        owner   => $login,
+        group   => $login,
+        mode    => $home_unix_rights,
+        require => User[$login],
       }
+    }
 
-      # Tag: USER_PARAMS (not contains all the user parameters)
-      user { $login:
-        password       => $password,
-        name           => $login,
-        ensure         => $ensure,
-        uid            => $uid,
-        gid            => $gid,
-        home           => $home,
-        managehome     => $managehome,
-        shell          => $shell,
-        groups         => $suppl_groups,
-        membership     => $membership,
-        purge_ssh_keys => $purge_ssh_keys,
-        expiry         => absent,
-        system         => false,
-      }
+    # Management of the sudo file of $login.
+    $ensure_sudo_file = case [$ensure, $is_sudo] {
+      ['present', true   ]: { 'present' }
+      [default,   default]: { 'absent'  }
+    }
 
-      # Set the Unix rights of the home directory.
-      if $ensure == 'present' {
-        file { "${home}":
-          ensure  => directory,
-          owner   => $login,
-          group   => $login,
-          mode    => $home_unix_rights,
-          require => User[$login],
-        }
-      }
-
-      # Management of the sudo file of $login.
-      case [ $ensure, $is_sudo ] {
-        [ 'present', true ]:    { $ensure_sudo_file = 'present' }
-        [ default,   default ]: { $ensure_sudo_file = 'absent'  }
-      }
-
-      file { "/etc/sudoers.d/${login}":
-        ensure  => $ensure_sudo_file,
-        owner   => 'root',
-        group   => 'root',
-        mode    => '0440',
-        content => epp('unix_accounts/sudofile.epp',
-                       { 'user' => $login, }
-                      ),
-        require => [ Package['sudo'], User[$login] ],
-      }
-
+    file { "/etc/sudoers.d/${login}":
+      ensure  => $ensure_sudo_file,
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0440',
+      content => epp('unix_accounts/sudofile.epp',
+                     {'user' => $login,}
+                 ),
+      require => [ Package['sudo'], User[$login] ],
     }
 
   }
@@ -172,7 +176,7 @@ define unix_accounts::user (
                        'fqdn_in_prompt'  => $fqdn_in_prompt,
                        'is_sudo_or_root' => $is_sudo_or_root,
                      }
-                    ),
+                 ),
     }
 
     file { "${home}/.vimrc":
@@ -202,16 +206,16 @@ define unix_accounts::user (
     $ssh_authorized_keys.each |$keyname| {
 
       unless $keyname in $ssh_public_keys {
-        @("END").regsubst('\n', ' ', 'G').fail
-          ${title}: `$login` account should have the `$keyname` ssh key as
-          authorized key but this key does not exist in the list of ssh
+        @("END"/L$).fail
+          ${rsrc_name}: `$login` account should have the `$keyname` ssh key \
+          as authorized key but this key does not exist in the list of ssh \
           public keys.
           |- END
       }
 
-      case 'type' in $ssh_public_keys[$keyname] {
-        true:    { $type = $ssh_public_keys[$keyname]['type'] }
-        default: { $type = 'ssh-rsa'                          }
+      $type = case 'type' in $ssh_public_keys[$keyname] {
+        true:    { $ssh_public_keys[$keyname]['type'] }
+        default: { 'ssh-rsa'                          }
       }
 
       # Just to allow ssh_public_keys in hiera in multiple

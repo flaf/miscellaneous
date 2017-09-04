@@ -59,6 +59,7 @@ network::params::inventory_networks:
 
 unix_accounts::params::users:
   root:
+    ensure: 'present'
     password: '%{alias("_root_unix_pwd_")}'
     fqdn_in_prompt: true
     ssh_authorized_keys:
