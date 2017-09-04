@@ -14,7 +14,7 @@ type Unix_accounts::UserSettings = Struct[{
   Optional['ssh_authorized_keys']  => Array[String[1]],
   Optional['purge_ssh_keys']       => Boolean,
   Optional['ssh_public_keys']      => Unix_accounts::SshPublicKeys,
-  'email'         ]                => Option[String[1]],
+  'email'                          => Option[String[1]],
 }]
 # Tag: USER_PARAMS
 
