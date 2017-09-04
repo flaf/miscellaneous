@@ -18,8 +18,8 @@ class unix_accounts {
 
   # A user will be managed only if its 'ensure' parameter
   # is absent or present and equal to 'ignore'.
-  $users_managed = $users.filter |$user, $params| {
-   !('ensure' in $params) or $params['ensure'] != 'ignore'
+  $users_managed = $users.filter |$user, $settings| {
+   !('ensure' in $settings) or $settings['ensure'] != 'ignore'
   }
 
 
@@ -28,7 +28,7 @@ class unix_accounts {
 
     $default_settings   = ::unix_accounts::defaults(
                             $user,
-                            $params['ensure'],
+                            $settings['ensure'],
                             $ssh_public_keys,
                           )
 
