@@ -1,14 +1,19 @@
-<%- |$user| -%>
-<%-
-  $user_upper = $user.upcase
-  $cmd_alias  = "CMD_WITH_PWD_FOR_${user_upper}"
-
-  # Aesthetic: to align column.
-  $user_ljust = ::homemade::ljust($user, size($user) + 8, ' ')
-  $who_ljust  = ::homemade::ljust("Who", size($user_ljust) - 2, ' ')
--%>
+<%-|
+  Unix_accounts::Login              $user,
+  Boolean                           $is_sudo,
+  Array[Unix_accounts::SudoCommand] $sudo_commands,
+|-%>
 ### This file is managed by Puppet, don't edit it. ###
 
+<%- if $is_sudo { -%>
+  <%-
+    $user_upper = $user.upcase
+    $cmd_alias  = "CMD_WITH_PWD_FOR_${user_upper}"
+
+    # Aesthetic: to align column.
+    $user_ljust = ::homemade::ljust($user, size($user) + 8, ' ')
+    $who_ljust  = ::homemade::ljust("Who", size($user_ljust) - 2, ' ')
+  -%>
 Cmnd_Alias <%= $cmd_alias %> = /bin/su
 
 # From sudoers(5)
@@ -19,5 +24,15 @@ Cmnd_Alias <%= $cmd_alias %> = /bin/su
 # <%= $who_ljust %>   Host(s)   (As who)    Tag         Which command(s)
 <%= $user_ljust  %>   ALL     = (ALL)       NOPASSWD:   ALL
 <%= $user_ljust  %>   ALL     = (ALL)       PASSWD:     <%= $cmd_alias %>
+<%- } else { -%>
+  <%- $sudo_commands.each |$scmd| { -%>
+    <%- $scmd.dig('comment').then |$c| { -%>
+      <%- $c.each |$line| { -%>
+# <%= $line %>
+      <%- } -%>
+    <%- } -%>
+<%= $user %>  <%= $scmd['host'] %> = (<%= $scmd['run_as'] %>) <%= $scmd['tag'] %> <%= $scmd['command'] %>
+  <%- } -%>
+<%- } -%>
 
 

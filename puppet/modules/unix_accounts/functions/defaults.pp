@@ -34,10 +34,12 @@ function unix_accounts::defaults (
     'supplementary_groups' => [],
     'membership'           => 'inclusive',
     'is_sudo'              => false,
+    'sudo_commands'        => [],
     'ssh_authorized_keys'  => [],
     'purge_ssh_keys'       => $purge_ssh_keys,
     'ssh_public_keys'      => $ssh_public_keys,
     'email'                => undef,
+    'extra_info'           => {},
   }
 
 }

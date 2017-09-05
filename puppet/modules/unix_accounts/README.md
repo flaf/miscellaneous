@@ -23,6 +23,34 @@ $ssh_public_keys = {
   },
 }
 
+$sudo_commands = [
+  {
+    'host'    => 'srv-*',
+    'run_as'  => 'ALL',
+    'tag'     => 'NOPASSWD:',
+    'command' => '/usr/bin/cmd_foo',
+    'comment' => [
+      'Blabla blabla blabla blabla.',
+      'Blibli blibli blibli blibli.',
+    ],
+  },
+  {
+    'host'    => 'mysql-srv-*',
+    'run_as'  => 'ALL',
+    'tag'     => 'NOPASSWD:',
+    'command' => '/usr/bin/cmd_bar',
+    'comment' => [
+      'Blabla blabla blabla blabla.',
+      'Blibli blibli blibli blibli.',
+    ],
+  },
+]
+
+$extra_info = {
+  'is_foo' => true,
+  'foo'    => 'bar',
+}
+
 $settings = {
   'password'             => '$6$ba08106dfd57328e$Z8fC...gfZmD',
   'ensure'               => present,
@@ -35,10 +63,13 @@ $settings = {
   'fqdn_in_prompt'       => true,
   'supplementary_groups' => [ 'adm' ],
   'membership'           => 'inclusive',
-  'is_sudo'              => true,
+  'is_sudo'              => false,
+  'sudo_commands'        => $sudo_commands,
   'ssh_authorized_keys'  => [ 'foo@desktop-1', 'foo@desktop-1' ],
   'purge_ssh_keys'       => true,
   'ssh_public_keys'      => $ssh_public_keys,
+  'email'                => 'foo@domain.tld',
+  'extra_info'           => $extra_info,
 }
 
 unix_accounts::user { 'foo':
@@ -173,9 +204,17 @@ account, but the account can belong to other groups. This
 key is optional and its default value key is `'inclusive'`.
 
 The value of the `is_sudo` key is a boolean. If set to
-`true`, the account will be sudo and a file
-`/etc/sudoers.d/${login}` will be managed. This key is
-optional and its default value is `false`.
+`true`, the account will be sudo (ie the user will belong to
+the `sudo` group) and a file `/etc/sudoers.d/${login}` will
+be managed (to avoid password for - almost - all commands).
+This key is optional and its default value is `false`.
+
+The value of the key `sudo_commands` must match with an
+array of `Unix_accounts::SudoCommand` and, if it is not
+empty, it allows to manage the file
+`/etc/sudoers.d/${login}`. This key is optional and its
+default value is `[]`. Warning, if the value of `is_sudo` is
+`true`, the value of `sudo_commands` must be empty.
 
 The value of the key `ssh_authorized_keys` is an array of
 strings which contains the names of the ssh public keys
@@ -197,7 +236,17 @@ above. However, the `type` key is optional and in this case
 the default type is `ssh-rsa`. The key `ssh_public_keys` is
 optional and its default value is `{}`.
 
+The value of the key `email` is a string or `undef`. This
+key is optional and its default value is `undef`. Currently,
+this key is absolutely not used by the defined resource
+`unix_accounts::user` and by all the module.
 
+The value of the key `extra_info` is a hash. This key is
+optional and its default value is `{}`. Currently, this key
+is absolutely not used by the defined resource
+`unix_account::user` and by all the module. But it can be
+useful to put some data which can be used by another modules
+in a role class, for instance.
 
 
 # Usage of the module

@@ -11,10 +11,12 @@ type Unix_accounts::UserSettings = Struct[{
   Optional['supplementary_groups'] => Array[String[1]],
   Optional['membership']           => Unix_accounts::Membership,
   Optional['is_sudo']              => Boolean,
+  Optional['sudo_commands']        => Array[Unix_accounts::SudoCommand],
   Optional['ssh_authorized_keys']  => Array[String[1]],
   Optional['purge_ssh_keys']       => Boolean,
   Optional['ssh_public_keys']      => Unix_accounts::SshPublicKeys,
   'email'                          => Optional[String[1]],
+  Optional['extra_info']           => Hash[String[1], Data],
 }]
 # Tag: USER_PARAMS
 

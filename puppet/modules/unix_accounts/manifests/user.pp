@@ -11,6 +11,9 @@ define unix_accounts::user (
   $settings_completed = $default_settings + $settings
 
   # Tag: USER_PARAMS
+  #
+  # All keys of Unix_accounts::UserSettings except
+  # 'extra_info' which is just ignored in this module.
   $password             = $settings_completed['password']
   $ensure               = $settings_completed['ensure']
   $uid                  = $settings_completed['uid']
@@ -23,6 +26,7 @@ define unix_accounts::user (
   $supplementary_groups = $settings_completed['supplementary_groups']
   $membership           = $settings_completed['membership']
   $is_sudo              = $settings_completed['is_sudo']
+  $sudo_commands        = $settings_completed['sudo_commands']
   $ssh_authorized_keys  = $settings_completed['ssh_authorized_keys']
   $purge_ssh_keys       = $settings_completed['purge_ssh_keys']
   $ssh_public_keys      = $settings_completed['ssh_public_keys']
@@ -61,6 +65,15 @@ define unix_accounts::user (
       ${rsrc_name}: `$login` account has the `supplementary_groups` which \
       contains the group `sudo` but its parameter `is_sudo` set to false. \
       It is inconsistent.
+      |- END
+  }
+
+  if $is_sudo and !($sudo_commands.empty) {
+    @("END"/L$).fail
+      ${rsrc_name}: `$login` account has the `is_sudo` \
+      parameter which is set to true and the `sudo_commands` \
+      parameter which is not empty. This is not allowed. If \
+      `is_sudo` is true, `sudo_commands` must be empty.
       |- END
   }
 
@@ -123,9 +136,10 @@ define unix_accounts::user (
     }
 
     # Management of the sudo file of $login.
-    $ensure_sudo_file = case [$ensure, $is_sudo] {
-      ['present', true   ]: { 'present' }
-      [default,   default]: { 'absent'  }
+    $ensure_sudo_file = case [$ensure, $is_sudo, $sudo_commands.empty] {
+      ['present',    true, default]: { 'present' }
+      ['present',   false,   false]: { 'present' }
+      [  default, default, default]: { 'absent'  }
     }
 
     file { "/etc/sudoers.d/${login}":
@@ -134,7 +148,11 @@ define unix_accounts::user (
       group   => 'root',
       mode    => '0440',
       content => epp('unix_accounts/sudofile.epp',
-                     {'user' => $login,}
+                     {
+                       'user'          => $login,
+                       'is_sudo'       => $is_sudo,
+                       'sudo_commands' => $sudo_commands,
+                     }
                  ),
       require => [ Package['sudo'], User[$login] ],
     }
