@@ -1,6 +1,6 @@
 {
   "name": "flaf-roles",
-  "version": "0.25.6",
+  "version": "0.25.7",
   "author": "flaf",
   "summary": "Module to implement roles, ie very top level classes",
   "license": "Apache-2.0",
@@ -8,7 +8,7 @@
   "project_page": null,
   "issues_url": null,
   "dependencies": [
-    {"name":"flaf-unix_accounts","version_requirement":"2.0.1"},
+    {"name":"flaf-unix_accounts","version_requirement":"2.1.0"},
     {"name":"flaf-network","version_requirement":"0.9.3"},
     {"name":"flaf-basic_ntp","version_requirement":"0.2.0"},
     {"name":"flaf-repository","version_requirement":"0.8.1"},
