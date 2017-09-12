@@ -6,7 +6,7 @@ enc_groups: [ 'puppetserver' ]
 
 network::params::ifaces:
   eth0:
-    in_networks: [ 'net97' ]
+    in_networks: [ 'dsi_admin' ]
     macaddress: '08:00:27:00:00:a0'
     inet:
       method: 'dhcp'
