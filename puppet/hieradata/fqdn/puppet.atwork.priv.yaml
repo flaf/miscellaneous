@@ -28,6 +28,6 @@ network::params::ifaces:
         netmask: '__default__'
 
 pxeserver::params::host_records:
-  'apt.%{::domain}': [ 'apt', '195.221.97.69' ]
+  'apt.%{::domain}': [ 'apt', '172.31.130.19' ]
 
 

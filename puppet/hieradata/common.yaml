@@ -13,6 +13,16 @@ eximnullclient::params::passwd_client:
     password: 'xxx...'
 
 network::params::inventory_networks:
+  dsi_admin:
+    comment: [ 'Admin network in DSI of Versailles' ]
+    vlan_id: '1'
+    vlan_name: 'dsi_admin'
+    datacenters: [ 'lss1' ]
+    cidr_address: '172.31.130.19/26'
+    gateway: '172.31.130.62'
+    dns_servers: [ '172.31.131.21', '172.31.131.21' ]
+    ntp_servers: [ 'ntp.ac-versailles.fr' ]
+    admin_email: '%{alias("_admin_email_")}'
   net97:
     comment: [ 'Historical "97" network at lss1.' ]
     vlan_id: '97'
