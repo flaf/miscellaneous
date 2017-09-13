@@ -128,13 +128,13 @@ unix_accounts::params::ssh_public_keys:
       - 'ppbackup@puppet.athome.priv'
   francois@dtic-flaf.atwork.priv:
     type: 'ssh-rsa'
-    keyvalue: "AAAAB3NzaC1yc2EAAAADAQABAAABAQCt1PCCTyhW/dvX+7Yyt6sut5e\
-               BD4d+nqFqp1a1d7YSomQ2Bzc8wz0rSZFplr+MHepbjblzPrGfTxbyA8\
-               tyyV5iiQU3nYwCEt7OPAEKktF700Gukny3if9OqTUeaVlTECn0+rQPa\
-               hj6VaipuJFJBSOwoaHWacP7MaerrmUWu6gVT32YQP/zglXnjgB/M2Aa\
-               b23ssrSSfPB1Sw06wVeiIjTlmG/UDhsPuPeu/VXi9j96XhIz3UwuMqq\
-               3dUyLTR3tPisEqa4TwxaZRb6vZrk2rSwhN/Fjk1hR45TeYUDxxw5u3A\
-               QcsOI0Nur1Gr/uHmnDRWhoIDrO5HMxmsb6eGMWDpg/"
+    keyvalue: "AAAAB3NzaC1yc2EAAAADAQABAAABAQDPOFUcqqhqoDp/RIXtL7opCZx\
+               VnmriJwbsT+cid//HBaogYoaI+nrnpb9rMPIzLo3AE7ikwD2SHMckal\
+               eb7LWJLbKdS7CU4LcUsoChf2zYZpwqgKwUELkSaO+PGQgj+qlFriwmK\
+               C1aKpwvelUSlNmOScnbGdY+NLOCCH9ByAX0UJBKwtd8l7TKvzTmP1JA\
+               PpIccg8FwerCjtsjRW/FZRG5dVNhuzJoqoyS1aQF+g/QROQj6JjcZWA\
+               MlURJc2FfEDAK7/C//bw/PISzOnsKbaKfpcskgfLmOhkAJhezmVQdui\
+               0mVY0c3jagmNhGbTfCi009QB0+F/Ypzt0bfmOnXQ+T"
     tags:
       - 'ppbackup@puppet.atwork.priv'
 
