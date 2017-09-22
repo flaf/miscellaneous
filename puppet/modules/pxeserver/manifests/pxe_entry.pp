@@ -89,7 +89,7 @@ define pxeserver::pxe_entry (
     }
 
     $set_permitrootlogin = [
-      "sed -i 's/^PermitRootLogin.*/PermitRootLogin yes/' /target/etc/ssh/sshd_config"
+      "sed -r -i 's/^[[:space:]]*#?[[:space:]]*PermitRootLogin.*/PermitRootLogin yes/' /target/etc/ssh/sshd_config",
     ]
 
     if $permitrootlogin_ssh {
