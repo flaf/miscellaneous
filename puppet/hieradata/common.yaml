@@ -59,12 +59,15 @@ network::params::inventory_networks:
     smtp_relay: '%{alias("_smtp_relay_")}'
     smtp_port: '%{alias("_smtp_port_")}'
   vbox_priv:
-    comment: [ 'Private LAN n2 in VBox (dhcp wihout gateway and dns).' ]
+    comment: [ 'Second private LAN in VBox directly reachable by the phyisical VBox host.' ]
     vlan_id: '1002'
-    vlan_name: 'priv2'
+    vlan_name: 'host-only-via-vboxnet0'
     datacenters: [ 'vboxhome', 'vboxwork' ]
-    cidr_address: '10.0.0.0/24'
-    dhcp_range: [ '10.0.0.210', '10.0.0.220' ]
+    cidr_address: '10.111.222.0/24'
+    gateway: '10.111.222.1'
+    ntp_servers: [ '10.111.222.1' ]
+    dns_servers: [ '10.111.222.1' ]
+    dhcp_range: [ '10.111.222.210', '10.111.222.220' ]
     admin_email: '%{alias("_admin_email_")}'
 
 unix_accounts::params::users:

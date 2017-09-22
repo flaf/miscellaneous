@@ -53,9 +53,11 @@ class pxeserver::params (
   $semi_manual_install_trusty        = $semi_manual_install_ubuntu.regsubst('__DISTRIB__', 'Trusty')
   $semi_manual_install_xenial        = $semi_manual_install_ubuntu.regsubst('__DISTRIB__', 'Xenial')
   $semi_manual_install_jessie        = $semi_manual_install_debian.regsubst('__DISTRIB__', 'Jessie')
+  $semi_manual_install_stretch       = $semi_manual_install_debian.regsubst('__DISTRIB__', 'Stretch')
   $all_in_first_disk_install_trusty  = $all_in_first_disk_install_ubuntu.regsubst('__DISTRIB__', 'Trusty')
   $all_in_first_disk_install_xenial  = $all_in_first_disk_install_ubuntu.regsubst('__DISTRIB__', 'Xenial')
   $all_in_first_disk_install_jessie  = $all_in_first_disk_install_debian.regsubst('__DISTRIB__', 'Jessie')
+  $all_in_first_disk_install_stretch = $all_in_first_disk_install_debian.regsubst('__DISTRIB__', 'Stretch')
 
   $pxe_entries = {
 
@@ -91,6 +93,17 @@ class pxeserver::params (
       'partman_early_command_file' => 'nothing',
       'late_command_file'          => 'nothing',
       'install_puppet'             => false,
+    },
+
+    'stretch-partial-preseed-without-puppet' => {
+      'distrib'                    => 'stretch',
+      'menu_label'                 => '[stretch] Partial preseed without puppet installed',
+      'text_help'                  => $semi_manual_install_stretch,
+      'apt_proxy'                  => $apt_proxy,
+      'skip_boot_loader'           => false,
+      'partman_early_command_file' => 'nothing',
+      'late_command_file'          => 'nothing',
+      'install_puppet'             => false,
       'insert_end'                 => 'MENU END',
     },
 
@@ -119,6 +132,16 @@ class pxeserver::params (
       'distrib'                    => 'jessie',
       'menu_label'                 => '[jessie] Partial preseed with puppet installed',
       'text_help'                  => $semi_manual_install_jessie,
+      'apt_proxy'                  => $apt_proxy,
+      'skip_boot_loader'           => false,
+      'partman_early_command_file' => 'nothing',
+      'late_command_file'          => 'nothing',
+    },
+
+    'stretch-partial-preseed-with-puppet' => {
+      'distrib'                    => 'stretch',
+      'menu_label'                 => '[stretch] Partial preseed with puppet installed',
+      'text_help'                  => $semi_manual_install_stretch,
       'apt_proxy'                  => $apt_proxy,
       'skip_boot_loader'           => false,
       'partman_early_command_file' => 'nothing',
@@ -161,6 +184,18 @@ class pxeserver::params (
       'partman_early_command_file' => 'partman_early_command_first_disk',
       'late_command_file'          => 'nothing',
       'install_puppet'             => false,
+    },
+
+    'stretch-all-in-first-disk-preseed-without-puppet' => {
+      'distrib'                    => 'stretch',
+      'menu_label'                 => '[stretch] All in first disk without puppet installed',
+      'text_help'                  => $all_in_first_disk_install_jessie,
+      'apt_proxy'                  => $apt_proxy,
+      'partman_auto_disk'          => ' ', # A space to have the entry without value.
+      'skip_boot_loader'           => false,
+      'partman_early_command_file' => 'partman_early_command_first_disk',
+      'late_command_file'          => 'nothing',
+      'install_puppet'             => false,
       'insert_end'                 => 'MENU END',
     },
 
@@ -190,6 +225,17 @@ class pxeserver::params (
     'jessie-all-in-first-disk-preseed-with-puppet' => {
       'distrib'                    => 'jessie',
       'menu_label'                 => '[jessie] All in first disk with puppet installed',
+      'text_help'                  => $all_in_first_disk_install_jessie,
+      'apt_proxy'                  => $apt_proxy,
+      'partman_auto_disk'          => ' ', # A space to have the entry without value.
+      'skip_boot_loader'           => false,
+      'partman_early_command_file' => 'partman_early_command_first_disk',
+      'late_command_file'          => 'nothing',
+    },
+
+    'stretch-all-in-first-disk-preseed-with-puppet' => {
+      'distrib'                    => 'stretch',
+      'menu_label'                 => '[stretch] All in first disk with puppet installed',
       'text_help'                  => $all_in_first_disk_install_jessie,
       'apt_proxy'                  => $apt_proxy,
       'partman_auto_disk'          => ' ', # A space to have the entry without value.
@@ -277,6 +323,10 @@ class pxeserver::params (
     },
     ### Debian ###
     'jessie' => {
+      'family'       => 'debian',
+      'boot_options' => 'locale=en_US.UTF-8 keyboard-configuration/xkb-keymap=fr(latin9)',
+    },
+    'stretch' => {
       'family'       => 'debian',
       'boot_options' => 'locale=en_US.UTF-8 keyboard-configuration/xkb-keymap=fr(latin9)',
     },
