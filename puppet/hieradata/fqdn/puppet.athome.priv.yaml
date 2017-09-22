@@ -26,7 +26,7 @@ network::params::ifaces:
     inet:
       method: 'static'
       options:
-        address: '10.111.222.1'
+        address: '10.111.222.2'
         netmask: '__default__'
 
 pxeserver::params::host_records:
