@@ -25,6 +25,7 @@ pxeserver::params::host_records:
   'xenial.%{::domain}':      [ 'xenial',        '172.16.5.2'  ]
   'trusty.%{::domain}':      [ 'trusty',        '172.16.5.3'  ]
   'jessie.%{::domain}':      [ 'jessie',        '172.16.5.4'  ]
+  'stretch.%{::domain}':     [ 'stretch',       '172.16.5.5'  ]
   # Ceph labs
   'ceph01.%{::domain}':      [ 'ceph01',        '172.16.10.1' ]
   'ceph02.%{::domain}':      [ 'ceph02',        '172.16.10.2' ]
@@ -43,6 +44,7 @@ pxeserver::params::ip_reservations:
   '08:00:27:00:00:b2': [ '172.16.5.2',    'xenial'      ] # eth0
   '08:00:27:00:00:b3': [ '172.16.5.3',    'trusty'      ] # eth0
   '08:00:27:00:00:b4': [ '172.16.5.4',    'jessie'      ] # eth0
+  '08:00:27:00:00:b5': [ '172.16.5.5',    'stretch'     ] # eth0
   # Ceph labs
   '08:00:27:00:00:c1': [ '172.16.10.1',   'ceph01'      ] # eth0
   '08:00:27:00:00:ca': [ '10.0.0.11',     'ceph01'      ] # eth1
