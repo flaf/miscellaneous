@@ -1,7 +1,8 @@
 <%-|
-  String[1] $puppetdb_name,
-  String[1] $puppetdb_user,
-  String[1] $profile,
+  String[1]  $puppetdb_name,
+  String[1]  $puppetdb_user,
+  String[1]  $profile,
+  Integer[1] $backend_etc_retention,
 |-%>
 #!/bin/sh
 
