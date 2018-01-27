@@ -20,6 +20,7 @@ function puppetserver::data (
   $datacenters             = undef
   $mcrypt_pwd              = undef
   $authorized_backup_keys  = {}
+  $backend_etc_retention   = 30
   $supported_distributions = [ 'trusty' ]
   $sd                      = 'supported_distributions';
 
@@ -40,6 +41,7 @@ function puppetserver::data (
     puppetserver::params::datacenters            => $datacenters,
     puppetserver::params::mcrypt_pwd             => $mcrypt_pwd,
     puppetserver::params::authorized_backup_keys => $authorized_backup_keys,
+    puppetserver::params::backend_etc_retention  => $backend_etc_retention,
    "puppetserver::params::${sd}"                 => $supported_distributions,
   }
 

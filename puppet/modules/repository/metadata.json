@@ -1,6 +1,6 @@
 {
   "name": "flaf-repository",
-  "version": "0.8.1",
+  "version": "0.8.2",
   "author": "flaf",
   "summary": "Module to set APT repositories.",
   "license": "Apache-2.0",

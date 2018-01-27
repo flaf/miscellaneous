@@ -635,6 +635,23 @@ class roles::generic (
 
   } # End of "if $nullclient".
 
+  ##############################################################################################
+  ## olc's workaround's -- if flaf discover that a day, I will disavow any knowledge of it :) ##
+  ##############################################################################################
+  if $::lsbdistcodename == 'stretch' {
+    $snmp_workaround_present = present
+  } else {
+    $snmp_workaround_present = absent
+  }
+
+  file { '/etc/sudoers.d/xxx-snmpd-extend-stretch-workaround':
+    ensure  => $snmp_workaround_present,
+    source  => 'puppet:///modules/roles/etc/sudoers.d/xxx-snmpd-extend-stretch-workaround', 
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0440', 
+    require => Package['sudo'],
+  }
 }
 
 

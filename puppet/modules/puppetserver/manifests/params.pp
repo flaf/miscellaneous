@@ -15,6 +15,7 @@ class puppetserver::params (
   Optional[ Array[String[1], 1] ]         $datacenters,
   Optional[ String[1] ]                   $mcrypt_pwd,
   Hash[ String[1], Puppetserver::Pubkey ] $authorized_backup_keys,
+  Integer[1]                              $backend_etc_retention,
   Array[String[1], 1]                     $supported_distributions,
 ) {
 

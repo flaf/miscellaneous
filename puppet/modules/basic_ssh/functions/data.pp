@@ -8,6 +8,7 @@ function basic_ssh::data {
     default             => 'prohibit-password',
   }
 
+  $port = 22
   $supported_distributions = [
                                'trusty',
                                'xenial',
@@ -16,6 +17,7 @@ function basic_ssh::data {
 
   {
     basic_ssh::server::params::permitrootlogin         => $default_permitrootlogin,
+    basic_ssh::server::params::port                    => $port,
     basic_ssh::server::params::supported_distributions => $supported_distributions,
 
     basic_ssh::client::params::supported_distributions => $supported_distributions,

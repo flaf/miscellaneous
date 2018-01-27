@@ -4,6 +4,7 @@ class basic_ssh::server {
 
   [
     $permitrootlogin,
+    $port,
     $supported_distributions,
   ] = Class['::basic_ssh::server::params']
 
@@ -15,6 +16,14 @@ class basic_ssh::server {
     path    => '/etc/ssh/sshd_config',
     line    => "PermitRootLogin ${permitrootlogin} # Edited by Puppet.",
     match   => '^#?[[:space:]]*PermitRootLogin[[:space:]]*.*$',
+    require => Package['openssh-server'],
+    notify  => Service['ssh'],
+  }
+
+  file_line { 'edit-Piort-parameter':
+    path    => '/etc/ssh/sshd_config',
+    line    => "Port ${port} # Edited by Puppet.",
+    match   => '^#?[[:space:]]*Port[[:space:]]*.*$',
     require => Package['openssh-server'],
     notify  => Service['ssh'],
   }

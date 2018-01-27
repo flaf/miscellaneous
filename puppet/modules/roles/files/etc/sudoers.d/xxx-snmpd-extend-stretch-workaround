@@ -1,0 +1,4 @@
+# This file is maintened by Puppet - Don't waste your time modifying it
+# workaround in roles::generic
+
+Debian-snmp ALL = (root) NOPASSWD: SNMPCMD_ROOT

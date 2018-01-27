@@ -5,6 +5,7 @@ class puppetserver::backup {
   [
     $mcrypt_pwd,
     $authorized_backup_keys,
+    $backend_etc_retention,
     $puppetdb_name,
     $puppetdb_user,
     $profile,
@@ -33,9 +34,10 @@ class puppetserver::backup {
     mode    => '0750',
     content  => epp('puppetserver/save-etc.puppet.epp',
                     {
-                      'puppetdb_name' => $puppetdb_name,
-                      'puppetdb_user' => $puppetdb_user,
-                      'profile'       => $profile,
+                      'puppetdb_name'         => $puppetdb_name,
+                      'puppetdb_user'         => $puppetdb_user,
+                      'profile'               => $profile,
+                      'backend_etc_retention' => $backend_etc_retention,
                     }
                    ),
     before  => Cron['save-etc-cron'],

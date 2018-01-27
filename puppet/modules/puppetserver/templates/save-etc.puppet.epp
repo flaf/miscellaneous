@@ -14,6 +14,10 @@ targzfile="$backupdir/etc_$(date '+%Y-%m-%d').tar.gz"
 config='/root/.mcryptrc'
 me=$(id --user --name)
 
+# We remove backups older than <%= $backend_etc_retention %> days,
+# so we take "-mtime +<%= $backend_etc_retention -1 %>".
+mtime_retention='<%= $backend_etc_retention - 1 %>'
+
 clean () {
     exit_code="$?"
     # We want to remove the not encrypted tar.gz file.
@@ -77,7 +81,7 @@ chown ppbackup:ppbackup "${targzfile}.nc"
 
 # We remove backups older than 100 days.
 # "-mtime +99" means "mtime equal to 100 or 101 or 102 etc."
-find "$backupdir" -maxdepth 1 -type f -name 'etc_*.tar.gz' -mtime +99 -delete
-find "$backupdir" -maxdepth 1 -type f -name 'etc_*.tar.gz.nc' -mtime +99 -delete
+find "$backupdir" -maxdepth 1 -type f -name 'etc_*.tar.gz' -mtime "+${mtime_retention}" -delete
+find "$backupdir" -maxdepth 1 -type f -name 'etc_*.tar.gz.nc' -mtime "+${mtime_retention}" -delete
 
 

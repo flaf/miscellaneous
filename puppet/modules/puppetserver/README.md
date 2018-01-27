@@ -46,6 +46,7 @@ class { '::puppetserver::params':
   #groups_from_master     => [],
   mcrypt_pwd             => 'abcdef',
   authorized_backup_keys => $pubkeys,
+  backend_etc_retention  => 30,
 }
 
 include '::puppetserver'
@@ -213,7 +214,10 @@ launch the command `mcrypt -d "etc_${date}.tar.gz.nc"` and
 you have to give the password `mcrypt_pwd`.
 
 **Remark:** if the server if an autonomous server, so with a
-Puppetdb service, the puppetdb is saved in `/usr/local/puppetdb-backup/`.
+Puppetdb service, the puppetdb is saved too in the file
+`etc_${date}.tar.gz.nc` which contains too the content of
+`/usr/local/puppetdb-backup/` (this directory is emptied
+just after the `.tar.gz` is created).
 
 The `authorized_backup_keys` parameter allows to set ssh
 public keys which will be put in the `~/.ssh/authorized_keys`
@@ -222,6 +226,11 @@ has a locked password and the only way to use this account
 (for instance to make a `scp` of the backups) is to use ssh
 public keys. The structure of this parameter must be the
 same as the example above.
+
+The parameter `backend_etc_retention` allows to set the
+`/etc/` backup retention. For instance, if it set to 30,
+which is the default, only backups older than 30 days
+will be removed.
 
 **Remark:** with the mechanism of backups in
 `/home/ppbackup/etc/` and the `authorized_backup_keys`
