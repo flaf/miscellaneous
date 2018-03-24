@@ -396,3 +396,72 @@ unless you change the value of the `hour_range_cron`
 parameter.
 
 
+# Remove and re-create manually repositories of a node (ie a provider)
+
+
+To remove all data of a node from the collector, the
+simplest way is to deactivate the node in Puppet and launch
+a puppet run in the collector:
+
+```sh
+FQDN='...'
+
+# In the puppet server.
+puppet node deactivate "$FQDN"
+
+# And in the collector.
+puppet agent --test
+```
+
+If it's not possible to make a deactivate, you have to
+remove the data manually in the collector:
+
+```sh
+FQDN='...'
+
+su - git
+# launched as "git" Unix account.
+rm -rf "all-in-one.git/$FQDN/" "non-bare-repos/$FQDN/" "repositories/$FQDN/"
+
+su - gitolite-admin
+# launched as "gitolite-admin" Unix account.
+cd ~/gitolite-admin
+vim conf/gitolite.conf # We remove all occurrences of $FQDN.
+rm keydir/*@$FQDN.pub
+git commit -m "Manual remove of $FQDN"
+git push
+```
+
+In the provider node, as root:
+
+```sh
+# We remove all Git repositories.
+rm -rf /etc/.git/ /opt/.git/ /usr/local/.git ...
+
+# At least 2 puppet runs are required (maybe 3, make a
+# puppet run until there is no change).
+puppet agent --test
+puppet agent --test
+```
+
+In the collector, as root:
+
+```sh
+# Repositories of $FQDN will be created again.
+puppet agent --test
+```
+
+Then, in the provider node, as root:
+
+```sh
+# All repositories of the node are commited and pushed.
+/usr/local/sbin/etckeeper-push-all
+```
+
+And then, in the collector node, as git:
+
+```sh
+su - git
+/usr/local/bin/collect-all-git-repos
+```
+
