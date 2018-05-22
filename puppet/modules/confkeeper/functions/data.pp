@@ -13,12 +13,19 @@ function confkeeper::data (
                            'xenial',
                           ]
 
-  # By default, repositories are /etc, /usr/local and /opt
+  # By default, repositories are:
+  #
+  #   - /etc
+  #   - /usr/local
+  #   - /opt
+  #   - /var/spool/cron
+  #
   # with almost default settings.
   $default_repositories = {
-    '/etc'       => {'gitignore' => undef},
-    '/usr/local' => {},
-    '/opt'       => {'gitignore' => ['/puppetlabs/']}, # exclude /opt/puppetlabs/
+    '/etc'            => {'gitignore' => undef},
+    '/usr/local'      => {},
+    '/opt'            => {'gitignore' => ['/puppetlabs/']}, # exclude /opt/puppetlabs/
+    '/var/spool/cron' => {},
   };
 
   {
