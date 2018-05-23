@@ -184,8 +184,14 @@ do
         if etckeeper unclean -d "$dir"
         then
             etckeeper commit -d "$dir" "Automatic commit via ${SCRIPT_NAME}" || true
-            timeout --signal TERM --kill-after 40s 20s git push origin master
         fi
+        # With PUSH_REMOTE="origin", the push will be triggered
+        # automatically during the "etckeeper commit" command. So
+        # this line below is redundant. But if the commit has worked
+        # and the push has failed, the next times, the "etckeeper
+        # unclean" command returns 0 no longer and the push will be
+        # never made. So we force a push here at each time.
+        timeout --signal TERM --kill-after 40s 20s git push origin master
     )
 
     unset -v dir
