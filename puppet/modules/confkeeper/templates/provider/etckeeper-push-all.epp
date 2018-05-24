@@ -181,16 +181,28 @@ do
             git config --local push.default 'simple'
         fi
 
-        if etckeeper unclean -d "$dir"
-        then
+        #if etckeeper unclean -d "$dir"
+        #then
+            # The command "etckeeper unclean" (to test if there are changes
+            # to commit) doesn't seem to be reliable in old versions of
+            # etckeeper. In recent versions (in Stretch), it seems to be
+            # reliable but a systematic "etckeeper commit" is probably
+            # better. If there is nothing to commit, the command will just
+            # do nothing and will return a non-zero exit code.
             etckeeper commit -d "$dir" "Automatic commit via ${SCRIPT_NAME}" || true
-        fi
+        #fi
+
         # With PUSH_REMOTE="origin", the push will be triggered
         # automatically during the "etckeeper commit" command. So
         # this line below is redundant. But if the commit has worked
         # and the push has failed, the next times, the "etckeeper
         # unclean" command returns 0 no longer and the push will be
         # never made. So we force a push here at each time.
+        #
+        # And even without the "if", a new "etckeeper commit" will
+        # do nothing (no commit and no push too) if there is no change
+        # in the Git repository. So it's probably better to put a
+        # systematical push here.
         timeout --signal TERM --kill-after 40s 20s git push origin master
     )
 
