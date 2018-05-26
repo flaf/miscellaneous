@@ -115,7 +115,7 @@ do
     # Path cleaning (remove the trailing slash if present etc).
     dir=$(readlink -f "$dir")
 
-    printf 'Handle of "%s".\n' "$dir"
+    printf '\n===> Handle of "%s".\n' "$dir"
 
     # Specific handle if the repository is /usr/local. In
     # this case, we make a copy of all bash histories in
