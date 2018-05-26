@@ -38,7 +38,7 @@ pool `ceph-vm` of course), I have set `--krbd=false`.
 
 # Fio bench on a OSD disk ie a SSD 800GB Intel S3520
 
-With the fio bench below, I obtain ~ 6261 iops:
+With the fio bench below, **I obtain ~ 6261 iops**:
 
 ```sh
 ~$ sudo fio --bs=4k --size=4G --numjobs=3 --time_based --runtime=40 --group_reporting --name myjob \
@@ -82,7 +82,7 @@ Disk stats (read/write):
 # Fio bench on a VM which uses the Ceph storage
 
 I have installed a little VM, a little Debian Stretch with 512MB RAM and a virtual 32GB disk with the
-driver VirtIO. In the VM, I have made exactly the same fio bench as above and **I have ~ 362 iops**:
+driver VirtIO. In the VM, I have made exactly the same fio bench as above and **I obtain ~ 362 iops**:
 
 ```sh
 ~$ sudo fio --bs=4k --size=4G --numjobs=3 --time_based --runtime=40 --group_reporting --name myjob \
