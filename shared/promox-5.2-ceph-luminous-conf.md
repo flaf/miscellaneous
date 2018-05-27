@@ -39,7 +39,9 @@ pool `ceph-vm` of course), I have set `--krbd=false`.
 
 # Fio bench on a OSD disk ie a SSD 800GB Intel S3520
 
-With the fio bench below, **I obtain ~ 6261 iops**:
+Before to install Proxmox, Ceph etc. I have tested a simple
+"OSD" disk in EXT4. With the fio bench below, **I obtain ~
+6261 iops**:
 
 ```sh
 ~$ sudo fio --bs=4k --size=4G --numjobs=3 --time_based --runtime=40 --group_reporting --name myjob \
