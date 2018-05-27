@@ -7,8 +7,9 @@
     - 10 disks
 * A RAID controller PERC H730P which is set in HBA mode (no RAID).
 * Among the 10 disks, there are:
-    - 2 SSD 200GB Intel S3710 2.5" in RAID1 ZFS dedicated to the OS.
+    - 2 SSD 200GB Intel S3710 2.5" in RAID1 ZFS dedicated to the OS (and the monitors).
     - 8 SSD 800GB Intel S3520 2.5" dedicated to the ceph storage (one disk = one OSD, so 8x3=24 OSDs in all).
+    - It's Ceph Luminous so all OSDs use the Bluestore backend.
 * There is one network card 2x10Gbps SFP+ strictly dedicated to the ceph cluster network.
 
 I have set a bonding on the two 10Gbps interfaces in active-backup mode with MTU=9000 like this:
